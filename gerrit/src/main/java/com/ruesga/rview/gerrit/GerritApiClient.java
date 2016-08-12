@@ -24,7 +24,10 @@ import com.ruesga.rview.gerrit.adapters.GerritServerVersionAdapter;
 import com.ruesga.rview.gerrit.adapters.GerritUtcDateAdapter;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.AccountInput;
+import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -42,6 +45,7 @@ import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
+import com.ruesga.rview.gerrit.model.UsernameInput;
 
 import java.io.IOException;
 import java.util.Date;
@@ -57,7 +61,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Path;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
@@ -165,6 +168,98 @@ public class GerritApiClient implements GerritApi {
         return mService.getAccounts(query, count, start, options);
     }
 
+    @Override
+    public Observable<AccountInfo> getAccount(int accountId) {
+        return mService.getAccount(accountId);
+    }
+
+    @Override
+    public Observable<AccountInfo> getSelfAccount() {
+        return mService.getSelfAccount();
+    }
+
+    @Override
+    public Observable<AccountInfo> createAccount(
+            @NonNull String username, @NonNull AccountInput input) {
+        return mService.createAccount(username, input);
+    }
+
+    @Override
+    public Observable<AccountDetailInfo> getAccountDetails(int accountId) {
+        return mService.getAccountDetails(accountId);
+    }
+
+    @Override
+    public Observable<AccountDetailInfo> getSelfAccountDetails() {
+        return mService.getSelfAccountDetails();
+    }
+
+    @Override
+    public Observable<String> getAccountName(int accountId) {
+        return mService.getAccountName(accountId);
+    }
+
+    @Override
+    public Observable<String> getSelfAccountName() {
+        return mService.getSelfAccountName();
+    }
+
+    @Override
+    public Observable<String> setAccountName(int accountId, @NonNull AccountNameInput input) {
+        return mService.setAccountName(accountId, input);
+    }
+
+    @Override
+    public Observable<String> setSelfAccountName(@NonNull AccountNameInput input) {
+        return mService.setSelfAccountName(input);
+    }
+
+    @Override
+    public Observable<Void> deleteAccountName(int accountId) {
+        return mService.deleteAccountName(accountId);
+    }
+
+    @Override
+    public Observable<Void> deleteSelfAccountName() {
+        return mService.deleteSelfAccountName();
+    }
+
+    @Override
+    public Observable<String> getAccountUsername(int accountId) {
+        return mService.getAccountUsername(accountId);
+    }
+
+    @Override
+    public Observable<String> getSelfAccountUsername() {
+        return mService.getSelfAccountUsername();
+    }
+
+    @Override
+    public Observable<String> setAccountUsername(int accountId, @NonNull UsernameInput input) {
+        return mService.setAccountUsername(accountId, input);
+    }
+
+    @Override
+    public Observable<String> setSelfAccountUsername(@NonNull UsernameInput input) {
+        return mService.setSelfAccountUsername(input);
+    }
+
+    @Override
+    public Observable<String> isAccountActive(int accountId) {
+        return mService.isAccountActive(accountId);
+    }
+
+    @Override
+    public Observable<Void> setAccountAsActive(int accountId) {
+        return mService.setAccountAsActive(accountId);
+    }
+
+    @Override
+    public Observable<Void> setAccountAsInactive(int accountId) {
+        return mService.setAccountAsInactive(accountId);
+    }
+
+
 
     // ===============================
     // Gerrit changes endpoints
@@ -229,8 +324,8 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<ProjectInfo> createProject(@NonNull ProjectInput input) {
-        return mService.createProject(input);
+    public Observable<ProjectInfo> createProject(@NonNull String name, @NonNull ProjectInput input) {
+        return mService.createProject(name, input);
     }
 
     @Override

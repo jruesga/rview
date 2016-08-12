@@ -20,7 +20,10 @@ import com.ruesga.rview.gerrit.GerritApiClient;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.StatusType;
+import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.AccountInput;
+import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
@@ -38,6 +41,7 @@ import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SubmitStatus;
 import com.ruesga.rview.gerrit.model.UseStatus;
+import com.ruesga.rview.gerrit.model.UsernameInput;
 
 import org.junit.Test;
 
@@ -52,7 +56,8 @@ import static org.junit.Assert.assertTrue;
 
 public class GerritApiClientTest {
 
-    private static final String ENDPOINT = "https://gerrit-review.googlesource.com/";
+    //private static final String ENDPOINT = "https://gerrit-review.googlesource.com/";
+    private static final String ENDPOINT = "http://review.cyanogenmod.org/";
     private static final String TEST_ENDPOINT = "http://localhost/";
 
     // ===============================
@@ -63,7 +68,6 @@ public class GerritApiClientTest {
     @Test
     public void testGetAccessRights() {
         String[] projectNames = {"gerrit", "git-repo"};
-        int count = 3;
         final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
         Map<String, ProjectAccessInfo> accesses =
                 client.getAccessRights(projectNames).toBlocking().first();
@@ -84,12 +88,12 @@ public class GerritApiClientTest {
     @Test
     public void testGetAccountsSuggestions() {
         String query = "john";
-        int count = 3;
+        final int count = 3;
         final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
         List<AccountInfo> accounts = client.getAccountsSuggestions(
                 query, count).toBlocking().first();
         assertNotNull(accounts);
-        assertEquals(accounts.size(), 3);
+        assertEquals(accounts.size(), count);
     }
 
     @Test
@@ -105,6 +109,163 @@ public class GerritApiClientTest {
                 query, count, start, options).toBlocking().first();
         assertNotNull(accounts);
         assertEquals(accounts.size(), count);
+    }
+
+    @Test
+    public void testGetAccount() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        AccountInfo account = client.getAccount(accountId).toBlocking().first();
+        assertNotNull(account);
+        assertEquals(account.accountId, accountId);
+    }
+
+    @Test
+    public void testGetSelfAccount() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        AccountInfo account = client.getSelfAccount().toBlocking().first();
+        assertNotNull(account);
+    }
+
+    @Test
+    public void testCreateAccount() {
+        final String username = "test";
+        AccountInput input = new AccountInput();
+        input.name = "Test";
+        input.email = "test@test.com";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        AccountInfo account = client.createAccount(username, input).toBlocking().first();
+        assertNotNull(account);
+        assertEquals(account.name, username);
+    }
+
+    @Test
+    public void testGetAccountDetails() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        AccountDetailInfo accountDetails = client.getAccountDetails(accountId).toBlocking().first();
+        assertNotNull(accountDetails);
+        assertEquals(accountDetails.accountId, accountId);
+    }
+
+    @Test
+    public void testGetSelfAccountDetails() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        AccountDetailInfo accountDetails = client.getSelfAccountDetails().toBlocking().first();
+        assertNotNull(accountDetails);
+    }
+
+    @Test
+    public void testGetAccountName() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String name = client.getAccountName(accountId).toBlocking().first();
+        assertNotNull(name);
+    }
+
+    @Test
+    public void testGetSelfAccountName() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String name = client.getSelfAccountName().toBlocking().first();
+        assertNotNull(name);
+    }
+
+    @Test
+    public void testSetAccountName() {
+        final AccountNameInput input = new AccountNameInput();
+        input.name = "Test";
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String name = client.setAccountName(accountId, input).toBlocking().first();
+        assertNotNull(name);
+        assertEquals(name, input.name);
+    }
+
+    @Test
+    public void testSetSelfAccountName() {
+        final AccountNameInput input = new AccountNameInput();
+        input.name = "Test";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String name = client.setSelfAccountName(input).toBlocking().first();
+        assertNotNull(name);
+        assertEquals(name, input.name);
+    }
+
+    @Test
+    public void testDeleteAccountName() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.deleteAccountName(accountId).toBlocking().first();
+    }
+
+    @Test
+    public void testDeleteSelfAccountName() {
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.deleteSelfAccountName().toBlocking().first();
+    }
+
+    @Test
+    public void testGetAccountUsername() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String username = client.getAccountUsername(accountId).toBlocking().first();
+        assertNotNull(username);
+    }
+
+    @Test
+    public void testGetSelfAccountUsername() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String username = client.getSelfAccountUsername().toBlocking().first();
+        assertNotNull(username);
+    }
+
+    @Test
+    public void testSetAccountUsername() {
+        final UsernameInput input = new UsernameInput();
+        input.username = "test";
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String username = client.setAccountUsername(accountId, input).toBlocking().first();
+        assertNotNull(username);
+        assertEquals(username, input.username);
+    }
+
+    @Test
+    public void testSetSelfAccountUsername() {
+        final UsernameInput input = new UsernameInput();
+        input.username = "test";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String username = client.setSelfAccountUsername(input).toBlocking().first();
+        assertNotNull(username);
+        assertEquals(username, input.username);
+    }
+
+    @Test
+    public void testIsAccountActive() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String active = client.isAccountActive(accountId).toBlocking().first();
+        assertNotNull(active);
+        assertEquals(active, "ok");
+    }
+
+    @Test
+    public void testSetAccountAsActive() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        client.setAccountAsActive(accountId).toBlocking().first();
+        String active = client.isAccountActive(accountId).toBlocking().first();
+        assertNotNull(active);
+        assertEquals(active, "ok");
+    }
+
+    @Test
+    public void testSetAccountAsInactive() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        client.setAccountAsActive(accountId).toBlocking().first();
+        String active = client.isAccountActive(accountId).toBlocking().first();
+        assertTrue(active == null || active.length() == 0);
     }
 
 
@@ -197,15 +358,15 @@ public class GerritApiClientTest {
 
     @Test
     public void testCreateProject() {
+        final String name = "test";
         final ProjectInput input = new ProjectInput();
-        input.name = "test";
         input.description = "test - description";
         input.createEmptyCommit = true;
         final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
-        ProjectInfo project = client.createProject(input).toBlocking().first();
+        ProjectInfo project = client.createProject(name, input).toBlocking().first();
         assertNotNull(project);
         assertNotNull(project.id);
-        assertTrue(project.name.equals(input.name));
+        assertTrue(project.name.equals(name));
     }
 
     @Test

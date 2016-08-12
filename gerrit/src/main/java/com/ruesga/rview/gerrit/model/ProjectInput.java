@@ -25,7 +25,6 @@ import java.util.Map;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#project-input"
  */
 public class ProjectInput {
-    @Nullable @SerializedName("name") public String name;
     @Nullable @SerializedName("parent") public String parent;
     @Nullable @SerializedName("description") public String description;
     @Nullable @SerializedName("permissions_only") public Boolean permissionsOnly;

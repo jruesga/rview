@@ -20,7 +20,10 @@ import android.support.annotation.Nullable;
 
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.AccountInput;
+import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
@@ -37,12 +40,12 @@ import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
+import com.ruesga.rview.gerrit.model.UsernameInput;
 
 import java.util.List;
 import java.util.Map;
 
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -96,6 +99,125 @@ public interface GerritApi {
             @Nullable @Query("n") Integer count,
             @Nullable @Query("S") Integer start,
             @Nullable @Query("o") AccountOptions[] options);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account"
+     */
+    @GET("accounts/{account-id}")
+    Observable<AccountInfo> getAccount(@Path("account-id") int accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account"
+     */
+    @GET("accounts/self")
+    Observable<AccountInfo> getSelfAccount();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#create-account"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{username}")
+    Observable<AccountInfo> createAccount(
+            @NonNull @Path("username") String username,
+            @NonNull @Body AccountInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-detail"
+     */
+    @GET("accounts/{account-id}/detail")
+    Observable<AccountDetailInfo> getAccountDetails(@Path("account-id") int accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-detail"
+     */
+    @GET("accounts/self/detail")
+    Observable<AccountDetailInfo> getSelfAccountDetails();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account-name"
+     */
+    @GET("accounts/{account-id}/name")
+    Observable<String> getAccountName(@Path("account-id") int accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account-name"
+     */
+    @GET("accounts/self/name")
+    Observable<String> getSelfAccountName();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-account-name"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/name")
+    Observable<String> setAccountName(
+            @Path("account-id") int accountId,
+            @NonNull @Body AccountNameInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-account-name"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/self/name")
+    Observable<String> setSelfAccountName(@NonNull @Body AccountNameInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-account-name"
+     */
+    @DELETE("accounts/{account-id}/name")
+    Observable<Void> deleteAccountName(@Path("account-id") int accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-account-name"
+     */
+    @DELETE("accounts/self/name")
+    Observable<Void> deleteSelfAccountName();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-username"
+     */
+    @GET("accounts/{account-id}/username")
+    Observable<String> getAccountUsername(@Path("account-id") int accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-username"
+     */
+    @GET("accounts/self/username")
+    Observable<String> getSelfAccountUsername();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-username"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/username")
+    Observable<String> setAccountUsername(
+            @Path("account-id") int accountId,
+            @NonNull @Body UsernameInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-username"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/self/username")
+    Observable<String> setSelfAccountUsername(@NonNull @Body UsernameInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-active"
+     */
+    @GET("accounts/{account-id}/active")
+    Observable<String> isAccountActive(@Path("account-id") int accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-active"
+     */
+    @PUT("accounts/{account-id}/active")
+    Observable<Void> setAccountAsActive(@Path("account-id") int accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-active"
+     */
+    @DELETE("accounts/{account-id}/active")
+    Observable<Void> setAccountAsInactive(@Path("account-id") int accountId);
 
 
 
@@ -177,7 +299,9 @@ public interface GerritApi {
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @PUT("projects/{project-name}")
-    Observable<ProjectInfo> createProject(@NonNull @Body ProjectInput input);
+    Observable<ProjectInfo> createProject(
+            @NonNull @Path("project-name") String name,
+            @NonNull @Body ProjectInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-project-description"
