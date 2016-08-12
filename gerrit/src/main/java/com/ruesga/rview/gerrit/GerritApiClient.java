@@ -29,15 +29,23 @@ import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
+import com.ruesga.rview.gerrit.model.ProjectInfo;
+import com.ruesga.rview.gerrit.model.ProjectInput;
+import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -56,6 +64,7 @@ public class GerritApiClient implements GerritApi {
                 .followRedirects(true)
                 .followSslRedirects(true)
                 .addInterceptor(createLoggingInterceptor())
+                .addInterceptor(createHeadersInterceptor())
                 .build();
 
         // Gson adapter
@@ -99,6 +108,19 @@ public class GerritApiClient implements GerritApi {
         return logging;
     }
 
+    private Interceptor createHeadersInterceptor() {
+        return new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Request original = chain.request();
+                Request.Builder requestBuilder = original.newBuilder()
+                        .header("Accept", "application/json");
+                Request request = requestBuilder.build();
+                return chain.proceed(request);
+            }
+        };
+    }
+
     private void registerCustomAdapters(GsonBuilder builder) {
         builder.registerTypeAdapter(Date.class, new GerritUtcDateAdapter());
         builder.registerTypeAdapter(ServerVersion.class, new GerritServerVersionAdapter());
@@ -137,6 +159,7 @@ public class GerritApiClient implements GerritApi {
         return mService.getChange(changeId, options);
     }
 
+
     //-- Config
 
     @Override
@@ -147,5 +170,42 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<ServerInfo> getServerInfo() {
         return mService.getServerInfo();
+    }
+
+
+    //-- Projects
+
+
+    @Override
+    public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Boolean showDescription,
+            @Nullable Boolean showTree, @Nullable String branch,
+            @Nullable ProjectType type, @Nullable String group) {
+        return mService.getProjects(showDescription, showTree, branch, type, group);
+    }
+
+    @Override
+    public Observable<ProjectInfo> getProject(@NonNull String projectName) {
+        return mService.getProject(projectName);
+    }
+
+    @Override
+    public Observable<ProjectInfo> createProject(@NonNull ProjectInput input) {
+        return mService.createProject(input);
+    }
+
+    @Override
+    public Observable<String> getProjectDescription(@NonNull String projectName) {
+        return mService.getProjectDescription(projectName);
+    }
+
+    @Override
+    public Observable<String> setProjectDescription(
+            @NonNull String projectName, @NonNull ProjectDescriptionInput input) {
+        return mService.setProjectDescription(projectName, input);
+    }
+
+    @Override
+    public Observable<Void> deleteProjectDescription(@NonNull String projectName) {
+        return mService.deleteProjectDescription(projectName);
     }
 }

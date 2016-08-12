@@ -15,12 +15,15 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.SerializedName;
+public enum SizeLimitUnit {
+    KILOBYTES("k"), MEGABYTES("m"), GIGABYTES("g");
 
-/**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#plugin-config-info"
- */
-public class PluginConfigInfo {
-    @SerializedName("has_avatars") public boolean hasAvatars;
+    private final String mUnit;
+    SizeLimitUnit(String unit) {
+        mUnit = unit;
+    }
+
+    public String format(long size) {
+        return size + mUnit;
+    }
 }
-

@@ -24,12 +24,16 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
+import com.ruesga.rview.gerrit.model.ProjectInfo;
+import com.ruesga.rview.gerrit.model.ProjectInput;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -38,6 +42,7 @@ import static org.junit.Assert.assertTrue;
 public class GerritApiClientTest {
 
     private static final String ENDPOINT = "https://gerrit-review.googlesource.com/";
+    private static final String TEST_ENDPOINT = "http://localhost/";
 
     @Test
     public void getAccountsSuggestions() {
@@ -107,5 +112,64 @@ public class GerritApiClientTest {
         ServerInfo info = client.getServerInfo().toBlocking().first();
         assertNotNull(info);
         assertTrue(info.gerrit.docUrl.equals(ENDPOINT + "Documentation/"));
+    }
+
+    @Test
+    public void testGetProjects() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        Map<String, ProjectInfo> projects = client.getProjects(true, true, null, null, null)
+                .toBlocking().first();
+        assertNotNull(projects);
+        assertTrue(projects.size() > 0);
+    }
+
+    @Test
+    public void testGetProject() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        ProjectInfo project = client.getProject("git-repo").toBlocking().first();
+        assertNotNull(project);
+        assertTrue(project.id.equals("git-repo"));
+    }
+
+    @Test
+    public void testCreateProject() {
+        final ProjectInput input = new ProjectInput();
+        input.name = "test";
+        input.description = "test - description";
+        input.createEmptyCommit = true;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ProjectInfo project = client.createProject(input).toBlocking().first();
+        assertNotNull(project);
+        assertNotNull(project.id);
+        assertTrue(project.name.equals(input.name));
+    }
+
+    @Test
+    public void testGetProjectDescription() {
+        final String description = "repo - The Multiple Git Repository Tool";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String projectDescription = client.getProjectDescription("git-repo").toBlocking().first();
+        assertNotNull(projectDescription);
+        assertTrue(projectDescription.equals(description));
+    }
+
+    @Test
+    public void testSetProjectDescription() {
+        final ProjectDescriptionInput input = new ProjectDescriptionInput();
+        input.description = "test - description - " + System.currentTimeMillis();
+        input.commitMessage = "test commit message";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String projectDescription = client.setProjectDescription("test", input).toBlocking().first();
+        assertNotNull(projectDescription);
+        assertTrue(projectDescription.equals(input.description));
+    }
+
+    @Test
+    public void testDeleteProjectDescription() {
+        final String project = "test";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.deleteProjectDescription(project).toBlocking().first();
+        String projectDescription = client.getProjectDescription(project).toBlocking().first();
+        assertTrue(projectDescription == null || projectDescription.length() == 0);
     }
 }

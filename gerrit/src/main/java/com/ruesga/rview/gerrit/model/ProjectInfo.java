@@ -17,10 +17,18 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Map;
+
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#plugin-config-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#project-info"
  */
-public class PluginConfigInfo {
-    @SerializedName("has_avatars") public boolean hasAvatars;
+public class ProjectInfo {
+    @SerializedName("id") public String id;
+    @SerializedName("name") public String name;
+    @SerializedName("parent") public String parent;
+    @SerializedName("description") public String description;
+    @SerializedName("state") public ProjectStatus state;
+    @SerializedName("branches") public Map<String, String> branches;
+    @SerializedName("web_links") public WebLinkInfo[] webLinks;
 }
 

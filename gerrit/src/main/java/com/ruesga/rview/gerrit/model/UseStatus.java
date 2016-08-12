@@ -15,12 +15,6 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.SerializedName;
-
-/**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#plugin-config-info"
- */
-public class PluginConfigInfo {
-    @SerializedName("has_avatars") public boolean hasAvatars;
+public enum UseStatus {
+    TRUE, FALSE, INHERIT
 }
-

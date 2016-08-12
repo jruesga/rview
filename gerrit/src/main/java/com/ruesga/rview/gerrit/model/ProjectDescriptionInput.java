@@ -15,12 +15,15 @@
  */
 package com.ruesga.rview.gerrit.model;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#plugin-config-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#project-description-input"
  */
-public class PluginConfigInfo {
-    @SerializedName("has_avatars") public boolean hasAvatars;
+public class ProjectDescriptionInput {
+    @Nullable @SerializedName("description") public String description;
+    @Nullable @SerializedName("commit_message") public String commitMessage;
 }
 
