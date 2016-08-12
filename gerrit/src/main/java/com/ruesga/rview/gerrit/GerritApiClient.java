@@ -33,6 +33,7 @@ import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.HeadInput;
+import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectInput;
@@ -56,6 +57,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Path;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
@@ -110,7 +112,7 @@ public class GerritApiClient implements GerritApi {
 
     private HttpLoggingInterceptor createLoggingInterceptor() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
         return logging;
     }
 
@@ -119,8 +121,8 @@ public class GerritApiClient implements GerritApi {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request original = chain.request();
-                Request.Builder requestBuilder = original.newBuilder()/*
-                        .header("Accept", "application/json")*/;
+                Request.Builder requestBuilder = original.newBuilder()
+                        .header("Accept", "application/json");
                 Request request = requestBuilder.build();
                 return chain.proceed(request);
             }
@@ -134,7 +136,21 @@ public class GerritApiClient implements GerritApi {
     }
 
 
-    //-- Accounts
+    // ===============================
+    // Gerrit access endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-access.html"
+    // ===============================
+
+    @Override
+    public Observable<Map<String, ProjectAccessInfo>> getAccessRights(@NonNull String[] names) {
+        return mService.getAccessRights(names);
+    }
+
+
+    // ===============================
+    // Gerrit accounts endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html"
+    // ===============================
 
     @Override
     public Observable<List<AccountInfo>> getAccountsSuggestions(
@@ -150,7 +166,10 @@ public class GerritApiClient implements GerritApi {
     }
 
 
-    //-- Changes
+    // ===============================
+    // Gerrit changes endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"
+    // ===============================
 
     @Override
     public Observable<List<ChangeInfo>> getChanges(
@@ -166,7 +185,10 @@ public class GerritApiClient implements GerritApi {
     }
 
 
-    //-- Config
+    // ===============================
+    // Gerrit configuration endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html"
+    // ===============================
 
     @Override
     public Observable<ServerVersion> getServerVersion() {
@@ -179,8 +201,20 @@ public class GerritApiClient implements GerritApi {
     }
 
 
-    //-- Projects
+    // ===============================
+    // Gerrit groups endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html"
+    // ===============================
 
+    // ===============================
+    // Gerrit plugins endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html"
+    // ===============================
+
+    // ===============================
+    // Gerrit projects endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html"
+    // ===============================
 
     @Override
     public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Boolean showDescription,
@@ -190,8 +224,8 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<ProjectInfo> getProject(@NonNull String projectName) {
-        return mService.getProject(projectName);
+    public Observable<ProjectInfo> getProject(@NonNull String name) {
+        return mService.getProject(name);
     }
 
     @Override
@@ -200,63 +234,60 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<String> getProjectDescription(@NonNull String projectName) {
-        return mService.getProjectDescription(projectName);
+    public Observable<String> getProjectDescription(@NonNull String name) {
+        return mService.getProjectDescription(name);
     }
 
     @Override
     public Observable<String> setProjectDescription(
-            @NonNull String projectName, @NonNull ProjectDescriptionInput input) {
-        return mService.setProjectDescription(projectName, input);
+            @NonNull String name, @NonNull ProjectDescriptionInput input) {
+        return mService.setProjectDescription(name, input);
     }
 
     @Override
-    public Observable<Void> deleteProjectDescription(@NonNull String projectName) {
-        return mService.deleteProjectDescription(projectName);
+    public Observable<Void> deleteProjectDescription(@NonNull String name) {
+        return mService.deleteProjectDescription(name);
     }
 
     @Override
-    public Observable<String> getProjectParent(@NonNull String projectName) {
-        return mService.getProjectParent(projectName);
+    public Observable<String> getProjectParent(@NonNull String name) {
+        return mService.getProjectParent(name);
     }
 
     @Override
     public Observable<String> setProjectParent(
-            @NonNull String projectName, @NonNull ProjectParentInput input) {
-        return mService.setProjectParent(projectName, input);
+            @NonNull String name, @NonNull ProjectParentInput input) {
+        return mService.setProjectParent(name, input);
     }
 
     @Override
-    public Observable<String> getProjectHead(@NonNull String projectName) {
-        return mService.getProjectHead(projectName);
+    public Observable<String> getProjectHead(@NonNull String name) {
+        return mService.getProjectHead(name);
     }
 
     @Override
-    public Observable<String> setProjectHead(
-            @NonNull String projectName, @NonNull HeadInput input) {
-        return mService.setProjectHead(projectName, input);
+    public Observable<String> setProjectHead(@NonNull String name, @NonNull HeadInput input) {
+        return mService.setProjectHead(name, input);
     }
 
     @Override
-    public Observable<RepositoryStatisticsInfo> getProjectStatistics(
-            @NonNull String projectName) {
-        return mService.getProjectStatistics(projectName);
+    public Observable<RepositoryStatisticsInfo> getProjectStatistics(@NonNull String name) {
+        return mService.getProjectStatistics(name);
     }
 
     @Override
-    public Observable<ConfigInfo> getProjectConfig(@NonNull String projectName) {
-        return mService.getProjectConfig(projectName);
+    public Observable<ConfigInfo> getProjectConfig(@NonNull String name) {
+        return mService.getProjectConfig(name);
     }
 
     @Override
     public Observable<ConfigInfo> setProjectConfig(
-            @NonNull String projectName, @NonNull ConfigInput input) {
-        return mService.setProjectConfig(projectName, input);
+            @NonNull String name, @NonNull ConfigInput input) {
+        return mService.setProjectConfig(name, input);
     }
 
     @Override
-    public Observable<Response> runProjectGc(
-            @NonNull String projectName, @NonNull GcInput input) {
-        return mService.runProjectGc(projectName, input);
+    public Observable<Response> runProjectGc(@NonNull String name, @NonNull GcInput input) {
+        return mService.runProjectGc(name, input);
     }
 }

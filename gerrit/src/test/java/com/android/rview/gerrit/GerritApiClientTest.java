@@ -28,7 +28,7 @@ import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.HeadInput;
-import com.ruesga.rview.gerrit.model.InheritBooleanInfo;
+import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectInput;
@@ -44,9 +44,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
-import okhttp3.Callback;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -57,8 +55,34 @@ public class GerritApiClientTest {
     private static final String ENDPOINT = "https://gerrit-review.googlesource.com/";
     private static final String TEST_ENDPOINT = "http://localhost/";
 
+    // ===============================
+    // Gerrit access endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-access.html"
+    // ===============================
+
     @Test
-    public void getAccountsSuggestions() {
+    public void testGetAccessRights() {
+        String[] projectNames = {"gerrit", "git-repo"};
+        int count = 3;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        Map<String, ProjectAccessInfo> accesses =
+                client.getAccessRights(projectNames).toBlocking().first();
+        assertNotNull(accesses);
+        assertEquals(accesses.size(), projectNames.length);
+        for (String projectName : projectNames) {
+            assertTrue(accesses.containsKey(projectName));
+            assertNotNull(accesses.get(projectName));
+            assertNotNull(accesses.get(projectName).inheritsFrom.id = "Public-Projects");
+        }
+    }
+
+    // ===============================
+    // Gerrit accounts endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html"
+    // ===============================
+
+    @Test
+    public void testGetAccountsSuggestions() {
         String query = "john";
         int count = 3;
         final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
@@ -82,6 +106,12 @@ public class GerritApiClientTest {
         assertNotNull(accounts);
         assertEquals(accounts.size(), count);
     }
+
+
+    // ===============================
+    // Gerrit changes endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html"
+    // ===============================
 
     @Test
     public void getChanges() {
@@ -111,6 +141,12 @@ public class GerritApiClientTest {
         assertEquals(change.id, changeId);
     }
 
+
+    // ===============================
+    // Gerrit configuration endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html"
+    // ===============================
+
     @Test
     public void testGetServerVersion() {
         final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
@@ -126,6 +162,21 @@ public class GerritApiClientTest {
         assertNotNull(info);
         assertTrue(info.gerrit.docUrl.equals(ENDPOINT + "Documentation/"));
     }
+
+    // ===============================
+    // Gerrit groups endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html"
+    // ===============================
+
+    // ===============================
+    // Gerrit plugins endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html"
+    // ===============================
+
+    // ===============================
+    // Gerrit projects endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html"
+    // ===============================
 
     @Test
     public void testGetProjects() {
