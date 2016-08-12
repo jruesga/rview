@@ -24,16 +24,29 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.ConfigInfo;
+import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.GcInput;
+import com.ruesga.rview.gerrit.model.HeadInput;
+import com.ruesga.rview.gerrit.model.InheritBooleanInfo;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectInput;
+import com.ruesga.rview.gerrit.model.ProjectParentInput;
+import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
+import com.ruesga.rview.gerrit.model.SubmitStatus;
+import com.ruesga.rview.gerrit.model.UseStatus;
 
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -171,5 +184,86 @@ public class GerritApiClientTest {
         client.deleteProjectDescription(project).toBlocking().first();
         String projectDescription = client.getProjectDescription(project).toBlocking().first();
         assertTrue(projectDescription == null || projectDescription.length() == 0);
+    }
+
+    @Test
+    public void testGetProjectParent() {
+        final String parent = "Public-Projects";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String projectParent = client.getProjectParent("git-repo").toBlocking().first();
+        assertNotNull(projectParent);
+        assertTrue(projectParent.equals(parent));
+    }
+
+    @Test
+    public void testSetProjectParent() {
+        final ProjectParentInput input = new ProjectParentInput();
+        input.parent = "Public-Projects";
+        input.commitMessage = "test commit message";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String projectParent = client.setProjectParent("test", input).toBlocking().first();
+        assertNotNull(projectParent);
+        assertTrue(projectParent.equals(input.parent));
+    }
+
+    @Test
+    public void testGetProjectHead() {
+        final String head = "refs/heads/master";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String projectHead = client.getProjectHead("git-repo").toBlocking().first();
+        assertNotNull(projectHead);
+        assertTrue(projectHead.equals(head));
+
+    }
+
+    @Test
+    public void testSetProjectHead() {
+        final HeadInput input = new HeadInput();
+        input.ref = "refs/heads/master";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String projectHead = client.setProjectHead("test", input).toBlocking().first();
+        assertNotNull(projectHead);
+        assertTrue(projectHead.equals(input.ref));
+    }
+
+    @Test
+    public void testGetProjectStatistics() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        RepositoryStatisticsInfo statistics =
+                client.getProjectStatistics("git-repo").toBlocking().first();
+        assertNotNull(statistics);
+        assertTrue(statistics.numberOfLooseObjects > 0);
+    }
+
+    @Test
+    public void testGetProjectConfig() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        ConfigInfo config = client.getProjectConfig("git-repo").toBlocking().first();
+        assertNotNull(config);
+        assertNotNull(config.useContentMerge.value = true);
+        assertNotNull(config.useSignedOffBy.value = false);
+        assertNotNull(config.submitType.equals(SubmitStatus.MERGE_IF_NECESSARY));
+    }
+
+    @Test
+    public void testSetProjectConfig() {
+        final ConfigInput input = new ConfigInput();
+        input.requireChangeId = UseStatus.TRUE;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ConfigInfo info = client.setProjectConfig("test", input).toBlocking().first();
+        assertNotNull(info);
+        assertNotNull(info.requireChangeId);
+        assertTrue(info.requireChangeId.value = true);
+    }
+
+    @Test
+    public void testRunProjectGc() {
+        final GcInput input = new GcInput();
+        input.async = true;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        Response response = client.runProjectGc("test", input).toBlocking().first();
+        assertNotNull(response);
+        String location = response.header("Location");
+        assertNotNull(location);
     }
 }

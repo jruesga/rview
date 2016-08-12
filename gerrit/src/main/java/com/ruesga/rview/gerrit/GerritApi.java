@@ -24,20 +24,29 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.ConfigInfo;
+import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.GcInput;
+import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectInput;
+import com.ruesga.rview.gerrit.model.ProjectParentInput;
 import com.ruesga.rview.gerrit.model.ProjectType;
+import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -167,4 +176,64 @@ public interface GerritApi {
     @DELETE("projects/{project-name}/description")
     Observable<Void> deleteProjectDescription(@NonNull @Path("project-name") String projectName);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-project-parent"
+     */
+    @GET("projects/{project-name}/parent")
+    Observable<String> getProjectParent(@NonNull @Path("project-name") String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-project-parent"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("projects/{project-name}/parent")
+    Observable<String> setProjectParent(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body ProjectParentInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-head"
+     */
+    @GET("projects/{project-name}/HEAD")
+    Observable<String> getProjectHead(@NonNull @Path("project-name") String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-head"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("projects/{project-name}/HEAD")
+    Observable<String> setProjectHead(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body HeadInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-repository-statistics"
+     */
+    @GET("projects/{project-name}/statistics.git")
+    Observable<RepositoryStatisticsInfo> getProjectStatistics(
+            @NonNull @Path("project-name") String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-config"
+     */
+    @GET("projects/{project-name}/config")
+    Observable<ConfigInfo> getProjectConfig(@NonNull @Path("project-name") String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-config"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("projects/{project-name}/config")
+    Observable<ConfigInfo> setProjectConfig(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body ConfigInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#run-gc"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/gc")
+    Observable<Response> runProjectGc(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body GcInput input);
 }

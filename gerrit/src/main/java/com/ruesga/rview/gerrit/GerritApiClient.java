@@ -29,10 +29,16 @@ import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.ConfigInfo;
+import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.GcInput;
+import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectInput;
+import com.ruesga.rview.gerrit.model.ProjectParentInput;
 import com.ruesga.rview.gerrit.model.ProjectType;
+import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 
@@ -104,7 +110,7 @@ public class GerritApiClient implements GerritApi {
 
     private HttpLoggingInterceptor createLoggingInterceptor() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         return logging;
     }
 
@@ -113,8 +119,8 @@ public class GerritApiClient implements GerritApi {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request original = chain.request();
-                Request.Builder requestBuilder = original.newBuilder()
-                        .header("Accept", "application/json");
+                Request.Builder requestBuilder = original.newBuilder()/*
+                        .header("Accept", "application/json")*/;
                 Request request = requestBuilder.build();
                 return chain.proceed(request);
             }
@@ -207,5 +213,50 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> deleteProjectDescription(@NonNull String projectName) {
         return mService.deleteProjectDescription(projectName);
+    }
+
+    @Override
+    public Observable<String> getProjectParent(@NonNull String projectName) {
+        return mService.getProjectParent(projectName);
+    }
+
+    @Override
+    public Observable<String> setProjectParent(
+            @NonNull String projectName, @NonNull ProjectParentInput input) {
+        return mService.setProjectParent(projectName, input);
+    }
+
+    @Override
+    public Observable<String> getProjectHead(@NonNull String projectName) {
+        return mService.getProjectHead(projectName);
+    }
+
+    @Override
+    public Observable<String> setProjectHead(
+            @NonNull String projectName, @NonNull HeadInput input) {
+        return mService.setProjectHead(projectName, input);
+    }
+
+    @Override
+    public Observable<RepositoryStatisticsInfo> getProjectStatistics(
+            @NonNull String projectName) {
+        return mService.getProjectStatistics(projectName);
+    }
+
+    @Override
+    public Observable<ConfigInfo> getProjectConfig(@NonNull String projectName) {
+        return mService.getProjectConfig(projectName);
+    }
+
+    @Override
+    public Observable<ConfigInfo> setProjectConfig(
+            @NonNull String projectName, @NonNull ConfigInput input) {
+        return mService.setProjectConfig(projectName, input);
+    }
+
+    @Override
+    public Observable<Response> runProjectGc(
+            @NonNull String projectName, @NonNull GcInput input) {
+        return mService.runProjectGc(projectName, input);
     }
 }
