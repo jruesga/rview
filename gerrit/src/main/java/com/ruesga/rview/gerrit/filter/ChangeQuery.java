@@ -26,7 +26,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
     public enum TimeUnit {
         SECONDS("s"), MINUTES("m"), HOURS("h"), DAYS("d"), WEEKS("w"), MONTHS("mon"), YEARS("y");
 
-        private String mUnit;
+        private final String mUnit;
         TimeUnit(String unit) {
             mUnit = unit;
         }

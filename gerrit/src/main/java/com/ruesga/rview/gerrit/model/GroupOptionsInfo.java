@@ -15,14 +15,12 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#head-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#group-options-info"
  */
-public class HeadInput {
-    @NonNull @SerializedName("ref") public String ref = "";
+public class GroupOptionsInfo {
+    @SerializedName("visible_to_all") public boolean visibleToAll;
 }
 

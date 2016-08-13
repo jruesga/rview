@@ -31,24 +31,36 @@ import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
+import com.ruesga.rview.gerrit.model.Capability;
+import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
+import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
+import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
+import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
+import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
+import com.ruesga.rview.gerrit.model.EditPreferencesInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.GpgKeyInfo;
+import com.ruesga.rview.gerrit.model.GroupInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.HttpPasswordInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
+import com.ruesga.rview.gerrit.model.PreferencesInfo;
+import com.ruesga.rview.gerrit.model.PreferencesInput;
 import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectInput;
 import com.ruesga.rview.gerrit.model.ProjectParentInput;
 import com.ruesga.rview.gerrit.model.ProjectType;
+import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
+import com.ruesga.rview.gerrit.model.ProjectWatchInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
@@ -69,8 +81,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.Path;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
@@ -237,18 +247,18 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<String> getHttpPassword(@NonNull @Path("account-id") String accountId) {
+    public Observable<String> getHttpPassword(@NonNull String accountId) {
         return mService.getHttpPassword(accountId);
     }
 
     @Override
     public Observable<String> setHttpPassword(
-            @NonNull @Path("account-id") String accountId, @NonNull @Body HttpPasswordInput input) {
+            @NonNull String accountId, @NonNull HttpPasswordInput input) {
         return mService.setHttpPassword(accountId, input);
     }
 
     @Override
-    public Observable<Void> deleteHttpPassword(@NonNull @Path("account-id") String accountId) {
+    public Observable<Void> deleteHttpPassword(@NonNull String accountId) {
         return mService.deleteHttpPassword(accountId);
     }
 
@@ -327,6 +337,86 @@ public class GerritApiClient implements GerritApi {
     public Observable<Map<String, GpgKeyInfo>> deleteAccountGpgKeys(
             @NonNull String accountId, @NonNull DeleteGpgKeyInput input) {
         return mService.deleteAccountGpgKeys(accountId, input);
+    }
+
+    @Override
+    public Observable<CapabilityInfo> getAccountCapabilities(
+            @NonNull String accountId, @Nullable Capability[] filter) {
+        return mService.getAccountCapabilities(accountId, filter);
+    }
+
+    @Override
+    public Observable<String> hasAccountCapability(
+            @NonNull String accountId, @NonNull Capability capabilityId) {
+        return mService.hasAccountCapability(accountId, capabilityId);
+    }
+
+    @Override
+    public Observable<List<GroupInfo>> getAccountGroups(@NonNull String accountId) {
+        return mService.getAccountGroups(accountId);
+    }
+
+    @Override
+    public Observable<Response> getAccountAvatar(@NonNull String accountId) {
+        return mService.getAccountAvatar(accountId);
+    }
+
+    @Override
+    public Observable<String> getAccountAvatarChangeUrl(@NonNull String accountId) {
+        return mService.getAccountAvatarChangeUrl(accountId);
+    }
+
+    @Override
+    public Observable<PreferencesInfo> getAccountPreferences(@NonNull String accountId) {
+        return mService.getAccountPreferences(accountId);
+    }
+
+    @Override
+    public Observable<PreferencesInfo> setAccountPreferences(
+            @NonNull String accountId,
+            @NonNull PreferencesInput input) {
+        return mService.setAccountPreferences(accountId, input);
+    }
+
+    @Override
+    public Observable<DiffPreferencesInfo> getAccountDiffPreferences(@NonNull String accountId) {
+        return mService.getAccountDiffPreferences(accountId);
+    }
+
+    @Override
+    public Observable<DiffPreferencesInfo> setAccountDiffPreferences(
+            @NonNull String accountId,
+            @NonNull DiffPreferencesInput input) {
+        return mService.setAccountDiffPreferences(accountId, input);
+    }
+
+    @Override
+    public Observable<EditPreferencesInfo> getAccountEditPreferences(@NonNull String accountId) {
+        return mService.getAccountEditPreferences(accountId);
+    }
+
+    @Override
+    public Observable<EditPreferencesInfo> setAccountEditPreferences(
+            @NonNull String accountId,
+            @NonNull EditPreferencesInput input) {
+        return mService.setAccountEditPreferences(accountId, input);
+    }
+
+    @Override
+    public Observable<List<ProjectWatchInfo>> getAccountWatchedProjects(@NonNull String accountId) {
+        return mService.getAccountWatchedProjects(accountId);
+    }
+
+    @Override
+    public Observable<List<ProjectWatchInfo>> addOrUpdateAccountWatchedProjects(
+            @NonNull String accountId, @NonNull ProjectWatchInput[] input) {
+        return mService.addOrUpdateAccountWatchedProjects(accountId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteAccountWatchedProjects(
+            @NonNull String accountId, @NonNull DeleteProjectWatchInput[] input) {
+        return mService.deleteAccountWatchedProjects(accountId, input);
     }
 
 

@@ -17,8 +17,6 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Map;
-
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#commit-info"
  */

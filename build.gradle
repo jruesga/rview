@@ -20,6 +20,7 @@ allprojects {
             jcenter()
         }
         dependencies {
+            //noinspection GroovyAssignabilityCheck
             classpath 'com.android.tools.build:gradle-experimental:0.8.0-beta1'
         }
     }

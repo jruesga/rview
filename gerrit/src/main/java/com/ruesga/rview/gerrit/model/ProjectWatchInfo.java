@@ -15,14 +15,17 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#head-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#project-watch-info"
  */
-public class HeadInput {
-    @NonNull @SerializedName("ref") public String ref = "";
+public class ProjectWatchInfo {
+    @SerializedName("project") public String project;
+    @SerializedName("filter") public String filter;
+    @SerializedName("notify_new_changes") public boolean notifyNewChanges;
+    @SerializedName("notify_new_patch_sets") public boolean notifyNewPatchSets;
+    @SerializedName("notify_all_comments") public boolean notifyAllComments;
+    @SerializedName("notify_submitted_changes") public boolean notifySubmittedChanges;
+    @SerializedName("notify_abandoned_changes") public boolean notifyAbandonedChanges;
 }
-

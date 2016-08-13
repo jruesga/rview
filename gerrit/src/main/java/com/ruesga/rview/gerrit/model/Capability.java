@@ -15,14 +15,8 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
-import com.google.gson.annotations.SerializedName;
-
-/**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#head-input"
- */
-public class HeadInput {
-    @NonNull @SerializedName("ref") public String ref = "";
+public enum Capability {
+    accessDatabase, administrateServer, createAccount, createGroup, createProject,
+    emailReviewers, flushCaches, killTask, maintainServer, priority, queryLimit, runAs,
+    runGC, streamEvents, viewAllAccounts, viewCaches, viewConnections, viewPlugins, viewQueue
 }
-

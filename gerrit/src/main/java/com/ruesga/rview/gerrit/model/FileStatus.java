@@ -18,7 +18,7 @@ package com.ruesga.rview.gerrit.model;
 public enum FileStatus {
     A("ADDED"), D("DELETED"), R("RENAMED"), C("COPIED"), W("REWRITTEN"), M("MODIFIED");
 
-    private String mDescription;
+    private final String mDescription;
     FileStatus(String description) {
         mDescription = description;
     }

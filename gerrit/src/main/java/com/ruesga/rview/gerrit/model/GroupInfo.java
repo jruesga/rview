@@ -15,14 +15,21 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#head-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#group-info"
  */
-public class HeadInput {
-    @NonNull @SerializedName("ref") public String ref = "";
+public class GroupInfo {
+    @SerializedName("id") public String id;
+    @SerializedName("name") public String name;
+    @SerializedName("url") public String url;
+    @SerializedName("options") public GroupOptionsInfo options;
+    @SerializedName("description") public String description;
+    @SerializedName("group_id") public int groupId;
+    @SerializedName("owner") public String owner;
+    @SerializedName("owner_id") public int ownerId;
+    @SerializedName("members") public AccountInfo[] members;
+    @SerializedName("includes") public GroupInfo[] includes;
 }
 

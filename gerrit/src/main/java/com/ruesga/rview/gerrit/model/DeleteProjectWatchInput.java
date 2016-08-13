@@ -15,14 +15,14 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#head-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#project-watch-info"
  */
-public class HeadInput {
-    @NonNull @SerializedName("ref") public String ref = "";
+public class DeleteProjectWatchInput {
+    @Nullable @SerializedName("project") public String project;
+    @Nullable @SerializedName("filter") public String filter;
 }
-

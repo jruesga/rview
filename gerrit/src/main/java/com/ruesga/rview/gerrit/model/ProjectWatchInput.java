@@ -20,13 +20,14 @@ import android.support.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#project-watch-info"
  */
-public class AccountInput {
-    @Nullable @SerializedName("name") public String name;
-    @Nullable @SerializedName("email") public String email;
-    @Nullable @SerializedName("ssh_key") public String sshKey;
-    @Nullable @SerializedName("http_password") public String httpPassword;
-    @Nullable @SerializedName("groups") public String[] groups;
+public class ProjectWatchInput {
+    @Nullable @SerializedName("project") public String project;
+    @Nullable @SerializedName("filter") public String filter;
+    @Nullable @SerializedName("notify_new_changes") public Boolean notifyNewChanges;
+    @Nullable @SerializedName("notify_new_patch_sets") public Boolean notifyNewPatchSets;
+    @Nullable @SerializedName("notify_all_comments") public Boolean notifyAllComments;
+    @Nullable @SerializedName("notify_submitted_changes") public Boolean notifySubmittedChanges;
+    @Nullable @SerializedName("notify_abandoned_changes") public Boolean notifyAbandonedChanges;
 }
-

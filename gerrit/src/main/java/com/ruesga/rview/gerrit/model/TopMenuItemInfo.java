@@ -15,14 +15,14 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#head-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#top-menu-item-info"
  */
-public class HeadInput {
-    @NonNull @SerializedName("ref") public String ref = "";
+public class TopMenuItemInfo {
+    @SerializedName("url") public String url;
+    @SerializedName("name") public String name;
+    @SerializedName("target") public String target;
+    @SerializedName("id") public String id;
 }
-

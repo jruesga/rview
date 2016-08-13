@@ -15,14 +15,6 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
-import com.google.gson.annotations.SerializedName;
-
-/**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#head-input"
- */
-public class HeadInput {
-    @NonNull @SerializedName("ref") public String ref = "";
+public enum KeyMapType {
+    DEFAULT, EMACS, SUBLIME, VIM
 }
-

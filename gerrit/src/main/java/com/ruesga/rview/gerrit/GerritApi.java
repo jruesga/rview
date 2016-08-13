@@ -26,24 +26,36 @@ import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
+import com.ruesga.rview.gerrit.model.Capability;
+import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
+import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
+import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
+import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
+import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
+import com.ruesga.rview.gerrit.model.EditPreferencesInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.GpgKeyInfo;
+import com.ruesga.rview.gerrit.model.GroupInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.HttpPasswordInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
+import com.ruesga.rview.gerrit.model.PreferencesInfo;
+import com.ruesga.rview.gerrit.model.PreferencesInput;
 import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectInput;
 import com.ruesga.rview.gerrit.model.ProjectParentInput;
 import com.ruesga.rview.gerrit.model.ProjectType;
+import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
+import com.ruesga.rview.gerrit.model.ProjectWatchInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
@@ -320,6 +332,115 @@ public interface GerritApi {
     Observable<Map<String, GpgKeyInfo>> deleteAccountGpgKeys(
             @NonNull @Path("account-id") String accountId,
             @NonNull @Body DeleteGpgKeyInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-account-capabilities"
+     */
+    @GET("accounts/{account-id}/capabilities")
+    Observable<CapabilityInfo> getAccountCapabilities(
+            @NonNull @Path("account-id") String accountId,
+            @Nullable @Query("q") Capability[] filter);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#check-account-capabilities"
+     */
+    @GET("accounts/{account-id}/capabilities/{capability-id}")
+    Observable<String> hasAccountCapability(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("capability-id") Capability capabilityId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-groups"
+     */
+    @GET("accounts/{account-id}/groups")
+    Observable<List<GroupInfo>> getAccountGroups(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-avatar"
+     */
+    @GET("accounts/{account-id}/avatar")
+    Observable<Response> getAccountAvatar(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-avatar-change-url"
+     */
+    @GET("accounts/{account-id}/avatar.change.url")
+    Observable<String> getAccountAvatarChangeUrl(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-user-preferences"
+     */
+    @GET("accounts/{account-id}/preferences")
+    Observable<PreferencesInfo> getAccountPreferences(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-user-preferences"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/preferences")
+    Observable<PreferencesInfo> setAccountPreferences(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body PreferencesInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-diff-preferences"
+     */
+    @GET("accounts/{account-id}/preferences.diff")
+    Observable<DiffPreferencesInfo> getAccountDiffPreferences(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-diff-preferences"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/preferences.diff")
+    Observable<DiffPreferencesInfo> setAccountDiffPreferences(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body DiffPreferencesInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-edit-preferences"
+     */
+    @GET("accounts/{account-id}/preferences.edit")
+    Observable<EditPreferencesInfo> getAccountEditPreferences(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-edit-preferences"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/preferences.edit")
+    Observable<EditPreferencesInfo> setAccountEditPreferences(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body EditPreferencesInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-watched-projects"
+     */
+    @GET("accounts/{account-id}/watched.projects")
+    Observable<List<ProjectWatchInfo>> getAccountWatchedProjects(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-watched-projects"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/watched.projects")
+    Observable<List<ProjectWatchInfo>> addOrUpdateAccountWatchedProjects(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body ProjectWatchInput[] input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-watched-projects"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/watched.projects")
+    Observable<Void> deleteAccountWatchedProjects(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body DeleteProjectWatchInput[] input);
+
+
 
 
     // ===============================

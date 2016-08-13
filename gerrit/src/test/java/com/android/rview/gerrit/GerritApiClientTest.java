@@ -26,23 +26,36 @@ import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
+import com.ruesga.rview.gerrit.model.Capability;
+import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.DateFormat;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
+import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
+import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
+import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
+import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
+import com.ruesga.rview.gerrit.model.EditPreferencesInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.GpgKeyInfo;
+import com.ruesga.rview.gerrit.model.GroupInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.HttpPasswordInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
+import com.ruesga.rview.gerrit.model.PreferencesInfo;
+import com.ruesga.rview.gerrit.model.PreferencesInput;
 import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectInput;
 import com.ruesga.rview.gerrit.model.ProjectParentInput;
+import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
+import com.ruesga.rview.gerrit.model.ProjectWatchInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
@@ -384,6 +397,151 @@ public class GerritApiClientTest {
         assertNotNull(keys);
         assertEquals(keys.size(), 1);
         assertTrue(keys.containsKey(input.gpgKeyIds[0]));
+    }
+
+    @Test
+    public void testGetAccountCapabilities() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        CapabilityInfo capabilities =
+                client.getAccountCapabilities(String.valueOf(accountId), null).toBlocking().first();
+        assertNotNull(capabilities);
+    }
+
+    @Test
+    public void testHasAccountCapability() {
+        final int accountId = 1000;
+        final Capability capability = Capability.createGroup;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String hasCapability = client.hasAccountCapability(
+                String.valueOf(accountId), capability).toBlocking().first();
+        assertNotNull(hasCapability);
+        assertEquals(hasCapability, "ok");
+    }
+
+    @Test
+    public void testGetAccountGroups() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<GroupInfo> groups = client.getAccountGroups(
+                String.valueOf(accountId)).toBlocking().first();
+        assertNotNull(groups);
+        assertTrue(groups.size() > 0);
+    }
+
+    @Test
+    public void testGetAccountAvatar() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        Response response = client.getAccountAvatar(
+                String.valueOf(accountId)).toBlocking().first();
+        assertNotNull(response);
+        String location = response.header("Location");
+        assertNotNull(location);
+    }
+
+    @Test
+    public void testGetAccountAvatarChangeUrl() {
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String url = client.getAccountAvatarChangeUrl(
+                String.valueOf(accountId)).toBlocking().first();
+        assertNotNull(url);
+    }
+
+    @Test
+    public void testGetAccountPreferences() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        PreferencesInfo preferences = client.getAccountPreferences(
+                GerritApi.SELF_ACCOUNT).toBlocking().first();
+        assertNotNull(preferences);
+    }
+
+    @Test
+    public void testSetAccountPreferences() {
+        final PreferencesInput input = new PreferencesInput();
+        input.dateFormat = DateFormat.EURO;
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        PreferencesInfo preferences = client.setAccountPreferences(
+                String.valueOf(accountId), input).toBlocking().first();
+        assertNotNull(preferences);
+        assertNotNull(preferences.dateFormat);
+        assertEquals(preferences.dateFormat, input.dateFormat);
+    }
+
+    @Test
+    public void testGetAccountDiffPreferences() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        DiffPreferencesInfo preferences = client.getAccountDiffPreferences(
+                GerritApi.SELF_ACCOUNT).toBlocking().first();
+        assertNotNull(preferences);
+    }
+
+    @Test
+    public void testSetAccountDiffPreferences() {
+        final DiffPreferencesInput input = new DiffPreferencesInput();
+        input.expandAllComments = true;
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        DiffPreferencesInfo preferences = client.setAccountDiffPreferences(
+                String.valueOf(accountId), input).toBlocking().first();
+        assertNotNull(preferences);
+        assertTrue(preferences.expandAllComments == input.expandAllComments);
+    }
+
+    @Test
+    public void testGetAccountEditPreferences() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        EditPreferencesInfo preferences = client.getAccountEditPreferences(
+                GerritApi.SELF_ACCOUNT).toBlocking().first();
+        assertNotNull(preferences);
+    }
+
+    @Test
+    public void testSetAccountEditPreferences() {
+        final EditPreferencesInput input = new EditPreferencesInput();
+        input.autoCloseBrackets = true;
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        EditPreferencesInfo preferences = client.setAccountEditPreferences(
+                String.valueOf(accountId), input).toBlocking().first();
+        assertNotNull(preferences);
+        assertTrue(preferences.autoCloseBrackets == input.autoCloseBrackets);
+    }
+
+    @Test
+    public void testGetAccountWatchedProjects() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<ProjectWatchInfo> projects = client.getAccountWatchedProjects(
+                GerritApi.SELF_ACCOUNT).toBlocking().first();
+        assertNotNull(projects);
+        assertTrue(projects.size() > 0);
+    }
+
+    @Test
+    public void testSetAccountWatchedProjects() {
+        final ProjectWatchInput[] input = new ProjectWatchInput[1];
+        input[0] = new ProjectWatchInput();
+        input[0].project = "test";
+        input[0].notifyAllComments = true;
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        List<ProjectWatchInfo> projects = client.addOrUpdateAccountWatchedProjects(
+                String.valueOf(accountId), input).toBlocking().first();
+        assertNotNull(projects);
+        assertEquals(projects.size(), input.length);
+        assertEquals(projects.get(0).notifyAllComments, true);
+    }
+
+    @Test
+    public void testDeleteAccountWatchedProjects() {
+        final DeleteProjectWatchInput[] input = new DeleteProjectWatchInput[1];
+        input[0] = new DeleteProjectWatchInput();
+        input[0].project = "test";
+        final int accountId = 1000;
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.deleteAccountWatchedProjects(String.valueOf(accountId), input).toBlocking().first();
     }
 
 
