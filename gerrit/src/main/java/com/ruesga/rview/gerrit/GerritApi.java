@@ -25,12 +25,19 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
+import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
+import com.ruesga.rview.gerrit.model.EmailInfo;
+import com.ruesga.rview.gerrit.model.EmailInput;
 import com.ruesga.rview.gerrit.model.GcInput;
+import com.ruesga.rview.gerrit.model.GpgKeyInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
+import com.ruesga.rview.gerrit.model.HttpPasswordInput;
+import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
 import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
@@ -40,6 +47,7 @@ import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
+import com.ruesga.rview.gerrit.model.SshKeyInfo;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
 import java.util.List;
@@ -61,6 +69,9 @@ import rx.Observable;
  */
 public interface GerritApi {
 
+    /**
+     * The current supported Gerrit api version
+     */
     double VERSION = 2.12;
 
     // ===============================
@@ -81,6 +92,11 @@ public interface GerritApi {
     // Gerrit accounts endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html"
     // ===============================
+
+    /**
+     * The own account id (requires and authenticated account)
+     */
+    String SELF_ACCOUNT = "self";
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#query-account"
@@ -104,13 +120,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account"
      */
     @GET("accounts/{account-id}")
-    Observable<AccountInfo> getAccount(@Path("account-id") int accountId);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account"
-     */
-    @GET("accounts/self")
-    Observable<AccountInfo> getSelfAccount();
+    Observable<AccountInfo> getAccount(@NonNull @Path("account-id") String accountId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#create-account"
@@ -125,25 +135,13 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-detail"
      */
     @GET("accounts/{account-id}/detail")
-    Observable<AccountDetailInfo> getAccountDetails(@Path("account-id") int accountId);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-detail"
-     */
-    @GET("accounts/self/detail")
-    Observable<AccountDetailInfo> getSelfAccountDetails();
+    Observable<AccountDetailInfo> getAccountDetails(@NonNull @Path("account-id") String accountId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account-name"
      */
     @GET("accounts/{account-id}/name")
-    Observable<String> getAccountName(@Path("account-id") int accountId);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account-name"
-     */
-    @GET("accounts/self/name")
-    Observable<String> getSelfAccountName();
+    Observable<String> getAccountName(@NonNull @Path("account-id") String accountId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-account-name"
@@ -151,39 +149,20 @@ public interface GerritApi {
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @PUT("accounts/{account-id}/name")
     Observable<String> setAccountName(
-            @Path("account-id") int accountId,
+            @NonNull @Path("account-id") String accountId,
             @NonNull @Body AccountNameInput input);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-account-name"
-     */
-    @Headers({"Content-Type: application/json; charset=UTF-8"})
-    @PUT("accounts/self/name")
-    Observable<String> setSelfAccountName(@NonNull @Body AccountNameInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-account-name"
      */
     @DELETE("accounts/{account-id}/name")
-    Observable<Void> deleteAccountName(@Path("account-id") int accountId);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-account-name"
-     */
-    @DELETE("accounts/self/name")
-    Observable<Void> deleteSelfAccountName();
+    Observable<Void> deleteAccountName(@NonNull @Path("account-id") String accountId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-username"
      */
     @GET("accounts/{account-id}/username")
-    Observable<String> getAccountUsername(@Path("account-id") int accountId);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-username"
-     */
-    @GET("accounts/self/username")
-    Observable<String> getSelfAccountUsername();
+    Observable<String> getAccountUsername(@NonNull @Path("account-id") String accountId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-username"
@@ -191,34 +170,156 @@ public interface GerritApi {
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @PUT("accounts/{account-id}/username")
     Observable<String> setAccountUsername(
-            @Path("account-id") int accountId,
+            @NonNull @Path("account-id") String accountId,
             @NonNull @Body UsernameInput input);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-username"
-     */
-    @Headers({"Content-Type: application/json; charset=UTF-8"})
-    @PUT("accounts/self/username")
-    Observable<String> setSelfAccountUsername(@NonNull @Body UsernameInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-active"
      */
     @GET("accounts/{account-id}/active")
-    Observable<String> isAccountActive(@Path("account-id") int accountId);
+    Observable<String> isAccountActive(@NonNull @Path("account-id") String accountId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-active"
      */
     @PUT("accounts/{account-id}/active")
-    Observable<Void> setAccountAsActive(@Path("account-id") int accountId);
+    Observable<Void> setAccountAsActive(@NonNull @Path("account-id") String accountId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-active"
      */
     @DELETE("accounts/{account-id}/active")
-    Observable<Void> setAccountAsInactive(@Path("account-id") int accountId);
+    Observable<Void> setAccountAsInactive(@NonNull @Path("account-id") String accountId);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-http-password"
+     */
+    @GET("accounts/{account-id}/password.http")
+    Observable<String> getHttpPassword(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-http-password"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/password.http")
+    Observable<String> setHttpPassword(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body HttpPasswordInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-http-password"
+     */
+    @DELETE("accounts/{account-id}/password.http")
+    Observable<Void> deleteHttpPassword(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-oauth-token"
+     */
+    @GET("accounts/{account-id}/oauthtoken")
+    Observable<OAuthTokenInfo> getOAuthToken(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-account-emails"
+     */
+    @GET("accounts/{account-id}/emails")
+    Observable<List<EmailInfo>> getAccountEmails(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-account-email"
+     */
+    @GET("accounts/{account-id}/emails/{email-id}")
+    Observable<EmailInfo> getAccountEmail(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("email-id") String emailId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#create-account-email"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/emails/{email-id}")
+    Observable<EmailInfo> createAccountEmail(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("email-id") String emailId,
+            @NonNull @Body EmailInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-account-email"
+     */
+    @DELETE("accounts/{account-id}/emails/{email-id}")
+    Observable<Void> deleteAccountEmail(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("email-id") String emailId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-preferred-email"
+     */
+    @PUT("accounts/{account-id}/emails/{email-id}/preferred")
+    Observable<Void> setAccountPreferredEmail(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("email-id") String emailId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-ssh-keys"
+     */
+    @GET("accounts/{account-id}/sshkeys")
+    Observable<List<SshKeyInfo>> getAccountSshKeys(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-ssh-key"
+     */
+    @GET("accounts/{account-id}/sshkeys/{ssh-key-id}")
+    Observable<SshKeyInfo> getAccountSshKey(
+            @NonNull @Path("account-id") String accountId,
+            @Path("ssh-key-id") int sshKeyId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#add-ssh-key"
+     */
+    @Headers({"Content-Type: plain/text"})
+    @POST("accounts/{account-id}/sshkeys")
+    Observable<SshKeyInfo> addAccountSshKey(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body String encodedKey);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-ssh-key"
+     */
+    @DELETE("accounts/{account-id}/sshkeys/{ssh-key-id}")
+    Observable<Void> deleteAccountSshKey(
+            @NonNull @Path("account-id") String accountId,
+            @Path("ssh-key-id") int sshKeyId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-gpg-keys"
+     */
+    @GET("accounts/{account-id}/gpgkeys")
+    Observable<List<GpgKeyInfo>> getAccountGpgKeys(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-gpg-key"
+     */
+    @GET("accounts/{account-id}/gpgkeys/{gpg-key-id}")
+    Observable<GpgKeyInfo> getAccountGpgKey(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("gpg-key-id") String gpgKeyId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#add-delete-gpg-keys"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/gpgkeys")
+    Observable<Map<String, GpgKeyInfo>> addAccountGpgKeys(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body AddGpgKeyInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#add-delete-gpg-keys"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/gpgkeys")
+    Observable<Map<String, GpgKeyInfo>> deleteAccountGpgKeys(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body DeleteGpgKeyInput input);
 
 
     // ===============================

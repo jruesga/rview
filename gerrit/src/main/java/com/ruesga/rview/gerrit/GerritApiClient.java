@@ -29,13 +29,20 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
+import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
+import com.ruesga.rview.gerrit.model.EmailInfo;
+import com.ruesga.rview.gerrit.model.EmailInput;
 import com.ruesga.rview.gerrit.model.GcInput;
+import com.ruesga.rview.gerrit.model.GpgKeyInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
+import com.ruesga.rview.gerrit.model.HttpPasswordInput;
+import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
 import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
 import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
@@ -45,6 +52,7 @@ import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
+import com.ruesga.rview.gerrit.model.SshKeyInfo;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
 import java.io.IOException;
@@ -61,6 +69,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.Path;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
@@ -169,13 +179,8 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<AccountInfo> getAccount(int accountId) {
+    public Observable<AccountInfo> getAccount(@NonNull String accountId) {
         return mService.getAccount(accountId);
-    }
-
-    @Override
-    public Observable<AccountInfo> getSelfAccount() {
-        return mService.getSelfAccount();
     }
 
     @Override
@@ -185,78 +190,143 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<AccountDetailInfo> getAccountDetails(int accountId) {
+    public Observable<AccountDetailInfo> getAccountDetails(@NonNull String accountId) {
         return mService.getAccountDetails(accountId);
     }
 
     @Override
-    public Observable<AccountDetailInfo> getSelfAccountDetails() {
-        return mService.getSelfAccountDetails();
-    }
-
-    @Override
-    public Observable<String> getAccountName(int accountId) {
+    public Observable<String> getAccountName(@NonNull String accountId) {
         return mService.getAccountName(accountId);
     }
 
     @Override
-    public Observable<String> getSelfAccountName() {
-        return mService.getSelfAccountName();
-    }
-
-    @Override
-    public Observable<String> setAccountName(int accountId, @NonNull AccountNameInput input) {
+    public Observable<String> setAccountName(
+            @NonNull String accountId, @NonNull AccountNameInput input) {
         return mService.setAccountName(accountId, input);
     }
 
     @Override
-    public Observable<String> setSelfAccountName(@NonNull AccountNameInput input) {
-        return mService.setSelfAccountName(input);
-    }
-
-    @Override
-    public Observable<Void> deleteAccountName(int accountId) {
+    public Observable<Void> deleteAccountName(@NonNull String accountId) {
         return mService.deleteAccountName(accountId);
     }
 
     @Override
-    public Observable<Void> deleteSelfAccountName() {
-        return mService.deleteSelfAccountName();
-    }
-
-    @Override
-    public Observable<String> getAccountUsername(int accountId) {
+    public Observable<String> getAccountUsername(@NonNull String accountId) {
         return mService.getAccountUsername(accountId);
     }
 
     @Override
-    public Observable<String> getSelfAccountUsername() {
-        return mService.getSelfAccountUsername();
-    }
-
-    @Override
-    public Observable<String> setAccountUsername(int accountId, @NonNull UsernameInput input) {
+    public Observable<String> setAccountUsername(
+            @NonNull String accountId, @NonNull UsernameInput input) {
         return mService.setAccountUsername(accountId, input);
     }
 
     @Override
-    public Observable<String> setSelfAccountUsername(@NonNull UsernameInput input) {
-        return mService.setSelfAccountUsername(input);
-    }
-
-    @Override
-    public Observable<String> isAccountActive(int accountId) {
+    public Observable<String> isAccountActive(@NonNull String accountId) {
         return mService.isAccountActive(accountId);
     }
 
     @Override
-    public Observable<Void> setAccountAsActive(int accountId) {
+    public Observable<Void> setAccountAsActive(@NonNull String accountId) {
         return mService.setAccountAsActive(accountId);
     }
 
     @Override
-    public Observable<Void> setAccountAsInactive(int accountId) {
+    public Observable<Void> setAccountAsInactive(@NonNull String accountId) {
         return mService.setAccountAsInactive(accountId);
+    }
+
+    @Override
+    public Observable<String> getHttpPassword(@NonNull @Path("account-id") String accountId) {
+        return mService.getHttpPassword(accountId);
+    }
+
+    @Override
+    public Observable<String> setHttpPassword(
+            @NonNull @Path("account-id") String accountId, @NonNull @Body HttpPasswordInput input) {
+        return mService.setHttpPassword(accountId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteHttpPassword(@NonNull @Path("account-id") String accountId) {
+        return mService.deleteHttpPassword(accountId);
+    }
+
+    @Override
+    public Observable<OAuthTokenInfo> getOAuthToken(@NonNull String accountId) {
+        return mService.getOAuthToken(accountId);
+    }
+
+    @Override
+    public Observable<List<EmailInfo>> getAccountEmails(@NonNull String accountId) {
+        return mService.getAccountEmails(accountId);
+    }
+
+    @Override
+    public Observable<EmailInfo> getAccountEmail(
+            @NonNull String accountId, @NonNull String emailId) {
+        return mService.getAccountEmail(accountId, emailId);
+    }
+
+    @Override
+    public Observable<EmailInfo> createAccountEmail(@NonNull String accountId,
+            @NonNull String emailId, @NonNull EmailInput input) {
+        return mService.createAccountEmail(accountId, emailId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteAccountEmail(@NonNull String accountId, @NonNull String emailId) {
+        return mService.deleteAccountEmail(accountId, emailId);
+    }
+
+    @Override
+    public Observable<Void> setAccountPreferredEmail(
+            @NonNull String accountId, @NonNull String emailId) {
+        return mService.setAccountPreferredEmail(accountId, emailId);
+    }
+
+    @Override
+    public Observable<List<SshKeyInfo>> getAccountSshKeys(@NonNull String accountId) {
+        return mService.getAccountSshKeys(accountId);
+    }
+
+    @Override
+    public Observable<SshKeyInfo> getAccountSshKey(@NonNull String accountId, int sshKeyId) {
+        return mService.getAccountSshKey(accountId, sshKeyId);
+    }
+
+    @Override
+    public Observable<SshKeyInfo> addAccountSshKey(
+            @NonNull String accountId, @NonNull String encodedKey) {
+        return mService.addAccountSshKey(accountId, encodedKey);
+    }
+
+    @Override
+    public Observable<Void> deleteAccountSshKey(@NonNull String accountId, int sshKeyId) {
+        return mService.deleteAccountSshKey(accountId, sshKeyId);
+    }
+
+    @Override
+    public Observable<List<GpgKeyInfo>> getAccountGpgKeys(@NonNull String accountId) {
+        return mService.getAccountGpgKeys(accountId);
+    }
+
+    @Override
+    public Observable<GpgKeyInfo> getAccountGpgKey(
+            @NonNull String accountId, @NonNull String gpgKeyId) {
+        return mService.getAccountGpgKey(accountId, gpgKeyId);
+    }
+
+    @Override
+    public Observable<Map<String, GpgKeyInfo>> addAccountGpgKeys(
+            @NonNull String accountId, @NonNull AddGpgKeyInput input) {
+        return mService.addAccountGpgKeys(accountId, input);
+    }
+
+    @Override
+    public Observable<Map<String, GpgKeyInfo>> deleteAccountGpgKeys(
+            @NonNull String accountId, @NonNull DeleteGpgKeyInput input) {
+        return mService.deleteAccountGpgKeys(accountId, input);
     }
 
 
