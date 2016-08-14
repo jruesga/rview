@@ -24,6 +24,7 @@ import com.ruesga.rview.gerrit.adapters.GerritServerVersionAdapter;
 import com.ruesga.rview.gerrit.adapters.GerritUtcDateAdapter;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.model.AbandonInput;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
@@ -34,7 +35,9 @@ import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.Capability;
 import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
 import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
@@ -47,11 +50,14 @@ import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
+import com.ruesga.rview.gerrit.model.FixInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.GpgKeyInfo;
 import com.ruesga.rview.gerrit.model.GroupInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.HttpPasswordInput;
+import com.ruesga.rview.gerrit.model.IncludeInInfo;
+import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInput;
@@ -63,11 +69,18 @@ import com.ruesga.rview.gerrit.model.ProjectParentInput;
 import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
 import com.ruesga.rview.gerrit.model.ProjectWatchInput;
+import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
+import com.ruesga.rview.gerrit.model.RestoreInput;
+import com.ruesga.rview.gerrit.model.RevertInput;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
 import com.ruesga.rview.gerrit.model.StarInput;
+import com.ruesga.rview.gerrit.model.SubmitInput;
+import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
+import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
+import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
 import java.io.IOException;
@@ -476,6 +489,11 @@ public class GerritApiClient implements GerritApi {
     // ===============================
 
     @Override
+    public Observable<ChangeInfo> createChange(@NonNull ChangeInput input) {
+        return mService.createChange(input);
+    }
+
+    @Override
     public Observable<List<ChangeInfo>> getChanges(
             @NonNull ChangeQuery query, @Nullable Integer count,
             @Nullable Integer start, @Nullable ChangeOptions[] options) {
@@ -487,6 +505,111 @@ public class GerritApiClient implements GerritApi {
             @NonNull String changeId, @Nullable ChangeOptions[] options) {
         return mService.getChange(changeId, options);
     }
+
+    @Override
+    public Observable<ChangeInfo> getChangeDetail(
+            @NonNull String changeId, @Nullable ChangeOptions[] options) {
+        return mService.getChangeDetail(changeId, options);
+    }
+
+    @Override
+    public Observable<String> getChangeTopic(@NonNull String changeId) {
+        return mService.getChangeTopic(changeId);
+    }
+
+    @Override
+    public Observable<String> setChangeTopic(@NonNull String changeId, @NonNull TopicInput input) {
+        return mService.setChangeTopic(changeId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteChangeTopic(@NonNull String changeId) {
+        return mService.deleteChangeTopic(changeId);
+    }
+
+    @Override
+    public Observable<ChangeInfo> abandonChange(
+            @NonNull String changeId, @NonNull AbandonInput input) {
+        return mService.abandonChange(changeId, input);
+    }
+
+    @Override
+    public Observable<ChangeInfo> restoreChange(
+            @NonNull String changeId, @NonNull RestoreInput input) {
+        return mService.restoreChange(changeId, input);
+    }
+
+    @Override
+    public Observable<ChangeInfo> rebaseChange(
+            @NonNull String changeId, @NonNull RebaseInput input) {
+        return mService.rebaseChange(changeId, input);
+    }
+
+    @Override
+    public Observable<ChangeInfo> moveChange(
+            @NonNull String changeId, @NonNull MoveInput input) {
+        return mService.moveChange(changeId, input);
+    }
+
+    @Override
+    public Observable<ChangeInfo> revertChange(
+            @NonNull String changeId, @NonNull RevertInput input) {
+        return mService.revertChange(changeId, input);
+    }
+
+    @Override
+    public Observable<ChangeInfo> submitChange(
+            @NonNull String changeId, @NonNull SubmitInput input) {
+        return mService.submitChange(changeId, input);
+    }
+
+    @Override
+    public Observable<SubmittedTogetherInfo> getChangesSubmittedTogether(
+            @NonNull String changeId, @Nullable SubmittedTogetherOptions[] options) {
+        return mService.getChangesSubmittedTogether(changeId, options);
+    }
+
+    @Override
+    public Observable<Void> publishDraftChange(@NonNull String changeId) {
+        return mService.publishDraftChange(changeId);
+    }
+
+    @Override
+    public Observable<Void> deleteDraftChange(@NonNull String changeId) {
+        return mService.deleteDraftChange(changeId);
+    }
+
+    @Override
+    public Observable<IncludeInInfo> getChangeIncludedIn(@NonNull String changeId) {
+        return mService.getChangeIncludedIn(changeId);
+    }
+
+    @Override
+    public Observable<Void> indexChange(@NonNull String changeId) {
+        return mService.indexChange(changeId);
+    }
+
+    @Override
+    public Observable<Map<String, List<CommentInfo>>> getChangeComments(@NonNull String changeId) {
+        return mService.getChangeComments(changeId);
+    }
+
+    @Override
+    public Observable<Map<String, List<CommentInfo>>> getChangeDraftComments(
+            @NonNull String changeId) {
+        return mService.getChangeDraftComments(changeId);
+    }
+
+    @Override
+    public Observable<ChangeInfo> checkChange(@NonNull String changeId) {
+        return mService.checkChange(changeId);
+    }
+
+    @Override
+    public Observable<ChangeInfo> fixChange(@NonNull String changeId, @NonNull FixInput input) {
+        return mService.fixChange(changeId, input);
+    }
+
 
 
     // ===============================

@@ -15,19 +15,14 @@
  */
 package com.ruesga.rview.gerrit.model;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-message-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#rebase-input"
  */
-public class ChangeMessageInfo {
-    @SerializedName("id") public String id;
-    @SerializedName("author") public AccountInfo author;
-    @SerializedName("date") public Date date;
-    @SerializedName("message") public String message;
-    @SerializedName("tag") public String tag;
-    @SerializedName("_revision_number") public int revisionNumber;
+public class RebaseInput {
+    @Nullable @SerializedName("base") public String base;
 }
 

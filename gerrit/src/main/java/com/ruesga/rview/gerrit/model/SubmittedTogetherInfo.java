@@ -17,17 +17,11 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-message-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#submitted-together-info"
  */
-public class ChangeMessageInfo {
-    @SerializedName("id") public String id;
-    @SerializedName("author") public AccountInfo author;
-    @SerializedName("date") public Date date;
-    @SerializedName("message") public String message;
-    @SerializedName("tag") public String tag;
-    @SerializedName("_revision_number") public int revisionNumber;
+public class SubmittedTogetherInfo {
+    @SerializedName("changes") public ChangeInfo[] changes;
+    @SerializedName("non_visible_changes") public int nonVisibleChanges;
 }
 

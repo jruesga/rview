@@ -20,6 +20,7 @@ import com.ruesga.rview.gerrit.GerritApiClient;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.StatusType;
+import com.ruesga.rview.gerrit.model.AbandonInput;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
@@ -29,7 +30,10 @@ import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
 import com.ruesga.rview.gerrit.model.Capability;
 import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.ChangeStatus;
+import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
 import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
@@ -43,11 +47,14 @@ import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
+import com.ruesga.rview.gerrit.model.FixInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.GpgKeyInfo;
 import com.ruesga.rview.gerrit.model.GroupInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.HttpPasswordInput;
+import com.ruesga.rview.gerrit.model.IncludeInInfo;
+import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInput;
@@ -58,12 +65,19 @@ import com.ruesga.rview.gerrit.model.ProjectInput;
 import com.ruesga.rview.gerrit.model.ProjectParentInput;
 import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
 import com.ruesga.rview.gerrit.model.ProjectWatchInput;
+import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
+import com.ruesga.rview.gerrit.model.RestoreInput;
+import com.ruesga.rview.gerrit.model.RevertInput;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
 import com.ruesga.rview.gerrit.model.StarInput;
+import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmitStatus;
+import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
+import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
+import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.gerrit.model.UseStatus;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
@@ -634,7 +648,21 @@ public class GerritApiClientTest {
     // ===============================
 
     @Test
-    public void getChanges() {
+    public void testCreateChange() {
+        final ChangeInput input = new ChangeInput();
+        input.project = "test";
+        input.branch = "master";
+        input.subject = "Test commit";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.createChange(input).toBlocking().first();
+        assertNotNull(change);
+        assertEquals(change.project, input.project);
+        assertEquals(change.branch, input.branch);
+        assertEquals(change.subject, input.subject);
+    }
+
+    @Test
+    public void testGetChanges() {
         ChangeQuery query = new ChangeQuery()
                 .status(StatusType.MERGED)
                 .and(new ChangeQuery().owner("John Doe"));
@@ -650,7 +678,7 @@ public class GerritApiClientTest {
     }
 
     @Test
-    public void getChange() {
+    public void testGetChange() {
         final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
         final ChangeOptions[] options = {
                 ChangeOptions.DETAILED_ACCOUNTS,
@@ -660,6 +688,184 @@ public class GerritApiClientTest {
         assertNotNull(change);
         assertEquals(change.id, changeId);
     }
+
+    @Test
+    public void testGetChangeDetail() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        ChangeInfo change = client.getChangeDetail(changeId, null).toBlocking().first();
+        assertNotNull(change);
+        assertEquals(change.id, changeId);
+    }
+
+    @Test
+    public void testGetChangeTopic() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        String topic = client.getChangeTopic(changeId).toBlocking().first();
+        assertNotNull(topic);
+    }
+
+    @Test
+    public void testSetChangeTopic() {
+        final TopicInput input = new TopicInput();
+        input.topic = "mytopic";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String topic = client.setChangeTopic(changeId, input).toBlocking().first();
+        assertNotNull(topic);
+        assertEquals(topic, input.topic);
+    }
+
+    @Test
+    public void testDeleteChangeTopic() {
+        final TopicInput input = new TopicInput();
+        input.topic = "mytopic";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.deleteChangeTopic(changeId).toBlocking().first();
+    }
+
+    @Test
+    public void testAbandonChange() {
+        final AbandonInput input = new AbandonInput();
+        input.message = "not useful anymore";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.abandonChange(changeId, input).toBlocking().first();
+        assertNotNull(change);
+        assertEquals(change.status, ChangeStatus.ABANDONED);
+    }
+
+    @Test
+    public void testRestoreChange() {
+        final RestoreInput input = new RestoreInput();
+        input.message = "restored";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.restoreChange(changeId, input).toBlocking().first();
+        assertNotNull(change);
+        assertEquals(change.status, ChangeStatus.NEW);
+    }
+
+    @Test
+    public void testRebaseChange() {
+        final RebaseInput input = new RebaseInput();
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.rebaseChange(changeId, input).toBlocking().first();
+        assertNotNull(change);
+        assertEquals(change.status, ChangeStatus.NEW);
+    }
+
+    @Test
+    public void testMoveChange() {
+        final MoveInput input = new MoveInput();
+        input.destinationBranch = "release-2.0";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.moveChange(changeId, input).toBlocking().first();
+        assertNotNull(change);
+        assertEquals(change.branch, input.destinationBranch);
+    }
+
+    @Test
+    public void testRevertChange() {
+        final RevertInput input = new RevertInput();
+        input.message = "needed by prev commit";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.revertChange(changeId, input).toBlocking().first();
+        assertNotNull(change);
+        assertEquals(change.status, ChangeStatus.NEW);
+    }
+
+    @Test
+    public void testSubmitChange() {
+        final SubmitInput input = new SubmitInput();
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.submitChange(changeId, input).toBlocking().first();
+        assertNotNull(change);
+        assertEquals(change.status, ChangeStatus.MERGED);
+    }
+
+    @Test
+    public void testGetChangesSubmittedTogether() {
+        final SubmittedTogetherOptions[] options = {SubmittedTogetherOptions.NON_VISIBLE_CHANGES};
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        SubmittedTogetherInfo changes = client.getChangesSubmittedTogether(
+                changeId, options).toBlocking().first();
+        assertNotNull(changes);
+    }
+
+    @Test
+    public void testPublishDraftChange() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.publishDraftChange(changeId).toBlocking().first();
+    }
+
+    @Test
+    public void testDeleteDraftChange() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.deleteDraftChange(changeId).toBlocking().first();
+    }
+
+    @Test
+    public void testGetChangeIncludedIn() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        IncludeInInfo includedIn = client.getChangeIncludedIn(changeId).toBlocking().first();
+        assertNotNull(includedIn);
+    }
+
+    @Test
+    public void testIndexChange() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.indexChange(changeId).toBlocking().first();
+    }
+
+    @Test
+    public void testGetChangeComments() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        Map<String, List<CommentInfo>> comments =
+                client.getChangeComments(changeId).toBlocking().first();
+        assertNotNull(comments);
+        assertTrue(comments.size() > 0);
+    }
+
+    @Test
+    public void testGetChangeDraftComments() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        Map<String, List<CommentInfo>> comments =
+                client.getChangeDraftComments(changeId).toBlocking().first();
+        assertNotNull(comments);
+        assertTrue(comments.size() > 0);
+    }
+
+    @Test
+    public void testCheckChange() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.checkChange(changeId).toBlocking().first();
+        assertNotNull(change);
+    }
+
+    @Test
+    public void testFixChange() {
+        final FixInput input = new FixInput();
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        ChangeInfo change = client.fixChange(changeId, input).toBlocking().first();
+        assertNotNull(change);
+    }
+
 
 
     // ===============================
