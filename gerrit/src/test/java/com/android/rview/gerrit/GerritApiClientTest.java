@@ -32,6 +32,8 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
+import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
 import com.ruesga.rview.gerrit.model.DateFormat;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
 import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
@@ -60,6 +62,7 @@ import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
+import com.ruesga.rview.gerrit.model.StarInput;
 import com.ruesga.rview.gerrit.model.SubmitStatus;
 import com.ruesga.rview.gerrit.model.UseStatus;
 import com.ruesga.rview.gerrit.model.UsernameInput;
@@ -72,6 +75,7 @@ import java.util.Map;
 import okhttp3.Response;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -542,6 +546,84 @@ public class GerritApiClientTest {
         final int accountId = 1000;
         final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
         client.deleteAccountWatchedProjects(String.valueOf(accountId), input).toBlocking().first();
+    }
+
+    @Test
+    public void testGetDefaultStarredChanges() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<ChangeInfo> projects = client.getDefaultStarredChanges(
+                GerritApi.SELF_ACCOUNT).toBlocking().first();
+        assertNotNull(projects);
+        assertTrue(projects.size() > 0);
+    }
+
+    @Test
+    public void testPutDefaultStarOnChange() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.putDefaultStarOnChange(GerritApi.SELF_ACCOUNT, changeId).toBlocking().first();
+    }
+
+    @Test
+    public void testRemoveDefaultStarFromChange() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.removeDefaultStarFromChange(GerritApi.SELF_ACCOUNT, changeId).toBlocking().first();
+    }
+
+    @Test
+    public void testGetStarredChanges() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<ChangeInfo> projects = client.getStarredChanges(
+                GerritApi.SELF_ACCOUNT).toBlocking().first();
+        assertNotNull(projects);
+        assertTrue(projects.size() > 0);
+    }
+
+    @Test
+    public void testGetStarLabelsFromChange() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<String> labels = client.getStarLabelsFromChange(
+                GerritApi.SELF_ACCOUNT, changeId).toBlocking().first();
+        assertNotNull(labels);
+        assertTrue(labels.size() > 0);
+    }
+
+    @Test
+    public void testUpdateStarLabelsFromChange() {
+        final StarInput input = new StarInput();
+        input.add = new String[]{"blue", "red"};
+        input.remove = new String[]{"yellow"};
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        List<String> labels = client.updateStarLabelsFromChange(
+                GerritApi.SELF_ACCOUNT, changeId, input).toBlocking().first();
+        assertNotNull(labels);
+        assertTrue(labels.size() > 0);
+        assertTrue(labels.contains("blue"));
+        assertTrue(labels.contains("red"));
+        assertFalse(labels.contains("yellow"));
+    }
+
+    @Test
+    public void testGetContributorAgreements() {
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<ContributorAgreementInfo> agreements = client.getContributorAgreements(
+                GerritApi.SELF_ACCOUNT).toBlocking().first();
+        assertNotNull(agreements);
+        assertTrue(agreements.size() > 0);
+    }
+
+    @Test
+    public void testSignContributorAgreement() {
+        final ContributorAgreementInput input = new ContributorAgreementInput();
+        input.name = "Individual";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        String agreement = client.signContributorAgreement(
+                GerritApi.SELF_ACCOUNT, input).toBlocking().first();
+        assertNotNull(agreement);
+        assertEquals(agreement, input.name);
     }
 
 

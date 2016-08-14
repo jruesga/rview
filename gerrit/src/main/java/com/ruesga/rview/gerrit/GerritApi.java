@@ -32,6 +32,8 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
+import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
 import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
@@ -60,6 +62,7 @@ import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
+import com.ruesga.rview.gerrit.model.StarInput;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
 import java.util.List;
@@ -440,6 +443,69 @@ public interface GerritApi {
             @NonNull @Path("account-id") String accountId,
             @NonNull @Body DeleteProjectWatchInput[] input);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-changes-with-default-star"
+     */
+    @GET("accounts/{account-id}/starred.changes")
+    Observable<List<ChangeInfo>> getDefaultStarredChanges(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#star-change"
+     */
+    @PUT("accounts/{account-id}/starred.changes/{change-id}")
+    Observable<Void> putDefaultStarOnChange(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#unstar-change"
+     */
+    @PUT("accounts/{account-id}/starred.changes/{change-id}")
+    Observable<Void> removeDefaultStarFromChange(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-starred-changes"
+     */
+    @GET("accounts/{account-id}/stars.changes")
+    Observable<List<ChangeInfo>> getStarredChanges(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-stars"
+     */
+    @GET("accounts/{account-id}/stars.changes/{change-id}")
+    Observable<List<String>> getStarLabelsFromChange(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-stars"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/stars.changes/{change-id}")
+    Observable<List<String>> updateStarLabelsFromChange(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Body StarInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
+     */
+    @GET("accounts/{account-id}/agreements")
+    Observable<List<ContributorAgreementInfo>> getContributorAgreements(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/agreements")
+    Observable<String> signContributorAgreement(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body ContributorAgreementInput input);
 
 
 

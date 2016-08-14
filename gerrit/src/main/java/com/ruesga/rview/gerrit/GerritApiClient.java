@@ -37,6 +37,8 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
+import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
+import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
 import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
@@ -65,6 +67,7 @@ import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
+import com.ruesga.rview.gerrit.model.StarInput;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
 import java.io.IOException;
@@ -417,6 +420,52 @@ public class GerritApiClient implements GerritApi {
     public Observable<Void> deleteAccountWatchedProjects(
             @NonNull String accountId, @NonNull DeleteProjectWatchInput[] input) {
         return mService.deleteAccountWatchedProjects(accountId, input);
+    }
+
+    @Override
+    public Observable<List<ChangeInfo>> getDefaultStarredChanges(@NonNull String accountId) {
+        return mService.getDefaultStarredChanges(accountId);
+    }
+
+    @Override
+    public Observable<Void> putDefaultStarOnChange(
+            @NonNull String accountId, @NonNull String changeId) {
+        return mService.putDefaultStarOnChange(accountId, changeId);
+    }
+
+    @Override
+    public Observable<Void> removeDefaultStarFromChange(
+            @NonNull String accountId, @NonNull String changeId) {
+        return mService.removeDefaultStarFromChange(accountId, changeId);
+    }
+
+    @Override
+    public Observable<List<ChangeInfo>> getStarredChanges(@NonNull String accountId) {
+        return mService.getStarredChanges(accountId);
+    }
+
+    @Override
+    public Observable<List<String>> getStarLabelsFromChange(
+            @NonNull String accountId, @NonNull String changeId) {
+        return mService.getStarLabelsFromChange(accountId, changeId);
+    }
+
+    @Override
+    public Observable<List<String>> updateStarLabelsFromChange(@NonNull String accountId,
+            @NonNull String changeId, @NonNull StarInput input) {
+        return mService.updateStarLabelsFromChange(accountId, changeId, input);
+    }
+
+    @Override
+    public Observable<List<ContributorAgreementInfo>> getContributorAgreements(
+            @NonNull String accountId) {
+        return mService.getContributorAgreements(accountId);
+    }
+
+    @Override
+    public Observable<String> signContributorAgreement(
+            @NonNull String accountId, @NonNull ContributorAgreementInput input) {
+        return mService.signContributorAgreement(accountId, input);
     }
 
 
