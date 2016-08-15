@@ -18,14 +18,10 @@ package com.ruesga.rview.gerrit.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#group-base-info"
  */
-public class AccountInfo {
-    @SerializedName("_account_id") public int accountId;
+public class GroupBaseInfo {
+    @SerializedName("id") public String id;
     @SerializedName("name") public String name;
-    @SerializedName("username") public String username;
-    @SerializedName("email") public String email;
-    @SerializedName("secondary_emails") public String[] secondaryEmails;
-    @SerializedName("avatars") public AvatarInfo[] avatars;
 }
 

@@ -17,15 +17,12 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Map;
+
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#reviewer-info"
  */
-public class AccountInfo {
-    @SerializedName("_account_id") public int accountId;
-    @SerializedName("name") public String name;
-    @SerializedName("username") public String username;
-    @SerializedName("email") public String email;
-    @SerializedName("secondary_emails") public String[] secondaryEmails;
-    @SerializedName("avatars") public AvatarInfo[] avatars;
+public class ReviewerInfo extends AccountInfo {
+    @SerializedName("approvals") public Map<String, Integer> approvals;
 }
 

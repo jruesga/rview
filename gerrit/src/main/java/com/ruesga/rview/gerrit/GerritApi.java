@@ -27,6 +27,7 @@ import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
+import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.Capability;
 import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -39,6 +40,7 @@ import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
 import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
 import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
+import com.ruesga.rview.gerrit.model.DeleteVoteInput;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
 import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
@@ -68,6 +70,8 @@ import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.RestoreInput;
 import com.ruesga.rview.gerrit.model.RevertInput;
+import com.ruesga.rview.gerrit.model.ReviewerInfo;
+import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
@@ -75,6 +79,7 @@ import com.ruesga.rview.gerrit.model.StarInput;
 import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
+import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
@@ -696,6 +701,68 @@ public interface GerritApi {
             @NonNull @Path("change-id") String changeId,
             @NonNull @Body FixInput input);
 
+    // TODO Edit endpoints
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-reviewers"
+     */
+    @GET("changes/{change-id}/reviewers")
+    Observable<List<ReviewerInfo>> getChangeReviewers(@NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#suggest-reviewers"
+     */
+    @GET("changes/{change-id}/suggest_reviewers")
+    Observable<List<SuggestedReviewerInfo>> getChangeSuggestedReviewers(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Query("q") String query,
+            @Nullable @Query("n") Integer count);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-reviewer"
+     */
+    @GET("changes/{change-id}/reviewers/{account-id}")
+    Observable<List<ReviewerInfo>> getChangeReviewer(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#add-reviewer"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("changes/{change-id}/reviewers")
+    Observable<AddReviewerResultInfo> addChangeReviewer(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Body ReviewerInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-reviewer"
+     */
+    @DELETE("changes/{change-id}/reviewers/{account-id}")
+    Observable<Void> deleteChangeReviewer(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-votes"
+     */
+    @GET("changes/{change-id}/reviewers/{account-id}/votes/")
+    Observable<Map<String, Integer>> getChangeReviewerVotes(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("account-id") String accountId);
+
+    // TODO Where are the Add and Update vote actions?
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-vote"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("changes/{change-id}/reviewers/{account-id}/votes/{label-id}/delete")
+    Observable<Void> deleteChangeReviewerVote(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("label-id") String labelId,
+            @NonNull @Body DeleteVoteInput input);
 
 
 

@@ -20,9 +20,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#group-info"
  */
-public class GroupInfo {
-    @SerializedName("id") public String id;
-    @SerializedName("name") public String name;
+public class GroupInfo extends GroupBaseInfo {
     @SerializedName("url") public String url;
     @SerializedName("options") public GroupOptionsInfo options;
     @SerializedName("description") public String description;

@@ -31,6 +31,7 @@ import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
+import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.Capability;
 import com.ruesga.rview.gerrit.model.CapabilityInfo;
@@ -44,6 +45,7 @@ import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
 import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
 import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
+import com.ruesga.rview.gerrit.model.DeleteVoteInput;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
 import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
@@ -73,6 +75,8 @@ import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.RestoreInput;
 import com.ruesga.rview.gerrit.model.RevertInput;
+import com.ruesga.rview.gerrit.model.ReviewerInfo;
+import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
@@ -80,6 +84,7 @@ import com.ruesga.rview.gerrit.model.StarInput;
 import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
+import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
@@ -151,7 +156,7 @@ public class GerritApiClient implements GerritApi {
 
     private HttpLoggingInterceptor createLoggingInterceptor() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        logging.setLevel(/*FIXME*/HttpLoggingInterceptor.Level.BODY);
         return logging;
     }
 
@@ -161,7 +166,7 @@ public class GerritApiClient implements GerritApi {
             public Response intercept(Chain chain) throws IOException {
                 Request original = chain.request();
                 Request.Builder requestBuilder = original.newBuilder()
-                        .header("Accept", "application/json");
+                        /*FIXME .header("Accept", "application/json")*/;
                 Request request = requestBuilder.build();
                 return chain.proceed(request);
             }
@@ -608,6 +613,50 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<ChangeInfo> fixChange(@NonNull String changeId, @NonNull FixInput input) {
         return mService.fixChange(changeId, input);
+    }
+
+
+
+
+    @Override
+    public Observable<List<ReviewerInfo>> getChangeReviewers(@NonNull String changeId) {
+        return mService.getChangeReviewers(changeId);
+    }
+
+    @Override
+    public Observable<List<SuggestedReviewerInfo>> getChangeSuggestedReviewers(
+            @NonNull String changeId, @NonNull String query, @Nullable Integer count) {
+        return mService.getChangeSuggestedReviewers(changeId, query, count);
+    }
+
+    @Override
+    public Observable<List<ReviewerInfo>> getChangeReviewer(
+            @NonNull String changeId, @NonNull String accountId) {
+        return mService.getChangeReviewer(changeId, accountId);
+    }
+
+    @Override
+    public Observable<AddReviewerResultInfo> addChangeReviewer(
+            @NonNull String changeId, @NonNull ReviewerInput input) {
+        return mService.addChangeReviewer(changeId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteChangeReviewer(
+            @NonNull String changeId, @NonNull String accountId) {
+        return mService.deleteChangeReviewer(changeId, accountId);
+    }
+
+    @Override
+    public Observable<Map<String, Integer>> getChangeReviewerVotes(
+            @NonNull String changeId, @NonNull String accountId) {
+        return mService.getChangeReviewerVotes(changeId, accountId);
+    }
+
+    @Override
+    public Observable<Void> deleteChangeReviewerVote(@NonNull String changeId,
+            @NonNull String accountId, @NonNull String labelId, @NonNull DeleteVoteInput input) {
+        return mService.deleteChangeReviewerVote(changeId, accountId, labelId, input);
     }
 
 

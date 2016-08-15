@@ -17,15 +17,8 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-info"
- */
-public class AccountInfo {
-    @SerializedName("_account_id") public int accountId;
-    @SerializedName("name") public String name;
-    @SerializedName("username") public String username;
-    @SerializedName("email") public String email;
-    @SerializedName("secondary_emails") public String[] secondaryEmails;
-    @SerializedName("avatars") public AvatarInfo[] avatars;
+public class AvatarInfo {
+    @SerializedName("url") public String url;
+    @SerializedName("height") public int height;
 }
 

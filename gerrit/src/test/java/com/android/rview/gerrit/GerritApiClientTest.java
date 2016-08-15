@@ -27,6 +27,8 @@ import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
 import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
+import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
+import com.ruesga.rview.gerrit.model.AddReviewerStatus;
 import com.ruesga.rview.gerrit.model.Capability;
 import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -41,6 +43,7 @@ import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
 import com.ruesga.rview.gerrit.model.DateFormat;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
 import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
+import com.ruesga.rview.gerrit.model.DeleteVoteInput;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
 import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
@@ -69,6 +72,8 @@ import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.RestoreInput;
 import com.ruesga.rview.gerrit.model.RevertInput;
+import com.ruesga.rview.gerrit.model.ReviewerInfo;
+import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
@@ -77,6 +82,7 @@ import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmitStatus;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
+import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.gerrit.model.UseStatus;
 import com.ruesga.rview.gerrit.model.UsernameInput;
@@ -91,6 +97,7 @@ import okhttp3.Response;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class GerritApiClientTest {
@@ -864,6 +871,83 @@ public class GerritApiClientTest {
         final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
         ChangeInfo change = client.fixChange(changeId, input).toBlocking().first();
         assertNotNull(change);
+    }
+
+
+
+
+    @Test
+    public void testGetChangeReviewers() {
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<ReviewerInfo> reviewers = client.getChangeReviewers(changeId).toBlocking().first();
+        assertNotNull(reviewers);
+        assertTrue(reviewers.size() > 0);
+    }
+
+    @Test
+    public void testGetChangeSuggestedReviewers() {
+        final String query = "han";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<SuggestedReviewerInfo> reviewers =
+                client.getChangeSuggestedReviewers(changeId, query, null).toBlocking().first();
+        assertNotNull(reviewers);
+        assertTrue(reviewers.size() > 0);
+    }
+
+    @Test
+    public void testGetChangeReviewer() {
+        final String accountId = "1024147";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        List<ReviewerInfo> reviewers = client.getChangeReviewer(
+                changeId, accountId).toBlocking().first();
+        assertNotNull(reviewers);
+        assertNotNull(reviewers.size() == 1);
+        assertEquals(String.valueOf(reviewers.get(0).accountId), accountId);
+    }
+
+    @Test
+    public void testAddChangeReviewer() {
+        final ReviewerInput input = new ReviewerInput();
+        input.reviewerId = "1024147";
+        input.state = AddReviewerStatus.REVIEWER;
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        AddReviewerResultInfo result = client.addChangeReviewer(
+                changeId, input).toBlocking().first();
+        assertNotNull(result);
+        assertNull(result.error);
+    }
+
+    @Test
+    public void testDeleteChangeReviewer() {
+        final String accountId = "1024147";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.deleteChangeReviewer(changeId, accountId).toBlocking().first();
+    }
+
+    @Test
+    public void testGetChangeReviewerVotes() {
+        final String accountId = "1024147";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(ENDPOINT);
+        Map<String, Integer> votes = client.getChangeReviewerVotes(
+                changeId, accountId).toBlocking().first();
+        assertNotNull(votes);
+        assertNotNull(votes.size() == 1);
+    }
+
+    @Test
+    public void testDeleteChangeReviewerVote() {
+        final DeleteVoteInput input = new DeleteVoteInput();
+        final String accountId = "1024147";
+        final String labelId = "Code-Review";
+        final String changeId = "zoekt~master~Ia8e07dc3e73501d07c7726a6946b4088dad7e376";
+        final GerritApiClient client = GerritApiClient.getInstance(TEST_ENDPOINT);
+        client.deleteChangeReviewerVote(changeId, accountId, labelId, input).toBlocking().first();
     }
 
 
