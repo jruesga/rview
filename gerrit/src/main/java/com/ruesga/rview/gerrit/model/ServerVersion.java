@@ -15,8 +15,6 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.text.TextUtils;
-
 import java.util.Locale;
 
 /**
@@ -54,10 +52,13 @@ public class ServerVersion {
 
     @Override
     public String toString() {
-        if (TextUtils.isEmpty(build)) {
+        if (isEmpty(build)) {
             return String.format(Locale.getDefault(), "%d.%d", major, minor);
         }
         return String.format(Locale.getDefault(), "%d.%d.%s", major, minor, build);
     }
 
+    private static boolean isEmpty(String src) {
+        return src != null && src.length() == 0;
+    }
 }

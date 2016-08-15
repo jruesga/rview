@@ -13,8 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.gerrit.model;
+package com.ruesga.rview.gerrit;
 
-public enum SubmitStatus {
-    FAST_FORWARD_ONLY, MERGE_IF_NECESSARY, ALWAYS_MERGE, CHERRY_PICK, REBASE_IF_NECESSARY
+public interface PlatformAbstractionLayer {
+    /**
+     * Return if the app is running in debug mode
+     */
+    boolean isDebugBuild();
+
+    /**
+     * Log a message from gerrit
+     */
+    void log(String message);
+
+    /**
+     * Encode data to base64
+     */
+    byte[] encodeBase64(byte[] data);
+
+    /**
+     * Decode data from base64
+     */
+    byte[] decodeBase64(byte[] data);
 }

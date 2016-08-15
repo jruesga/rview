@@ -20,20 +20,25 @@ import android.support.annotation.Nullable;
 
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.AbandonInput;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
+import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
+import com.ruesga.rview.gerrit.model.Base64Data;
 import com.ruesga.rview.gerrit.model.Capability;
 import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.CommentInfo;
+import com.ruesga.rview.gerrit.model.CommentInput;
+import com.ruesga.rview.gerrit.model.CommitInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
 import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
@@ -47,6 +52,7 @@ import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
+import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FixInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.GpgKeyInfo;
@@ -54,6 +60,7 @@ import com.ruesga.rview.gerrit.model.GroupInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.HttpPasswordInput;
 import com.ruesga.rview.gerrit.model.IncludeInInfo;
+import com.ruesga.rview.gerrit.model.MergeableInfo;
 import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInfo;
@@ -67,16 +74,23 @@ import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
 import com.ruesga.rview.gerrit.model.ProjectWatchInput;
 import com.ruesga.rview.gerrit.model.RebaseInput;
+import com.ruesga.rview.gerrit.model.RelatedChangesInfo;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.RestoreInput;
 import com.ruesga.rview.gerrit.model.RevertInput;
+import com.ruesga.rview.gerrit.model.ReviewInfo;
+import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInput;
+import com.ruesga.rview.gerrit.model.RuleInput;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
 import com.ruesga.rview.gerrit.model.StarInput;
+import com.ruesga.rview.gerrit.model.SubmitInfo;
 import com.ruesga.rview.gerrit.model.SubmitInput;
+import com.ruesga.rview.gerrit.model.SubmitRecordInfo;
+import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
@@ -764,6 +778,210 @@ public interface GerritApi {
             @NonNull @Path("label-id") String labelId,
             @NonNull @Body DeleteVoteInput input);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-commit"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/commit")
+    Observable<CommitInfo> getChangeRevisionCommit(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @Nullable @Query("links") Option links);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-revision-actions"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/actions")
+    Observable<Map<String, ActionInfo>> getChangeRevisionActions(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-review"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/review")
+    Observable<ChangeInfo> getChangeRevisionReview(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-review"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("changes/{change-id}/revisions/{revision-id}/review")
+    Observable<ReviewInfo> setChangeRevisionRelatedChanges(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Body ReviewInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-related-changes"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/related")
+    Observable<RelatedChangesInfo> getChangeRevisionRelatedChanges(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#rebase-revision"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("changes/{change-id}/revisions/{revision-id}/rebase")
+    Observable<ChangeInfo> rebaseChangeRevision(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Body RebaseInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#submit-revision"
+     */
+    @POST("changes/{change-id}/revisions/{revision-id}/submit")
+    Observable<SubmitInfo> submitChangeRevision(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#publish-draft-revision"
+     */
+    @POST("changes/{change-id}/revisions/{revision-id}/publish")
+    Observable<SubmitInfo> publishChangeDraftRevision(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-draft-revision"
+     */
+    @DELETE("changes/{change-id}/revisions/{revision-id}")
+    Observable<SubmitInfo> deleteChangeDraftRevision(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-patch"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/patch")
+    Observable<Base64Data> getChangeRevisionPatch(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @Nullable @Query("zip") Option zip,
+            @Nullable @Query("download") Option download);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-mergeable"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/mergeable")
+    Observable<MergeableInfo> getChangeRevisionMergeable(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @Nullable @Query("other-branches") Option otherBranches);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-submit-type"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/submit_type")
+    Observable<SubmitType> getChangeRevisionSubmitType(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#test-submit-type"
+     */
+    @POST("changes/{change-id}/revisions/{revision-id}/test.submit_type")
+    Observable<SubmitType> testChangeRevisionSubmitType(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Body RuleInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#test-submit-rule"
+     */
+    @POST("changes/{change-id}/revisions/{revision-id}/test.submit_rule")
+    Observable<List<SubmitRecordInfo>> testChangeRevisionSubmitRule(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Body RuleInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-drafts"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/drafts/")
+    Observable<Map<String, List<CommentInfo>>> getChangeRevisionDrafts(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#create-draft"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("changes/{change-id}/revisions/{revision-id}/drafts")
+    Observable<CommentInfo> createChangeRevisionDraft(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Body CommentInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-draft"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/drafts/{draft-id}")
+    Observable<CommentInfo> getChangeRevisionDraft(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Path("draft-id") String draftId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#update-draft"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("changes/{change-id}/revisions/{revision-id}/drafts/{draft-id}")
+    Observable<CommentInfo> updateChangeRevisionDraft(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Path("draft-id") String draftId,
+            @NonNull @Body CommentInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-draft"
+     */
+    @DELETE("changes/{change-id}/revisions/{revision-id}/drafts/{draft-id}")
+    Observable<Void> deleteChangeRevisionDraft(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Path("draft-id") String draftId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-comments"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/comments/")
+    Observable<Map<String, List<CommentInfo>>> getChangeRevisionComments(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-comment"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/comments/{comment-id}")
+    Observable<CommentInfo> getChangeRevisionComment(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Path("comment-id") String commentId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-files"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/files/")
+    Observable<Map<String, List<FileInfo>>> getChangeRevisionFiles(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/files/{file-id}/content")
+    Observable<Base64Data> getChangeRevisionFileContent(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Path("file-id") String fileId);
+
+
 
 
     // ===============================
@@ -803,8 +1021,8 @@ public interface GerritApi {
      */
     @GET("projects/")
     Observable<Map<String, ProjectInfo>> getProjects(
-            @Nullable @Query("d") Boolean showDescription,
-            @Nullable @Query("t") Boolean showTree,
+            @Nullable @Query("d") Option showDescription,
+            @Nullable @Query("t") Option showTree,
             @Nullable @Query("b") String branch,
             @Nullable @Query("type") ProjectType type,
             @Nullable @Query("has-acl-for") String group);

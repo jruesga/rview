@@ -20,25 +20,31 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.GsonBuilder;
 import com.ruesga.rview.gerrit.adapters.GerritApprovalInfoAdapter;
+import com.ruesga.rview.gerrit.adapters.GerritBas64Adapter;
 import com.ruesga.rview.gerrit.adapters.GerritServerVersionAdapter;
 import com.ruesga.rview.gerrit.adapters.GerritUtcDateAdapter;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.AbandonInput;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
 import com.ruesga.rview.gerrit.model.AccountNameInput;
 import com.ruesga.rview.gerrit.model.AccountOptions;
+import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
+import com.ruesga.rview.gerrit.model.Base64Data;
 import com.ruesga.rview.gerrit.model.Capability;
 import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.CommentInfo;
+import com.ruesga.rview.gerrit.model.CommentInput;
+import com.ruesga.rview.gerrit.model.CommitInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.ConfigInput;
 import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
@@ -52,6 +58,7 @@ import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
+import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FixInput;
 import com.ruesga.rview.gerrit.model.GcInput;
 import com.ruesga.rview.gerrit.model.GpgKeyInfo;
@@ -59,6 +66,7 @@ import com.ruesga.rview.gerrit.model.GroupInfo;
 import com.ruesga.rview.gerrit.model.HeadInput;
 import com.ruesga.rview.gerrit.model.HttpPasswordInput;
 import com.ruesga.rview.gerrit.model.IncludeInInfo;
+import com.ruesga.rview.gerrit.model.MergeableInfo;
 import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInfo;
@@ -72,16 +80,23 @@ import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
 import com.ruesga.rview.gerrit.model.ProjectWatchInput;
 import com.ruesga.rview.gerrit.model.RebaseInput;
+import com.ruesga.rview.gerrit.model.RelatedChangesInfo;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
 import com.ruesga.rview.gerrit.model.RestoreInput;
 import com.ruesga.rview.gerrit.model.RevertInput;
+import com.ruesga.rview.gerrit.model.ReviewInfo;
+import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInput;
+import com.ruesga.rview.gerrit.model.RuleInput;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
 import com.ruesga.rview.gerrit.model.StarInput;
+import com.ruesga.rview.gerrit.model.SubmitInfo;
 import com.ruesga.rview.gerrit.model.SubmitInput;
+import com.ruesga.rview.gerrit.model.SubmitRecordInfo;
+import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
@@ -99,6 +114,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.logging.HttpLoggingInterceptor.Logger;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -109,8 +125,11 @@ public class GerritApiClient implements GerritApi {
     private final static Map<String, GerritApiClient> sInstances = new HashMap<>();
 
     private final GerritApi mService;
+    private final PlatformAbstractionLayer mAbstractionLayer;
 
-    private GerritApiClient(String endpoint) {
+    private GerritApiClient(String endpoint, PlatformAbstractionLayer abstractionLayer) {
+        mAbstractionLayer = abstractionLayer;
+
         // OkHttp client
         OkHttpClient client = OkHttpHelper.getUnsafeClientBuilder()
                 .followRedirects(true)
@@ -142,21 +161,28 @@ public class GerritApiClient implements GerritApi {
         mService = retrofit.create(GerritApi.class);
     }
 
-    public static GerritApiClient getInstance(String endpoint) {
+    public static GerritApiClient getInstance(String endpoint,
+            PlatformAbstractionLayer abstractionLayer) {
         // Sanitize endpoint
         if (!endpoint.endsWith("/")) {
             endpoint += "/";
         }
 
         if (!sInstances.containsKey(endpoint)) {
-            sInstances.put(endpoint, new GerritApiClient(endpoint));
+            sInstances.put(endpoint, new GerritApiClient(endpoint, abstractionLayer));
         }
         return sInstances.get(endpoint);
     }
 
     private HttpLoggingInterceptor createLoggingInterceptor() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(/*FIXME*/HttpLoggingInterceptor.Level.BODY);
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new Logger() {
+            @Override
+            public void log(String message) {
+                mAbstractionLayer.log(message);
+            }
+        });
+        logging.setLevel(mAbstractionLayer.isDebugBuild()
+                ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.BASIC);
         return logging;
     }
 
@@ -165,8 +191,10 @@ public class GerritApiClient implements GerritApi {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request original = chain.request();
-                Request.Builder requestBuilder = original.newBuilder()
-                        /*FIXME .header("Accept", "application/json")*/;
+                Request.Builder requestBuilder = original.newBuilder();
+                if (!mAbstractionLayer.isDebugBuild()) {
+                    requestBuilder.header("Accept", "application/json");
+                }
                 Request request = requestBuilder.build();
                 return chain.proceed(request);
             }
@@ -177,6 +205,7 @@ public class GerritApiClient implements GerritApi {
         builder.registerTypeAdapter(Date.class, new GerritUtcDateAdapter());
         builder.registerTypeAdapter(ServerVersion.class, new GerritServerVersionAdapter());
         builder.registerTypeAdapter(ApprovalInfo.class, new GerritApprovalInfoAdapter());
+        builder.registerTypeAdapter(Base64Data.class, new GerritBas64Adapter(mAbstractionLayer));
     }
 
 
@@ -659,7 +688,143 @@ public class GerritApiClient implements GerritApi {
         return mService.deleteChangeReviewerVote(changeId, accountId, labelId, input);
     }
 
+    @Override
+    public Observable<CommitInfo> getChangeRevisionCommit(
+            @NonNull String changeId, @NonNull String revisionId, @Nullable Option links) {
+        return mService.getChangeRevisionCommit(changeId, revisionId, links);
+    }
 
+    @Override
+    public Observable<Map<String, ActionInfo>> getChangeRevisionActions(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.getChangeRevisionActions(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<ChangeInfo> getChangeRevisionReview(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.getChangeRevisionReview(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<ReviewInfo> setChangeRevisionRelatedChanges(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull ReviewInput input) {
+        return mService.setChangeRevisionRelatedChanges(changeId, revisionId, input);
+    }
+
+    @Override
+    public Observable<RelatedChangesInfo> getChangeRevisionRelatedChanges(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.getChangeRevisionRelatedChanges(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<ChangeInfo> rebaseChangeRevision(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull RebaseInput input) {
+        return mService.rebaseChangeRevision(changeId, revisionId, input);
+    }
+
+    @Override
+    public Observable<SubmitInfo> submitChangeRevision(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.submitChangeRevision(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<SubmitInfo> publishChangeDraftRevision(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.publishChangeDraftRevision(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<SubmitInfo> deleteChangeDraftRevision(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.deleteChangeDraftRevision(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<Base64Data> getChangeRevisionPatch(@NonNull String changeId,
+            @NonNull String revisionId, @Nullable Option zip, @Nullable Option download) {
+        return mService.getChangeRevisionPatch(changeId, revisionId, zip, download);
+    }
+
+    @Override
+    public Observable<MergeableInfo> getChangeRevisionMergeable(@NonNull String changeId,
+            @NonNull String revisionId, @Nullable Option otherBranches) {
+        return mService.getChangeRevisionMergeable(changeId, revisionId, otherBranches);
+    }
+
+    @Override
+    public Observable<SubmitType> getChangeRevisionSubmitType(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.getChangeRevisionSubmitType(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<SubmitType> testChangeRevisionSubmitType(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull RuleInput input) {
+        return mService.testChangeRevisionSubmitType(changeId, revisionId, input);
+    }
+
+    @Override
+    public Observable<List<SubmitRecordInfo>> testChangeRevisionSubmitRule(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull RuleInput input) {
+        return mService.testChangeRevisionSubmitRule(changeId, revisionId, input);
+    }
+
+    @Override
+    public Observable<Map<String, List<CommentInfo>>> getChangeRevisionDrafts(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.getChangeRevisionDrafts(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<CommentInfo> createChangeRevisionDraft(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull CommentInput input) {
+        return mService.createChangeRevisionDraft(changeId, revisionId, input);
+    }
+
+    @Override
+    public Observable<CommentInfo> getChangeRevisionDraft(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull String draftId) {
+        return mService.getChangeRevisionDraft(changeId, revisionId, draftId);
+    }
+
+    @Override
+    public Observable<CommentInfo> updateChangeRevisionDraft(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull String draftId, @NonNull CommentInput input) {
+        return mService.updateChangeRevisionDraft(changeId, revisionId, draftId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteChangeRevisionDraft(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull String draftId) {
+        return mService.deleteChangeRevisionDraft(changeId, revisionId, draftId);
+    }
+
+    @Override
+    public Observable<Map<String, List<CommentInfo>>> getChangeRevisionComments(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.getChangeRevisionComments(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<CommentInfo> getChangeRevisionComment(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull String commentId) {
+        return mService.getChangeRevisionComment(changeId, revisionId, commentId);
+    }
+
+    @Override
+    public Observable<Map<String, List<FileInfo>>> getChangeRevisionFiles(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return mService.getChangeRevisionFiles(changeId, revisionId);
+    }
+
+    @Override
+    public Observable<Base64Data> getChangeRevisionFileContent(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull String fileId) {
+        return mService.getChangeRevisionFileContent(changeId, revisionId, fileId);
+    }
 
     // ===============================
     // Gerrit configuration endpoints
@@ -693,8 +858,8 @@ public class GerritApiClient implements GerritApi {
     // ===============================
 
     @Override
-    public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Boolean showDescription,
-            @Nullable Boolean showTree, @Nullable String branch,
+    public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Option showDescription,
+            @Nullable Option showTree, @Nullable String branch,
             @Nullable ProjectType type, @Nullable String group) {
         return mService.getProjects(showDescription, showTree, branch, type, group);
     }

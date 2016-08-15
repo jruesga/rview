@@ -32,7 +32,7 @@ public class ConfigInput {
     @Nullable @SerializedName("create_new_change_for_all_not_in_target") public UseStatus createNewChangeForAllNotInTarget;
     @Nullable @SerializedName("require_change_id") public UseStatus requireChangeId;
     @Nullable @SerializedName("max_object_size_limit") public MaxObjectSizeLimitInfo maxObjectSizeLimit;
-    @Nullable @SerializedName("submit_type") public SubmitStatus submitType;
+    @Nullable @SerializedName("submit_type") public SubmitType submitType;
     @Nullable @SerializedName("state") public ProjectStatus state;
     @Nullable @SerializedName("plugin_config_values") public Map<String, Map<String, String>> pluginConfigValues;
 }

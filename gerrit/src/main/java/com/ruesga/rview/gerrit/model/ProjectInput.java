@@ -29,7 +29,7 @@ public class ProjectInput {
     @Nullable @SerializedName("description") public String description;
     @Nullable @SerializedName("permissions_only") public Boolean permissionsOnly;
     @Nullable @SerializedName("create_empty_commit") public Boolean createEmptyCommit;
-    @Nullable @SerializedName("submit_type") public SubmitStatus submitType;
+    @Nullable @SerializedName("submit_type") public SubmitType submitType;
     @Nullable @SerializedName("branches") public String[] branches;
     @Nullable @SerializedName("owners") public String[] owners;
     @Nullable @SerializedName("use_contributor_agreements") public UseStatus useContributorAgreements;

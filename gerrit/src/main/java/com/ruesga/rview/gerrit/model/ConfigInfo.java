@@ -32,7 +32,7 @@ public class ConfigInfo {
     @SerializedName("enable_signed_push") public InheritBooleanInfo enableSignedPush;
     @SerializedName("require_signed_push") public InheritBooleanInfo requireSignedPush;
     @SerializedName("max_object_size_limit") public MaxObjectSizeLimitInfo maxObjectSizeLimit;
-    @SerializedName("submit_type") public SubmitStatus submitType;
+    @SerializedName("submit_type") public SubmitType submitType;
     @SerializedName("commentlinks") public Map<String, CommentLinkInfo> commentLinks;
     @SerializedName("theme") public ThemeInfo theme;
     @SerializedName("plugin_config") public Map<String, ConfigParameterInfo> pluginConfig;
