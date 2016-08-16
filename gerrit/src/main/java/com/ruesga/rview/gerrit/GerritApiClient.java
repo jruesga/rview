@@ -79,6 +79,8 @@ import com.ruesga.rview.gerrit.model.MergeableInfo;
 import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.NewChangeEditInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
+import com.ruesga.rview.gerrit.model.PluginInfo;
+import com.ruesga.rview.gerrit.model.PluginInput;
 import com.ruesga.rview.gerrit.model.PreferencesInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInput;
 import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
@@ -136,6 +138,8 @@ import okhttp3.logging.HttpLoggingInterceptor.Logger;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
+import retrofit2.http.Path;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
@@ -1054,6 +1058,38 @@ public class GerritApiClient implements GerritApi {
     // Gerrit plugins endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html"
     // ===============================
+
+    @Override
+    public Observable<Map<String, PluginInfo>> getPlugins() {
+        return mService.getPlugins();
+    }
+
+    @Override
+    public Observable<PluginInfo> installPlugin(
+            @NonNull String pluginId, @NonNull PluginInput input) {
+        return mService.installPlugin(pluginId, input);
+    }
+
+    @Override
+    public Observable<PluginInfo> getPluginStatus(@NonNull String pluginId) {
+        return mService.getPluginStatus(pluginId);
+    }
+
+    @Override
+    public Observable<PluginInfo> enablePlugin(@NonNull String pluginId) {
+        return mService.enablePlugin(pluginId);
+    }
+
+    @Override
+    public Observable<PluginInfo> disablePlugin(@NonNull String pluginId) {
+        return mService.disablePlugin(pluginId);
+    }
+
+    @Override
+    public Observable<PluginInfo> reloadPlugin(@NonNull String pluginId) {
+        return mService.reloadPlugin(pluginId);
+    }
+
 
     // ===============================
     // Gerrit projects endpoints

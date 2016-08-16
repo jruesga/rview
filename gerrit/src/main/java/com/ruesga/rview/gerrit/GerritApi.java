@@ -73,6 +73,8 @@ import com.ruesga.rview.gerrit.model.MergeableInfo;
 import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.NewChangeEditInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
+import com.ruesga.rview.gerrit.model.PluginInfo;
+import com.ruesga.rview.gerrit.model.PluginInput;
 import com.ruesga.rview.gerrit.model.PreferencesInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInput;
 import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
@@ -1290,6 +1292,47 @@ public interface GerritApi {
     // Gerrit plugins endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html"
     // ===============================
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html#list-plugins"
+     */
+    @GET("plugins/")
+    Observable<Map<String, PluginInfo>> getPlugins();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html#install-plugin"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("plugins/{plugin-id}")
+    Observable<PluginInfo> installPlugin(
+            @NonNull @Path("plugin-id") String pluginId,
+            @NonNull @Body PluginInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html#get-plugin-status"
+     */
+    @GET("plugins/{plugin-id}/gerrit~status")
+    Observable<PluginInfo> getPluginStatus(@NonNull @Path("plugin-id") String pluginId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html#enable-plugin"
+     */
+    @POST("plugins/{plugin-id}/gerrit~enable")
+    Observable<PluginInfo> enablePlugin(@NonNull @Path("plugin-id") String pluginId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html#disable-plugin"
+     */
+    @POST("plugins/{plugin-id}/gerrit~disable")
+    Observable<PluginInfo> disablePlugin(@NonNull @Path("plugin-id") String pluginId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html#reload-plugin"
+     */
+    @POST("plugins/{plugin-id}/gerrit~reload")
+    Observable<PluginInfo> reloadPlugin(@NonNull @Path("plugin-id") String pluginId);
+
+
 
     // ===============================
     // Gerrit projects endpoints
