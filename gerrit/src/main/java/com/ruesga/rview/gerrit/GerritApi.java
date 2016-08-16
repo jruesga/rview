@@ -1668,4 +1668,19 @@ public interface GerritApi {
     Observable<List<ReflogEntryInfo>> getProjectBranchReflog(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Path("branch-id") String branchId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-child-projects"
+     */
+    @GET("projects/{project-name}/children/")
+    Observable<List<ProjectInfo>> getProjectChildProjects(
+            @NonNull @Path("project-name") String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-child-project"
+     */
+    @GET("projects/{project-name}/children/{child-project-name}")
+    Observable<ProjectInfo> getProjectChildProject(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("child-project-name") String childProjectName);
 }

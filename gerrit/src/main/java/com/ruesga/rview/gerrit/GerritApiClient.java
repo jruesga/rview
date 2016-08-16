@@ -1307,4 +1307,15 @@ public class GerritApiClient implements GerritApi {
             @NonNull String projectName, @NonNull String branchId) {
         return mService.getProjectBranchReflog(projectName, branchId);
     }
+
+    @Override
+    public Observable<List<ProjectInfo>> getProjectChildProjects(@NonNull String projectName) {
+        return mService.getProjectChildProjects(projectName);
+    }
+
+    @Override
+    public Observable<ProjectInfo> getProjectChildProject(
+            @NonNull String projectName, @NonNull String childProjectName) {
+        return mService.getProjectChildProject(projectName, childProjectName);
+    }
 }
