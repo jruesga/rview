@@ -900,7 +900,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-mergeable"
      */
     @GET("changes/{change-id}/revisions/{revision-id}/mergeable")
-    Observable<MergeableInfo> getChangeRevisionMergeable(
+    Observable<MergeableInfo> getChangeRevisionMergeableStatus(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
             @Nullable @Query("other-branches") Option otherBranches);
@@ -1584,7 +1584,8 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-access"
      */
     @GET("projects/{project-name}/access")
-    Observable<ProjectAccessInfo> getProjectAccessRights(@NonNull @Path("project-name") String name);
+    Observable<ProjectAccessInfo> getProjectAccessRights(
+            @NonNull @Path("project-name") String projectName);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-access"
@@ -1594,4 +1595,77 @@ public interface GerritApi {
     Observable<ProjectAccessInfo> setProjectAccessRights(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Body ProjectAccessInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-branches"
+     */
+    @GET("projects/{project-name}/branches/")
+    Observable<List<BranchInfo>> getProjectBranches(
+            @NonNull @Path("project-name") String projectName,
+            @Nullable @Query("n") Integer count,
+            @Nullable @Query("s") Integer start,
+            @Nullable @Query("m") String substring,
+            @Nullable @Query("r") String regexp);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-branch"
+     */
+    @GET("projects/{project-name}/branches/{branch-id}")
+    Observable<BranchInfo> getProjectBranch(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("branch-id") String branchId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#create-branch"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("projects/{project-name}/branches/{branch-id}")
+    Observable<BranchInfo> createProjectBranch(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("branch-id") String branchId,
+            @NonNull @Body BranchInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#delete-branch"
+     */
+    @DELETE("projects/{project-name}/branches/{branch-id}")
+    Observable<Void> deleteProjectBranch(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("branch-id") String branchId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#delete-branches"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/branches/branches:delete")
+    Observable<Void> deleteProjectBranches(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body DeleteBranchesInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-content"
+     */
+    @GET("projects/{project-name}/branches/{branch-id}/files/{file-id}/content")
+    Observable<Base64Data> getProjectBranchFileContent(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("branch-id") String branchId,
+            @NonNull @Path("file-id") String fileId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-mergeable-info"
+     */
+    @GET("projects/{project-name}/branches/{branch-id}/mergeable")
+    Observable<MergeableInfo> getProjectBranchMergeableStatus(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("branch-id") String branchId,
+            @NonNull @Query("source") String sourceBranchId,
+            @Nullable @Query("strategy") MergeStrategy strategy);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-reflog"
+     */
+    @GET("projects/{project-name}/branches/{branch-id}/reflog")
+    Observable<List<ReflogEntryInfo>> getProjectBranchReflog(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("branch-id") String branchId);
 }

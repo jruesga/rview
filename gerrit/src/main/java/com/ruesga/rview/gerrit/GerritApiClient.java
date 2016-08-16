@@ -747,9 +747,9 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<MergeableInfo> getChangeRevisionMergeable(@NonNull String changeId,
+    public Observable<MergeableInfo> getChangeRevisionMergeableStatus(@NonNull String changeId,
             @NonNull String revisionId, @Nullable Option otherBranches) {
-        return mService.getChangeRevisionMergeable(changeId, revisionId, otherBranches);
+        return mService.getChangeRevisionMergeableStatus(changeId, revisionId, otherBranches);
     }
 
     @Override
@@ -1255,5 +1255,56 @@ public class GerritApiClient implements GerritApi {
     public Observable<ProjectAccessInfo> setProjectAccessRights(
             @NonNull String projectName, @NonNull ProjectAccessInput input) {
         return mService.setProjectAccessRights(projectName, input);
+    }
+
+    @Override
+    public Observable<List<BranchInfo>> getProjectBranches(@NonNull String projectName,
+            @Nullable Integer count, @Nullable Integer start, @Nullable String substring,
+            @Nullable String regexp) {
+        return mService.getProjectBranches(projectName, count, start, substring, regexp);
+    }
+
+    @Override
+    public Observable<BranchInfo> getProjectBranch(
+            @NonNull String projectName, @NonNull String branchId) {
+        return mService.getProjectBranch(projectName, branchId);
+    }
+
+    @Override
+    public Observable<BranchInfo> createProjectBranch(
+            @NonNull String projectName, @NonNull String branchId, @NonNull BranchInput input) {
+        return mService.createProjectBranch(projectName, branchId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteProjectBranch(
+            @NonNull String projectName, @NonNull String branchId) {
+        return mService.deleteProjectBranch(projectName, branchId);
+    }
+
+    @Override
+    public Observable<Void> deleteProjectBranches(
+            @NonNull String projectName, @NonNull DeleteBranchesInput input) {
+        return mService.deleteProjectBranches(projectName, input);
+    }
+
+    @Override
+    public Observable<Base64Data> getProjectBranchFileContent(
+            @NonNull String projectName, @NonNull String branchId, @NonNull String fileId) {
+        return mService.getProjectBranchFileContent(projectName, branchId, fileId);
+    }
+
+    @Override
+    public Observable<MergeableInfo> getProjectBranchMergeableStatus(@NonNull String projectName,
+            @NonNull String branchId, @NonNull String sourceBranchId,
+            @Nullable MergeStrategy strategy) {
+        return mService.getProjectBranchMergeableStatus(
+                projectName, branchId, sourceBranchId, strategy);
+    }
+
+    @Override
+    public Observable<List<ReflogEntryInfo>> getProjectBranchReflog(
+            @NonNull String projectName, @NonNull String branchId) {
+        return mService.getProjectBranchReflog(projectName, branchId);
     }
 }
