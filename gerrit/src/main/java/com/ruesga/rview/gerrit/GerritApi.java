@@ -74,6 +74,11 @@ public interface GerritApi {
     String SELF_ACCOUNT = "self";
 
     /**
+     * The default project's dashboard
+     */
+    String DEFAULT_DASHBOARD = "default";
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#query-account"
      */
     @GET("accounts/")
@@ -1711,7 +1716,7 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-commit"
      */
-    @GET("projects/{project-name}/tags/{commit-id}")
+    @GET("projects/{project-name}/commits/{commit-id}")
     Observable<CommitInfo> getProjectCommit(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Path("commit-id") String commitId);
@@ -1719,9 +1724,42 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-content-from-commit"
      */
-    @GET("projects/{project-name}/tags/{commit-id}/files/{file-id}/content")
+    @GET("projects/{project-name}/commits/{commit-id}/files/{file-id}/content")
     Observable<Base64Data> getProjectCommitFileContent(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Path("commit-id") String commitId,
             @NonNull @Path("file-id") String fileId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-dashboards"
+     */
+    @GET("projects/{project-name}/dashboards/")
+    Observable<List<DashboardInfo>> getProjectDashboards(
+            @NonNull @Path("project-name") String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-dashboard"
+     */
+    @GET("projects/{project-name}/dashboards/{dashboard-id}")
+    Observable<DashboardInfo> getProjectDashboard(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("dashboard-id") String dashboardId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-dashboard"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("projects/{project-name}/dashboards/{dashboard-id}")
+    Observable<DashboardInfo> setProjectDashboard(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("dashboard-id") String dashboardId,
+            @NonNull @Body DashboardInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#delete-dashboard"
+     */
+    @DELETE("projects/{project-name}/dashboards/{dashboard-id}")
+    Observable<Void> deleteProjectDashboard(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("dashboard-id") String dashboardId);
 }

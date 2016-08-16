@@ -1346,4 +1346,27 @@ public class GerritApiClient implements GerritApi {
             @NonNull String projectName, @NonNull String commitId, @NonNull String fileId) {
         return mService.getProjectCommitFileContent(projectName, commitId, fileId);
     }
+
+    @Override
+    public Observable<List<DashboardInfo>> getProjectDashboards(@NonNull String projectName) {
+        return mService.getProjectDashboards(projectName);
+    }
+
+    @Override
+    public Observable<DashboardInfo> getProjectDashboard(
+            @NonNull String projectName, @NonNull String dashboardId) {
+        return mService.getProjectDashboard(projectName, dashboardId);
+    }
+
+    @Override
+    public Observable<DashboardInfo> setProjectDashboard(@NonNull String projectName,
+            @NonNull String dashboardId, @NonNull DashboardInput input) {
+        return mService.setProjectDashboard(projectName, dashboardId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteProjectDashboard(
+            @NonNull String projectName, @NonNull String dashboardId) {
+        return mService.deleteProjectDashboard(projectName, dashboardId);
+    }
 }
