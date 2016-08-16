@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#capability-info"
  */
-public class CapabilityInfo {
+public class AccountCapabilityInfo {
     @SerializedName("accessDatabase") public boolean accessDatabase;
     @SerializedName("administrateServer") public boolean administrateServer;
     @SerializedName("createAccount") public boolean createAccount;

@@ -15,18 +15,14 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-public class SizeLimitInfo {
-    private final SizeLimitUnit mUnit;
-    private final double mSize;
+import android.support.annotation.NonNull;
 
-    public SizeLimitInfo(SizeLimitUnit unit, double size) {
-        mUnit = unit;
-        mSize = size;
-    }
+import com.google.gson.annotations.SerializedName;
 
-    @Override
-    public String toString() {
-        return mUnit.format(mSize);
-    }
+/**
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#email-confirmation-input"
+ */
+public class EmailConfirmationInput {
+    @NonNull @SerializedName("token") public String token = "";
 }
 

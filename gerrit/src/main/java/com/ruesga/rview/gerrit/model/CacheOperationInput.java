@@ -15,18 +15,15 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-public class SizeLimitInfo {
-    private final SizeLimitUnit mUnit;
-    private final double mSize;
+import android.support.annotation.Nullable;
 
-    public SizeLimitInfo(SizeLimitUnit unit, double size) {
-        mUnit = unit;
-        mSize = size;
-    }
+import com.google.gson.annotations.SerializedName;
 
-    @Override
-    public String toString() {
-        return mUnit.format(mSize);
-    }
+/**
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#cache-operation-input"
+ */
+public class CacheOperationInput {
+    @Nullable @SerializedName("operation") public CacheOperationType operation;
+    @Nullable @SerializedName("caches") public String[] caches;
 }
 

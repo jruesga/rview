@@ -33,7 +33,7 @@ import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerStatus;
 import com.ruesga.rview.gerrit.model.Base64Data;
 import com.ruesga.rview.gerrit.model.Capability;
-import com.ruesga.rview.gerrit.model.CapabilityInfo;
+import com.ruesga.rview.gerrit.model.AccountCapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
@@ -465,7 +465,7 @@ public class GerritApiClientTest {
     public void testGetAccountCapabilities() {
         final int accountId = 1000;
         final GerritApiClient client = getGerritClient(ENDPOINT);
-        CapabilityInfo capabilities =
+        AccountCapabilityInfo capabilities =
                 client.getAccountCapabilities(String.valueOf(accountId), null).toBlocking().first();
         assertNotNull(capabilities);
     }

@@ -22,6 +22,7 @@ import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.AbandonInput;
+import com.ruesga.rview.gerrit.model.AccountCapabilityInfo;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
@@ -32,8 +33,9 @@ import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.Base64Data;
 import com.ruesga.rview.gerrit.model.BlameInfo;
+import com.ruesga.rview.gerrit.model.CacheInfo;
+import com.ruesga.rview.gerrit.model.CacheOperationInput;
 import com.ruesga.rview.gerrit.model.Capability;
-import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
@@ -56,6 +58,7 @@ import com.ruesga.rview.gerrit.model.EditFileInfo;
 import com.ruesga.rview.gerrit.model.EditInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInput;
+import com.ruesga.rview.gerrit.model.EmailConfirmationInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
 import com.ruesga.rview.gerrit.model.FileInfo;
@@ -92,6 +95,7 @@ import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.RuleInput;
+import com.ruesga.rview.gerrit.model.ServerCapabilityInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
@@ -104,6 +108,9 @@ import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
 import com.ruesga.rview.gerrit.model.SuffixMode;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
+import com.ruesga.rview.gerrit.model.SummaryInfo;
+import com.ruesga.rview.gerrit.model.TaskInfo;
+import com.ruesga.rview.gerrit.model.TopMenuEntryInfo;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
@@ -383,7 +390,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-account-capabilities"
      */
     @GET("accounts/{account-id}/capabilities")
-    Observable<CapabilityInfo> getAccountCapabilities(
+    Observable<AccountCapabilityInfo> getAccountCapabilities(
             @NonNull @Path("account-id") String accountId,
             @Nullable @Query("q") Capability[] filter);
 
@@ -1174,6 +1181,105 @@ public interface GerritApi {
      */
     @GET("config/server/info")
     Observable<ServerInfo> getServerInfo();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#email-confirmation-input"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("config/server/email.confirm")
+    Observable<Void> confirmEmail(@NonNull @Body EmailConfirmationInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#list-caches"
+     */
+    @GET("config/server/caches/")
+    Observable<Map<String, CacheInfo>> getServerCaches();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#cache-operations"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("config/server/caches/")
+    Observable<Void> executeServerCachesOperations(CacheOperationInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#get-cache"
+     */
+    @GET("config/server/caches/{cache-id}")
+    Observable<CacheInfo> getServerCache(@NonNull @Path("cache-id") String cacheId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#flush-cache"
+     */
+    @POST("config/server/caches/{cache-id}/flush")
+    Observable<Void> flushServerCache(@NonNull @Path("cache-id") String cacheId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#get-summary"
+     */
+    @GET("config/server/summary")
+    Observable<SummaryInfo> getServerSummary(
+            @Nullable @Query("jvm") Option jvm,
+            @Nullable @Query("gc") Option gc);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#list-capabilities"
+     */
+    @GET("config/server/capabilities")
+    Observable<Map<Capability, ServerCapabilityInfo>> getServerCapabilities();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#list-tasks"
+     */
+    @GET("config/server/tasks/")
+    Observable<List<TaskInfo>> getServerTasks();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#get-task"
+     */
+    @GET("config/server/tasks{task-id}")
+    Observable<TaskInfo> getServerTask(@NonNull @Path("task-id") String taskId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#delete-task"
+     */
+    @DELETE("config/server/tasks{task-id}")
+    Observable<Void> deleteServerTask(@NonNull @Path("task-id") String taskId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#get-top-menus"
+     */
+    @GET("config/server/top-menus")
+    Observable<List<TopMenuEntryInfo>> getServerTopMenus();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#get-user-preferences"
+     */
+    @GET("config/server/preferences")
+    Observable<PreferencesInfo> getServerDefaultPreferences();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#set-user-preferences"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("config/server/preferences")
+    Observable<PreferencesInfo> setServerDefaultPreferences(@NonNull @Body PreferencesInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#get-diff-preferences"
+     */
+    @GET("config/server/preferences.diff")
+    Observable<DiffPreferencesInfo> getServerDefaultDiffPreferences();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#set-diff-preferences"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("config/server/preferences.diff")
+    Observable<DiffPreferencesInfo> setServerDefaultDiffPreferences(
+            @NonNull @Body DiffPreferencesInput input);
+
+
 
     // ===============================
     // Gerrit groups endpoints

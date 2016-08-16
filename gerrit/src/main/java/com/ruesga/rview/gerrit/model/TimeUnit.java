@@ -15,18 +15,15 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-public class SizeLimitInfo {
-    private final SizeLimitUnit mUnit;
-    private final double mSize;
+public enum TimeUnit {
+    NANOSECONDS("ns"), MICROSECONDS("us"), MILLISECONDS("ms"), SECONDS("s");
 
-    public SizeLimitInfo(SizeLimitUnit unit, double size) {
+    private final String mUnit;
+    TimeUnit(String unit) {
         mUnit = unit;
-        mSize = size;
     }
 
-    @Override
-    public String toString() {
-        return mUnit.format(mSize);
+    public String format(long time) {
+        return time + mUnit;
     }
 }
-

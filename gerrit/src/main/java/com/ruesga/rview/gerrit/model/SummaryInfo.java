@@ -15,18 +15,14 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-public class SizeLimitInfo {
-    private final SizeLimitUnit mUnit;
-    private final double mSize;
+import com.google.gson.annotations.SerializedName;
 
-    public SizeLimitInfo(SizeLimitUnit unit, double size) {
-        mUnit = unit;
-        mSize = size;
-    }
-
-    @Override
-    public String toString() {
-        return mUnit.format(mSize);
-    }
+/**
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#summary-info"
+ */
+public class SummaryInfo {
+    @SerializedName("task_summary") public TaskSummaryInfo taskSummary;
+    @SerializedName("mem_summary") public MemSummaryInfo memSummary;
+    @SerializedName("thread_summary") public ThreadSummaryInfo threadSummary;
+    @SerializedName("jvm_summary") public JvmSummaryInfo jvmSummary;
 }
-

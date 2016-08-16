@@ -23,7 +23,7 @@ public enum SizeLimitUnit {
         mUnit = unit;
     }
 
-    public String format(long size) {
+    public String format(double size) {
         return size + mUnit;
     }
 }

@@ -27,6 +27,7 @@ import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.AbandonInput;
+import com.ruesga.rview.gerrit.model.AccountCapabilityInfo;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
@@ -38,8 +39,9 @@ import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.Base64Data;
 import com.ruesga.rview.gerrit.model.BlameInfo;
+import com.ruesga.rview.gerrit.model.CacheInfo;
+import com.ruesga.rview.gerrit.model.CacheOperationInput;
 import com.ruesga.rview.gerrit.model.Capability;
-import com.ruesga.rview.gerrit.model.CapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
@@ -62,6 +64,7 @@ import com.ruesga.rview.gerrit.model.EditFileInfo;
 import com.ruesga.rview.gerrit.model.EditInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInput;
+import com.ruesga.rview.gerrit.model.EmailConfirmationInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.EmailInput;
 import com.ruesga.rview.gerrit.model.FileInfo;
@@ -98,6 +101,7 @@ import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.RuleInput;
+import com.ruesga.rview.gerrit.model.ServerCapabilityInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.gerrit.model.SshKeyInfo;
@@ -110,6 +114,9 @@ import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
 import com.ruesga.rview.gerrit.model.SuffixMode;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
+import com.ruesga.rview.gerrit.model.SummaryInfo;
+import com.ruesga.rview.gerrit.model.TaskInfo;
+import com.ruesga.rview.gerrit.model.TopMenuEntryInfo;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.gerrit.model.UsernameInput;
 
@@ -401,7 +408,7 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<CapabilityInfo> getAccountCapabilities(
+    public Observable<AccountCapabilityInfo> getAccountCapabilities(
             @NonNull String accountId, @Nullable Capability[] filter) {
         return mService.getAccountCapabilities(accountId, filter);
     }
@@ -958,6 +965,83 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<ServerInfo> getServerInfo() {
         return mService.getServerInfo();
+    }
+
+    @Override
+    public Observable<Void> confirmEmail(@NonNull EmailConfirmationInput input) {
+        return mService.confirmEmail(input);
+    }
+
+    @Override
+    public Observable<Map<String, CacheInfo>> getServerCaches() {
+        return mService.getServerCaches();
+    }
+
+    @Override
+    public Observable<Void> executeServerCachesOperations(CacheOperationInput input) {
+        return mService.executeServerCachesOperations(input);
+    }
+
+    @Override
+    public Observable<CacheInfo> getServerCache(@NonNull String cacheId) {
+        return mService.getServerCache(cacheId);
+    }
+
+    @Override
+    public Observable<Void> flushServerCache(@NonNull String cacheId) {
+        return mService.flushServerCache(cacheId);
+    }
+
+    @Override
+    public Observable<SummaryInfo> getServerSummary(@Nullable Option jvm, @Nullable Option gc) {
+        return mService.getServerSummary(jvm, gc);
+    }
+
+    @Override
+    public Observable<Map<Capability, ServerCapabilityInfo>> getServerCapabilities() {
+        return mService.getServerCapabilities();
+    }
+
+    @Override
+    public Observable<List<TaskInfo>> getServerTasks() {
+        return mService.getServerTasks();
+    }
+
+    @Override
+    public Observable<TaskInfo> getServerTask(@NonNull String taskId) {
+        return mService.getServerTask(taskId);
+    }
+
+    @Override
+    public Observable<Void> deleteServerTask(@NonNull String taskId) {
+        return mService.deleteServerTask(taskId);
+    }
+
+    @Override
+    public Observable<List<TopMenuEntryInfo>> getServerTopMenus() {
+        return mService.getServerTopMenus();
+    }
+
+    @Override
+    public Observable<PreferencesInfo> getServerDefaultPreferences() {
+        return mService.getServerDefaultPreferences();
+    }
+
+    @Override
+    public Observable<PreferencesInfo> setServerDefaultPreferences(
+            @NonNull PreferencesInput input) {
+        return mService.setServerDefaultPreferences(input);
+    }
+
+    @Override
+    public Observable<DiffPreferencesInfo> getServerDefaultDiffPreferences() {
+        return mService.getServerDefaultDiffPreferences();
+    }
+
+    @Override
+    public Observable<DiffPreferencesInfo> setServerDefaultDiffPreferences(
+            @NonNull DiffPreferencesInput input) {
+        return mService.setServerDefaultDiffPreferences(input);
     }
 
 

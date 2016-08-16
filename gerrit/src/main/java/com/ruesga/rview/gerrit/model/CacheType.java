@@ -15,18 +15,6 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-public class SizeLimitInfo {
-    private final SizeLimitUnit mUnit;
-    private final double mSize;
-
-    public SizeLimitInfo(SizeLimitUnit unit, double size) {
-        mUnit = unit;
-        mSize = size;
-    }
-
-    @Override
-    public String toString() {
-        return mUnit.format(mSize);
-    }
+public enum CacheType {
+    MEM, DISK
 }
-
