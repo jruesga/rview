@@ -1171,70 +1171,89 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<ProjectInfo> getProject(@NonNull String name) {
-        return mService.getProject(name);
+    public Observable<ProjectInfo> getProject(@NonNull String projectName) {
+        return mService.getProject(projectName);
     }
 
     @Override
-    public Observable<ProjectInfo> createProject(@NonNull String name, @NonNull ProjectInput input) {
-        return mService.createProject(name, input);
+    public Observable<ProjectInfo> createProject(
+            @NonNull String projectName, @NonNull ProjectInput input) {
+        return mService.createProject(projectName, input);
     }
 
     @Override
-    public Observable<String> getProjectDescription(@NonNull String name) {
-        return mService.getProjectDescription(name);
+    public Observable<String> getProjectDescription(@NonNull String projectName) {
+        return mService.getProjectDescription(projectName);
     }
 
     @Override
     public Observable<String> setProjectDescription(
-            @NonNull String name, @NonNull ProjectDescriptionInput input) {
-        return mService.setProjectDescription(name, input);
+            @NonNull String projectName, @NonNull ProjectDescriptionInput input) {
+        return mService.setProjectDescription(projectName, input);
     }
 
     @Override
-    public Observable<Void> deleteProjectDescription(@NonNull String name) {
-        return mService.deleteProjectDescription(name);
+    public Observable<Void> deleteProjectDescription(@NonNull String projectName) {
+        return mService.deleteProjectDescription(projectName);
     }
 
     @Override
-    public Observable<String> getProjectParent(@NonNull String name) {
-        return mService.getProjectParent(name);
+    public Observable<String> getProjectParent(@NonNull String projectName) {
+        return mService.getProjectParent(projectName);
     }
 
     @Override
     public Observable<String> setProjectParent(
-            @NonNull String name, @NonNull ProjectParentInput input) {
-        return mService.setProjectParent(name, input);
+            @NonNull String projectName, @NonNull ProjectParentInput input) {
+        return mService.setProjectParent(projectName, input);
     }
 
     @Override
-    public Observable<String> getProjectHead(@NonNull String name) {
-        return mService.getProjectHead(name);
+    public Observable<String> getProjectHead(@NonNull String projectName) {
+        return mService.getProjectHead(projectName);
     }
 
     @Override
-    public Observable<String> setProjectHead(@NonNull String name, @NonNull HeadInput input) {
-        return mService.setProjectHead(name, input);
+    public Observable<String> setProjectHead(
+            @NonNull String projectName, @NonNull HeadInput input) {
+        return mService.setProjectHead(projectName, input);
     }
 
     @Override
-    public Observable<RepositoryStatisticsInfo> getProjectStatistics(@NonNull String name) {
-        return mService.getProjectStatistics(name);
+    public Observable<RepositoryStatisticsInfo> getProjectStatistics(@NonNull String projectName) {
+        return mService.getProjectStatistics(projectName);
     }
 
     @Override
-    public Observable<ConfigInfo> getProjectConfig(@NonNull String name) {
-        return mService.getProjectConfig(name);
+    public Observable<ConfigInfo> getProjectConfig(@NonNull String projectName) {
+        return mService.getProjectConfig(projectName);
     }
 
     @Override
     public Observable<ConfigInfo> setProjectConfig(
-            @NonNull String name, @NonNull ConfigInput input) {
-        return mService.setProjectConfig(name, input);
+            @NonNull String projectName, @NonNull ConfigInput input) {
+        return mService.setProjectConfig(projectName, input);
     }
 
     @Override
-    public Observable<Response> runProjectGc(@NonNull String name, @NonNull GcInput input) {
-        return mService.runProjectGc(name, input);
+    public Observable<Response> runProjectGc(@NonNull String projectName, @NonNull GcInput input) {
+        return mService.runProjectGc(projectName, input);
+    }
+
+    @Override
+    public Observable<BanResultInfo> banProject(
+            @NonNull String projectName, @NonNull BanInput input) {
+        return mService.banProject(projectName, input);
+    }
+
+    @Override
+    public Observable<ProjectAccessInfo> getProjectAccessRights(@NonNull String projectName) {
+        return mService.getProjectAccessRights(projectName);
+    }
+
+    @Override
+    public Observable<ProjectAccessInfo> setProjectAccessRights(
+            @NonNull String projectName, @NonNull ProjectAccessInput input) {
+        return mService.setProjectAccessRights(projectName, input);
     }
 }

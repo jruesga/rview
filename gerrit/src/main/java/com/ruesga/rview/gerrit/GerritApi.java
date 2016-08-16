@@ -1478,7 +1478,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-project"
      */
     @GET("projects/{project-name}")
-    Observable<ProjectInfo> getProject(@NonNull @Path("project-name") String name);
+    Observable<ProjectInfo> getProject(@NonNull @Path("project-name") String projectName);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#create-project"
@@ -1493,7 +1493,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-project-description"
      */
     @GET("projects/{project-name}/description")
-    Observable<String> getProjectDescription(@NonNull @Path("project-name") String name);
+    Observable<String> getProjectDescription(@NonNull @Path("project-name") String projectName);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-project-description"
@@ -1508,13 +1508,13 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#delete-project-description"
      */
     @DELETE("projects/{project-name}/description")
-    Observable<Void> deleteProjectDescription(@NonNull @Path("project-name") String name);
+    Observable<Void> deleteProjectDescription(@NonNull @Path("project-name") String projectName);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-project-parent"
      */
     @GET("projects/{project-name}/parent")
-    Observable<String> getProjectParent(@NonNull @Path("project-name") String name);
+    Observable<String> getProjectParent(@NonNull @Path("project-name") String projectName);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-project-parent"
@@ -1522,14 +1522,14 @@ public interface GerritApi {
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @PUT("projects/{project-name}/parent")
     Observable<String> setProjectParent(
-            @NonNull @Path("project-name") String name,
+            @NonNull @Path("project-name") String projectName,
             @NonNull @Body ProjectParentInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-head"
      */
     @GET("projects/{project-name}/HEAD")
-    Observable<String> getProjectHead(@NonNull @Path("project-name") String name);
+    Observable<String> getProjectHead(@NonNull @Path("project-name") String projectName);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-head"
@@ -1537,7 +1537,7 @@ public interface GerritApi {
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @PUT("projects/{project-name}/HEAD")
     Observable<String> setProjectHead(
-            @NonNull @Path("project-name") String name,
+            @NonNull @Path("project-name") String projectName,
             @NonNull @Body HeadInput input);
 
     /**
@@ -1545,13 +1545,13 @@ public interface GerritApi {
      */
     @GET("projects/{project-name}/statistics.git")
     Observable<RepositoryStatisticsInfo> getProjectStatistics(
-            @NonNull @Path("project-name") String name);
+            @NonNull @Path("project-name") String projectName);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-config"
      */
     @GET("projects/{project-name}/config")
-    Observable<ConfigInfo> getProjectConfig(@NonNull @Path("project-name") String name);
+    Observable<ConfigInfo> getProjectConfig(@NonNull @Path("project-name") String projectName);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-config"
@@ -1559,7 +1559,7 @@ public interface GerritApi {
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @PUT("projects/{project-name}/config")
     Observable<ConfigInfo> setProjectConfig(
-            @NonNull @Path("project-name") String name,
+            @NonNull @Path("project-name") String projectName,
             @NonNull @Body ConfigInput input);
 
     /**
@@ -1568,6 +1568,30 @@ public interface GerritApi {
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("projects/{project-name}/gc")
     Observable<Response> runProjectGc(
-            @NonNull @Path("project-name") String name,
+            @NonNull @Path("project-name") String projectName,
             @NonNull @Body GcInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#ban-commit"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/ban")
+    Observable<BanResultInfo> banProject(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body BanInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-access"
+     */
+    @GET("projects/{project-name}/access")
+    Observable<ProjectAccessInfo> getProjectAccessRights(@NonNull @Path("project-name") String name);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-access"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/access")
+    Observable<ProjectAccessInfo> setProjectAccessRights(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body ProjectAccessInput input);
 }
