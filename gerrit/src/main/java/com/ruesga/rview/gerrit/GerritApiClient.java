@@ -25,102 +25,9 @@ import com.ruesga.rview.gerrit.adapters.GerritServerVersionAdapter;
 import com.ruesga.rview.gerrit.adapters.GerritUtcDateAdapter;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.GroupQuery;
 import com.ruesga.rview.gerrit.filter.Option;
-import com.ruesga.rview.gerrit.model.AbandonInput;
-import com.ruesga.rview.gerrit.model.AccountCapabilityInfo;
-import com.ruesga.rview.gerrit.model.AccountDetailInfo;
-import com.ruesga.rview.gerrit.model.AccountInfo;
-import com.ruesga.rview.gerrit.model.AccountInput;
-import com.ruesga.rview.gerrit.model.AccountNameInput;
-import com.ruesga.rview.gerrit.model.AccountOptions;
-import com.ruesga.rview.gerrit.model.ActionInfo;
-import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
-import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
-import com.ruesga.rview.gerrit.model.ApprovalInfo;
-import com.ruesga.rview.gerrit.model.Base64Data;
-import com.ruesga.rview.gerrit.model.BlameInfo;
-import com.ruesga.rview.gerrit.model.CacheInfo;
-import com.ruesga.rview.gerrit.model.CacheOperationInput;
-import com.ruesga.rview.gerrit.model.Capability;
-import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
-import com.ruesga.rview.gerrit.model.ChangeInfo;
-import com.ruesga.rview.gerrit.model.ChangeInput;
-import com.ruesga.rview.gerrit.model.ChangeOptions;
-import com.ruesga.rview.gerrit.model.CherryPickInput;
-import com.ruesga.rview.gerrit.model.CommentInfo;
-import com.ruesga.rview.gerrit.model.CommentInput;
-import com.ruesga.rview.gerrit.model.CommitInfo;
-import com.ruesga.rview.gerrit.model.ConfigInfo;
-import com.ruesga.rview.gerrit.model.ConfigInput;
-import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
-import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
-import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
-import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
-import com.ruesga.rview.gerrit.model.DeleteVoteInput;
-import com.ruesga.rview.gerrit.model.DiffInfo;
-import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
-import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
-import com.ruesga.rview.gerrit.model.EditFileInfo;
-import com.ruesga.rview.gerrit.model.EditInfo;
-import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
-import com.ruesga.rview.gerrit.model.EditPreferencesInput;
-import com.ruesga.rview.gerrit.model.EmailConfirmationInput;
-import com.ruesga.rview.gerrit.model.EmailInfo;
-import com.ruesga.rview.gerrit.model.EmailInput;
-import com.ruesga.rview.gerrit.model.FileInfo;
-import com.ruesga.rview.gerrit.model.FixInput;
-import com.ruesga.rview.gerrit.model.GcInput;
-import com.ruesga.rview.gerrit.model.GpgKeyInfo;
-import com.ruesga.rview.gerrit.model.GroupInfo;
-import com.ruesga.rview.gerrit.model.HeadInput;
-import com.ruesga.rview.gerrit.model.HttpPasswordInput;
-import com.ruesga.rview.gerrit.model.IncludeInInfo;
-import com.ruesga.rview.gerrit.model.MergeableInfo;
-import com.ruesga.rview.gerrit.model.MoveInput;
-import com.ruesga.rview.gerrit.model.NewChangeEditInput;
-import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
-import com.ruesga.rview.gerrit.model.PluginInfo;
-import com.ruesga.rview.gerrit.model.PluginInput;
-import com.ruesga.rview.gerrit.model.PreferencesInfo;
-import com.ruesga.rview.gerrit.model.PreferencesInput;
-import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
-import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
-import com.ruesga.rview.gerrit.model.ProjectInfo;
-import com.ruesga.rview.gerrit.model.ProjectInput;
-import com.ruesga.rview.gerrit.model.ProjectParentInput;
-import com.ruesga.rview.gerrit.model.ProjectType;
-import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
-import com.ruesga.rview.gerrit.model.ProjectWatchInput;
-import com.ruesga.rview.gerrit.model.RebaseInput;
-import com.ruesga.rview.gerrit.model.RelatedChangesInfo;
-import com.ruesga.rview.gerrit.model.RenameChangeEditInput;
-import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
-import com.ruesga.rview.gerrit.model.RestoreChangeEditInput;
-import com.ruesga.rview.gerrit.model.RestoreInput;
-import com.ruesga.rview.gerrit.model.RevertInput;
-import com.ruesga.rview.gerrit.model.ReviewInfo;
-import com.ruesga.rview.gerrit.model.ReviewInput;
-import com.ruesga.rview.gerrit.model.ReviewerInfo;
-import com.ruesga.rview.gerrit.model.ReviewerInput;
-import com.ruesga.rview.gerrit.model.RuleInput;
-import com.ruesga.rview.gerrit.model.ServerCapabilityInfo;
-import com.ruesga.rview.gerrit.model.ServerInfo;
-import com.ruesga.rview.gerrit.model.ServerVersion;
-import com.ruesga.rview.gerrit.model.SshKeyInfo;
-import com.ruesga.rview.gerrit.model.StarInput;
-import com.ruesga.rview.gerrit.model.SubmitInfo;
-import com.ruesga.rview.gerrit.model.SubmitInput;
-import com.ruesga.rview.gerrit.model.SubmitRecordInfo;
-import com.ruesga.rview.gerrit.model.SubmitType;
-import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
-import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
-import com.ruesga.rview.gerrit.model.SuffixMode;
-import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
-import com.ruesga.rview.gerrit.model.SummaryInfo;
-import com.ruesga.rview.gerrit.model.TaskInfo;
-import com.ruesga.rview.gerrit.model.TopMenuEntryInfo;
-import com.ruesga.rview.gerrit.model.TopicInput;
-import com.ruesga.rview.gerrit.model.UsernameInput;
+import com.ruesga.rview.gerrit.model.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -138,8 +45,6 @@ import okhttp3.logging.HttpLoggingInterceptor.Logger;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.Path;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
@@ -229,6 +134,7 @@ public class GerritApiClient implements GerritApi {
         builder.registerTypeAdapter(ApprovalInfo.class, new GerritApprovalInfoAdapter());
         builder.registerTypeAdapter(Base64Data.class, new GerritBas64Adapter(mAbstractionLayer));
     }
+
 
 
     // ===============================
@@ -956,6 +862,9 @@ public class GerritApiClient implements GerritApi {
         return mService.cherryPickChangeRevisionFile(changeId, revisionId, fileId, input);
     }
 
+
+
+
     // ===============================
     // Gerrit configuration endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html"
@@ -1049,10 +958,97 @@ public class GerritApiClient implements GerritApi {
     }
 
 
+
     // ===============================
     // Gerrit groups endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html"
     // ===============================
+
+    @Override
+    public Observable<List<GroupInfo>> getGroupSuggestions(
+            @NonNull String query, @Nullable Integer count) {
+        return mService.getGroupSuggestions(query, count);
+    }
+
+    @Override
+    public Observable<List<GroupInfo>> getGroups(
+            @Nullable GroupQuery query, @Nullable Integer count, @Nullable Integer start,
+            @Nullable String project, @Nullable String user, @Nullable Option owned,
+            @Nullable Option visibleToAll, @Nullable Option verbose,
+            @Nullable GroupOptions[] options) {
+        return mService.getGroups(query, count, start, project,
+                user, owned, visibleToAll, verbose, options);
+    }
+
+    @Override
+    public Observable<GroupInfo> getGroup(@NonNull String groupId) {
+        return mService.getGroup(groupId);
+    }
+
+    @Override
+    public Observable<GroupInfo> createGroup(@NonNull String groupName, @NonNull GroupInput input) {
+        return mService.createGroup(groupName, input);
+    }
+
+    @Override
+    public Observable<GroupInfo> getGroupDetail(@NonNull String groupId) {
+        return mService.getGroupDetail(groupId);
+    }
+
+    @Override
+    public Observable<String> getGroupName(@NonNull String groupId) {
+        return mService.getGroupName(groupId);
+    }
+
+    @Override
+    public Observable<String> setGroupName(@NonNull String groupId, @NonNull GroupNameInput input) {
+        return mService.setGroupName(groupId, input);
+    }
+
+    @Override
+    public Observable<String> getGroupDescription(@NonNull String groupId) {
+        return mService.getGroupDescription(groupId);
+    }
+
+    @Override
+    public Observable<String> setGroupDescription(
+            @NonNull String groupId, @NonNull GroupDescriptionInput input) {
+        return mService.setGroupDescription(groupId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteGroupDescription(@NonNull String groupId) {
+        return mService.deleteGroupDescription(groupId);
+    }
+
+    @Override
+    public Observable<GroupOptionsInfo> getGroupOptions(@NonNull String groupId) {
+        return mService.getGroupOptions(groupId);
+    }
+
+    @Override
+    public Observable<GroupOptionsInfo> setGroupOptions(
+            @NonNull String groupId, @NonNull GroupOptionsInput input) {
+        return mService.setGroupOptions(groupId, input);
+    }
+
+    @Override
+    public Observable<GroupInfo> getGroupOwner(@NonNull String groupId) {
+        return mService.getGroupOwner(groupId);
+    }
+
+    @Override
+    public Observable<GroupInfo> setGroupOwner(
+            @NonNull String groupId, @NonNull GroupOwnerInput input) {
+        return mService.setGroupOwner(groupId, input);
+    }
+
+    @Override
+    public Observable<List<GroupAuditEventInfo>> getGroupAuditLog(@NonNull String groupId) {
+        return mService.getGroupAuditLog(groupId);
+    }
+
+
 
     // ===============================
     // Gerrit plugins endpoints
@@ -1089,6 +1085,7 @@ public class GerritApiClient implements GerritApi {
     public Observable<PluginInfo> reloadPlugin(@NonNull String pluginId) {
         return mService.reloadPlugin(pluginId);
     }
+
 
 
     // ===============================

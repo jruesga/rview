@@ -20,101 +20,9 @@ import android.support.annotation.Nullable;
 
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.GroupQuery;
 import com.ruesga.rview.gerrit.filter.Option;
-import com.ruesga.rview.gerrit.model.AbandonInput;
-import com.ruesga.rview.gerrit.model.AccountCapabilityInfo;
-import com.ruesga.rview.gerrit.model.AccountDetailInfo;
-import com.ruesga.rview.gerrit.model.AccountInfo;
-import com.ruesga.rview.gerrit.model.AccountInput;
-import com.ruesga.rview.gerrit.model.AccountNameInput;
-import com.ruesga.rview.gerrit.model.AccountOptions;
-import com.ruesga.rview.gerrit.model.ActionInfo;
-import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
-import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
-import com.ruesga.rview.gerrit.model.Base64Data;
-import com.ruesga.rview.gerrit.model.BlameInfo;
-import com.ruesga.rview.gerrit.model.CacheInfo;
-import com.ruesga.rview.gerrit.model.CacheOperationInput;
-import com.ruesga.rview.gerrit.model.Capability;
-import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
-import com.ruesga.rview.gerrit.model.ChangeInfo;
-import com.ruesga.rview.gerrit.model.ChangeInput;
-import com.ruesga.rview.gerrit.model.ChangeOptions;
-import com.ruesga.rview.gerrit.model.CherryPickInput;
-import com.ruesga.rview.gerrit.model.CommentInfo;
-import com.ruesga.rview.gerrit.model.CommentInput;
-import com.ruesga.rview.gerrit.model.CommitInfo;
-import com.ruesga.rview.gerrit.model.ConfigInfo;
-import com.ruesga.rview.gerrit.model.ConfigInput;
-import com.ruesga.rview.gerrit.model.ContributorAgreementInfo;
-import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
-import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
-import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
-import com.ruesga.rview.gerrit.model.DeleteVoteInput;
-import com.ruesga.rview.gerrit.model.DiffInfo;
-import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
-import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
-import com.ruesga.rview.gerrit.model.EditFileInfo;
-import com.ruesga.rview.gerrit.model.EditInfo;
-import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
-import com.ruesga.rview.gerrit.model.EditPreferencesInput;
-import com.ruesga.rview.gerrit.model.EmailConfirmationInput;
-import com.ruesga.rview.gerrit.model.EmailInfo;
-import com.ruesga.rview.gerrit.model.EmailInput;
-import com.ruesga.rview.gerrit.model.FileInfo;
-import com.ruesga.rview.gerrit.model.FixInput;
-import com.ruesga.rview.gerrit.model.GcInput;
-import com.ruesga.rview.gerrit.model.GpgKeyInfo;
-import com.ruesga.rview.gerrit.model.GroupInfo;
-import com.ruesga.rview.gerrit.model.HeadInput;
-import com.ruesga.rview.gerrit.model.HttpPasswordInput;
-import com.ruesga.rview.gerrit.model.IncludeInInfo;
-import com.ruesga.rview.gerrit.model.MergeableInfo;
-import com.ruesga.rview.gerrit.model.MoveInput;
-import com.ruesga.rview.gerrit.model.NewChangeEditInput;
-import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
-import com.ruesga.rview.gerrit.model.PluginInfo;
-import com.ruesga.rview.gerrit.model.PluginInput;
-import com.ruesga.rview.gerrit.model.PreferencesInfo;
-import com.ruesga.rview.gerrit.model.PreferencesInput;
-import com.ruesga.rview.gerrit.model.ProjectAccessInfo;
-import com.ruesga.rview.gerrit.model.ProjectDescriptionInput;
-import com.ruesga.rview.gerrit.model.ProjectInfo;
-import com.ruesga.rview.gerrit.model.ProjectInput;
-import com.ruesga.rview.gerrit.model.ProjectParentInput;
-import com.ruesga.rview.gerrit.model.ProjectType;
-import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
-import com.ruesga.rview.gerrit.model.ProjectWatchInput;
-import com.ruesga.rview.gerrit.model.RebaseInput;
-import com.ruesga.rview.gerrit.model.RelatedChangesInfo;
-import com.ruesga.rview.gerrit.model.RenameChangeEditInput;
-import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
-import com.ruesga.rview.gerrit.model.RestoreChangeEditInput;
-import com.ruesga.rview.gerrit.model.RestoreInput;
-import com.ruesga.rview.gerrit.model.RevertInput;
-import com.ruesga.rview.gerrit.model.ReviewInfo;
-import com.ruesga.rview.gerrit.model.ReviewInput;
-import com.ruesga.rview.gerrit.model.ReviewerInfo;
-import com.ruesga.rview.gerrit.model.ReviewerInput;
-import com.ruesga.rview.gerrit.model.RuleInput;
-import com.ruesga.rview.gerrit.model.ServerCapabilityInfo;
-import com.ruesga.rview.gerrit.model.ServerInfo;
-import com.ruesga.rview.gerrit.model.ServerVersion;
-import com.ruesga.rview.gerrit.model.SshKeyInfo;
-import com.ruesga.rview.gerrit.model.StarInput;
-import com.ruesga.rview.gerrit.model.SubmitInfo;
-import com.ruesga.rview.gerrit.model.SubmitInput;
-import com.ruesga.rview.gerrit.model.SubmitRecordInfo;
-import com.ruesga.rview.gerrit.model.SubmitType;
-import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
-import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
-import com.ruesga.rview.gerrit.model.SuffixMode;
-import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
-import com.ruesga.rview.gerrit.model.SummaryInfo;
-import com.ruesga.rview.gerrit.model.TaskInfo;
-import com.ruesga.rview.gerrit.model.TopMenuEntryInfo;
-import com.ruesga.rview.gerrit.model.TopicInput;
-import com.ruesga.rview.gerrit.model.UsernameInput;
+import com.ruesga.rview.gerrit.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -1287,6 +1195,124 @@ public interface GerritApi {
     // Gerrit groups endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html"
     // ===============================
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#list-groups"
+     */
+    @GET("groups/")
+    Observable<List<GroupInfo>> getGroupSuggestions(
+            @NonNull @Query("q") String query,
+            @Nullable @Query("n") Integer count);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#list-groups"
+     */
+    @GET("groups/")
+    Observable<List<GroupInfo>> getGroups(
+            @Nullable @Query("q") GroupQuery query,
+            @Nullable @Query("n") Integer count,
+            @Nullable @Query("S") Integer start,
+            @Nullable @Query("p") String project,
+            @Nullable @Query("u") String user,
+            @Nullable @Query("owned") Option owned,
+            @Nullable @Query("visible-to-all") Option visibleToAll,
+            @Nullable @Query("verbose") Option verbose,
+            @Nullable @Query("o") GroupOptions[] options);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group"
+     */
+    @GET("groups/{group-id}")
+    Observable<GroupInfo> getGroup(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#create-group"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("groups/{group-name}")
+    Observable<GroupInfo> createGroup(
+            @NonNull @Path("group-name") String groupName,
+            @NonNull @Body GroupInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group-detail"
+     */
+    @GET("groups/{group-id}/detail")
+    Observable<GroupInfo> getGroupDetail(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group-name"
+     */
+    @GET("groups/{group-id}/name")
+    Observable<String> getGroupName(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#rename-group"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("groups/{group-id}/name")
+    Observable<String> setGroupName(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Body GroupNameInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group-description"
+     */
+    @GET("groups/{group-id}/description")
+    Observable<String> getGroupDescription(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#set-group-description"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("groups/{group-id}/description")
+    Observable<String> setGroupDescription(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Body GroupDescriptionInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-group-description"
+     */
+    @DELETE("groups/{group-id}/description")
+    Observable<Void> deleteGroupDescription(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group-options"
+     */
+    @GET("groups/{group-id}/options")
+    Observable<GroupOptionsInfo> getGroupOptions(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#set-group-options"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("groups/{group-id}/options")
+    Observable<GroupOptionsInfo> setGroupOptions(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Body GroupOptionsInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group-owner"
+     */
+    @GET("groups/{group-id}/owner")
+    Observable<GroupInfo> getGroupOwner(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#set-group-owner"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("groups/{group-id}/owner")
+    Observable<GroupInfo> setGroupOwner(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Body GroupOwnerInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-audit-log"
+     */
+    @GET("groups/{group-id}/log.audit")
+    Observable<List<GroupAuditEventInfo>> getGroupAuditLog(@NonNull @Path("group-id") String groupId);
+
+
 
     // ===============================
     // Gerrit plugins endpoints
