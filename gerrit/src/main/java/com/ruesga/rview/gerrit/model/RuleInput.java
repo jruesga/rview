@@ -19,8 +19,6 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#rule-input"
  */

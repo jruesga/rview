@@ -15,10 +15,6 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.Nullable;
-
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#restore-input"
  */

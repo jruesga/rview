@@ -20,9 +20,6 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-import java.util.Map;
-
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-input"
  */
