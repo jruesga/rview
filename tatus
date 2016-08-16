@@ -1,0 +1,90 @@
+[1mdiff --git a/gerrit/src/main/java/com/ruesga/rview/gerrit/GerritApi.java b/gerrit/src/main/java/com/ruesga/rview/gerrit/GerritApi.java[m
+[1mindex dd50e28..d906626 100644[m
+[1m--- a/gerrit/src/main/java/com/ruesga/rview/gerrit/GerritApi.java[m
+[1m+++ b/gerrit/src/main/java/com/ruesga/rview/gerrit/GerritApi.java[m
+[36m@@ -1312,6 +1312,39 @@[m [mpublic interface GerritApi {[m
+     @GET("groups/{group-id}/log.audit")[m
+     Observable<List<GroupAuditEventInfo>> getGroupAuditLog(@NonNull @Path("group-id") String groupId);[m
+ [m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#group-members"[m
+[32m+[m[32m     */[m
+[32m+[m[32m    @GET("groups/{group-id}/members/")[m
+[32m+[m[32m    Observable<List<AccountInfo>> getGroupMembers([m
+[32m+[m[32m            @NonNull @Path("group-id") String groupId,[m
+[32m+[m[32m            @Nullable @Query("recursive") Option recursive);[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group-member"[m
+[32m+[m[32m     */[m
+[32m+[m[32m    @GET("groups/{group-id}/members/{account-id}")[m
+[32m+[m[32m    Observable<AccountInfo> getGroupMember([m
+[32m+[m[32m            @NonNull @Path("group-id") String groupId,[m
+[32m+[m[32m            @NonNull @Path("account-id") String accountId);[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#_add_group_members"[m
+[32m+[m[32m     */[m
+[32m+[m[32m    @Headers({"Content-Type: application/json; charset=UTF-8"})[m
+[32m+[m[32m    @PUT("groups/{group-id}/members")[m
+[32m+[m[32m    Observable<List<AccountInfo>> addGroupMembers([m
+[32m+[m[32m            @NonNull @Path("group-id") String groupId,[m
+[32m+[m[32m            @NonNull @Body MemberInput input);[m
+[32m+[m
+[32m+[m[32m    /**[m
+[32m+[m[32m     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-group-member"[m
+[32m+[m[32m     */[m
+[32m+[m[32m    @DELETE("groups/{group-id}/members/{account-id}")[m
+[32m+[m[32m    Observable<Void> deleteGroupMember([m
+[32m+[m[32m            @NonNull @Path("group-id") String groupId,[m
+[32m+[m[32m            @NonNull @Path("account-id") String accountId);[m
+[32m+[m
+ [m
+ [m
+     // ===============================[m
+[1mdiff --git a/gerrit/src/main/java/com/ruesga/rview/gerrit/GerritApiClient.java b/gerrit/src/main/java/com/ruesga/rview/gerrit/GerritApiClient.java[m
+[1mindex c6c68f9..c47fe63 100644[m
+[1m--- a/gerrit/src/main/java/com/ruesga/rview/gerrit/GerritApiClient.java[m
+[1m+++ b/gerrit/src/main/java/com/ruesga/rview/gerrit/GerritApiClient.java[m
+[36m@@ -45,6 +45,9 @@[m [mimport okhttp3.logging.HttpLoggingInterceptor.Logger;[m
+ import retrofit2.Retrofit;[m
+ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;[m
+ import retrofit2.converter.gson.GsonConverterFactory;[m
+[32m+[m[32mimport retrofit2.http.Body;[m
+[32m+[m[32mimport retrofit2.http.Path;[m
+[32m+[m[32mimport retrofit2.http.Query;[m
+ import rx.Observable;[m
+ [m
+ public class GerritApiClient implements GerritApi {[m
+[36m@@ -1048,6 +1051,31 @@[m [mpublic class GerritApiClient implements GerritApi {[m
+         return mService.getGroupAuditLog(groupId);[m
+     }[m
+ [m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public Observable<List<AccountInfo>> getGroupMembers(@NonNull String groupId) {[m
+[32m+[m[32m        return mService.getGroupMembers(groupId);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public Observable<List<AccountInfo>> getGroupMembers(@NonNull String groupId, @Nullable Option recursive) {[m
+[32m+[m[32m        return mService.getGroupMembers(groupId, recursive);[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public Observable<AccountInfo> getGroupMember(@NonNull String groupId, @NonNull String accountId) {[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public Observable<List<AccountInfo>> addGroupMembers(@NonNull String groupId, @NonNull MemberInput input) {[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public Observable<Void> deleteGroupMember(@NonNull String groupId, @NonNull String accountId) {[m
+[32m+[m[32m        return null;[m
+[32m+[m[32m    }[m
+[32m+[m
+ [m
+ [m
+     // ===============================[m

@@ -1312,6 +1312,56 @@ public interface GerritApi {
     @GET("groups/{group-id}/log.audit")
     Observable<List<GroupAuditEventInfo>> getGroupAuditLog(@NonNull @Path("group-id") String groupId);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#group-members"
+     */
+    @GET("groups/{group-id}/members/")
+    Observable<List<AccountInfo>> getGroupMembers(
+            @NonNull @Path("group-id") String groupId,
+            @Nullable @Query("recursive") Option recursive);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group-member"
+     */
+    @GET("groups/{group-id}/members/{account-id}")
+    Observable<AccountInfo> getGroupMember(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#add-group-member"
+     */
+    @PUT("groups/{group-id}/members/{account-id}")
+    Observable<AccountInfo> addGroupMember(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#_add_group_members"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("groups/{group-id}/members.add")
+    Observable<List<AccountInfo>> addGroupMembers(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Body MemberInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-group-member"
+     */
+    @DELETE("groups/{group-id}/members/{account-id}")
+    Observable<Void> deleteGroupMember(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-group-members"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("groups/{group-id}/members/members.delete")
+    Observable<Void> deleteGroupMembers(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Body MemberInput input);
+
 
 
     // ===============================

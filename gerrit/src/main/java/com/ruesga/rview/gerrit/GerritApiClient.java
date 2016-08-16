@@ -1048,6 +1048,41 @@ public class GerritApiClient implements GerritApi {
         return mService.getGroupAuditLog(groupId);
     }
 
+    @Override
+    public Observable<List<AccountInfo>> getGroupMembers(
+            @NonNull String groupId, @Nullable Option recursive) {
+        return mService.getGroupMembers(groupId, recursive);
+    }
+
+    @Override
+    public Observable<AccountInfo> getGroupMember(
+            @NonNull String groupId, @NonNull String accountId) {
+        return mService.getGroupMember(groupId, accountId);
+    }
+
+    @Override
+    public Observable<AccountInfo> addGroupMember(
+            @NonNull String groupId, @NonNull String accountId) {
+        return mService.addGroupMember(groupId, accountId);
+    }
+
+    @Override
+    public Observable<List<AccountInfo>> addGroupMembers(
+            @NonNull String groupId, @NonNull MemberInput input) {
+        return mService.addGroupMembers(groupId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteGroupMember(@NonNull String groupId, @NonNull String accountId) {
+        return mService.deleteGroupMember(groupId, accountId);
+    }
+
+    @Override
+    public Observable<Void> deleteGroupMembers(
+            @NonNull String groupId, @NonNull MemberInput input) {
+        return mService.deleteGroupMembers(groupId, input);
+    }
+
 
 
     // ===============================
