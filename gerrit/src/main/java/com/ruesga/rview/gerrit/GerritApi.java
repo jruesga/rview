@@ -1707,4 +1707,21 @@ public interface GerritApi {
             @NonNull @Path("project-name") String projectName,
             @NonNull @Path("tag-id") String tagId,
             @NonNull @Body TagInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-commit"
+     */
+    @GET("projects/{project-name}/tags/{commit-id}")
+    Observable<CommitInfo> getProjectCommit(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("commit-id") String commitId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-content-from-commit"
+     */
+    @GET("projects/{project-name}/tags/{commit-id}/files/{file-id}/content")
+    Observable<Base64Data> getProjectCommitFileContent(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("commit-id") String commitId,
+            @NonNull @Path("file-id") String fileId);
 }

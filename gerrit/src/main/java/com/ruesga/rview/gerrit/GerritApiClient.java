@@ -1334,4 +1334,16 @@ public class GerritApiClient implements GerritApi {
             @NonNull String projectName, @NonNull String tagId, @NonNull TagInput input) {
         return mService.createProjectTag(projectName, tagId, input);
     }
+
+    @Override
+    public Observable<CommitInfo> getProjectCommit(
+            @NonNull String projectName, @NonNull String commitId) {
+        return mService.getProjectCommit(projectName, commitId);
+    }
+
+    @Override
+    public Observable<Base64Data> getProjectCommitFileContent(
+            @NonNull String projectName, @NonNull String commitId, @NonNull String fileId) {
+        return mService.getProjectCommitFileContent(projectName, commitId, fileId);
+    }
 }
