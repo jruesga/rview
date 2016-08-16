@@ -37,11 +37,14 @@ import com.ruesga.rview.gerrit.model.AddGpgKeyInput;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.Base64Data;
+import com.ruesga.rview.gerrit.model.BlameInfo;
 import com.ruesga.rview.gerrit.model.Capability;
 import com.ruesga.rview.gerrit.model.CapabilityInfo;
+import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.CherryPickInput;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.CommentInput;
 import com.ruesga.rview.gerrit.model.CommitInfo;
@@ -52,8 +55,11 @@ import com.ruesga.rview.gerrit.model.ContributorAgreementInput;
 import com.ruesga.rview.gerrit.model.DeleteGpgKeyInput;
 import com.ruesga.rview.gerrit.model.DeleteProjectWatchInput;
 import com.ruesga.rview.gerrit.model.DeleteVoteInput;
+import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInfo;
 import com.ruesga.rview.gerrit.model.DiffPreferencesInput;
+import com.ruesga.rview.gerrit.model.EditFileInfo;
+import com.ruesga.rview.gerrit.model.EditInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInfo;
 import com.ruesga.rview.gerrit.model.EditPreferencesInput;
 import com.ruesga.rview.gerrit.model.EmailInfo;
@@ -68,6 +74,7 @@ import com.ruesga.rview.gerrit.model.HttpPasswordInput;
 import com.ruesga.rview.gerrit.model.IncludeInInfo;
 import com.ruesga.rview.gerrit.model.MergeableInfo;
 import com.ruesga.rview.gerrit.model.MoveInput;
+import com.ruesga.rview.gerrit.model.NewChangeEditInput;
 import com.ruesga.rview.gerrit.model.OAuthTokenInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInfo;
 import com.ruesga.rview.gerrit.model.PreferencesInput;
@@ -81,7 +88,9 @@ import com.ruesga.rview.gerrit.model.ProjectWatchInfo;
 import com.ruesga.rview.gerrit.model.ProjectWatchInput;
 import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RelatedChangesInfo;
+import com.ruesga.rview.gerrit.model.RenameChangeEditInput;
 import com.ruesga.rview.gerrit.model.RepositoryStatisticsInfo;
+import com.ruesga.rview.gerrit.model.RestoreChangeEditInput;
 import com.ruesga.rview.gerrit.model.RestoreInput;
 import com.ruesga.rview.gerrit.model.RevertInput;
 import com.ruesga.rview.gerrit.model.ReviewInfo;
@@ -99,6 +108,7 @@ import com.ruesga.rview.gerrit.model.SubmitRecordInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherInfo;
 import com.ruesga.rview.gerrit.model.SubmittedTogetherOptions;
+import com.ruesga.rview.gerrit.model.SuffixMode;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.gerrit.model.UsernameInput;
@@ -112,6 +122,7 @@ import java.util.Map;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Logger;
@@ -644,8 +655,78 @@ public class GerritApiClient implements GerritApi {
         return mService.fixChange(changeId, input);
     }
 
+    @Override
+    public Observable<EditInfo> getChangeEdit(@NonNull String changeId,
+            @Nullable Option list, @Nullable String base, @Nullable Option downloadCommands) {
+        return mService.getChangeEdit(changeId, list, base, downloadCommands);
+    }
 
+    @Override
+    public Observable<Void> setChangeEdit(
+            @NonNull String changeId, @NonNull String fileId, @NonNull RequestBody data) {
+        return mService.setChangeEdit(changeId, fileId, data);
+    }
 
+    @Override
+    public Observable<Void> restoreChangeEdit(
+            @NonNull String changeId, @NonNull RestoreChangeEditInput input) {
+        return mService.restoreChangeEdit(changeId, input);
+    }
+
+    @Override
+    public Observable<Void> renameChangeEdit(
+            @NonNull String changeId, @NonNull RenameChangeEditInput input) {
+        return mService.renameChangeEdit(changeId, input);
+    }
+
+    @Override
+    public Observable<Void> newChangeEdit(
+            @NonNull String changeId, @NonNull NewChangeEditInput input) {
+        return mService.newChangeEdit(changeId, input);
+    }
+
+    @Override
+    public Observable<Void> deleteChangeEditFile(@NonNull String changeId, @NonNull String fileId) {
+        return mService.deleteChangeEditFile(changeId, fileId);
+    }
+
+    @Override
+    public Observable<Base64Data> getChangeEditFileContent(
+            @NonNull String changeId, @NonNull String fileId, @Nullable String base) {
+        return mService.getChangeEditFileContent(changeId, fileId, base);
+    }
+
+    @Override
+    public Observable<EditFileInfo> getChangeEditFileMetadata(
+            @NonNull String changeId, @NonNull String fileId) {
+        return mService.getChangeEditFileMetadata(changeId, fileId);
+    }
+
+    @Override
+    public Observable<String> getChangeEditMessage(@NonNull String changeId) {
+        return mService.getChangeEditMessage(changeId);
+    }
+
+    @Override
+    public Observable<Void> setChangeEditMessage(
+            @NonNull String changeId, @NonNull ChangeEditMessageInput input) {
+        return mService.setChangeEditMessage(changeId, input);
+    }
+
+    @Override
+    public Observable<Void> publishChangeEdit(@NonNull String changeId) {
+        return mService.publishChangeEdit(changeId);
+    }
+
+    @Override
+    public Observable<Void> rebaseChangeEdit(@NonNull String changeId) {
+        return mService.rebaseChangeEdit(changeId);
+    }
+
+    @Override
+    public Observable<Void> deleteChangeEdit(@NonNull String changeId) {
+        return mService.deleteChangeEdit(changeId);
+    }
 
     @Override
     public Observable<List<ReviewerInfo>> getChangeReviewers(@NonNull String changeId) {
@@ -824,6 +905,44 @@ public class GerritApiClient implements GerritApi {
     public Observable<Base64Data> getChangeRevisionFileContent(@NonNull String changeId,
             @NonNull String revisionId, @NonNull String fileId) {
         return mService.getChangeRevisionFileContent(changeId, revisionId, fileId);
+    }
+
+    @Override
+    public Observable<Response> getChangeRevisionFileDownload(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull String fileId,
+            @Nullable SuffixMode suffixMode, @Nullable Integer parent) {
+        return mService.getChangeRevisionFileDownload(
+                changeId, revisionId, fileId, suffixMode, parent);
+    }
+
+    @Override
+    public Observable<DiffInfo> getChangeRevisionFileDiff(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull String fileId, @Nullable Option intraline) {
+        return mService.getChangeRevisionFileDiff(changeId, revisionId, fileId, intraline);
+    }
+
+    @Override
+    public Observable<BlameInfo> getChangeRevisionFileBlame(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull String fileId, @Nullable String base) {
+        return mService.getChangeRevisionFileBlame(changeId, revisionId, fileId, base);
+    }
+
+    @Override
+    public Observable<Void> setChangeRevisionFileAsReviewed(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull String fileId) {
+        return mService.setChangeRevisionFileAsReviewed(changeId, revisionId, fileId);
+    }
+
+    @Override
+    public Observable<Void> setChangeRevisionFileAsNotReviewed(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull String fileId) {
+        return mService.setChangeRevisionFileAsNotReviewed(changeId, revisionId, fileId);
+    }
+
+    @Override
+    public Observable<ChangeInfo> cherryPickChangeRevisionFile(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull String fileId, @NonNull CherryPickInput input) {
+        return mService.cherryPickChangeRevisionFile(changeId, revisionId, fileId, input);
     }
 
     // ===============================
