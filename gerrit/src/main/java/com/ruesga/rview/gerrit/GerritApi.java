@@ -1340,7 +1340,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#_add_group_members"
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
-    @PUT("groups/{group-id}/members.add")
+    @POST("groups/{group-id}/members.add")
     Observable<List<AccountInfo>> addGroupMembers(
             @NonNull @Path("group-id") String groupId,
             @NonNull @Body MemberInput input);
@@ -1361,6 +1361,54 @@ public interface GerritApi {
     Observable<Void> deleteGroupMembers(
             @NonNull @Path("group-id") String groupId,
             @NonNull @Body MemberInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#included-groups"
+     */
+    @GET("groups/{group-id}/groups/")
+    Observable<List<GroupInfo>> getGroupIncludedGroups(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-included-group"
+     */
+    @GET("groups/{group-id}/groups/{included-group-id}")
+    Observable<GroupInfo> getGroupIncludedGroup(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Path("included-group-id") String includedGroupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#include-group"
+     */
+    @PUT("groups/{group-id}/groups/{included-group-id}")
+    Observable<GroupInfo> addGroupIncludeGroup(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Path("included-group-id") String includedGroupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#include-groups"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("groups/{group-id}/groups/groups.add")
+    Observable<GroupInfo> addGroupIncludeGroups(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Body IncludeGroupInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-included-group"
+     */
+    @DELETE("groups/{group-id}/groups/{included-group-id}")
+    Observable<Void> deleteGroupIncludeGroup(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Path("included-group-id") String includedGroupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-included-groups"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("groups/{group-id}/groups/groups.delete")
+    Observable<Void> deleteGroupIncludeGroup(
+            @NonNull @Path("group-id") String groupId,
+            @NonNull @Body IncludeGroupInput input);
 
 
 
