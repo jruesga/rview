@@ -1683,4 +1683,28 @@ public interface GerritApi {
     Observable<ProjectInfo> getProjectChildProject(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Path("child-project-name") String childProjectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-tags"
+     */
+    @GET("projects/{project-name}/tags/")
+    Observable<List<TagInfo>> getProjectTags(@NonNull @Path("project-name") String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-tag"
+     */
+    @GET("projects/{project-name}/tags/{tag-id}")
+    Observable<TagInfo> getProjectTag(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("tag-id") String tagId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#create-tag"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/tags/{tag-id}")
+    Observable<TagInfo> createProjectTag(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("tag-id") String tagId,
+            @NonNull @Body TagInput input);
 }

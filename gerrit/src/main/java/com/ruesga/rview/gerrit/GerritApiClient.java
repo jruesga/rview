@@ -1318,4 +1318,20 @@ public class GerritApiClient implements GerritApi {
             @NonNull String projectName, @NonNull String childProjectName) {
         return mService.getProjectChildProject(projectName, childProjectName);
     }
+
+    @Override
+    public Observable<List<TagInfo>> getProjectTags(@NonNull String projectName) {
+        return mService.getProjectTags(projectName);
+    }
+
+    @Override
+    public Observable<TagInfo> getProjectTag(@NonNull String projectName, @NonNull String tagId) {
+        return mService.getProjectTag(projectName, tagId);
+    }
+
+    @Override
+    public Observable<TagInfo> createProjectTag(
+            @NonNull String projectName, @NonNull String tagId, @NonNull TagInput input) {
+        return mService.createProjectTag(projectName, tagId, input);
+    }
 }
