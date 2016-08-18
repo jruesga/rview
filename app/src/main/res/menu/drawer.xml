@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/category_all"
+        android:checkableBehavior="all">
+        <item android:title="@string/menu_all_changes_category">
+            <menu>
+                <item
+                    android:id="@+id/menu_open"
+                    android:icon="@drawable/ic_open_discussion"
+                    android:title="@string/menu_open"
+                    android:checkable="true"
+                    />
+                <item
+                    android:id="@+id/menu_merged"
+                    android:icon="@drawable/ic_merged"
+                    android:title="@string/menu_merged"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/menu_abandoned"
+                    android:icon="@drawable/ic_abandoned"
+                    android:title="@string/menu_abandoned"
+                    android:checkable="true"/>
+            </menu>
+        </item>
+    </group>
+    <group
+        android:id="@+id/category_my_menu"
+        android:checkableBehavior="all">
+        <item android:title="@string/menu_my_menu_category">
+            <menu>
+                <item
+                    android:id="@+id/menu_dashboard"
+                    android:icon="@drawable/ic_dashboard"
+                    android:title="@string/menu_dashboard"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/menu_drafts"
+                    android:icon="@drawable/ic_draft"
+                    android:title="@string/menu_drafts"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/menu_starred"
+                    android:icon="@drawable/ic_starred"
+                    android:title="@string/menu_starred"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/menu_watched"
+                    android:icon="@drawable/ic_watch"
+                    android:title="@string/menu_watched"
+                    android:checkable="true"/>
+            </menu>
+        </item>
+    </group>
+    <group
+        android:id="@+id/category_my_account"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/menu_account_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/menu_account_settings"/>
+        <item
+            android:id="@+id/menu_delete_account"
+            android:icon="@drawable/ic_delete"
+            android:title="@string/menu_delete_account"/>
+    </group>
+    <group
+        android:id="@+id/category_other_accounts"
+        android:checkableBehavior="none">
+        <item android:title="@string/menu_other_accounts_category">
+            <menu>
+                <item
+                    android:id="@+id/menu_add_account"
+                    android:icon="@drawable/ic_add_circle_outline"
+                    android:title="@string/menu_add_account"/>
+            </menu>
+        </item>
+    </group>
+</menu>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24"
+        android:viewportHeight="24">
+    <path
+        android:fillColor="#000000"
+        android:strokeWidth="2.375"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="square"
+        android:pathData="M 6.0717040568,12.309640833 a 4.2591723064,4.2591723064 0 0 0
+-4.2591723063,4.259172306 4.2591723064,4.2591723064 0 0 0
+4.2591723063,4.259172306 4.2591723064,4.2591723064 0 0 0
+4.2591723062,-4.259172306 4.2591723064,4.2591723064 0 0 0
+-4.2591723073,-4.259172306 z m 0,1.531807584 a 2.7273647225,2.7273647225 0 0 1
+2.7273647226,2.727364722 2.7273647225,2.7273647225 0 0 1
+-2.7273647226,2.727364723 2.7273647225,2.7273647225 0 0 1
+-2.7273647224,-2.727364723 2.7273647225,2.7273647225 0 0 1
+2.7273647224,-2.727364722 z" />
+    <path
+        android:fillColor="#000000"
+        android:strokeWidth="2.375"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="square"
+        android:pathData="M 18.027275444,12.309640833 a 4.2591723064,4.2591723064 0 0 0
+-4.259172306,4.259172306 4.2591723064,4.2591723064 0 0 0 4.259172306,4.259172306
+4.2591723064,4.2591723064 0 0 0 4.259172306,-4.259172306
+4.2591723064,4.2591723064 0 0 0 -4.259172306,-4.259172306 z m 0,1.531807584 a
+2.7273647225,2.7273647225 0 0 1 2.727364722,2.727364722
+2.7273647225,2.7273647225 0 0 1 -2.727364722,2.727364723
+2.7273647225,2.7273647225 0 0 1 -2.727364723,-2.727364723
+2.7273647225,2.7273647225 0 0 1 2.727364723,-2.727364722 z" />
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="1.1955571175"
+        android:pathData="M 9.434208542,14.999644359 c 0,0 1.701103888,-0.523056248
+2.577920087,-0.523056248 0.876816199,0 2.577920087,0.523056248
+2.577920087,0.523056248" />
+    <path
+        android:fillColor="#000000"
+        android:strokeWidth="2.375"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="square"
+        android:pathData="M 11.994947486,9.0970730673 A 13.464489737,4.4549695094 0 0 0
+1.7135522497,10.676849493 l 20.5468750013,0 A 13.464489737,4.4549695094 0 0 0
+11.994947486,9.0970730673 Z" />
+    <path
+        android:fillColor="#000000"
+        android:strokeWidth="2.375"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="square"
+        android:pathData="M 5.2616382138,3.2027111164 L 9.525349937,4.2233719067 18.92349536,3.172014555 l
+1.028539278,5.5177075647 -15.431063688,0 z" />
+</vector>

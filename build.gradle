@@ -22,6 +22,7 @@ allprojects {
         dependencies {
             //noinspection GroovyAssignabilityCheck
             classpath 'com.android.tools.build:gradle-experimental:0.8.0-beta1'
+            classpath 'org.bitbucket.pvoid:android-apt-experemental:1.0.1'
         }
     }
 

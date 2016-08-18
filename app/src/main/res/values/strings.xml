@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<resources>
+    <!-- App name -->
+    <string name="app_name" translatable="false">Rview</string>
+
+    <!-- Drawer menu options -->
+    <string name="menu_all_changes_category">All changes</string>
+    <string name="menu_open">Open</string>
+    <string name="menu_merged">Merged</string>
+    <string name="menu_abandoned">Abandoned</string>
+    <string name="menu_my_menu_category">My menu</string>
+    <string name="menu_dashboard">Dashboard</string>
+    <string name="menu_drafts">Drafts</string>
+    <string name="menu_starred">Starred</string>
+    <string name="menu_watched">Watched</string>
+    <string name="menu_account_settings">Account settings</string>
+    <string name="menu_delete_account">Delete account</string>
+    <string name="menu_other_accounts_category">Other accounts</string>
+    <string name="menu_add_account">Add account</string>
+</resources>
