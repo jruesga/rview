@@ -35,4 +35,9 @@ public interface PlatformAbstractionLayer {
      * Decode data from base64
      */
     byte[] decodeBase64(byte[] data);
+
+    /**
+     * Determines if there are network connectivity
+     */
+    boolean hasConnectivity();
 }

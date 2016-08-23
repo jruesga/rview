@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name=".RviewApplication"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
@@ -31,12 +32,18 @@
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:clearTaskOnLaunch="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".wizards.SetupAccountActivity"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
     </application>

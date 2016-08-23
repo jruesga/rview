@@ -14,11 +14,17 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- App name -->
     <string name="app_name" translatable="false">Rview</string>
 
-    <!-- Drawer menu options -->
+    <!-- Actions -->
+    <string name="action_previous">Previous</string>
+    <string name="action_next">Next</string>
+    <string name="action_done">Done</string>
+    <string name="action_let_start">Let\u0027s start</string>
+
+    <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
     <string name="menu_open">Open</string>
     <string name="menu_merged">Merged</string>
@@ -32,4 +38,54 @@
     <string name="menu_delete_account">Delete account</string>
     <string name="menu_other_accounts_category">Other accounts</string>
     <string name="menu_add_account">Add account</string>
+    <string name="menu_help">Help</string>
+
+    <!-- Exceptions -->
+    <string name="exception_browser_not_found">No browser detected. Can\'t launch <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
+    <string name="exception_unsupported_server_version">Gerrit server is unsupported</string>
+    <string name="exception_invalid_endpoint">Endpoint is not a gerrit instance</string>
+    <string name="exception_no_network_available">No network connectivity detected</string>
+    <string name="exception_invalid_user_password">Invalid user or password</string>
+
+
+    <!-- Account wizard -->
+    <!-- TRANSLATORS: The word 'Rviewer' is inferred from app name. DO NOT TRANSLATE IT! -->
+    <string name="account_wizard_welcome_page_title">Welcome \u0022Rviewer\u0022</string>
+    <string name="account_wizard_welcome_page_message">We know your are willing to start reviewing changes, but first you need to setup a Gerrit repository.\n\nIt will take just a few seconds and we will assist you in the process.</string>
+    <string name="account_wizard_repository_page_title">Repository</string>
+    <string name="account_wizard_repository_page_message1">Introduce the name and location of the Gerrit repository.</string>
+    <string name="account_wizard_repository_page_message2">Or choose between some <xliff:g id="link" example="predefined">%1$s</xliff:g> repositories.</string>
+    <string name="account_wizard_repository_page_message2_predefined">predefined</string>
+    <string name="account_wizard_repository_page_name">Name</string>
+    <string name="account_wizard_repository_page_url">Url</string>
+    <string name="account_wizard_account_page_title">Account</string>
+    <string name="account_wizard_account_page_message">Choose the way you want to access to &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; repository.</string>
+    <string name="account_wizard_account_page_anonymous_access">Read-only access</string>
+    <string name="account_wizard_account_page_authenticated_access">Authenticated access</string>
+    <string name="account_wizard_account_page_authenticated_access_hint">If you don\'t know your username or password, click <xliff:g id="link" example="here">%1$s</xliff:g> to obtain or generate a new one. If you don\'t have an account yet, you can sign-in <xliff:g id="link" example="here">%2$s</xliff:g>. Use the help menu to obtain more information related to account authentication.</string>
+    <string name="account_wizard_account_page_help">
+        The REST API authentication in a Gerrit repository is done through a generated password.
+        You can obtain a password to authenticate in your settings profile (in the HTTP password
+        option). Depends on the authentication mode of the Gerrit service, there will 3 modes
+        of password generation:\n\n\n
+        - <u>plain password</u>\n\n
+        In the HTTP password page you can generate a new random password. The Gerrit service will
+        present you a username and a password. These values are the ones you should introduce in
+        this account page. Just copy and paste these values into the account authentication
+        fields.\n\n\n
+        - <u>.gitcookies</u>\n\n
+        In the HTTP password page you can generate a new git cookie associated to your Google
+        account. The Gerrit service will present some instructions to include this new generated
+        cookie in a file called .gitcookies to login though the git tool. You can localize the
+        information to introduce in the account authentication fields in the instruction presented,
+        by localizing the expression git-<b>&lt;username&gt;</b>.gmail.com=<b>&lt;password&gt;</b>.
+        Just copy and paste these <i>&lt;username&gt;</i> and <i>&lt;password&gt;</i> values
+        into the account authentication fields.\n\n</string>
+    <string name="account_wizard_account_page_password_hint_here">here</string>
+    <string name="account_wizard_account_page_username">Username</string>
+    <string name="account_wizard_account_page_password">Password</string>
+    <string name="account_wizard_confirmation_page_title">Well done!</string>
+    <!-- TRANSLATORS: The word 'Rviewing' is inferred from app name. DO NOT TRANSLATE IT! -->
+    <string name="account_wizard_confirmation_page_message">Great! Your account is ready and you can start reviewing changes in &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; right now.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Happy \u0022Rviewing\u0022!&lt;/b&gt;</string>
+    <string name="account_wizard_repositories_chooser_title">Choose a repository</string>
 </resources>

@@ -45,9 +45,20 @@ import rx.Observable;
 public interface GerritApi {
 
     /**
-     * The current supported Gerrit api version
+     * The current supported Gerrit api version.
      */
-    double VERSION = 2.12;
+    double API_VERSION = 2.12;
+
+    /**
+     * The uri of the page where to obtain the http password.
+     */
+    String HTTP_PASSWORD_URI = "#/settings/http-password";
+
+    /**
+     * The uri of the page where to login into the repository.
+     */
+    String LOGIN_URI = "login";
+
 
     // ===============================
     // Gerrit access endpoints

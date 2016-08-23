@@ -16,23 +16,32 @@
 
 apply plugin: 'com.android.model.library'
 
-dependencies {
-    compile 'com.android.support:support-annotations:24.1.1'
-    compile 'com.google.code.gson:gson:2.7'
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.squareup.okio:okio:1.9.0'
-    compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxjava:1.1.8'
+def libraries = rootProject.ext.libraries;
+def testLibraries = rootProject.ext.testLibraries;
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.hamcrest:hamcrest-core:1.3'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
-    testCompile 'org.mockito:mockito-core:1.9.5'
-    testCompile 'net.iharder:base64:2.3.9'
+dependencies {
+    compile "com.android.support:support-annotations:${libraries.support}"
+    compile "com.google.code.gson:gson:${libraries.gson}"
+    compile "com.squareup.retrofit2:retrofit:${libraries.retrofit2}"
+    compile "com.squareup.retrofit2:converter-gson:${libraries.retrofit2}"
+    compile "com.squareup.retrofit2:adapter-rxjava:${libraries.retrofit2}"
+    compile "com.squareup.okhttp3:okhttp:${libraries.okhttp3}"
+    compile "com.squareup.okhttp3:logging-interceptor:${libraries.okhttp3}"
+    compile "com.squareup.okio:okio:${libraries.okio}"
+    // Because of bug https://code.google.com/p/android/issues/detail?id=70073,
+    // we forked the original repository (version 1.6) to don't need to force
+    // to apps to set allowBackup = true. TODO check if this is fixed in the futute
+    // and we can change to the original library
+    //compile "com.burgstaller:okhttp-digest:${libraries.okhttp_digest}@aar"
+    compile "com.github.jruesga:okhttp-digest:3cc8b6412f@aar"
+    compile "io.reactivex:rxjava:${libraries.rxjava}"
+    compile "io.reactivex:rxandroid:${libraries.rxandroid}"
+
+    testCompile "junit:junit:${testLibraries.junit}"
+    testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
+    testCompile "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
+    testCompile "org.mockito:mockito-core:${testLibraries.mockito}"
+    testCompile "net.iharder:base64:${libraries.iharder_base64}"
 }
 
 model {

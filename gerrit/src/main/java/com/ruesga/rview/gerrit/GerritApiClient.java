@@ -18,11 +18,13 @@ package com.ruesga.rview.gerrit;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.gson.GsonBuilder;
-import com.ruesga.rview.gerrit.adapters.GerritApprovalInfoAdapter;
-import com.ruesga.rview.gerrit.adapters.GerritBas64Adapter;
-import com.ruesga.rview.gerrit.adapters.GerritServerVersionAdapter;
-import com.ruesga.rview.gerrit.adapters.GerritUtcDateAdapter;
+import com.burgstaller.okhttp.AuthenticationCacheInterceptor;
+import com.burgstaller.okhttp.CachingAuthenticatorDecorator;
+import com.burgstaller.okhttp.DispatchingAuthenticator;
+import com.burgstaller.okhttp.basic.BasicAuthenticator;
+import com.burgstaller.okhttp.digest.CachingAuthenticator;
+import com.burgstaller.okhttp.digest.Credentials;
+import com.burgstaller.okhttp.digest.DigestAuthenticator;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.GroupQuery;
@@ -30,10 +32,9 @@ import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.*;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -48,30 +49,43 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
-
-    private final static Map<String, GerritApiClient> sInstances = new HashMap<>();
-
     private final GerritApi mService;
     private final PlatformAbstractionLayer mAbstractionLayer;
 
-    private GerritApiClient(String endpoint, PlatformAbstractionLayer abstractionLayer) {
+    public GerritApiClient(String endpoint, Authorization authorization,
+            PlatformAbstractionLayer abstractionLayer) {
         mAbstractionLayer = abstractionLayer;
 
+        DispatchingAuthenticator authenticator = null;
+        if (authorization != null && !authorization.isAnonymousUser()) {
+            final Credentials credentials = new Credentials(
+                    authorization.mUsername, authorization.mPassword);
+            final BasicAuthenticator basicAuthenticator = new BasicAuthenticator(credentials);
+            final DigestAuthenticator digestAuthenticator = new DigestAuthenticator(credentials);
+            authenticator = new DispatchingAuthenticator.Builder()
+                    .with("digest", digestAuthenticator)
+                    .with("basic", basicAuthenticator)
+                    .build();
+        }
+
         // OkHttp client
-        OkHttpClient client = OkHttpHelper.getUnsafeClientBuilder()
-                .followRedirects(true)
+        OkHttpClient.Builder clientBuilder = OkHttpHelper.getSafeClientBuilder();
+        clientBuilder.followRedirects(true)
                 .followSslRedirects(true)
+                .addInterceptor(createConnectivityCheckInterceptor())
                 .addInterceptor(createLoggingInterceptor())
-                .addInterceptor(createHeadersInterceptor())
-                .build();
+                .addInterceptor(createHeadersInterceptor());
+        if (authorization != null && !authorization.isAnonymousUser()) {
+            final Map<String, CachingAuthenticator> authCache = new ConcurrentHashMap<>();
+            clientBuilder
+                    .authenticator(new CachingAuthenticatorDecorator(authenticator, authCache))
+                    .addInterceptor(new AuthenticationCacheInterceptor(authCache));
+        }
+        OkHttpClient client = clientBuilder.build();
 
         // Gson adapter
-        GsonBuilder gsonBuilder = new GsonBuilder()
-                .setVersion(VERSION)
-                .generateNonExecutableJson()
-                .setLenient();
-        registerCustomAdapters(gsonBuilder);
-        GsonConverterFactory gsonFactory = GsonConverterFactory.create(gsonBuilder.create());
+        GsonConverterFactory gsonFactory = GsonConverterFactory.create(
+                GsonHelper.createGerritGsonBuilder(true, mAbstractionLayer).create());
 
         // RxJava adapter
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.create();
@@ -86,19 +100,6 @@ public class GerritApiClient implements GerritApi {
 
         // Build the api
         mService = retrofit.create(GerritApi.class);
-    }
-
-    public static GerritApiClient getInstance(String endpoint,
-            PlatformAbstractionLayer abstractionLayer) {
-        // Sanitize endpoint
-        if (!endpoint.endsWith("/")) {
-            endpoint += "/";
-        }
-
-        if (!sInstances.containsKey(endpoint)) {
-            sInstances.put(endpoint, new GerritApiClient(endpoint, abstractionLayer));
-        }
-        return sInstances.get(endpoint);
     }
 
     private HttpLoggingInterceptor createLoggingInterceptor() {
@@ -128,11 +129,16 @@ public class GerritApiClient implements GerritApi {
         };
     }
 
-    private void registerCustomAdapters(GsonBuilder builder) {
-        builder.registerTypeAdapter(Date.class, new GerritUtcDateAdapter());
-        builder.registerTypeAdapter(ServerVersion.class, new GerritServerVersionAdapter());
-        builder.registerTypeAdapter(ApprovalInfo.class, new GerritApprovalInfoAdapter());
-        builder.registerTypeAdapter(Base64Data.class, new GerritBas64Adapter(mAbstractionLayer));
+    private Interceptor createConnectivityCheckInterceptor() {
+        return new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                if (!mAbstractionLayer.hasConnectivity()) {
+                    throw new NoConnectivityException();
+                }
+                return chain.proceed(chain.request());
+            }
+        };
     }
 
 

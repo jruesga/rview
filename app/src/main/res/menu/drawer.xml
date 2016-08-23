@@ -24,8 +24,7 @@
                     android:id="@+id/menu_open"
                     android:icon="@drawable/ic_open_discussion"
                     android:title="@string/menu_open"
-                    android:checkable="true"
-                    />
+                    android:checkable="true"/>
                 <item
                     android:id="@+id/menu_merged"
                     android:icon="@drawable/ic_merged"

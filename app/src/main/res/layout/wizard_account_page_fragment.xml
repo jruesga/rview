@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View"/>
+        <variable name="model" type="com.ruesga.rview.wizards.AccountPageFragment.Model"/>
+        <variable name="handlers" type="com.ruesga.rview.wizards.AccountPageFragment.EventHandlers"/>
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.ruesga.rview.ui.FixedSizeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxWidth="@dimen/wizard_max_content_width"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="48dp"
+            android:layout_marginRight="48dp"
+            android:layout_marginEnd="48dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.message}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/secondary_text_light"/>
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/access_mode_switcher_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:clickable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:onClick="@{handlers::onClickPressed}">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                            android:textColor="@android:color/secondary_text_light"
+                            android:text="@{model.authenticatedAccess ? @string/account_wizard_account_page_authenticated_access : @string/account_wizard_account_page_anonymous_access}"/>
+
+                        <android.support.v7.widget.SwitchCompat
+                            android:id="@+id/access_mode_switcher"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="@{model.authenticatedAccess}"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/account_authentication_hint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:visibility="@{model.authenticatedAccess ? View.VISIBLE : View.GONE}"
+                        android:text="@string/account_wizard_account_page_authenticated_access_hint"/>
+                </LinearLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/account_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:visibility="@{model.authenticatedAccess ? View.VISIBLE : View.GONE}"
+                    app:errorTextAppearance="@style/AppTheme.WizardErrorTextAppearance"
+                    app:errorEnabled="true">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/account_username_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:text="@={model.username}"
+                        android:inputType="textNoSuggestions"
+                        android:hint="@string/account_wizard_account_page_username">
+                    </android.support.design.widget.TextInputEditText>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/account_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{model.authenticatedAccess ? View.VISIBLE : View.GONE}"
+                    app:errorTextAppearance="@style/AppTheme.WizardErrorTextAppearance"
+                    app:errorEnabled="true">
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/account_password_edit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:text="@={model.password}"
+                        android:inputType="textPassword"
+                        android:hint="@string/account_wizard_account_page_password"/>
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+        </com.ruesga.rview.ui.FixedSizeLayout>
+    </ScrollView>
+</layout>

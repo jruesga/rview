@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2016 Jorge Ruesga
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'com.android.model.library'
+
+def libraries = rootProject.ext.libraries;
+
+dependencies {
+    compile "com.android.support:support-v4:${libraries.support}"
+    compile "com.android.support:appcompat-v7:${libraries.support}"
+    compile "com.android.support:cardview-v7:${libraries.support}"
+    compile "com.android.support:design:${libraries.support}"
+    compile "io.reactivex:rxjava:${libraries.rxjava}"
+    compile "io.reactivex:rxandroid:${libraries.rxandroid}"
+    compile "com.airbnb:rxgroups-android:0.3.5"
+    compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
+}
+
+model {
+    android {
+        defaultConfig {
+            consumerProguardFiles.add(file('proguard-consumer.txt'))
+        }
+    }
+
+    android.dataBinding {
+        //noinspection GroovyAssignabilityCheck
+        enabled true
+    }
+}

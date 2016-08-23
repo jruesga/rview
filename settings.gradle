@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-include ':gerrit', ':app'
+include ':gerrit', ':wizard', ':app'

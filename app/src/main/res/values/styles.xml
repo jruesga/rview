@@ -27,6 +27,11 @@
     </style>
 
     <style name="AppTheme.DrawerMenu" parent="AppTheme">
-        <item name="colorPrimary">@color/textSelection</item>
+        <item name="colorPrimary">@color/accent</item>
+    </style>
+
+    <style name="AppTheme.WizardErrorTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/accent</item>
     </style>
 </resources>

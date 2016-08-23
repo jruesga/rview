@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<resources>
+    <string name="validator_field_required">Field required</string>
+    <string name="validator_invalid_web_url">Invalid Web url</string>
+    <string name="validator_invalid_text_length">Invalid text length</string>
+
+    <string name="chooser_no_data">No data</string>
+    <string name="chooser_failed_to_fetch_data">Failed to fetch data</string>
+</resources>

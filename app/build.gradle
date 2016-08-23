@@ -17,13 +17,19 @@
 apply plugin: 'com.android.model.application'
 apply plugin: 'org.bitbucket.pvoid.android-apt'
 
+def libraries = rootProject.ext.libraries;
+
 dependencies {
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
-    compile 'com.jakewharton:butterknife:8.2.1'
-    apt 'com.jakewharton:butterknife-compiler:8.2.1'
     compile project(':gerrit')
+    compile project(':wizard')
+    compile "com.android.support:support-v4:${libraries.support}"
+    compile "com.android.support:appcompat-v7:${libraries.support}"
+    compile "com.android.support:design:${libraries.support}"
+    compile "com.android.support:customtabs:${libraries.support}"
+    compile "com.jakewharton:butterknife:${libraries.butterknife}"
+    apt     "com.jakewharton:butterknife-compiler:${libraries.butterknife}"
+    compile "io.reactivex:rxjava:${libraries.rxjava}"
+    compile "io.reactivex:rxandroid:${libraries.rxandroid}"
 }
 
 model {
@@ -55,6 +61,11 @@ model {
                 }
             }
         }
+    }
+
+    android.dataBinding {
+        //noinspection GroovyAssignabilityCheck
+        enabled true
     }
 
     android.signingConfigs {

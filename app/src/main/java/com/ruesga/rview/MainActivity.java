@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,12 +33,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.wizards.SetupAccountActivity;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int INVALID_ITEM = -1;
+
+    private static final int REQUEST_WIZARD = 1;
 
     private static final int MESSAGE_NAVIGATE_TO = 0;
 
@@ -67,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        launchAddGerritAccountIfNeeded();
         mUiHandler = new Handler(mMessenger);
 
         onRestoreInstanceState(savedInstanceState);
@@ -92,6 +100,23 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putBoolean("navbar_expanded", mAccountExpanded);
         outState.putInt("navbar_current_item", mCurrentNavigationItemId);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_WIZARD) {
+            if (resultCode == RESULT_OK) {
+                // Load and choose the new account
+                Account account = data.getParcelableExtra(SetupAccountActivity.EXTRA_ACCOUNT);
+System.out.println(account);
+                // TODO Save the account and refresh the activity
+            } else {
+                // TODO If we don't have account, then close the activity.
+                // Otherwise, do nothing
+                finish();
+            }
+        }
     }
 
     private void setupToolbar() {
@@ -198,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
             default:
                 if (item.getGroupId() == R.id.category_other_accounts) {
-                    // Choose account
+                    // TODO Choose account
                 } else {
                     // Filter
                     if (getSupportActionBar() != null) {
@@ -213,5 +238,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Hide account info
         performShowAccount(false);
+    }
+
+    private boolean launchAddGerritAccountIfNeeded() {
+        // TODO check if there any defined account
+        Intent i = new Intent(this, SetupAccountActivity.class);
+        startActivityForResult(i, REQUEST_WIZARD);
+        return true;
     }
 }

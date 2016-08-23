@@ -111,7 +111,7 @@ public class GerritApiClientTest {
     private static final String ENDPOINT = "https://gerrit-review.googlesource.com/";
     private static final String TEST_ENDPOINT = "http://localhost/";
 
-    private static PlatformAbstractionLayer mAbstractionLayer = new PlatformAbstractionLayer() {
+    private static final PlatformAbstractionLayer TEST_PLATFORM = new PlatformAbstractionLayer() {
         @Override
         public boolean isDebugBuild() {
             return true;
@@ -136,10 +136,15 @@ public class GerritApiClientTest {
             }
             return null;
         }
+
+        @Override
+        public boolean hasConnectivity() {
+            return true;
+        }
     };
 
     private static GerritApiClient getGerritClient(String endPoint) {
-        return GerritApiClient.getInstance(endPoint, mAbstractionLayer);
+        return new GerritApiClient(endPoint, null, TEST_PLATFORM);
     }
 
     // ===============================
@@ -1008,7 +1013,7 @@ public class GerritApiClientTest {
         final GerritApiClient client = getGerritClient(ENDPOINT);
         ServerVersion version = client.getServerVersion().toBlocking().first();
         assertNotNull(version);
-        assertTrue(version.getVersion() >= GerritApi.VERSION);
+        assertTrue(version.getVersion() >= GerritApi.API_VERSION);
     }
 
     @Test
