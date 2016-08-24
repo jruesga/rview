@@ -74,7 +74,7 @@ public class Account implements Parcelable, Comparable<Account> {
     }
 
     public String getAccountHash() {
-        String hashId = mRepository.mUrl + "-" + mAccount.accountId;
+        String hashId = mRepository.mName + "-" + mRepository.mUrl + "-" + mAccount.accountId;
         return Base64.encodeToString(hashId.getBytes(), Base64.NO_WRAP);
     }
 
