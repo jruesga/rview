@@ -1,0 +1,5 @@
+-dontwarn android.support.v4.app.NotificationCompatBase
+-dontwarn com.google.gson.*
+-dontwarn retrofit2.*
+-dontwarn okio.*
+-dontwarn rx.internal.util.unsafe.*
