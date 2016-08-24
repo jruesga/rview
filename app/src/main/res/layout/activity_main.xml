@@ -36,14 +36,14 @@
              app:model="@{model}"
              app:handlers="@{handlers}" />
 
-        <android.support.design.widget.NavigationView
+        <com.ruesga.rview.drawer.NavigationView
             android:id="@+id/drawer_navigation_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:theme="@style/AppTheme.DrawerMenu"
             app:menu="@menu/drawer">
-        </android.support.design.widget.NavigationView>
+        </com.ruesga.rview.drawer.NavigationView>
 
     </android.support.v4.widget.DrawerLayout>
 </layout>

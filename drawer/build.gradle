@@ -14,4 +14,20 @@
  * limitations under the License.
  */
 
-include ':gerrit', ':wizard', ':drawer', ':app'
+apply plugin: 'com.android.model.library'
+
+def libraries = rootProject.ext.libraries;
+
+dependencies {
+    compile "com.android.support:support-v4:${libraries.support}"
+    compile "com.android.support:appcompat-v7:${libraries.support}"
+    compile "com.android.support:design:${libraries.support}"
+}
+
+model {
+    android {
+        defaultConfig {
+            consumerProguardFiles.add(file('proguard-consumer.txt'))
+        }
+    }
+}

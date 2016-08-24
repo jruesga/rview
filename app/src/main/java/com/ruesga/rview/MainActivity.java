@@ -24,7 +24,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +34,7 @@ import android.view.View;
 
 import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
+import com.ruesga.rview.drawer.NavigationView;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
@@ -185,10 +185,12 @@ mModel.accountRepository = "CyanogenMod";
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
-                    this, mBinding.drawerLayout, mBinding.pageContentLayout.toolbar, 0, 0);
-            mBinding.drawerLayout.addDrawerListener(drawerToggle);
-            drawerToggle.syncState();
+            if (mBinding.drawerLayout != null) {
+                ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
+                        this, mBinding.drawerLayout, mBinding.pageContentLayout.toolbar, 0, 0);
+                mBinding.drawerLayout.addDrawerListener(drawerToggle);
+                drawerToggle.syncState();
+            }
         }
     }
 
@@ -248,8 +250,10 @@ mModel.accountRepository = "CyanogenMod";
         final boolean navigate = performSelectItem(itemId, false);
 
         // Close the drawer
-        if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+        if (mBinding.drawerLayout != null) {
+            if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                mBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+            }
         }
 
         if (navigate) {
