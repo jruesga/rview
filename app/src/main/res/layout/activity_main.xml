@@ -14,26 +14,36 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<android.support.v4.widget.DrawerLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <include layout="@layout/content" />
+    <data>
+        <variable name="model" type="com.ruesga.rview.MainActivity.Model" />
+        <variable name="handlers" type="com.ruesga.rview.MainActivity.EventHandlers" />
+    </data>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/drawer_navigation_view"
-        android:layout_width="wrap_content"
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:theme="@style/AppTheme.DrawerMenu"
-        app:headerLayout="@layout/navigation_header"
-        app:menu="@menu/drawer">
-    </android.support.design.widget.NavigationView>
+        android:fitsSystemWindows="true"
+        tools:context=".MainActivity">
 
-</android.support.v4.widget.DrawerLayout>
+        <include layout="@layout/content"
+            android:id="@+id/page_content_layout"
+             app:model="@{model}"
+             app:handlers="@{handlers}" />
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/drawer_navigation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:theme="@style/AppTheme.DrawerMenu"
+            app:menu="@menu/drawer">
+        </android.support.design.widget.NavigationView>
+
+    </android.support.v4.widget.DrawerLayout>
+</layout>

@@ -47,6 +47,9 @@
     <string name="exception_no_network_available">No network connectivity detected</string>
     <string name="exception_invalid_user_password">Invalid user or password</string>
 
+    <!-- Accounts -->
+    <string name="account_anonymous_coward">Anonymous Coward</string>
+
 
     <!-- Account wizard -->
     <!-- TRANSLATORS: The word 'Rviewer' is inferred from app name. DO NOT TRANSLATE IT! -->

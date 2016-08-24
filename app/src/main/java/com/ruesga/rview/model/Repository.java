@@ -17,10 +17,11 @@ package com.ruesga.rview.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Repository implements Parcelable {
+public class Repository implements Parcelable, Comparable<Repository> {
     @SerializedName("name") public String mName;
     @SerializedName("url") public String mUrl;
 
@@ -55,5 +56,14 @@ public class Repository implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(mName);
         parcel.writeString(mUrl);
+    }
+
+    @Override
+    public int compareTo(@NonNull Repository repository) {
+        int compare = mName.compareTo(repository.mName);
+        if (compare == 0) {
+            compare = mUrl.compareTo(repository.mUrl);
+        }
+        return compare;
     }
 }

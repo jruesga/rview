@@ -30,18 +30,17 @@ dependencies {
     compile "com.squareup.okio:okio:${libraries.okio}"
     // Because of bug https://code.google.com/p/android/issues/detail?id=70073,
     // we forked the original repository (version 1.6) to don't need to force
-    // to apps to set allowBackup = true. TODO check if this is fixed in the futute
-    // and we can change to the original library
+    // to apps to set allowBackup = true.
+    // TODO check if this is fixed in the futute and we can change to the original library
     //compile "com.burgstaller:okhttp-digest:${libraries.okhttp_digest}@aar"
-    compile "com.github.jruesga:okhttp-digest:3cc8b6412f@aar"
+    compile "com.github.jruesga:okhttp-digest:${libraries.okhttp_digest}@aar"
     compile "io.reactivex:rxjava:${libraries.rxjava}"
-    compile "io.reactivex:rxandroid:${libraries.rxandroid}"
 
     testCompile "junit:junit:${testLibraries.junit}"
     testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
     testCompile "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
     testCompile "org.mockito:mockito-core:${testLibraries.mockito}"
-    testCompile "net.iharder:base64:${libraries.iharder_base64}"
+    testCompile "net.iharder:base64:2.3.9"
 }
 
 model {

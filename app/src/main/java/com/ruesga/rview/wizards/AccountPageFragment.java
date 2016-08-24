@@ -45,6 +45,7 @@ import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.NoConnectivityException;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.wizard.WizardActivity;
@@ -260,14 +261,22 @@ public class AccountPageFragment extends WizardPageFragment {
         if (mModel.wasConfirmed) {
             return null;
         }
-        if (!mModel.authenticatedAccess) {
-            return null;
-        }
 
         // Check if the url passed is a valid Gerrit endpoint
         return new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
+                if (!mModel.authenticatedAccess) {
+                    String anonymousCowardName = getAnonymousCowardName();
+                    if (anonymousCowardName == null) {
+                        anonymousCowardName = getString(R.string.account_anonymous_coward);
+                    }
+                    mModel.accountInfo = new AccountInfo();
+                    mModel.accountInfo.accountId = -1;
+                    mModel.accountInfo.name = anonymousCowardName;
+                    return true;
+                }
+
                 try {
                     // Check if the activity is attached
                     if (getActivity() == null) {
@@ -289,6 +298,19 @@ public class AccountPageFragment extends WizardPageFragment {
         GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
         mModel.accountInfo = client.getAccount(GerritApi.SELF_ACCOUNT).toBlocking().first();
         return mModel.accountInfo != null;
+    }
+
+    private String getAnonymousCowardName() {
+        try {
+            Context ctx = getActivity().getApplicationContext();
+            Authorization authorization = new Authorization(mModel.username, mModel.password);
+            GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
+            ServerInfo serverInfo = client.getServerInfo().toBlocking().first();
+            return serverInfo.user.anonymousCowardName;
+        } catch (Exception ex) {
+            Log.w(TAG, "Gerrit repository doesn't provided server configuration.");
+        }
+        return null;
     }
 
     private void postUpdateErrorMessage(final Exception cause) {

@@ -71,7 +71,7 @@
                         android:layout_marginStart="16dp"
                         android:layout_gravity="bottom"
                         android:src="@drawable/ic_more_vertical"
-                        android:background="?attr/selectableItemBackground"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:visibility="@{!workflow.isInProgress &amp;&amp; workflow.hasPageOptionsMenu ? View.VISIBLE : View.GONE}"
                         android:onClick="@{handlers::onPageOptionsMenuPressed}"
                         android:contentDescription="@null"/>

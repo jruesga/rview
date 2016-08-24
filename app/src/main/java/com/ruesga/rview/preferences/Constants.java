@@ -20,4 +20,10 @@ public class Constants {
      * The minimal server version supported.
      */
     public static final double MINIMAL_SUPPORTED_VERSION = 2.11d;
+
+
+    // --- Preference Keys
+    public static final String PREF_IS_FIRST_RUN = "first_run";
+    public static final String PREF_ACCOUNT = "account";
+    public static final String PREF_ACCOUNTS = "accounts";
 }

@@ -17,12 +17,14 @@ package com.ruesga.rview.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.SerializationManager;
 
-public class Account implements Parcelable {
+public class Account implements Parcelable, Comparable<Account> {
     @SerializedName("repo") public Repository mRepository;
     @SerializedName("account") public AccountInfo mAccount;
     @SerializedName("token") public String mToken;
@@ -33,7 +35,29 @@ public class Account implements Parcelable {
     protected Account(Parcel in) {
         mRepository = SerializationManager.getInstance().fromJson(in.readString(), Repository.class);
         mAccount = SerializationManager.getInstance().fromJson(in.readString(), AccountInfo.class);
-        mToken = in.readString();
+        if (in.readInt() == 1) {
+            mToken = in.readString();
+        }
+    }
+
+    public String getAccountDisplayName() {
+        if (!TextUtils.isEmpty(mAccount.name)) {
+            return mAccount.name;
+        }
+        if (!TextUtils.isEmpty(mAccount.username)) {
+            return mAccount.username;
+        }
+        if (!TextUtils.isEmpty(mAccount.email)) {
+            return mAccount.email;
+        }
+        return String.valueOf(mAccount.accountId);
+    }
+
+    public String getRepositoryDisplayName() {
+        if (!TextUtils.isEmpty(mRepository.mName)) {
+            return mRepository.mName;
+        }
+        return mRepository.mUrl;
     }
 
     public static final Creator<Account> CREATOR = new Creator<Account>() {
@@ -57,6 +81,26 @@ public class Account implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(SerializationManager.getInstance().toJson(mRepository));
         parcel.writeString(SerializationManager.getInstance().toJson(mAccount));
-        parcel.writeString(mToken);
+        parcel.writeInt(mToken != null ? 1 : 0);
+        if (mToken != null) {
+            parcel.writeString(mToken);
+        }
+    }
+
+    @Override
+    public int compareTo(@NonNull Account account) {
+        int compare = mRepository.compareTo(mRepository);
+        if (compare == 0) {
+            if (mAccount == null && account.mAccount == null) {
+                return 0;
+            } else if (mAccount != null && account.mAccount != null) {
+                compare = mAccount.username.compareTo(account.mAccount.username);
+            } else if (mAccount == null) {
+                compare = 1;
+            } else {
+                compare = -1;
+            }
+        }
+        return compare;
     }
 }

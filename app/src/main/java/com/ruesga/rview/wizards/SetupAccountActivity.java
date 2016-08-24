@@ -24,6 +24,7 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.Repository;
+import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizard.WizardActivity;
 
 public class SetupAccountActivity extends WizardActivity {
@@ -38,10 +39,14 @@ public class SetupAccountActivity extends WizardActivity {
     @Override
     @SuppressWarnings("unchecked")
     public void setupPages() {
-        addPage(WelcomePageFragment.class);
+        if (Preferences.isFirstRun(this)) {
+            addPage(WelcomePageFragment.class);
+        }
         addPage(RepositoryPageFragment.class);
         addPage(AccountPageFragment.class);
-        addPage(ConfirmationPageFragment.class);
+        if (Preferences.isFirstRun(this)) {
+            addPage(ConfirmationPageFragment.class);
+        }
     }
 
     @Override
@@ -51,12 +56,13 @@ public class SetupAccountActivity extends WizardActivity {
         String repoUrl = savedState.getString(RepositoryPageFragment.STATE_REPO_URL);
         String accountUsername;
         String accountPassword = null;
-        AccountInfo accountInfo = null;
-        if (savedState.getBoolean(AccountPageFragment.STATE_ACCOUNT_ACCESS_MODE)) {
+        boolean authenticatedMode = savedState.getBoolean(
+                AccountPageFragment.STATE_ACCOUNT_ACCESS_MODE);
+        AccountInfo accountInfo = SerializationManager.getInstance().fromJson(
+                savedState.getString(AccountPageFragment.STATE_ACCOUNT_INFO), AccountInfo.class);
+        if (authenticatedMode) {
             accountUsername = savedState.getString(AccountPageFragment.STATE_ACCOUNT_USERNAME);
             accountPassword = savedState.getString(AccountPageFragment.STATE_ACCOUNT_PASSWORD);
-            accountInfo = SerializationManager.getInstance().fromJson(
-                    savedState.getString(AccountPageFragment.STATE_ACCOUNT_INFO), AccountInfo.class);
             if (accountInfo.username == null) {
                 accountInfo.username = accountUsername;
             }
@@ -65,10 +71,13 @@ public class SetupAccountActivity extends WizardActivity {
         // Create the account
         Account account = new Account();
         account.mRepository = new Repository(repoName, repoUrl);
-        if (accountInfo != null) {
-            account.mAccount = accountInfo;
+        account.mAccount = accountInfo;
+        if (authenticatedMode) {
             account.mToken = accountPassword;
         }
+
+        // We have an account, so assume that we ended the "first run" experience
+        Preferences.setFirstRun(this);
 
         // Send the information of the new account
         Intent intent = new Intent();
