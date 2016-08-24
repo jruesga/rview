@@ -335,7 +335,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(i, REQUEST_WIZARD);
                 break;
 
+            case R.id.menu_dashboard:
+                break;
+
             default:
+                // Other accounts group?
                 if (item.getGroupId() == R.id.category_other_accounts) {
                     int accountIndex = item.getItemId() - OTHER_ACCOUNTS_GROUP_BASE_ID;
                     Account account = mAccounts.get(accountIndex);
@@ -344,16 +348,14 @@ public class MainActivity extends AppCompatActivity {
                         performAccountSwitch();
                     }
                     return;
-                } else if (item.getGroupId() == R.id.category_all ||
-                        item.getGroupId() == R.id.category_my_menu) {
-//                    // Filter
-//                    if (getSupportActionBar() != null) {
-//                        getSupportActionBar().setTitle(item.getTitle());
-//                        getSupportActionBar().setSubtitle("status:open");
-//                    }
-//
-//                    // Navigate to filter fragment
                 }
+
+                // Is a filter menu?
+                String filter = getQueryFilterExpressionFromMenuItemOrder(item.getOrder());
+                if (filter != null) {
+                    openFilterFragment(item.getTitle(), filter);
+                }
+
                 break;
         }
 
@@ -471,6 +473,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void openFilterFragment(CharSequence title, String filter) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+            getSupportActionBar().setSubtitle(filter);
+        }
+
+        // FIXME Open filter fragment
+    }
+
     private boolean launchAddAccountIfNeeded() {
         if (mAccount == null) {
             Intent i = new Intent(this, SetupAccountActivity.class);
@@ -482,5 +493,18 @@ public class MainActivity extends AppCompatActivity {
 
     private String sanitizeSubmenuText(String title) {
         return title.replaceAll(NavigationMenuItemView.SEPARATOR_REGEXP, "_");
+    }
+
+    private String getQueryFilterExpressionFromMenuItemOrder(int order) {
+        int[] orders = getResources().getIntArray(R.array.query_filters_orders);
+        String[] filters = getResources().getStringArray(R.array.query_filters_values);
+
+        int count = orders.length;
+        for (int i = 0; i < count; i++) {
+            if (orders[i] == order) {
+                return filters[i];
+            }
+        }
+        return null;
     }
 }
