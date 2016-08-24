@@ -40,13 +40,17 @@ public class Preferences {
         return context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
     }
 
+    private static SharedPreferences getAccountPreferences(Context context, Account account) {
+        return context.getSharedPreferences(account.getAccountHash(), Context.MODE_PRIVATE);
+    }
+
     public static boolean isFirstRun(Context context) {
         return getPreferences(context).getBoolean(PREF_IS_FIRST_RUN, true);
     }
 
     public static void setFirstRun(Context context) {
         Editor editor = getPreferences(context).edit();
-        editor.putBoolean(PREF_IS_FIRST_RUN, true);
+        editor.putBoolean(PREF_IS_FIRST_RUN, false);
         editor.apply();
     }
 
@@ -59,10 +63,14 @@ public class Preferences {
         return gson.fromJson(value, Account.class);
     }
 
-    public static void setAccount(Context context, @NonNull Account account) {
+    public static void setAccount(Context context, Account account) {
         final Gson gson = SerializationManager.getInstance();
         Editor editor = getPreferences(context).edit();
-        editor.putString(PREF_ACCOUNT, gson.toJson(account));
+        if (account != null) {
+            editor.putString(PREF_ACCOUNT, gson.toJson(account));
+        } else {
+            editor.remove(PREF_ACCOUNT);
+        }
         editor.apply();
     }
 
@@ -79,17 +87,19 @@ public class Preferences {
         return accounts;
     }
 
-    public static void addAccount(Context context, @NonNull Account account) {
+    public static List<Account> addAccount(Context context, @NonNull Account account) {
         List<Account> accounts = getAccounts(context);
         accounts.add(account);
         saveAccounts(context, accounts);
+        return accounts;
     }
 
-    public static void removeAccount(Context context, @NonNull Account account) {
+    public static List<Account>  removeAccount(Context context, @NonNull Account account) {
         final Gson gson = SerializationManager.getInstance();
         List<Account> accounts = getAccounts(context);
         accounts.remove(account);
         saveAccounts(context, accounts);
+        return accounts;
     }
 
     private static void saveAccounts(Context context, List<Account> accounts) {
@@ -101,6 +111,12 @@ public class Preferences {
 
         Editor editor = getPreferences(context).edit();
         editor.putStringSet(PREF_ACCOUNTS, set);
+        editor.apply();
+    }
+
+    public static void removeAccountPreferences(Context context, Account account) {
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.clear();
         editor.apply();
     }
 }

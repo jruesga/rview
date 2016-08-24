@@ -25,8 +25,7 @@ ext {
         rxjava              : '1.1.8',
         rxandroid           : '1.2.1',
         rxgroups            : '0.3.5',
-        iharder_base64      : '2.3.9',
-        smoothprogressbar   : '1.1.0'
+        commons_io          : '1.3.2',
     ]
 
     testLibraries = [

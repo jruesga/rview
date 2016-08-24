@@ -22,6 +22,7 @@
     <string name="action_previous">Previous</string>
     <string name="action_next">Next</string>
     <string name="action_done">Done</string>
+    <string name="action_delete">Delete</string>
     <string name="action_let_start">Let\u0027s start</string>
 
     <!-- Menu options -->
@@ -47,14 +48,23 @@
     <string name="exception_no_network_available">No network connectivity detected</string>
     <string name="exception_invalid_user_password">Invalid user or password</string>
 
+    <!-- Validators -->
+    <string name="validator_account_exists">Account exists</string>
+
     <!-- Accounts -->
     <string name="account_anonymous_coward">Anonymous Coward</string>
-
+    <string name="account_deletion_title">Account deletion</string>
+    <string name="account_deletion_message">This action will delete the account and all its information.</string>
+    <string name="account_deletion_confirm_message">Account deleted</string>
+    <string name="account_account_not_exists">Account not exists</string>
+    <string name="account_account_exists">Account exists</string>
 
     <!-- Account wizard -->
     <!-- TRANSLATORS: The word 'Rviewer' is inferred from app name. DO NOT TRANSLATE IT! -->
     <string name="account_wizard_welcome_page_title">Welcome \u0022Rviewer\u0022</string>
-    <string name="account_wizard_welcome_page_message">We know your are willing to start reviewing changes, but first you need to setup a Gerrit repository.\n\nIt will take just a few seconds and we will assist you in the process.</string>
+    <string name="account_wizard_welcome_page_message">We know your are willing to start reviewing changes, but first you need to setup a Gerrit repository account.\n\nIt will take just a few seconds and we will assist you in the process.</string>
+    <string name="account_wizard_account_setup_page_title">Account setup</string>
+    <string name="account_wizard_account_setup_page_message">This wizard will lead you in the setup of a new Gerrit repository account.\n\nIt will take just a few seconds.</string>
     <string name="account_wizard_repository_page_title">Repository</string>
     <string name="account_wizard_repository_page_message1">Introduce the name and location of the Gerrit repository.</string>
     <string name="account_wizard_repository_page_message2">Or choose between some <xliff:g id="link" example="predefined">%1$s</xliff:g> repositories.</string>
@@ -90,5 +100,7 @@
     <string name="account_wizard_confirmation_page_title">Well done!</string>
     <!-- TRANSLATORS: The word 'Rviewing' is inferred from app name. DO NOT TRANSLATE IT! -->
     <string name="account_wizard_confirmation_page_message">Great! Your account is ready and you can start reviewing changes in &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; right now.&lt;br /&gt;&lt;br /&gt;&lt;b&gt;Happy \u0022Rviewing\u0022!&lt;/b&gt;</string>
+    <string name="account_wizard_account_ready_page_title">Account ready</string>
+    <string name="account_wizard_account_ready_page_message">Your account is ready and you can start reviewing changes in &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; right now.</string>
     <string name="account_wizard_repositories_chooser_title">Choose a repository</string>
 </resources>

@@ -19,6 +19,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -54,12 +55,15 @@ public class ConfirmationPageFragment extends WizardPageFragment {
         mBinding.unbind();
     }
 
+    protected @StringRes int getMessageResourceId() {
+        return R.string.account_wizard_confirmation_page_message;
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public void restoreState(Context context, Bundle savedState) {
         mModel.message = Html.fromHtml(context.getString(
-                R.string.account_wizard_confirmation_page_message,
-                savedState.getString(STATE_REPO_NAME)));
+                getMessageResourceId(), savedState.getString(STATE_REPO_NAME)));
         if (mBinding != null) {
             mBinding.setModel(mModel);
         }

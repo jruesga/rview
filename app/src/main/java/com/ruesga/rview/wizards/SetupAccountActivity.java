@@ -39,14 +39,11 @@ public class SetupAccountActivity extends WizardActivity {
     @Override
     @SuppressWarnings("unchecked")
     public void setupPages() {
-        if (Preferences.isFirstRun(this)) {
-            addPage(WelcomePageFragment.class);
-        }
+        final boolean isFirstRun = Preferences.isFirstRun(this);
+        addPage(isFirstRun ? WelcomePageFragment.class : AccountSetupPageFragment.class);
         addPage(RepositoryPageFragment.class);
         addPage(AccountPageFragment.class);
-        if (Preferences.isFirstRun(this)) {
-            addPage(ConfirmationPageFragment.class);
-        }
+        addPage(isFirstRun ? ConfirmationPageFragment.class : AccountReadyPageFragment.class);
     }
 
     @Override

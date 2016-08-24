@@ -13,7 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.exceptions;
+package com.ruesga.rview.wizards;
 
-public class UnsupportedServerVersionException extends Exception {
+import android.support.annotation.StringRes;
+
+import com.ruesga.rview.R;
+
+public class AccountReadyPageFragment extends ConfirmationPageFragment {
+
+    @Override
+    public int getPageTitle() {
+        return R.string.account_wizard_account_ready_page_title;
+    }
+
+    @Override
+    protected @StringRes int getMessageResourceId() {
+        return R.string.account_wizard_account_ready_page_message;
+    }
 }

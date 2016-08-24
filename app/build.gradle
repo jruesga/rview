@@ -30,6 +30,7 @@ dependencies {
     compile "io.reactivex:rxjava:${libraries.rxjava}"
     compile "io.reactivex:rxandroid:${libraries.rxandroid}"
     compile "com.airbnb:rxgroups-android:${libraries.rxgroups}"
+    compile "org.apache.commons:commons-io:${libraries.commons_io}"
 }
 
 model {

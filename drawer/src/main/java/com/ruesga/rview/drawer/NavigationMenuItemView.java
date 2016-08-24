@@ -46,7 +46,8 @@ import android.widget.TextView;
 @SuppressLint("PrivateResource")
 public class NavigationMenuItemView extends ForegroundLinearLayout implements MenuView.ItemView {
 
-    public static final String SEPARATOR = "\\|";
+    public static final String SEPARATOR = "|";
+    public static final String SEPARATOR_REGEXP = "\\|";
 
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
 
@@ -199,14 +200,20 @@ public class NavigationMenuItemView extends ForegroundLinearLayout implements Me
         // Callers must guarantee the sanity of the title string. This is a bad hack  :(, but
         // allow us to display the information we want on screen.
         if (!TextUtils.isEmpty(title)) {
-            String[] v = title.toString().split(SEPARATOR);
+            String[] v = title.toString().split(SEPARATOR_REGEXP);
+
+            // Title
             mTextTitle.setText(v[0]);
+
+            // Summary
             if (v.length >= 2 && !TextUtils.isEmpty(v[1])) {
                 mTextSummary.setText(v[1]);
                 mTextSummary.setVisibility(View.VISIBLE);
             } else {
                 mTextSummary.setVisibility(View.GONE);
             }
+
+            // Notifications
             if (v.length >= 3 && !TextUtils.isEmpty(v[2])) {
                 Integer notifications = null;
                 try {
@@ -219,11 +226,11 @@ public class NavigationMenuItemView extends ForegroundLinearLayout implements Me
                             ? "+99" : String.valueOf(notifications));
                     mNotifications.setVisibility(View.VISIBLE);
                 } else {
-                    mTextSummary.setVisibility(View.GONE);
+                    mNotifications.setVisibility(View.GONE);
                 }
 
             } else {
-                mTextSummary.setVisibility(View.GONE);
+                mNotifications.setVisibility(View.GONE);
             }
             return;
         }

@@ -19,12 +19,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.google.gson.annotations.SerializedName;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.SerializationManager;
 
 public class Account implements Parcelable, Comparable<Account> {
+    public static final int ANONYMOUS_ACCOUNT_ID = -1;
+
     @SerializedName("repo") public Repository mRepository;
     @SerializedName("account") public AccountInfo mAccount;
     @SerializedName("token") public String mToken;
@@ -58,6 +61,21 @@ public class Account implements Parcelable, Comparable<Account> {
             return mRepository.mName;
         }
         return mRepository.mUrl;
+    }
+
+    public boolean hasAuthenticatedAccessMode() {
+        return mAccount.accountId != ANONYMOUS_ACCOUNT_ID;
+    }
+
+    public boolean isSameAs(Account account) {
+        return mRepository.mName.equals(account.mRepository.mName)
+                && mRepository.mUrl.equals(account.mRepository.mUrl)
+                && mAccount.accountId == account.mAccount.accountId;
+    }
+
+    public String getAccountHash() {
+        String hashId = mRepository.mUrl + "-" + mAccount.accountId;
+        return Base64.encodeToString(hashId.getBytes(), Base64.NO_WRAP);
     }
 
     public static final Creator<Account> CREATOR = new Creator<Account>() {
@@ -94,7 +112,10 @@ public class Account implements Parcelable, Comparable<Account> {
             if (mAccount == null && account.mAccount == null) {
                 return 0;
             } else if (mAccount != null && account.mAccount != null) {
-                compare = mAccount.username.compareTo(account.mAccount.username);
+                compare = getRepositoryDisplayName().compareTo(account.getRepositoryDisplayName());
+                if (compare == 0) {
+                    compare = getAccountDisplayName().compareTo(account.getAccountDisplayName());
+                }
             } else if (mAccount == null) {
                 compare = 1;
             } else {

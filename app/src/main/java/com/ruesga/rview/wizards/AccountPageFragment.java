@@ -48,6 +48,7 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.model.Account;
 import com.ruesga.rview.wizard.WizardActivity;
 import com.ruesga.rview.wizard.WizardPageFragment;
 import com.ruesga.rview.wizard.misc.TextChangedWatcher;
@@ -149,6 +150,11 @@ public class AccountPageFragment extends WizardPageFragment {
                 mModel.wasConfirmed = false;
             }
         });
+
+        // Check validators (to ensure all them will be cleaned)
+        if (!mModel.authenticatedAccess) {
+            triggerAllValidators(null);
+        }
 
         return mBinding.getRoot();
     }
@@ -272,7 +278,7 @@ public class AccountPageFragment extends WizardPageFragment {
                         anonymousCowardName = getString(R.string.account_anonymous_coward);
                     }
                     mModel.accountInfo = new AccountInfo();
-                    mModel.accountInfo.accountId = -1;
+                    mModel.accountInfo.accountId = Account.ANONYMOUS_ACCOUNT_ID;
                     mModel.accountInfo.name = anonymousCowardName;
                     return true;
                 }

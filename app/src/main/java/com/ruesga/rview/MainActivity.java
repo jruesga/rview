@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -24,20 +25,30 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.internal.NavigationMenu;
+import android.support.design.internal.NavigationSubMenu;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 
 import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
+import com.ruesga.rview.drawer.NavigationMenuItemView;
 import com.ruesga.rview.drawer.NavigationView;
+import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_WIZARD = 1;
 
     private static final int MESSAGE_NAVIGATE_TO = 0;
+    private static final int MESSAGE_DELETE_ACCOUNT = 1;
+
+    private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 100;
+
+    private static final int DEFAULT_MENU = R.id.menu_open;
 
     public static class Model implements Parcelable {
         public String accountName;
@@ -89,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    @SuppressWarnings("UnusedParameters")
     public static class EventHandlers {
         private final MainActivity mActivity;
 
@@ -108,6 +125,10 @@ public class MainActivity extends AppCompatActivity {
                 performNavigateTo();
                 return true;
             }
+            if (message.what == MESSAGE_DELETE_ACCOUNT) {
+                performDeleteAccount();
+                return true;
+            }
             return false;
         }
     };
@@ -118,13 +139,15 @@ public class MainActivity extends AppCompatActivity {
     private Model mModel;
     private final EventHandlers mEventHandlers = new EventHandlers(this);
 
+    private Account mAccount;
+    private List<Account> mAccounts;
+
     private Handler mUiHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        launchAddGerritAccountIfNeeded();
         mUiHandler = new Handler(mMessenger);
 
         onRestoreInstanceState(savedInstanceState);
@@ -133,17 +156,21 @@ public class MainActivity extends AppCompatActivity {
         if (mModel == null) {
             mModel = new Model();
         }
-// FIXME Remove
-mModel.accountName = "Anonymous Coward";
-mModel.accountRepository = "CyanogenMod";
 
+        loadAccounts();
+        launchAddAccountIfNeeded();
         setupToolbar();
-        setupNavigationHeader();
+        setupNavigationDrawer();
 
         mBinding.setModel(mModel);
         mBinding.setHandlers(mEventHandlers);
         mHeaderDrawerBinding.setModel(mModel);
         mHeaderDrawerBinding.setHandlers(mEventHandlers);
+
+
+        // Navigate to current item
+        requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
+                ? DEFAULT_MENU : mModel.currentNavigationItemId);
     }
 
     @Override
@@ -166,10 +193,28 @@ mModel.accountRepository = "CyanogenMod";
         if (requestCode == REQUEST_WIZARD) {
             if (resultCode == RESULT_OK) {
                 // Save the account
-                Account account = data.getParcelableExtra(SetupAccountActivity.EXTRA_ACCOUNT);
-                Preferences.addAccount(this, account);
-                Preferences.setAccount(this, account);
-                selectAccount(account);
+                Account newAccount = data.getParcelableExtra(SetupAccountActivity.EXTRA_ACCOUNT);
+                boolean accountExists = false;
+                for (Account account : mAccounts) {
+                    // Current account
+                    if (account.isSameAs(newAccount)) {
+                        accountExists = true;
+                        break;
+                    }
+                }
+
+                if (!accountExists) {
+                    mAccount = newAccount;
+                    mAccounts = Preferences.addAccount(this, mAccount);
+                    Preferences.setAccount(this, mAccount);
+                    CacheHelper.createAccountCacheDir(this, mAccount);
+                } else {
+                    AndroidHelper.showWarningSnackbar(this, mBinding.pageContentLayout.getRoot(),
+                            R.string.account_account_exists);
+                }
+
+                // Switch to the new account
+                performAccountSwitch();
             } else {
                 // If we don't have account, then close the activity.
                 // Otherwise, do nothing
@@ -178,6 +223,11 @@ mModel.accountRepository = "CyanogenMod";
                 }
             }
         }
+    }
+
+    private void loadAccounts() {
+        mAccount = Preferences.getAccount(this);
+        mAccounts = Preferences.getAccounts(this);
     }
 
     private void setupToolbar() {
@@ -194,7 +244,7 @@ mModel.accountRepository = "CyanogenMod";
         }
     }
 
-    private void setupNavigationHeader() {
+    private void setupNavigationDrawer() {
         // Bind the header, in code rather than in layout so we can have access to
         // binding variables
         mHeaderDrawerBinding = DataBindingUtil.inflate(LayoutInflater.from(this),
@@ -211,14 +261,19 @@ mModel.accountRepository = "CyanogenMod";
                 return true;
             }
         });
-        requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
-                ? R.id.menu_open : mModel.currentNavigationItemId);
+
+        // Update the accounts and current account information
+        if (mAccount != null) {
+            updateCurrentAccountDrawerInfo();
+            updateAccountsDrawerInfo();
+        }
     }
 
     private void performShowAccount(boolean show) {
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
-        menu.setGroupVisible(R.id.category_my_menu, !show);
+        menu.setGroupVisible(R.id.category_my_menu, !show &&
+                (mAccount != null && mAccount.hasAuthenticatedAccessMode()));
         menu.setGroupVisible(R.id.category_my_account, show);
         menu.setGroupVisible(R.id.category_other_accounts, show);
         mModel.isAccountExpanded = show;
@@ -270,8 +325,10 @@ mModel.accountRepository = "CyanogenMod";
 
         switch (item.getItemId()) {
             case R.id.menu_account_settings:
+                openAccountSettings();
                 break;
             case R.id.menu_delete_account:
+                requestAccountDeletion();
                 break;
             case R.id.menu_add_account:
                 Intent i = new Intent(this, SetupAccountActivity.class);
@@ -280,15 +337,22 @@ mModel.accountRepository = "CyanogenMod";
 
             default:
                 if (item.getGroupId() == R.id.category_other_accounts) {
-                    // TODO Choose account
-                } else {
-                    // Filter
-                    if (getSupportActionBar() != null) {
-                        getSupportActionBar().setTitle(item.getTitle());
-                        getSupportActionBar().setSubtitle("status:open");
+                    int accountIndex = item.getItemId() - OTHER_ACCOUNTS_GROUP_BASE_ID;
+                    Account account = mAccounts.get(accountIndex);
+                    if (account != null) {
+                        mAccount = account;
+                        performAccountSwitch();
                     }
-
-                    // Navigate to filter fragment
+                    return;
+                } else if (item.getGroupId() == R.id.category_all ||
+                        item.getGroupId() == R.id.category_my_menu) {
+//                    // Filter
+//                    if (getSupportActionBar() != null) {
+//                        getSupportActionBar().setTitle(item.getTitle());
+//                        getSupportActionBar().setSubtitle("status:open");
+//                    }
+//
+//                    // Navigate to filter fragment
                 }
                 break;
         }
@@ -297,19 +361,126 @@ mModel.accountRepository = "CyanogenMod";
         performShowAccount(false);
     }
 
-    private void selectAccount(Account account) {
-        mModel.accountName = account.getAccountDisplayName();
-        mModel.accountRepository = account.getRepositoryDisplayName();
+    private void updateAccountsDrawerInfo() {
+        // Remove all accounts and re-add them
+        final NavigationMenu menu = (NavigationMenu) mBinding.drawerNavigationView.getMenu();
+        int otherAccountGroupIndex = menu.findGroupIndex(R.id.category_other_accounts);
+        MenuItem group = menu.getItem(otherAccountGroupIndex);
+        SubMenu otherAccountsSubMenu = group.getSubMenu();
+        int count = otherAccountsSubMenu.size() - 1;
+        for (int i = count; i > 0; i--) {
+            ((NavigationSubMenu) otherAccountsSubMenu).removeItemAt(i);
+        }
+        int i = 0;
+        for (Account account : mAccounts) {
+            // Current account
+            if (mAccount.isSameAs(account)) {
+                i++;
+                continue;
+            }
+
+            int id = OTHER_ACCOUNTS_GROUP_BASE_ID + i;
+            String title = sanitizeSubmenuText(account.getAccountDisplayName())
+                    + NavigationMenuItemView.SEPARATOR
+                    + sanitizeSubmenuText(account.getRepositoryDisplayName());
+            MenuItem item = otherAccountsSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
+            item.setIcon(R.drawable.ic_account_circle);
+            i++;
+        }
+    }
+
+    private void updateCurrentAccountDrawerInfo() {
+        mModel.accountName = mAccount.getAccountDisplayName();
+        mModel.accountRepository = mAccount.getRepositoryDisplayName();
         mHeaderDrawerBinding.setModel(mModel);
     }
 
-    private boolean launchAddGerritAccountIfNeeded() {
-// FIXME Uncomment
-//        if (Preferences.getAccount(this) == null) {
-//            Intent i = new Intent(this, SetupAccountActivity.class);
-//            startActivityForResult(i, REQUEST_WIZARD);
-//            return true;
-//        }
+    private void performAccountSwitch() {
+        // Check that we are in a valid status before update the ui
+        if (mAccount == null) {
+            if (mAccounts.size() == 0) {
+                return;
+            }
+
+            // Use the first one account
+            mAccount = mAccounts.get(0);
+        }
+
+        // Refresh the ui
+        updateCurrentAccountDrawerInfo();
+        updateAccountsDrawerInfo();
+
+        // And navigate to the default menu
+        requestNavigateTo(DEFAULT_MENU);
+    }
+
+    private void requestAccountDeletion() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.account_deletion_title)
+                .setMessage(R.string.account_deletion_message)
+                .setPositiveButton(R.string.action_delete, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Message.obtain(mUiHandler, MESSAGE_DELETE_ACCOUNT).sendToTarget();
+                    }
+                })
+                .create();
+        dialog.show();
+    }
+
+    private void performDeleteAccount() {
+        // Remove the account
+        boolean accountDeleted = false;
+        int count = mAccounts.size();
+        for (int i = 0; i < count; i++) {
+            Account account = mAccounts.get(i);
+            if (account.isSameAs(mAccount)) {
+                accountDeleted = true;
+                mAccounts.remove(i);
+                break;
+            }
+        }
+
+        if (!accountDeleted) {
+            AndroidHelper.showErrorSnackbar(this,
+                    mBinding.pageContentLayout.getRoot(),
+                    R.string.account_deletion_confirm_message);
+            return;
+        }
+
+        // Remove the account
+        Preferences.removeAccount(this, mAccount);
+        Preferences.setAccount(this, null);
+        Preferences.removeAccountPreferences(this, mAccount);
+        CacheHelper.removeAccountCacheDir(this, mAccount);
+        mAccount = null;
+
+        // Show message
+        Snackbar.make(mBinding.pageContentLayout.getRoot(),
+                R.string.account_deletion_confirm_message, Snackbar.LENGTH_SHORT).show();
+
+        performAccountSwitch();
+
+        // Have any account? No, then launch setup account wizard
+        launchAddAccountIfNeeded();
+    }
+
+    private void openAccountSettings() {
+        if (mAccount != null) {
+            // FIXME Open account settings activity
+        }
+    }
+
+    private boolean launchAddAccountIfNeeded() {
+        if (mAccount == null) {
+            Intent i = new Intent(this, SetupAccountActivity.class);
+            startActivityForResult(i, REQUEST_WIZARD);
+            return true;
+        }
         return false;
+    }
+
+    private String sanitizeSubmenuText(String title) {
+        return title.replaceAll(NavigationMenuItemView.SEPARATOR_REGEXP, "_");
     }
 }

@@ -20,8 +20,12 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
 import android.widget.Toast;
 
 import com.ruesga.rview.R;
@@ -54,4 +58,19 @@ public class AndroidHelper {
         }
     }
 
+    public static void showErrorSnackbar(Context context, @NonNull View parent,
+            @StringRes int message) {
+        Snackbar snackbar =  Snackbar.make(parent, message, Snackbar.LENGTH_LONG);
+        View v = snackbar.getView();
+        v.setBackgroundColor(ContextCompat.getColor(context, R.color.accent));
+        snackbar.show();
+    }
+
+    public static void showWarningSnackbar(Context context, @NonNull View parent,
+            @StringRes int message) {
+        Snackbar snackbar =  Snackbar.make(parent, message, Snackbar.LENGTH_LONG);
+        View v = snackbar.getView();
+        v.setBackgroundColor(ContextCompat.getColor(context, R.color.alert));
+        snackbar.show();
+    }
 }

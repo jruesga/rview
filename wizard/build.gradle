@@ -26,7 +26,7 @@ dependencies {
     compile "io.reactivex:rxjava:${libraries.rxjava}"
     compile "io.reactivex:rxandroid:${libraries.rxandroid}"
     compile "com.airbnb:rxgroups-android:${libraries.rxgroups}"
-    compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
+    compile "com.github.castorflex.smoothprogressbar:library:1.1.0"
 }
 
 model {

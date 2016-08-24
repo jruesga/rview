@@ -82,7 +82,8 @@
         android:id="@+id/category_other_accounts"
         android:checkableBehavior="none">
         <item android:title="@string/menu_other_accounts_category">
-            <menu>
+            <menu
+                android:id="@+id/category_other_accounts_group">
                 <item
                     android:id="@+id/menu_add_account"
                     android:icon="@drawable/ic_add_circle_outline"

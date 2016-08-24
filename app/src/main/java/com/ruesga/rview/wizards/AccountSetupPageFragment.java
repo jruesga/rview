@@ -13,7 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.exceptions;
+package com.ruesga.rview.wizards;
 
-public class UnsupportedServerVersionException extends Exception {
+import com.ruesga.rview.R;
+
+public class AccountSetupPageFragment extends WelcomePageFragment {
+    @Override
+    public int getPageTitle() {
+        return R.string.account_wizard_account_setup_page_title;
+    }
+
+    @Override
+    public int getPageLayout() {
+        return R.layout.wizard_account_setup_page_fragment;
+    }
 }

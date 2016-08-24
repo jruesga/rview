@@ -22,21 +22,37 @@ import android.widget.CompoundButton;
 public class DependencyValidator implements Validator {
 
     private final CompoundButton mView;
-    private final Validator mValidator;
+    private final Validator[] mValidators;
+    private int mFailed = -1;
 
-    public DependencyValidator(CompoundButton v, Validator validator) {
+    public DependencyValidator(CompoundButton v, Validator... validators) {
         mView = v;
-        mValidator = validator;
+        mValidators = validators;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean validate(View v) {
-        return !mView.isChecked() || mValidator.validate(v);
+        mFailed = -1;
+        if (!mView.isChecked()) {
+            return true;
+        }
+        int i = 0;
+        for (Validator validator : mValidators) {
+            if (!validator.validate(v)) {
+                mFailed = i;
+                return false;
+            }
+            i++;
+        }
+        return true;
     }
 
     @Override
     public String getMessage() {
-        return mValidator.getMessage().toString();
+        if (mFailed == -1) {
+            return null;
+        }
+        return mValidators[mFailed].getMessage().toString();
     }
 }
