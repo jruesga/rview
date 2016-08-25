@@ -25,7 +25,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.ruesga.rview.ui.FixedSizeLayout
+        <com.ruesga.rview.widget.FixedSizeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxWidth="@dimen/wizard_max_content_width"
@@ -93,6 +93,6 @@
 
             </LinearLayout>
 
-        </com.ruesga.rview.ui.FixedSizeLayout>
+        </com.ruesga.rview.widget.FixedSizeLayout>
     </ScrollView>
 </layout>

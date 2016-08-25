@@ -18,6 +18,6 @@
     <color name="primary">#05668d</color>
     <color name="primaryDark">#044c69</color>
     <color name="accent">#8d2205</color>
-    <color name="alert">#ffd600</color>
+    <color name="alert">#fbc02d</color>
     <color name="textDisabledColor">#e0e0e0</color>
 </resources>

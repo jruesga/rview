@@ -34,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.WizardRepositoryPageFragmentBinding;
 import com.ruesga.rview.exceptions.NoActivityAttachedException;
 import com.ruesga.rview.exceptions.UnsupportedServerVersionException;
@@ -65,6 +66,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
     public static final String STATE_REPO_URL = "repo.url";
     private static final String STATE_REPO_CONFIRMED_URL = "repo.confirmed.url";
 
+    @ProguardIgnored
     public static class Model {
         public String name;
         public String url;

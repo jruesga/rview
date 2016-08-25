@@ -19,13 +19,12 @@
 
     <data>
         <import type="android.view.View" />
-        <variable name="model" type="com.ruesga.rview.wizard.choosers.ListChooserFragment.Model" />
+        <variable name="model" type="com.ruesga.rview.fragments.ChangesFragment.Model" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="16dp">
+        android:layout_height="match_parent">
         <android.support.v7.widget.RecyclerView
             android:id="@android:id/list"
             android:layout_width="match_parent"
@@ -43,5 +42,4 @@
             android:textColor="@android:color/secondary_text_light"
             android:text="@string/chooser_no_data"/>
     </FrameLayout>
-
 </layout>

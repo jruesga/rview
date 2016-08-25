@@ -51,6 +51,7 @@ import com.airbnb.rxgroups.GroupLifecycleManager;
 import com.airbnb.rxgroups.ObservableGroup;
 import com.airbnb.rxgroups.ObservableManager;
 import com.airbnb.rxgroups.ResubscriptionObserver;
+import com.ruesga.rview.wizard.annotations.ProguardIgnored;
 import com.ruesga.rview.wizard.databinding.ActivityWizardBinding;
 
 import java.util.ArrayList;
@@ -66,6 +67,7 @@ import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 public abstract class WizardActivity extends AppCompatActivity {
 
+    @ProguardIgnored
     public static class WizardWorkflow {
         public String title;
         public boolean hasBack;
@@ -95,6 +97,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         }
     }
 
+    @ProguardIgnored
     public static class WorkFlowHandlers {
         private final WizardActivity mActivity;
 

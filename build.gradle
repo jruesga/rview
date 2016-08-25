@@ -57,17 +57,17 @@ subprojects {
         model {
             android {
                 compileSdkVersion 24
-                buildToolsVersion '24.0.1'
+                buildToolsVersion '24.0.2'
 
                 defaultConfig {
                     minSdkVersion.apiLevel = 16
                     targetSdkVersion.apiLevel = 24
                 }
-            }
 
-            compileOptions.with {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                compileOptions.with {
+                    sourceCompatibility = JavaVersion.VERSION_1_7
+                    targetCompatibility = JavaVersion.VERSION_1_7
+                }
             }
         }
     }

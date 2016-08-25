@@ -30,7 +30,9 @@
 
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            tools:ignore="UnusedAttribute">
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -38,17 +40,33 @@
                 android:layout_height="?attr/actionBarSize"
                 android:minHeight="?attr/actionBarSize"
                 android:background="?attr/colorPrimaryDark"
-                android:elevation="4dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                tools:ignore="UnusedAttribute" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+            <!--<android.support.design.widget.TabLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="?attr/colorPrimaryDark"-->
+                <!--app:tabTextColor="@android:color/white"-->
+                <!--app:tabSelectedTextColor="@android:color/white"-->
+                <!--app:tabIndicatorColor="@android:color/white"-->
+                <!--app:tabIndicatorHeight="6dp"/>-->
+
         </android.support.design.widget.AppBarLayout>
 
-        <FrameLayout
-            android:id="@android:id/content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <!--<android.support.v4.widget.SwipeRefreshLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
 
-    </android.support.design.widget.CoordinatorLayout>
+            <FrameLayout
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <!--</android.support.v4.widget.SwipeRefreshLayout>-->
+
+</android.support.design.widget.CoordinatorLayout>
 
 </layout>

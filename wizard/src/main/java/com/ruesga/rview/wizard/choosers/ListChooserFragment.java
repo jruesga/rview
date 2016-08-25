@@ -34,6 +34,7 @@ import com.airbnb.rxgroups.ResubscriptionObserver;
 import com.ruesga.rview.wizard.R;
 import com.ruesga.rview.wizard.WizardActivity;
 import com.ruesga.rview.wizard.WizardChooserFragment;
+import com.ruesga.rview.wizard.annotations.ProguardIgnored;
 import com.ruesga.rview.wizard.databinding.ListChooserBinding;
 import com.ruesga.rview.wizard.databinding.ListChooserItemBinding;
 
@@ -57,15 +58,18 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         }
     }
 
+    @ProguardIgnored
     public static class ItemModel {
         public String title;
         public String summary;
     }
 
-    public static class Workflow {
+    @ProguardIgnored
+    public static class Model {
         public boolean hasData = true;
     }
 
+    @ProguardIgnored
     public static class ItemEventHandlers {
         ListChooserFragment mFragment;
 
@@ -73,7 +77,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
             mFragment = fragment;
         }
 
-        public void onActionPressed(View view) {
+        public void onItemPressed(View view) {
             ItemModel item = (ItemModel) view.getTag();
             mFragment.onItemClick(item);
         }
@@ -127,8 +131,8 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         public void onError(Throwable e) {
             mAdapter.clear();
             mAdapter.notifyDataSetChanged();
-            mWorkflow.hasData = false;
-            mBinding.setWorkflow(mWorkflow);
+            mModel.hasData = false;
+            mBinding.setModel(mModel);
             ((WizardActivity)getActivity()).showMessage(
                     getString(R.string.chooser_failed_to_fetch_data));
 
@@ -139,8 +143,8 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
             mAdapter.clear();
             mAdapter.addAll(result);
             mAdapter.notifyDataSetChanged();
-            mWorkflow.hasData = result != null && !result.isEmpty();
-            mBinding.setWorkflow(mWorkflow);
+            mModel.hasData = result != null && !result.isEmpty();
+            mBinding.setModel(mModel);
         }
 
         @Override
@@ -153,7 +157,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     private ObservableGroup mObservableGroup;
 
     private ListChooserBinding mBinding;
-    private Workflow mWorkflow = new Workflow();
+    private Model mModel = new Model();
 
     private ListAdapter mAdapter;
     private ItemModel mSelectedItem;
@@ -174,7 +178,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.list_chooser, container, false);
-        mBinding.setWorkflow(mWorkflow);
+        mBinding.setModel(mModel);
         return mBinding.getRoot();
     }
 

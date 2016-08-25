@@ -38,10 +38,12 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 
+import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
 import com.ruesga.rview.drawer.NavigationMenuItemView;
 import com.ruesga.rview.drawer.NavigationView;
+import com.ruesga.rview.fragments.ChangesFragment;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.model.Account;
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int DEFAULT_MENU = R.id.menu_open;
 
+    @ProguardIgnored
     public static class Model implements Parcelable {
         public String accountName;
         public String accountRepository;
@@ -106,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("UnusedParameters")
+    @ProguardIgnored
     public static class EventHandlers {
         private final MainActivity mActivity;
 
@@ -319,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
     private void performNavigateTo() {
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         final MenuItem item = menu.findItem(mModel.currentNavigationItemId);
-        if (item == null) {
+        if (item == null || mAccount == null) {
             return;
         }
 
@@ -474,12 +478,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openFilterFragment(CharSequence title, String filter) {
+        // Setup the title
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
             getSupportActionBar().setSubtitle(filter);
         }
 
-        // FIXME Open filter fragment
+        // Open the filter fragment
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, ChangesFragment.newInstance(filter))
+                .commit();
     }
 
     private boolean launchAddAccountIfNeeded() {

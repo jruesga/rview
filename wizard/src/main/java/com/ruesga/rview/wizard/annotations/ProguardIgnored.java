@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview;
+package com.ruesga.rview.wizard.annotations;
 
-import android.app.Application;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.airbnb.rxgroups.ObservableManager;
-
-public class RviewApplication extends Application {
-    private final ObservableManager mObservableManager = new ObservableManager();
-
-    @Override public void onCreate() {
-        super.onCreate();
-    }
-
-    public ObservableManager observableManager() {
-        return mObservableManager;
-    }
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.TYPE})
+public @interface ProguardIgnored {
 }

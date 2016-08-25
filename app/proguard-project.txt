@@ -3,3 +3,5 @@
 -dontwarn retrofit2.*
 -dontwarn okio.*
 -dontwarn rx.internal.util.unsafe.*
+
+-keep @com.ruesga.rview.annotations.ProguardIgnored public class *

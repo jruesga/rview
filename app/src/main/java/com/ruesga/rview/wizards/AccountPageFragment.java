@@ -38,6 +38,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.WizardAccountPageFragmentBinding;
 import com.ruesga.rview.exceptions.NoActivityAttachedException;
 import com.ruesga.rview.gerrit.Authorization;
@@ -74,6 +75,7 @@ public class AccountPageFragment extends WizardPageFragment {
     private static final String STATE_REPO_NAME = "repo.name";
     private static final String STATE_REPO_URL = "repo.url";
 
+    @ProguardIgnored
     public static class Model {
         public Spanned message;
         public String username;
@@ -84,16 +86,17 @@ public class AccountPageFragment extends WizardPageFragment {
         private boolean wasConfirmed;
     }
 
+    @ProguardIgnored
     public static class EventHandlers {
-        AccountPageFragment mActivity;
-        public EventHandlers(AccountPageFragment activity) {
-            mActivity = activity;
+        AccountPageFragment mFragment;
+        public EventHandlers(AccountPageFragment fragment) {
+            mFragment = fragment;
         }
 
         public void onClickPressed(View view) {
             if (view.getId() == R.id.access_mode_switcher_layout) {
-                mActivity.mBinding.accessModeSwitcher.setChecked(
-                        !mActivity.mBinding.accessModeSwitcher.isChecked());
+                mFragment.mBinding.accessModeSwitcher.setChecked(
+                        !mFragment.mBinding.accessModeSwitcher.isChecked());
             }
         }
     }

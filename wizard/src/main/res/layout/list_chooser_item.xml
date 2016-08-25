@@ -35,7 +35,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:orientation="vertical"
-        android:onClick="@{handlers::onActionPressed}"
+        android:onClick="@{handlers::onItemPressed}"
         android:background="?attr/selectableItemBackground">
         <TextView
             android:id="@android:id/title"

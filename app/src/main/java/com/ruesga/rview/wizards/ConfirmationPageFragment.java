@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.WizardConfirmationPageFragmentBinding;
 import com.ruesga.rview.wizard.WizardPageFragment;
 
@@ -34,6 +35,7 @@ public class ConfirmationPageFragment extends WizardPageFragment {
 
     private static final String STATE_REPO_NAME = "repo.name";
 
+    @ProguardIgnored
     public static class Model {
         public Spanned message;
     }

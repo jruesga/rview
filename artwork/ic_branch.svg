@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+    <path d="m 7.3850635575,1.171875 c -1.9129469265,0 -3.4843749976,1.57142807 -3.484375,3.484375 0.0000000019,1.4947643496 0.9647126587,2.7688373088 2.296875,3.259765625 l 0,8.333984375 c -1.3162597347,0.499223605 -2.2656249981,1.76668429 -2.265625,3.25 0.0000000024,1.91294693 1.5714280735,3.484375 3.484375,3.484375 1.9129469227,0 3.4843749905,-1.57142807 3.4843749925,-3.484375 -0.000000002,-1.506212989 -0.9800414454,-2.787153689 -2.3281249925,-3.26953125 l 0,-4.0859375 0,-2.375 0,-1.853515625 C 9.9047258916,7.4250873088 10.869438548,6.1510143496 10.86943855,4.65625 c -0.00000002,-1.91294693 -1.5714280698,-3.484375 -3.4843749925,-3.484375 z m 0,2 c 0.8320666974,0 1.4843749984,0.6523083 1.4843749994,1.484375 -0.00000001,0.8320667 -0.652308302,1.484375 -1.4843749994,1.484375 -0.8320666974,0 -1.484374999,-0.6523083 -1.484375,-1.484375 0.00000001,-0.8320667 0.6523083026,-1.484375 1.484375,-1.484375 z m 0.03125,14.84375 c 0.8320666974,0 1.4843749981,0.6523083 1.4843749991,1.484375 -0.00000001,0.8320667 -0.6523083017,1.484375 -1.4843749991,1.484375 -0.8320666974,0 -1.484374999,-0.6523083 -1.484375,-1.484375 0.00000001,-0.8320667 0.6523083026,-1.484375 1.484375,-1.484375 z" />
+    <path style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+          d="m 18.197007174,5.8043163229 a 2.4851434231,2.4851434231 0 0 1 -2.485143423,2.485143423 2.4851434231,2.4851434231 0 0 1 -2.485143423,-2.485143423 2.4851434231,2.4851434231 0 0 1 2.485143423,-2.485143423 2.4851434231,2.4851434231 0 0 1 2.485143423,2.485143423 z" />
+    <path style="fill:none;stroke:#000000;stroke-width:2.375;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+          d="m 6.2033898338,13.863347459 9.5084745812,0 0,-6.305084755" />
+</svg>
