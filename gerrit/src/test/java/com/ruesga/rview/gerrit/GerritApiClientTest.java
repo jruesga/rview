@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.rview.gerrit;
+package com.ruesga.rview.gerrit;
 
-import com.ruesga.rview.gerrit.GerritApi;
-import com.ruesga.rview.gerrit.GerritApiClient;
-import com.ruesga.rview.gerrit.PlatformAbstractionLayer;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.filter.StatusType;
 import com.ruesga.rview.gerrit.model.AbandonInput;
+import com.ruesga.rview.gerrit.model.AccountCapabilityInfo;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AccountInput;
@@ -33,7 +31,6 @@ import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerStatus;
 import com.ruesga.rview.gerrit.model.Base64Data;
 import com.ruesga.rview.gerrit.model.Capability;
-import com.ruesga.rview.gerrit.model.AccountCapabilityInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeOptions;

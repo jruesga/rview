@@ -46,7 +46,7 @@ public abstract class Query {
         return "\"" + val.trim().replace("\"", "\"\"") + "\"";
     }
 
-    public static SimpleDateFormat getTimeFormatter() {
+    static SimpleDateFormat getTimeFormatter() {
         if (sTimeFormatter == null) {
             sTimeFormatter = new SimpleDateFormat("'\"'yyyy-MM-dd HH:mm:ss.SSS Z'\"'", Locale.US);
             sTimeFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));

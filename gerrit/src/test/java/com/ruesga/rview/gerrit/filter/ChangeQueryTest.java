@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.rview.gerrit.filter;
+package com.ruesga.rview.gerrit.filter;
 
-import com.ruesga.rview.gerrit.filter.ChangeQuery;
-import com.ruesga.rview.gerrit.filter.Relation;
-import com.ruesga.rview.gerrit.filter.StatusType;
-import com.ruesga.rview.gerrit.filter.TimeUnit;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 
 import org.junit.Test;
