@@ -15,6 +15,16 @@
  */
 package com.ruesga.rview.misc;
 
+import android.content.Context;
+import android.support.annotation.StringRes;
+import android.util.Log;
+
+import com.ruesga.rview.R;
+import com.ruesga.rview.exceptions.IllegalQueryExpressionException;
+import com.ruesga.rview.gerrit.NoConnectivityException;
+
+import retrofit2.adapter.rxjava.HttpException;
+
 public class ExceptionHelper {
     public static <T extends Exception> boolean isException(Throwable cause, Class<T> c) {
         if (cause.getCause() != null) {
@@ -23,5 +33,38 @@ public class ExceptionHelper {
             }
         }
         return c.isInstance(cause);
+    }
+
+    public static @StringRes int exceptionToMessage(Context context, String tag, Throwable cause) {
+        int message;
+        if (cause instanceof HttpException) {
+            final int code = ((HttpException) cause).code();
+            switch (code) {
+                case 400: //Bad request
+                    message = R.string.exception_invalid_request;
+                    break;
+                case 403: //Forbidden
+                    message = R.string.exception_insufficient_permissions;
+                    break;
+                case 404: //Not found
+                    message = R.string.exception_not_found;
+                    break;
+                default:
+                    message = R.string.exception_bad_request;
+                    break;
+            }
+        } else if (cause instanceof NoConnectivityException) {
+            message = R.string.exception_no_network_available;
+
+        } else if (cause instanceof IllegalQueryExpressionException) {
+            message = R.string.exception_invalid_request;
+
+        } else {
+            message = R.string.exception_request_error;
+        }
+
+        // Log an return the translated message
+        Log.e(tag, context.getString(message), cause);
+        return message;
     }
 }

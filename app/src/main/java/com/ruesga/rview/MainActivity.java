@@ -25,6 +25,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.internal.NavigationMenu;
 import android.support.design.internal.NavigationSubMenu;
 import android.support.design.widget.Snackbar;
@@ -38,6 +39,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 
+import com.airbnb.rxgroups.ObservableManager;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
@@ -46,13 +48,14 @@ import com.ruesga.rview.drawer.NavigationView;
 import com.ruesga.rview.fragments.ChangesFragment;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FragmentObservable {
 
     private static final int INVALID_ITEM = -1;
 
@@ -213,8 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     Preferences.setAccount(this, mAccount);
                     CacheHelper.createAccountCacheDir(this, mAccount);
                 } else {
-                    AndroidHelper.showWarningSnackbar(this, mBinding.pageContentLayout.getRoot(),
-                            R.string.account_account_exists);
+                    showWarning(R.string.account_exists);
                 }
 
                 // Switch to the new account
@@ -227,6 +229,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    public ObservableManager getObservableManager() {
+        return ((RviewApplication) getApplication()).observableManager();
+    }
+
+    @Override
+    public void handleException(String tag, Throwable cause) {
+        showError(ExceptionHelper.exceptionToMessage(this, tag, cause));
     }
 
     private void loadAccounts() {
@@ -448,9 +460,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!accountDeleted) {
-            AndroidHelper.showErrorSnackbar(this,
-                    mBinding.pageContentLayout.getRoot(),
-                    R.string.account_deletion_confirm_message);
+            showError(R.string.account_deletion_confirm_message);
             return;
         }
 
@@ -515,5 +525,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return null;
+    }
+
+    private void showError(@StringRes int message) {
+        AndroidHelper.showErrorSnackbar(this, mBinding.pageContentLayout.getRoot(), message);
+    }
+
+    private void showWarning(@StringRes int message) {
+        AndroidHelper.showWarningSnackbar(this, mBinding.pageContentLayout.getRoot(), message);
     }
 }

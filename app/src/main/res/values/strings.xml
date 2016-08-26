@@ -47,6 +47,11 @@
     <string name="exception_invalid_endpoint">Endpoint is not a gerrit instance</string>
     <string name="exception_no_network_available">No network connectivity detected</string>
     <string name="exception_invalid_user_password">Invalid user or password</string>
+    <string name="exception_invalid_request">Invalid request</string>
+    <string name="exception_insufficient_permissions">Insufficient permissions</string>
+    <string name="exception_not_found">Request data not found</string>
+    <string name="exception_bad_request">Bad request</string>
+    <string name="exception_request_error">Request error</string>
 
     <!-- Validators -->
     <string name="validator_account_exists">Account exists</string>
@@ -57,7 +62,7 @@
     <string name="account_deletion_message">This action will delete the account and all its information.</string>
     <string name="account_deletion_confirm_message">Account deleted</string>
     <string name="account_account_not_exists">Account not exists</string>
-    <string name="account_account_exists">Account exists</string>
+    <string name="account_exists">Account exists</string>
 
     <!-- Account wizard -->
     <!-- TRANSLATORS: The word 'Rviewer' is inferred from app name. DO NOT TRANSLATE IT! -->

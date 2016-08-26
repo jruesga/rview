@@ -13,7 +13,7 @@
 // limitations under the License.
 package com.ruesga.rview.gerrit.filter.antlr;
 
-public class QueryParseException extends Exception {
+public class QueryParseException extends IllegalArgumentException {
     public QueryParseException(final String message) {
         super(message);
     }

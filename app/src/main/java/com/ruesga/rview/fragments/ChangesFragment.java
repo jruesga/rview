@@ -31,31 +31,29 @@ import com.airbnb.rxgroups.GroupLifecycleManager;
 import com.airbnb.rxgroups.ObservableGroup;
 import com.airbnb.rxgroups.ObservableManager;
 import com.airbnb.rxgroups.ResubscriptionObserver;
+import com.ruesga.rview.FragmentObservable;
 import com.ruesga.rview.R;
-import com.ruesga.rview.RviewApplication;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangesFragmentBinding;
 import com.ruesga.rview.databinding.ChangesItemBinding;
 import com.ruesga.rview.gerrit.GerritApi;
-import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
-import com.ruesga.rview.gerrit.filter.StatusType;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
-import com.ruesga.rview.model.Account;
-import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.widget.DividerItemDecoration;
-import com.ruesga.rview.wizard.WizardActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class ChangesFragment extends Fragment {
+
+    private static final String TAG = "ChangesFragment";
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         private final ChangesItemBinding mBinding;
@@ -133,9 +131,9 @@ public class ChangesFragment extends Fragment {
 
         @Override
         public void onError(Throwable e) {
-            e.printStackTrace();
             mModel.hasData = false;
             mBinding.setModel(mModel);
+            ((FragmentObservable) getActivity()).handleException(TAG, e);
         }
 
         @Override
@@ -151,6 +149,8 @@ public class ChangesFragment extends Fragment {
             return getClass().getSimpleName();
         }
     };
+
+    private static final String EXTRA_FILTER = "filter";
 
     private GroupLifecycleManager mGroupLifecycleManager;
     private ObservableGroup mObservableGroup;
@@ -197,8 +197,7 @@ public class ChangesFragment extends Fragment {
         mBinding.list.setAdapter(mAdapter);
 
         // Configure RxGroups to manage rxjava fragment lifecycle
-        ObservableManager manager =
-                ((RviewApplication) getActivity().getApplication()).observableManager();
+        ObservableManager manager = ((FragmentObservable) getActivity()).getObservableManager();
         mGroupLifecycleManager = GroupLifecycleManager.onCreate(manager,
                 savedInstanceState, this);
         mObservableGroup = mGroupLifecycleManager.group();
@@ -216,15 +215,27 @@ public class ChangesFragment extends Fragment {
 
     @SuppressWarnings("ConstantConditions")
     private void fetchChanges() {
-        final Context ctx = getActivity().getApplicationContext();
-        Account account = Preferences.getAccount(ctx);
-        GerritApi api = GerritServiceFactory.getInstance(ctx, account.mRepository.mUrl);
-ChangeQuery query = new ChangeQuery().status(StatusType.OPEN);
-        Observable<List<ChangeInfo>> call = api.getChanges(query, 50, 0, new ChangeOptions[]{ChangeOptions.DETAILED_ACCOUNTS});
+        Observable<String> call = Observable.just(getArguments().getString(EXTRA_FILTER));
         call.subscribeOn(Schedulers.io())
-                .compose(mObservableGroup.<List<ChangeInfo>>transform(getClass().getSimpleName()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mChangesObserver);
+            .compose(mObservableGroup.<String>transform(getClass().getSimpleName()))
+            .observeOn(Schedulers.io())
+            .flatMap(new Func1<String, Observable<ChangeQuery>>() {
+                @Override
+                public Observable<ChangeQuery> call(String filter) {
+                    return Observable.just(ChangeQuery.parse(filter));
+                }
+            })
+            .flatMap(new Func1<ChangeQuery, Observable<List<ChangeInfo>>>() {
+                @Override
+                public Observable<List<ChangeInfo>> call(ChangeQuery query) {
+                    final Context ctx = getActivity().getApplicationContext();
+                    GerritApi api = ModelHelper.getGerritApi(ctx);
+                    return api.getChanges(query, 50, 0, new ChangeOptions[]{
+                            ChangeOptions.DETAILED_ACCOUNTS});
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(mChangesObserver);
     }
 
     private void onItemClick(ChangeInfo item) {
