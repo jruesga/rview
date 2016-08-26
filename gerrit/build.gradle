@@ -35,6 +35,7 @@ dependencies {
     //compile "com.burgstaller:okhttp-digest:${libraries.okhttp_digest}@aar"
     compile "com.github.jruesga:okhttp-digest:${libraries.okhttp_digest}@aar"
     compile "io.reactivex:rxjava:${libraries.rxjava}"
+    compile "org.antlr:antlr-runtime:${libraries.antlrv3}"
 
     testCompile "junit:junit:${testLibraries.junit}"
     testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"

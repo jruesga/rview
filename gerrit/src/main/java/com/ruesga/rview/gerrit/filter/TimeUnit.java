@@ -17,18 +17,15 @@ package com.ruesga.rview.gerrit.filter;
 
 import java.util.Locale;
 
-public enum Relation {
-    GREATER_OR_EQUALS_THAN(">="), GREATER_THAN(">"), LOWER_OR_EQUALS_THAN("<="),
-    LOWER_THAN("<"), EXACT_EQUALS_THAN("="), EQUALS_THAN("");
+public enum TimeUnit {
+    SECONDS("s"), MINUTES("m"), HOURS("h"), DAYS("d"), WEEKS("w"), MONTHS("mon"), YEARS("y");
 
-    public final String mRelation;
-    Relation(String relation) {
-        mRelation = relation;
+    public final String mUnit;
+    TimeUnit(String unit) {
+        mUnit = unit;
     }
 
     public String toQuery(int value) {
-        String relation = mRelation.equals(EXACT_EQUALS_THAN.mRelation)
-                ? EQUALS_THAN.mRelation : mRelation;
-        return String.format(Locale.US, "%s%d", relation, value);
+        return String.format(Locale.US, "%d%s", value, mUnit);
     }
 }

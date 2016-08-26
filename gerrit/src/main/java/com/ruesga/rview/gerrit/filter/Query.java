@@ -38,11 +38,15 @@ public abstract class Query {
         mQueries.remove(query);
     }
 
+    void clear() {
+        mQueries.clear();
+    }
+
     String sanitizeValue(String val) {
         return "\"" + val.trim().replace("\"", "\"\"") + "\"";
     }
 
-    SimpleDateFormat getTimeFormatter() {
+    public static SimpleDateFormat getTimeFormatter() {
         if (sTimeFormatter == null) {
             sTimeFormatter = new SimpleDateFormat("'\"'yyyy-MM-dd HH:mm:ss.SSS Z'\"'", Locale.US);
             sTimeFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
