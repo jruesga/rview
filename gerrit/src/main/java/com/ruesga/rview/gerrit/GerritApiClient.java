@@ -33,7 +33,7 @@ import com.ruesga.rview.gerrit.model.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -69,6 +69,7 @@ public class GerritApiClient implements GerritApi {
         // OkHttp client
         OkHttpClient.Builder clientBuilder = OkHttpHelper.getSafeClientBuilder();
         clientBuilder.followRedirects(true)
+                .readTimeout(30000, java.util.concurrent.TimeUnit.MILLISECONDS)
                 .followSslRedirects(true)
                 .addInterceptor(createConnectivityCheckInterceptor())
                 .addInterceptor(createLoggingInterceptor())
