@@ -31,7 +31,6 @@ import com.ruesga.rview.gerrit.filter.GroupQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +41,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.logging.HttpLoggingInterceptor.Logger;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -103,41 +101,30 @@ public class GerritApiClient implements GerritApi {
     }
 
     private HttpLoggingInterceptor createLoggingInterceptor() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new Logger() {
-            @Override
-            public void log(String message) {
-                mAbstractionLayer.log(message);
-            }
-        });
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(mAbstractionLayer::log);
         logging.setLevel(mAbstractionLayer.isDebugBuild()
                 ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.BASIC);
         return logging;
     }
 
     private Interceptor createHeadersInterceptor() {
-        return new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request original = chain.request();
-                Request.Builder requestBuilder = original.newBuilder();
-                if (!mAbstractionLayer.isDebugBuild()) {
-                    requestBuilder.header("Accept", "application/json");
-                }
-                Request request = requestBuilder.build();
-                return chain.proceed(request);
+        return chain -> {
+            Request original = chain.request();
+            Request.Builder requestBuilder = original.newBuilder();
+            if (!mAbstractionLayer.isDebugBuild()) {
+                requestBuilder.header("Accept", "application/json");
             }
+            Request request = requestBuilder.build();
+            return chain.proceed(request);
         };
     }
 
     private Interceptor createConnectivityCheckInterceptor() {
-        return new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                if (!mAbstractionLayer.hasConnectivity()) {
-                    throw new NoConnectivityException();
-                }
-                return chain.proceed(chain.request());
+        return chain -> {
+            if (!mAbstractionLayer.hasConnectivity()) {
+                throw new NoConnectivityException();
             }
+            return chain.proceed(chain.request());
         };
     }
 

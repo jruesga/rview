@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.model.library'
+apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
 
 def libraries = rootProject.ext.libraries;
 
@@ -26,18 +27,16 @@ dependencies {
     compile "io.reactivex:rxjava:${libraries.rxjava}"
     compile "io.reactivex:rxandroid:${libraries.rxandroid}"
     compile "com.airbnb:rxgroups-android:${libraries.rxgroups}"
-    compile "com.github.castorflex.smoothprogressbar:library:1.1.0"
+    compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
 }
 
-model {
-    android {
-        defaultConfig {
-            consumerProguardFiles.add(file('proguard-consumer.txt'))
-        }
+
+android {
+    defaultConfig {
+        consumerProguardFiles file('proguard-consumer.txt')
     }
 
-    android.dataBinding {
-        //noinspection GroovyAssignabilityCheck
-        enabled true
+    dataBinding {
+        enabled = true
     }
 }

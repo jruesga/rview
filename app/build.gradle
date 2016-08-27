@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.model.application'
-apply plugin: 'org.bitbucket.pvoid.android-apt'
+apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 def libraries = rootProject.ext.libraries;
 
 dependencies {
     compile project(':gerrit')
     compile project(':wizard')
-    compile project(':drawer')
+    //compile project(':drawer')
     compile "com.android.support:support-v4:${libraries.support}"
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:design:${libraries.support}"
@@ -31,46 +31,24 @@ dependencies {
     compile "io.reactivex:rxandroid:${libraries.rxandroid}"
     compile "com.airbnb:rxgroups-android:${libraries.rxgroups}"
     compile "org.apache.commons:commons-io:${libraries.commons_io}"
+    compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
 }
 
-model {
-    android {
-        defaultConfig {
-            versionCode 1
-            versionName '0.0.1'
-            vectorDrawables.useSupportLibrary = true
+android {
+    defaultConfig {
+        versionCode 1
+        versionName '0.0.1'
+        vectorDrawables.useSupportLibrary = true
 
-            applicationId = 'com.ruesga.rview'
-        }
-
-        buildTypes {
-            debug {
-                debuggable true
-            }
-            release {
-                debuggable false
-
-                zipAlignEnabled true
-                shrinkResources false
-                minifyEnabled true
-                useProguard true
-
-                proguardFiles.addAll([file('proguard-project.txt')])
-
-                if (rootProject.file('release.properties').exists()) {
-                    signingConfig = $('android.signingConfigs.release-signing-config')
-                }
-            }
-        }
+        applicationId 'com.ruesga.rview'
     }
 
-    android.dataBinding {
-        //noinspection GroovyAssignabilityCheck
-        enabled true
+    dataBinding {
+        enabled = true
     }
 
-    android.signingConfigs {
-        create('release-signing-config') {
+    signingConfigs {
+        release {
             def Properties releaseProps = new Properties()
             releaseProps.load(new FileInputStream(rootProject.file('release.properties')))
 
@@ -81,6 +59,25 @@ model {
             storePassword ksProps['storePass']
             keyPassword ksProps['pass']
             storeType ksProps['storeType']
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+        }
+        release {
+            debuggable false
+
+            zipAlignEnabled true
+            shrinkResources false
+            minifyEnabled true
+            useProguard true
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), file('proguard-project.txt')
+
+            //noinspection GroovyAssignabilityCheck
+            signingConfig signingConfigs.release
         }
     }
 }

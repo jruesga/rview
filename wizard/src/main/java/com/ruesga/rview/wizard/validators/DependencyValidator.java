@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview.wizard.validators;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.CompoundButton;
 

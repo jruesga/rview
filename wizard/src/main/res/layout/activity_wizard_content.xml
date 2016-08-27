@@ -62,8 +62,7 @@
             app:spb_progressiveStart_activated="true"
             app:spb_progressiveStart_speed="1.5"
             app:spb_progressiveStop_speed="3.4"
-            android:visibility="@{workflow.isInProgress ? View.VISIBLE : View.GONE}"
-            tools:ignore="UnusedAttribute"/>
+            android:visibility="@{workflow.isInProgress ? View.VISIBLE : View.INVISIBLE}"/>
 
         <LinearLayout
             android:layout_width="match_parent"

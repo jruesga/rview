@@ -30,12 +30,9 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
@@ -76,6 +73,7 @@ public class AccountPageFragment extends WizardPageFragment {
     private static final String STATE_REPO_URL = "repo.url";
 
     @ProguardIgnored
+    @SuppressWarnings("unused")
     public static class Model {
         public Spanned message;
         public String username;
@@ -84,9 +82,26 @@ public class AccountPageFragment extends WizardPageFragment {
         public boolean authenticatedAccess;
         private String repoUrl;
         private boolean wasConfirmed;
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
     }
 
     @ProguardIgnored
+    @SuppressWarnings("unused")
     public static class EventHandlers {
         AccountPageFragment mFragment;
         public EventHandlers(AccountPageFragment fragment) {
@@ -126,19 +141,16 @@ public class AccountPageFragment extends WizardPageFragment {
         mBinding.setModel(mModel);
         mBinding.setHandlers(mEventHandlers);
 
-        mBinding.accessModeSwitcher.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                mModel.authenticatedAccess = isChecked;
-                mBinding.accountUsername.setError(null);
-                mBinding.accountUsername.clearFocus();
-                mBinding.accountPassword.setError(null);
-                mBinding.accountPassword.clearFocus();
-                mBinding.accessModeSwitcher.requestFocus();
-                mBinding.setModel(mModel);
-                triggerAllValidators(compoundButton);
-                mModel.wasConfirmed = false;
-            }
+        mBinding.accessModeSwitcher.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            mModel.authenticatedAccess = isChecked;
+            mBinding.accountUsername.setError(null);
+            mBinding.accountUsername.clearFocus();
+            mBinding.accountPassword.setError(null);
+            mBinding.accountPassword.clearFocus();
+            mBinding.accessModeSwitcher.requestFocus();
+            mBinding.setModel(mModel);
+            triggerAllValidators(compoundButton);
+            mModel.wasConfirmed = false;
         });
 
         mBinding.accountUsernameEdit.addTextChangedListener(new TextChangedWatcher() {
@@ -254,14 +266,11 @@ public class AccountPageFragment extends WizardPageFragment {
 
     @Override
     public PopupMenu.OnMenuItemClickListener getPageOptionsMenuOnItemClickListener() {
-        return new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (item.getItemId() == R.id.menu_help) {
-                    openHelp();
-                }
-                return false;
+        return item -> {
+            if (item.getItemId() == R.id.menu_help) {
+                openHelp();
             }
+            return false;
         };
     }
 
@@ -272,31 +281,28 @@ public class AccountPageFragment extends WizardPageFragment {
         }
 
         // Check if the url passed is a valid Gerrit endpoint
-        return new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                if (!mModel.authenticatedAccess) {
-                    String anonymousCowardName = getAnonymousCowardName();
-                    if (anonymousCowardName == null) {
-                        anonymousCowardName = getString(R.string.account_anonymous_coward);
-                    }
-                    mModel.accountInfo = new AccountInfo();
-                    mModel.accountInfo.accountId = Account.ANONYMOUS_ACCOUNT_ID;
-                    mModel.accountInfo.name = anonymousCowardName;
-                    return true;
+        return () -> {
+            if (!mModel.authenticatedAccess) {
+                String anonymousCowardName = getAnonymousCowardName();
+                if (anonymousCowardName == null) {
+                    anonymousCowardName = getString(R.string.account_anonymous_coward);
                 }
+                mModel.accountInfo = new AccountInfo();
+                mModel.accountInfo.accountId = Account.ANONYMOUS_ACCOUNT_ID;
+                mModel.accountInfo.name = anonymousCowardName;
+                return true;
+            }
 
-                try {
-                    // Check if the activity is attached
-                    if (getActivity() == null) {
-                        throw new NoActivityAttachedException();
-                    }
-                    return logIn();
-                } catch (Exception ex) {
-                    postUpdateErrorMessage(ex);
-                    mModel.wasConfirmed = false;
-                    throw  ex;
+            try {
+                // Check if the activity is attached
+                if (getActivity() == null) {
+                    throw new NoActivityAttachedException();
                 }
+                return logIn();
+            } catch (Exception ex) {
+                postUpdateErrorMessage(ex);
+                mModel.wasConfirmed = false;
+                throw  ex;
             }
         };
     }
@@ -324,20 +330,17 @@ public class AccountPageFragment extends WizardPageFragment {
 
     private void postUpdateErrorMessage(final Exception cause) {
         if (mBinding != null) {
-            mBinding.accountUsername.post(new Runnable() {
-                @Override
-                public void run() {
-                    final Context context = mBinding.accountUsername.getContext();
-                    if (isException(cause, NoConnectivityException.class)) {
-                        ((WizardActivity) getActivity()).showMessage(context.getString(
-                                R.string.exception_no_network_available));
-                    } else {
-                        // Just ignore it if we don't have a valid context
-                        if (!(cause instanceof NoActivityAttachedException)) {
-                            Log.e(TAG, "Invalid user or password", cause);
-                            mBinding.accountUsername.setError(context.getString(
-                                    R.string.exception_invalid_user_password));
-                        }
+            mBinding.accountUsername.post(() -> {
+                final Context context = mBinding.accountUsername.getContext();
+                if (isException(cause, NoConnectivityException.class)) {
+                    ((WizardActivity) getActivity()).showMessage(context.getString(
+                            R.string.exception_no_network_available));
+                } else {
+                    // Just ignore it if we don't have a valid context
+                    if (!(cause instanceof NoActivityAttachedException)) {
+                        Log.e(TAG, "Invalid user or password", cause);
+                        mBinding.accountUsername.setError(context.getString(
+                                R.string.exception_invalid_user_password));
                     }
                 }
             });

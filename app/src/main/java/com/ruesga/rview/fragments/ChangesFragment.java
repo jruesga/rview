@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -31,7 +32,6 @@ import com.airbnb.rxgroups.GroupLifecycleManager;
 import com.airbnb.rxgroups.ObservableGroup;
 import com.airbnb.rxgroups.ObservableManager;
 import com.airbnb.rxgroups.ResubscriptionObserver;
-import com.ruesga.rview.FragmentObservable;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangesFragmentBinding;
@@ -43,17 +43,18 @@ import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.widget.DividerItemDecoration;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class ChangesFragment extends Fragment {
 
     private static final String TAG = "ChangesFragment";
+
+    private static final ChangeOptions[] OPTIONS = {ChangeOptions.DETAILED_ACCOUNTS};
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         private final ChangesItemBinding mBinding;
@@ -64,7 +65,8 @@ public class ChangesFragment extends Fragment {
         }
     }
 
-    @com.ruesga.rview.wizard.annotations.ProguardIgnored
+    @ProguardIgnored
+    @SuppressWarnings("unused")
     public static class ItemEventHandlers {
         ChangesFragment mFragment;
 
@@ -99,7 +101,7 @@ public class ChangesFragment extends Fragment {
         @Override
         public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            return new ItemViewHolder((ChangesItemBinding)
+            return new ItemViewHolder(
                     DataBindingUtil.inflate(inflater, R.layout.changes_item, parent, false));
         }
 
@@ -133,7 +135,7 @@ public class ChangesFragment extends Fragment {
         public void onError(Throwable e) {
             mModel.hasData = false;
             mBinding.setModel(mModel);
-            ((FragmentObservable) getActivity()).handleException(TAG, e);
+            ((ExceptionHandler) mActivity.get()).handleException(TAG, e);
         }
 
         @Override
@@ -159,6 +161,7 @@ public class ChangesFragment extends Fragment {
     private final Model mModel = new Model();
 
     private ChangesAdapter mAdapter;
+    private WeakReference<Activity> mActivity;
 
     public static ChangesFragment newInstance(String filter) {
         ChangesFragment fragment = new ChangesFragment();
@@ -187,6 +190,7 @@ public class ChangesFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mActivity = new WeakReference<>(getActivity());
 
         // Configure the adapter
         mAdapter = new ChangesAdapter(this);
@@ -197,48 +201,58 @@ public class ChangesFragment extends Fragment {
         mBinding.list.setAdapter(mAdapter);
 
         // Configure RxGroups to manage rxjava fragment lifecycle
-        ObservableManager manager = ((FragmentObservable) getActivity()).getObservableManager();
-        mGroupLifecycleManager = GroupLifecycleManager.onCreate(manager,
+        ObservableManager observableManager =
+                ((ObservableManagerProvider) getActivity()).getObservableManager();
+        mGroupLifecycleManager = GroupLifecycleManager.onCreate(observableManager,
                 savedInstanceState, this);
         mObservableGroup = mGroupLifecycleManager.group();
-        mGroupLifecycleManager.onResume();
         fetchChanges();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mGroupLifecycleManager.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mGroupLifecycleManager.onPause();
     }
 
     @Override
     public final void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
-        mGroupLifecycleManager.onPause();
         mGroupLifecycleManager.onDestroy(getActivity());
     }
 
     @SuppressWarnings("ConstantConditions")
     private void fetchChanges() {
-        Observable<String> call = Observable.just(getArguments().getString(EXTRA_FILTER));
-        call.subscribeOn(Schedulers.io())
-            .compose(mObservableGroup.<String>transform(getClass().getSimpleName()))
-            .observeOn(Schedulers.io())
-            .flatMap(new Func1<String, Observable<ChangeQuery>>() {
-                @Override
-                public Observable<ChangeQuery> call(String filter) {
-                    return Observable.just(ChangeQuery.parse(filter));
-                }
-            })
-            .flatMap(new Func1<ChangeQuery, Observable<List<ChangeInfo>>>() {
-                @Override
-                public Observable<List<ChangeInfo>> call(ChangeQuery query) {
-                    final Context ctx = getActivity().getApplicationContext();
-                    GerritApi api = ModelHelper.getGerritApi(ctx);
-                    return api.getChanges(query, 50, 0, new ChangeOptions[]{
-                            ChangeOptions.DETAILED_ACCOUNTS});
-                }
-            })
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(mChangesObserver);
+        try {
+            final String tag = getClass().getSimpleName();
+            final ChangeQuery query = ChangeQuery.parse(getArguments().getString(EXTRA_FILTER));
+            final Context ctx = mActivity.get();
+            final GerritApi api = ModelHelper.getGerritApi(ctx);
+            api.getChanges(query, 50, 0, OPTIONS)
+                    .compose(mObservableGroup.<List<ChangeInfo>>transform(tag))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(() -> showProgress(true))
+                    .doOnTerminate(() -> showProgress(false))
+                    .subscribe(mChangesObserver);
+        } catch (Exception cause) {
+            mChangesObserver.onError(cause);
+        }
     }
 
     private void onItemClick(ChangeInfo item) {
 
     }
+
+    private void showProgress(boolean show) {
+        ((UiInteractor) mActivity.get()).changeInProgressStatus(show);
+    }
+
 }

@@ -1,1 +1,0 @@
--dontwarn android.support.v4.app.NotificationCompatBase

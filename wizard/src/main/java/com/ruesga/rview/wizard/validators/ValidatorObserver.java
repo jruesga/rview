@@ -36,5 +36,5 @@ public abstract class ValidatorObserver<T extends View> {
 
     protected final void triggerValidations(View source) {
         mPage.triggerAllValidators(source);
-    };
+    }
 }

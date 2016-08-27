@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.model.library'
+apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
 
 def libraries = rootProject.ext.libraries;
 def testLibraries = rootProject.ext.testLibraries;
@@ -44,10 +45,8 @@ dependencies {
     testCompile "net.iharder:base64:2.3.9"
 }
 
-model {
-    android {
-        defaultConfig {
-            consumerProguardFiles.add(file('proguard-consumer.txt'))
-        }
+android {
+    defaultConfig {
+        consumerProguardFiles file('proguard-consumer.txt')
     }
 }

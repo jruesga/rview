@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview.gerrit;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ruesga.rview.gerrit.adapters.GerritApprovalInfoAdapter;
 import com.ruesga.rview.gerrit.adapters.GerritBas64Adapter;

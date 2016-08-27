@@ -20,6 +20,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
         <variable name="model" type="com.ruesga.rview.MainActivity.Model" />
         <variable name="handlers" type="com.ruesga.rview.MainActivity.EventHandlers" />
     </data>
@@ -58,12 +59,33 @@
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"-->
             <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                app:spb_sections_count="4"
+                app:spb_color="?attr/colorAccent"
+                app:spb_speed="1.5"
+                app:spb_stroke_width="4dp"
+                app:spb_stroke_separator_length="8dp"
+                app:spb_reversed="false"
+                app:spb_mirror_mode="false"
+                app:spb_progressiveStart_activated="false"
+                app:spb_progressiveStart_speed="1.5"
+                app:spb_progressiveStop_speed="3.4"
+                android:visibility="@{model.isInProgress ? View.VISIBLE : View.INVISIBLE}" />
 
             <FrameLayout
                 android:id="@+id/content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        </FrameLayout>
 
     <!--</android.support.v4.widget.SwipeRefreshLayout>-->
 

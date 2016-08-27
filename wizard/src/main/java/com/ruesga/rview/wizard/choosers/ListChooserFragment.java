@@ -44,7 +44,6 @@ import java.util.concurrent.Callable;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
 public abstract class ListChooserFragment extends WizardChooserFragment {
@@ -70,6 +69,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     }
 
     @ProguardIgnored
+    @SuppressWarnings("unused")
     public static class ItemEventHandlers {
         ListChooserFragment mFragment;
 
@@ -102,7 +102,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         @Override
         public ListChooserItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            return new ListChooserItemViewHolder((ListChooserItemBinding)
+            return new ListChooserItemViewHolder(
                     DataBindingUtil.inflate(inflater, R.layout.list_chooser_item, parent, false));
         }
 
@@ -236,18 +236,8 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
                 .subscribeOn(Schedulers.io())
                 .compose(mObservableGroup.<List<ItemModel>>transform(getClass().getSimpleName()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        ((WizardActivity)getActivity()).changeInProgressStatus(true);
-                    }
-                })
-                .doOnTerminate(new Action0() {
-                    @Override
-                    public void call() {
-                        ((WizardActivity)getActivity()).changeInProgressStatus(false);
-                    }
-                })
+                .doOnSubscribe(() -> ((WizardActivity)getActivity()).changeInProgressStatus(true))
+                .doOnTerminate(() -> ((WizardActivity)getActivity()).changeInProgressStatus(false))
                 .subscribe(mDataProducerObserver);
     }
 }

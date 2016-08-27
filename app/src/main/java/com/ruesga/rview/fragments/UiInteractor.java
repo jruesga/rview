@@ -13,21 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ruesga.rview.fragments;
 
-apply plugin: 'com.android.model.library'
-
-def libraries = rootProject.ext.libraries;
-
-dependencies {
-    compile "com.android.support:support-v4:${libraries.support}"
-    compile "com.android.support:appcompat-v7:${libraries.support}"
-    compile "com.android.support:design:${libraries.support}"
-}
-
-model {
-    android {
-        defaultConfig {
-            consumerProguardFiles.add(file('proguard-consumer.txt'))
-        }
-    }
+public interface UiInteractor {
+    void changeInProgressStatus(boolean status);
 }

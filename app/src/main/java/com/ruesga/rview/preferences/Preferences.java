@@ -95,13 +95,13 @@ public class Preferences {
     }
 
     public static List<Account>  removeAccount(Context context, @NonNull Account account) {
-        final Gson gson = SerializationManager.getInstance();
         List<Account> accounts = getAccounts(context);
         accounts.remove(account);
         saveAccounts(context, accounts);
         return accounts;
     }
 
+    @SuppressWarnings("Convert2streamapi")
     private static void saveAccounts(Context context, List<Account> accounts) {
         final Gson gson = SerializationManager.getInstance();
         Set<String> set = new HashSet<>();

@@ -13,5 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.ruesga.rview.fragments;
 
-include ':gerrit', ':wizard', ':app'
+public interface ExceptionHandler {
+    void handleException(String tag, Throwable cause);
+}

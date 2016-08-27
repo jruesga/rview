@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview;
+package com.ruesga.rview.fragments;
 
 import com.airbnb.rxgroups.ObservableManager;
 
-public interface FragmentObservable {
+public interface ObservableManagerProvider {
     ObservableManager getObservableManager();
-    void handleException(String tag, Throwable cause);
 }

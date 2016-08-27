@@ -59,8 +59,6 @@ import java.util.concurrent.Callable;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
@@ -68,6 +66,7 @@ import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 public abstract class WizardActivity extends AppCompatActivity {
 
     @ProguardIgnored
+    @SuppressWarnings("unused")
     public static class WizardWorkflow {
         public String title;
         public boolean hasBack;
@@ -82,7 +81,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         public boolean isInProgress;
         public boolean hasCancel;
 
-        @BindingAdapter({"app:srcDrawable"})
+        @BindingAdapter({"srcDrawable"})
         public static void setButtonResource(Button button, int resource) {
             final Context ctx = button.getContext();
             Drawable drawable = null;
@@ -98,6 +97,7 @@ public abstract class WizardActivity extends AppCompatActivity {
     }
 
     @ProguardIgnored
+    @SuppressWarnings("unused")
     public static class WorkFlowHandlers {
         private final WizardActivity mActivity;
 
@@ -515,12 +515,10 @@ public abstract class WizardActivity extends AppCompatActivity {
         final ValueAnimator animator = ValueAnimator.ofInt(from, to);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.setDuration(250L);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator animation) {
-                final View v = mBinding.pageHeader;
-                v.getLayoutParams().height = (Integer) animation.getAnimatedValue();
-                v.requestLayout();
-            }
+        animator.addUpdateListener(animation -> {
+            final View v = mBinding.pageHeader;
+            v.getLayoutParams().height = (Integer) animation.getAnimatedValue();
+            v.requestLayout();
         });
         animator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -602,29 +600,16 @@ public abstract class WizardActivity extends AppCompatActivity {
                     .subscribeOn(Schedulers.io())
                     .compose(mObservableGroup.<Boolean>transform(tag))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe(new Action0() {
-                        @Override
-                        public void call() {
-                            changeInProgressStatus(true);
+                    .doOnSubscribe(() -> changeInProgressStatus(true))
+                    .doOnError(throwable -> {
+                        if (forward) {
+                            mWorkflow.isForwardEnabled = false;
+                        } else {
+                            mWorkflow.isBackEnabled = false;
                         }
+                        // Update happens on terminate
                     })
-                    .doOnError(new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            if (forward) {
-                                mWorkflow.isForwardEnabled = false;
-                            } else {
-                                mWorkflow.isBackEnabled = false;
-                            }
-                            // Update happens on terminate
-                        }
-                    })
-                    .doOnTerminate(new Action0() {
-                        @Override
-                        public void call() {
-                            changeInProgressStatus(false);
-                        }
-                    })
+                    .doOnTerminate(() -> changeInProgressStatus(false))
                     .subscribe(forward ? mForwardObserver : mBackObserver);
         } else {
             // Run directly

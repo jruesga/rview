@@ -67,12 +67,28 @@ public class RepositoryPageFragment extends WizardPageFragment {
     private static final String STATE_REPO_CONFIRMED_URL = "repo.confirmed.url";
 
     @ProguardIgnored
+    @SuppressWarnings("unused")
     public static class Model {
         public String name;
         public String url;
-
         public String urlConfirmed;
         public boolean wasConfirmed;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
     }
 
     private WizardRepositoryPageFragmentBinding mBinding;
@@ -178,21 +194,18 @@ public class RepositoryPageFragment extends WizardPageFragment {
         }
 
         // Check if the url passed is a valid Gerrit endpoint
-        return new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                try {
-                    // Check if the activity is attached
-                    if (getActivity() == null) {
-                        throw new NoActivityAttachedException();
-                    }
-                    return checkServerVersion();
-                } catch (Exception ex) {
-                    postUpdateErrorMessage(ex);
-                    mModel.urlConfirmed = null;
-                    mModel.wasConfirmed = false;
-                    throw  ex;
+        return () -> {
+            try {
+                // Check if the activity is attached
+                if (getActivity() == null) {
+                    throw new NoActivityAttachedException();
                 }
+                return checkServerVersion();
+            } catch (Exception ex) {
+                postUpdateErrorMessage(ex);
+                mModel.urlConfirmed = null;
+                mModel.wasConfirmed = false;
+                throw  ex;
             }
         };
     }
@@ -239,24 +252,21 @@ public class RepositoryPageFragment extends WizardPageFragment {
 
     private void postUpdateErrorMessage(final Exception cause) {
         if (mBinding != null) {
-            mBinding.repositoryUrl.post(new Runnable() {
-                @Override
-                public void run() {
-                    final Context context = mBinding.repositoryUrl.getContext();
-                    if (isException(cause, UnsupportedServerVersionException.class)) {
-                        Log.w(TAG, "Gerrit server is unsupported");
+            mBinding.repositoryUrl.post(() -> {
+                final Context context = mBinding.repositoryUrl.getContext();
+                if (isException(cause, UnsupportedServerVersionException.class)) {
+                    Log.w(TAG, "Gerrit server is unsupported");
+                    mBinding.repositoryUrl.setError(context.getString(
+                            R.string.exception_unsupported_server_version));
+                } else if (isException(cause, NoConnectivityException.class)) {
+                    ((WizardActivity) getActivity()).showMessage(context.getString(
+                            R.string.exception_no_network_available));
+                } else {
+                    // Just ignore it if we don't have a valid context
+                    if (!(cause instanceof NoActivityAttachedException)) {
+                        Log.e(TAG, "Gerrit repository not resolved", cause);
                         mBinding.repositoryUrl.setError(context.getString(
-                                R.string.exception_unsupported_server_version));
-                    } else if (isException(cause, NoConnectivityException.class)) {
-                        ((WizardActivity) getActivity()).showMessage(context.getString(
-                                R.string.exception_no_network_available));
-                    } else {
-                        // Just ignore it if we don't have a valid context
-                        if (!(cause instanceof NoActivityAttachedException)) {
-                            Log.e(TAG, "Gerrit repository not resolved", cause);
-                            mBinding.repositoryUrl.setError(context.getString(
-                                    R.string.exception_invalid_endpoint));
-                        }
+                                R.string.exception_invalid_endpoint));
                     }
                 }
             });

@@ -22,9 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
@@ -69,13 +67,7 @@ public class OkHttpHelper {
             }
 
             builder.sslSocketFactory(sSSLSocketFactory, TRUST_ALL_CERTS);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String hostname, SSLSession session) {
-                    // Just to ignore lint badhostname warnings
-                    return hostname != null;
-                }
-            });
+            builder.hostnameVerifier((hostname, session) -> hostname != null);
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             // Ignore
         }

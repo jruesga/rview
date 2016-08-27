@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -23,12 +22,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.internal.NavigationMenu;
 import android.support.design.internal.NavigationSubMenu;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -43,9 +43,10 @@ import com.airbnb.rxgroups.ObservableManager;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
-import com.ruesga.rview.drawer.NavigationMenuItemView;
-import com.ruesga.rview.drawer.NavigationView;
 import com.ruesga.rview.fragments.ChangesFragment;
+import com.ruesga.rview.fragments.ExceptionHandler;
+import com.ruesga.rview.fragments.ObservableManagerProvider;
+import com.ruesga.rview.fragments.UiInteractor;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
@@ -55,7 +56,8 @@ import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements FragmentObservable {
+public class MainActivity extends AppCompatActivity
+        implements ObservableManagerProvider, ExceptionHandler, UiInteractor {
 
     private static final int INVALID_ITEM = -1;
 
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
         public String accountRepository;
         public boolean isAccountExpanded;
         public int currentNavigationItemId = INVALID_ITEM;
+        public boolean isInProgress = false;
 
         public Model() {
         }
@@ -111,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
         };
     }
 
-    @SuppressWarnings("UnusedParameters")
     @ProguardIgnored
+    @SuppressWarnings({"UnusedParameters", "unused"})
     public static class EventHandlers {
         private final MainActivity mActivity;
 
@@ -125,19 +128,16 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
         }
     }
 
-    private final Handler.Callback mMessenger = new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message message) {
-            if (message.what == MESSAGE_NAVIGATE_TO) {
-                performNavigateTo();
-                return true;
-            }
-            if (message.what == MESSAGE_DELETE_ACCOUNT) {
-                performDeleteAccount();
-                return true;
-            }
-            return false;
+    private final Handler.Callback mMessenger = message -> {
+        if (message.what == MESSAGE_NAVIGATE_TO) {
+            performNavigateTo();
+            return true;
         }
+        if (message.what == MESSAGE_DELETE_ACCOUNT) {
+            performDeleteAccount();
+            return true;
+        }
+        return false;
     };
 
     private ActivityMainBinding mBinding;
@@ -241,6 +241,12 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
         showError(ExceptionHelper.exceptionToMessage(this, tag, cause));
     }
 
+    @Override
+    public void changeInProgressStatus(boolean status) {
+        mModel.isInProgress = status;
+        mBinding.setModel(mModel);
+    }
+
     private void loadAccounts() {
         mAccount = Preferences.getAccount(this);
         mAccounts = Preferences.getAccounts(this);
@@ -269,13 +275,9 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
         performShowAccount(mModel.isAccountExpanded);
 
         // Listen for click events and select the current one
-        mBinding.drawerNavigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                requestNavigateTo(item.getItemId());
-                return true;
-            }
+        mBinding.drawerNavigationView.setNavigationItemSelectedListener(item -> {
+            requestNavigateTo(item.getItemId());
+            return true;
         });
 
         // Update the accounts and current account information
@@ -398,9 +400,7 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
             }
 
             int id = OTHER_ACCOUNTS_GROUP_BASE_ID + i;
-            String title = sanitizeSubmenuText(account.getAccountDisplayName())
-                    + NavigationMenuItemView.SEPARATOR
-                    + sanitizeSubmenuText(account.getRepositoryDisplayName());
+            String title = account.getAccountDisplayName();
             MenuItem item = otherAccountsSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
             item.setIcon(R.drawable.ic_account_circle);
             i++;
@@ -436,11 +436,8 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.account_deletion_title)
                 .setMessage(R.string.account_deletion_message)
-                .setPositiveButton(R.string.action_delete, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Message.obtain(mUiHandler, MESSAGE_DELETE_ACCOUNT).sendToTarget();
-                    }
+                .setPositiveButton(R.string.action_delete, (dialogInterface, i) -> {
+                    Message.obtain(mUiHandler, MESSAGE_DELETE_ACCOUNT).sendToTarget();
                 })
                 .create();
         dialog.show();
@@ -495,10 +492,13 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
         }
 
         // Open the filter fragment
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content, ChangesFragment.newInstance(filter))
-                .commit();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag("list");
+        if (oldFragment != null) {
+            tx.remove(oldFragment);
+        }
+        Fragment newFragment = ChangesFragment.newInstance(filter);
+        tx.replace(R.id.content, newFragment, "list").commit();
     }
 
     private boolean launchAddAccountIfNeeded() {
@@ -508,10 +508,6 @@ public class MainActivity extends AppCompatActivity implements FragmentObservabl
             return true;
         }
         return false;
-    }
-
-    private String sanitizeSubmenuText(String title) {
-        return title.replaceAll(NavigationMenuItemView.SEPARATOR_REGEXP, "_");
     }
 
     private String getQueryFilterExpressionFromMenuItemOrder(int order) {

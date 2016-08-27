@@ -51,12 +51,7 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
 
     @NonNull
     public Callable<List<ItemModel>> getDataProducer() {
-        return new Callable<List<ItemModel>>() {
-            @Override
-            public List<ItemModel> call() throws Exception {
-                return getRepositoriesAsModel();
-            }
-        };
+        return this::getRepositoriesAsModel;
     }
 
     @NonNull
