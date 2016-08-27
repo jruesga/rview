@@ -30,6 +30,9 @@ dependencies {
     compile "io.reactivex:rxjava:${libraries.rxjava}"
     compile "io.reactivex:rxandroid:${libraries.rxandroid}"
     compile "com.airbnb:rxgroups-android:${libraries.rxgroups}"
+    compile("me.tatarka.rxloader:rxloader:${libraries.rxloader}") {
+        exclude group: 'io.reactivex', module: 'rxandroid'
+    }
     compile "org.apache.commons:commons-io:${libraries.commons_io}"
     compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
 }

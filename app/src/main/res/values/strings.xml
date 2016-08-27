@@ -53,6 +53,9 @@
     <string name="exception_bad_request">Bad request</string>
     <string name="exception_request_error">Request error</string>
 
+    <!-- Pagination -->
+    <string name="pagination_fetching_more">Fetching more</string>
+
     <!-- Validators -->
     <string name="validator_account_exists">Account exists</string>
 

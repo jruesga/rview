@@ -15,39 +15,44 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.airbnb.rxgroups.AutoResubscribe;
-import com.airbnb.rxgroups.GroupLifecycleManager;
-import com.airbnb.rxgroups.ObservableGroup;
-import com.airbnb.rxgroups.ObservableManager;
-import com.airbnb.rxgroups.ResubscriptionObserver;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangesFragmentBinding;
 import com.ruesga.rview.databinding.ChangesItemBinding;
+import com.ruesga.rview.databinding.FetchingMoreItemBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.widget.DividerItemDecoration;
+import com.ruesga.rview.widget.EndlessRecyclerViewScrollListener;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import me.tatarka.rxloader.RxLoader2;
+import me.tatarka.rxloader.RxLoaderManager;
+import me.tatarka.rxloader.RxLoaderManagerCompat;
+import me.tatarka.rxloader.RxLoaderObserver;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class ChangesFragment extends Fragment {
@@ -56,11 +61,23 @@ public class ChangesFragment extends Fragment {
 
     private static final ChangeOptions[] OPTIONS = {ChangeOptions.DETAILED_ACCOUNTS};
 
+    private static final int FETCHED_CHANGES = 50;
+    private static final int FETCHED_MORE_CHANGES_THRESHOLD = 10;
+
+    private static final int MESSAGE_FETCH_MORE_ITEMS = 0;
+
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         private final ChangesItemBinding mBinding;
         public ItemViewHolder(ChangesItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
+            binding.executePendingBindings();
+        }
+    }
+
+    public static class FetchingMoreViewHolder extends RecyclerView.ViewHolder {
+        public FetchingMoreViewHolder(FetchingMoreItemBinding binding) {
+            super(binding.getRoot());
             binding.executePendingBindings();
         }
     }
@@ -85,8 +102,11 @@ public class ChangesFragment extends Fragment {
         public boolean hasData = true;
     }
 
-    private static class ChangesAdapter extends RecyclerView.Adapter<ItemViewHolder> {
-        private final List<ChangeInfo> mData = new ArrayList<>();
+    private static class ChangesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private static final int FETCHING_MODE_ITEM_VIEW = 0;
+        private static final int CHANGE_ITEM_VIEW = 1;
+
+        final List<ChangeInfo> mData = new ArrayList<>();
         private final ItemEventHandlers mHandlers;
 
         public ChangesAdapter(ChangesFragment fragment) {
@@ -94,27 +114,49 @@ public class ChangesFragment extends Fragment {
             mHandlers = new ItemEventHandlers(fragment);
         }
 
+        private void clear() {
+            mData.clear();
+        }
+
+        private void addFetchingMore() {
+            mData.add(new ChangeInfo());
+            notifyItemInserted(mData.size() - 1);
+        }
+
         private void addAll(List<ChangeInfo> data) {
             mData.addAll(data);
         }
 
         @Override
-        public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            return new ItemViewHolder(
-                    DataBindingUtil.inflate(inflater, R.layout.changes_item, parent, false));
+            switch (viewType) {
+                case FETCHING_MODE_ITEM_VIEW:
+                    return new FetchingMoreViewHolder(DataBindingUtil.inflate(
+                            inflater, R.layout.fetching_more_item, parent, false));
+                case CHANGE_ITEM_VIEW:
+                    return new ItemViewHolder(DataBindingUtil.inflate(
+                            inflater, R.layout.changes_item, parent, false));
+            }
+            return null;
         }
 
         @Override
-        public void onBindViewHolder(ItemViewHolder holder, int position) {
-            ChangeInfo item = mData.get(position);
-            holder.itemView.setTag(item);
-            holder.mBinding.setModel(item);
-            holder.mBinding.setHandlers(mHandlers);
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (holder instanceof ItemViewHolder) {
+                ChangeInfo item = mData.get(position);
+                ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
+                itemViewHolder.itemView.setTag(item);
+                itemViewHolder.mBinding.setModel(item);
+                itemViewHolder.mBinding.setHandlers(mHandlers);
+            }
         }
 
         @Override
         public long getItemId(int position) {
+            if (mData.get(position).id == null) {
+                return -1;
+            }
             return mData.get(position).id.hashCode();
         }
 
@@ -122,46 +164,62 @@ public class ChangesFragment extends Fragment {
         public int getItemCount() {
             return mData.size();
         }
+
+        @Override
+        public int getItemViewType(int position) {
+            return mData.get(position).id == null ? FETCHING_MODE_ITEM_VIEW : CHANGE_ITEM_VIEW;
+        }
     }
 
-    @AutoResubscribe
-    public final ResubscriptionObserver<List<ChangeInfo>> mChangesObserver
-            = new ResubscriptionObserver<List<ChangeInfo>>() {
+    private final RxLoaderObserver<List<ChangeInfo>> mLoaderObserver =
+            new RxLoaderObserver<List<ChangeInfo>>() {
         @Override
-        public void onCompleted() {
+        public void onNext(List<ChangeInfo> result) {
+            mAdapter.clear();
+            mAdapter.addAll(result);
+            mAdapter.notifyDataSetChanged();
+            mModel.hasData = result != null && !result.isEmpty();
+            mBinding.setModel(mModel);
+            showProgress(false);
         }
 
         @Override
-        public void onError(Throwable e) {
+        public void onError(Throwable error) {
+            // Hide your progress indicator and show that there was an error.
             mModel.hasData = false;
             mBinding.setModel(mModel);
-            ((ExceptionHandler) mActivity.get()).handleException(TAG, e);
+            ((ExceptionHandler) getActivity()).handleException(TAG, error);
+            showProgress(false);
         }
 
         @Override
-        public void onNext(List<ChangeInfo> changes) {
-            mAdapter.addAll(changes);
-            mAdapter.notifyDataSetChanged();
-            mModel.hasData = changes != null && !changes.isEmpty();
-            mBinding.setModel(mModel);
-        }
-
-        @Override
-        public Object resubscriptionTag() {
-            return getClass().getSimpleName();
+        public void onStarted() {
+            showProgress(true);
         }
     };
 
+    private final Handler.Callback mUiMessenger = message -> {
+        switch (message.what) {
+            case MESSAGE_FETCH_MORE_ITEMS:
+                fetchMoreItems();
+                return true;
+        }
+        return false;
+    };
+
+
+
+
     private static final String EXTRA_FILTER = "filter";
 
-    private GroupLifecycleManager mGroupLifecycleManager;
-    private ObservableGroup mObservableGroup;
-
+    private Handler mUiHandler;
     private ChangesFragmentBinding mBinding;
     private final Model mModel = new Model();
 
     private ChangesAdapter mAdapter;
-    private WeakReference<Activity> mActivity;
+    private EndlessRecyclerViewScrollListener mEndlessScroller;
+
+    private RxLoader2<Integer, Integer, List<ChangeInfo>> mChangesLoader;
 
     public static ChangesFragment newInstance(String filter) {
         ChangesFragment fragment = new ChangesFragment();
@@ -171,6 +229,12 @@ public class ChangesFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mUiHandler = new Handler(mUiMessenger);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -178,19 +242,13 @@ public class ChangesFragment extends Fragment {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.changes_fragment, container, false);
         mBinding.setModel(mModel);
+        mBinding.refresh.setEnabled(false);
         return mBinding.getRoot();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mGroupLifecycleManager.onSaveInstanceState(outState);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActivity = new WeakReference<>(getActivity());
 
         // Configure the adapter
         mAdapter = new ChangesAdapter(this);
@@ -199,60 +257,128 @@ public class ChangesFragment extends Fragment {
         mBinding.list.addItemDecoration(new DividerItemDecoration(
                 getContext(), LinearLayoutManager.VERTICAL));
         mBinding.list.setAdapter(mAdapter);
+        mEndlessScroller = new EndlessRecyclerViewScrollListener(
+                mBinding.list.getLayoutManager()) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                Message.obtain(mUiHandler, MESSAGE_FETCH_MORE_ITEMS).sendToTarget();
+            }
+        };
+        mEndlessScroller.setVisibleThreshold(2);
+        mBinding.list.addOnScrollListener(mEndlessScroller);
 
-        // Configure RxGroups to manage rxjava fragment lifecycle
-        ObservableManager observableManager =
-                ((ObservableManagerProvider) getActivity()).getObservableManager();
-        mGroupLifecycleManager = GroupLifecycleManager.onCreate(observableManager,
-                savedInstanceState, this);
-        mObservableGroup = mGroupLifecycleManager.group();
-        fetchChanges();
-    }
+        // Configure the refresh
+        setupSwipeToRefresh();
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        mGroupLifecycleManager.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mGroupLifecycleManager.onPause();
+        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+        mChangesLoader = loaderManager.create(
+                new Func2<Integer, Integer, Observable<List<ChangeInfo>>>() {
+                    @Override
+                    public Observable<List<ChangeInfo>> call(
+                            final Integer count, final Integer start) {
+                        return fetchChanges(count, start);
+                    }
+                },
+                mLoaderObserver)
+                .start(FETCHED_CHANGES, 0);
     }
 
     @Override
     public final void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
-        mGroupLifecycleManager.onDestroy(getActivity());
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void fetchChanges() {
-        try {
-            final String tag = getClass().getSimpleName();
-            final ChangeQuery query = ChangeQuery.parse(getArguments().getString(EXTRA_FILTER));
-            final Context ctx = mActivity.get();
-            final GerritApi api = ModelHelper.getGerritApi(ctx);
-            api.getChanges(query, 50, 0, OPTIONS)
-                    .compose(mObservableGroup.<List<ChangeInfo>>transform(tag))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe(() -> showProgress(true))
-                    .doOnTerminate(() -> showProgress(false))
-                    .subscribe(mChangesObserver);
-        } catch (Exception cause) {
-            mChangesObserver.onError(cause);
-        }
+    private Observable<List<ChangeInfo>> fetchChanges(Integer count, Integer start) {
+        final ChangeQuery query = ChangeQuery.parse(getArguments().getString(EXTRA_FILTER));
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.zip(
+                Observable.just(Collections.unmodifiableList(mAdapter.mData)),
+                api.getChanges(query, count, start, OPTIONS),
+                Observable.just(count),
+                this::combineChanges
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private void onItemClick(ChangeInfo item) {
+    private void fetchNewItems() {
+        // Fetch new
+        mEndlessScroller.loadCompleted();
+        mBinding.list.removeOnScrollListener(mEndlessScroller);
 
+        final int count = FETCHED_CHANGES;
+        final int start = 0;
+        mChangesLoader.restart(count, start);
+    }
+
+    private void fetchMoreItems() {
+        // Add the fetching more waiting view
+        mAdapter.addFetchingMore();
+
+        // Fetch more
+        final int count = FETCHED_CHANGES + FETCHED_MORE_CHANGES_THRESHOLD;
+        final int start = mAdapter.mData.size() - FETCHED_MORE_CHANGES_THRESHOLD;
+        mChangesLoader.restart(count, start);
+    }
+
+    private List<ChangeInfo> combineChanges(
+            List<ChangeInfo> oldChanges, List<ChangeInfo> newChanges, Integer count) {
+        // Check if we end fetching changes
+        if (newChanges.size() < count) {
+            mBinding.list.removeOnScrollListener(mEndlessScroller);
+        }
+
+        for (ChangeInfo oldChange : oldChanges) {
+            if (oldChange.id == null) {
+                continue;
+            }
+
+            boolean exists = false;
+            for (ChangeInfo newChange : newChanges) {
+                if (newChange.id.equals(oldChange.id)) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                newChanges.add(oldChange);
+            }
+        }
+
+        // Sort the collection
+        Collections.sort(newChanges, (o1, o2) -> {
+            if (o1.id.equals(o2.id)) {
+                return 0;
+            }
+            return o2.updated.compareTo(o1.updated);
+        });
+
+        return newChanges;
+    }
+
+    private void setupSwipeToRefresh() {
+        mBinding.refresh.setColorSchemeColors(
+                ContextCompat.getColor(getContext(), R.color.accent));
+        mBinding.refresh.setOnRefreshListener(() -> {
+            mBinding.refresh.setRefreshing(false);
+            fetchNewItems();
+        });
+        mBinding.refresh.setEnabled(false);
     }
 
     private void showProgress(boolean show) {
-        ((UiInteractor) mActivity.get()).changeInProgressStatus(show);
+        if (mEndlessScroller == null || !mEndlessScroller.isLoading()) {
+            ((UiInteractor) getActivity()).changeInProgressStatus(show);
+        } else if (!show) {
+            mEndlessScroller.loadCompleted();
+        }
+        mBinding.refresh.setEnabled(!show);
     }
 
+    private void onItemClick(ChangeInfo item) {
+    }
 }

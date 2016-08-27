@@ -24,6 +24,7 @@ ext {
         okhttp_digest       : '3cc8b6412f',
         rxjava              : '1.1.8',
         rxandroid           : '1.2.1',
+        rxloader            : '1.1.0',
         rxgroups            : '0.3.5',
         commons_io          : '1.3.2',
         antlrv3             : '3.5.2',

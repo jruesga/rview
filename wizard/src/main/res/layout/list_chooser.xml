@@ -30,6 +30,7 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scrollbars="vertical"
             android:visibility="@{model.hasData ? View.VISIBLE : View.GONE}">
         </android.support.v7.widget.RecyclerView>
         <TextView
