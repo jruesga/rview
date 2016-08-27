@@ -118,13 +118,12 @@ public class ChangesFragment extends Fragment {
             mData.clear();
         }
 
-        private void addFetchingMore() {
-            mData.add(new ChangeInfo());
-            notifyItemInserted(mData.size() - 1);
+        private void add(ChangeInfo change) {
+            mData.add(change);
         }
 
-        private void addAll(List<ChangeInfo> data) {
-            mData.addAll(data);
+        private void addAll(List<ChangeInfo> changes) {
+            mData.addAll(changes);
         }
 
         @Override
@@ -316,7 +315,8 @@ public class ChangesFragment extends Fragment {
 
     private void fetchMoreItems() {
         // Add the fetching more waiting view
-        mAdapter.addFetchingMore();
+        mAdapter.add(new ChangeInfo());
+        mAdapter.notifyItemInserted(mAdapter.mData.size() - 1);
 
         // Fetch more
         final int count = FETCHED_CHANGES + FETCHED_MORE_CHANGES_THRESHOLD;
