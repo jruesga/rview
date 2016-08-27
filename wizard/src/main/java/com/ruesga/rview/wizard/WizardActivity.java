@@ -35,6 +35,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
@@ -46,17 +47,16 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
-import com.airbnb.rxgroups.AutoResubscribe;
-import com.airbnb.rxgroups.GroupLifecycleManager;
-import com.airbnb.rxgroups.ObservableGroup;
-import com.airbnb.rxgroups.ObservableManager;
-import com.airbnb.rxgroups.ResubscriptionObserver;
 import com.ruesga.rview.wizard.annotations.ProguardIgnored;
 import com.ruesga.rview.wizard.databinding.ActivityWizardBinding;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+import me.tatarka.rxloader.RxLoader;
+import me.tatarka.rxloader.RxLoaderManager;
+import me.tatarka.rxloader.RxLoaderManagerCompat;
+import me.tatarka.rxloader.RxLoaderObserver;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -116,53 +116,34 @@ public abstract class WizardActivity extends AppCompatActivity {
         }
     }
 
-    @AutoResubscribe
-    public final ResubscriptionObserver<Boolean> mBackObserver
-            = new ResubscriptionObserver<Boolean>() {
-        @Override
-        public void onCompleted() {
-        }
+    private final RxLoaderObserver<Boolean> mBackObserver =
+            new RxLoaderObserver<Boolean>() {
+                @Override
+                public void onNext(Boolean result) {
+                    if (result) {
+                        doPerformActionPressed(false);
+                    }
+                }
 
-        @Override
-        public void onError(Throwable e) {
-        }
+                @Override
+                public void onError(Throwable e) {
+                    mWorkflow.isBackEnabled = false;
+                }
+            };
+    private final RxLoaderObserver<Boolean> mForwardObserver =
+            new RxLoaderObserver<Boolean>() {
+                @Override
+                public void onNext(Boolean result) {
+                    if (result) {
+                        doPerformActionPressed(true);
+                    }
+                }
 
-        @Override
-        public void onNext(Boolean result) {
-            if (result) {
-                doPerformActionPressed(false);
-            }
-        }
-
-        @Override
-        public Object resubscriptionTag() {
-            return getClass().getSimpleName() + "-BACK-OBSERVER";
-        }
-    };
-
-    @AutoResubscribe
-    public final ResubscriptionObserver<Boolean> mForwardObserver
-            = new ResubscriptionObserver<Boolean>() {
-        @Override
-        public void onCompleted() {
-        }
-
-        @Override
-        public void onError(Throwable e) {
-        }
-
-        @Override
-        public void onNext(Boolean result) {
-            if (result) {
-                doPerformActionPressed(true);
-            }
-        }
-
-        @Override
-        public Object resubscriptionTag() {
-            return getClass().getSimpleName() + "-FORWARD-OBSERVER";
-        }
-    };
+                @Override
+                public void onError(Throwable e) {
+                    mWorkflow.isForwardEnabled = false;
+                }
+            };
 
     private static final String STATE_CURRENT_PAGE = "current_page";
     private static final String STATE_CURRENT_CHOOSER = "current_chooser";
@@ -187,8 +168,7 @@ public abstract class WizardActivity extends AppCompatActivity {
 
     private final Bundle mData = new Bundle();
 
-    private GroupLifecycleManager mGroupLifecycleManager;
-    private ObservableGroup mObservableGroup;
+    private Pair<RxLoader<Boolean>,RxLoader<Boolean>>[] mLoaders;
 
     protected WizardActivity() {
     }
@@ -219,10 +199,26 @@ public abstract class WizardActivity extends AppCompatActivity {
             }
         }
 
-        // Configure RxGroups to manage rxjava activity lifecycle
-        mGroupLifecycleManager = GroupLifecycleManager.onCreate(getObservableManager(),
-                savedInstanceState, this);
-        mObservableGroup = mGroupLifecycleManager.group();
+        // Prepared the back and forward loaders
+        //noinspection unchecked
+        mLoaders = new Pair[mPages.size()];
+        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+        int i = 0;
+        for (WizardPageFragment page : mPages) {
+            Callable<Boolean> back = page.doBackAction();
+            Callable<Boolean> forward = page.doForwardAction();
+            RxLoader<Boolean> backLoader = null;
+            if (back != null) {
+                backLoader = loaderManager.create("lb" + i, actionObserver(back), mBackObserver);
+            }
+            RxLoader<Boolean> forwardLoader = null;
+            if (forward != null) {
+                forwardLoader = loaderManager.create("lf" + i, actionObserver(forward),
+                        mForwardObserver);
+            }
+            mLoaders[i] = new Pair<>(backLoader, forwardLoader);
+            i++;
+        }
 
         // Configure the view
         setupStatusBar();
@@ -261,19 +257,6 @@ public abstract class WizardActivity extends AppCompatActivity {
             mHeaderAnimator.cancel();
         }
         mHeaderAnimator = null;
-        mGroupLifecycleManager.onDestroy(this);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mGroupLifecycleManager.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mGroupLifecycleManager.onPause();
     }
 
     @Override
@@ -283,14 +266,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         outState.putString(STATE_CURRENT_CHOOSER, mCurrentChooserFragmentTag);
         outState.putBoolean(STATE_IS_IN_PROGRESS, mWorkflow.isInProgress);
         savePagesState(outState);
-        mGroupLifecycleManager.onSaveInstanceState(outState);
     }
-
-    /**
-     * IMP!! This must return a singleton non-lifecycle-destroyable reference
-     * (for example an @{link Application} stored reference)
-     */
-    public abstract ObservableManager getObservableManager();
 
     public abstract void setupPages();
 
@@ -590,31 +566,23 @@ public abstract class WizardActivity extends AppCompatActivity {
         }
 
         // Determine if need to do some operation before continue with the
-        final Callable<Boolean> call = forward ?
-                mCurrentPageFragment.doForwardAction() : mCurrentPageFragment.doBackAction();
-        if (call != null) {
-            final String tag = (String) (forward
-                    ? mForwardObserver.resubscriptionTag()
-                    : mBackObserver.resubscriptionTag());
-            Observable.fromCallable(call)
-                    .subscribeOn(Schedulers.io())
-                    .compose(mObservableGroup.<Boolean>transform(tag))
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe(() -> changeInProgressStatus(true))
-                    .doOnError(throwable -> {
-                        if (forward) {
-                            mWorkflow.isForwardEnabled = false;
-                        } else {
-                            mWorkflow.isBackEnabled = false;
-                        }
-                        // Update happens on terminate
-                    })
-                    .doOnTerminate(() -> changeInProgressStatus(false))
-                    .subscribe(forward ? mForwardObserver : mBackObserver);
+        RxLoader<Boolean> loader =  forward
+                ? mLoaders[mCurrentPage].second : mLoaders[mCurrentPage].first;
+        if (loader != null) {
+            loader.restart();
         } else {
             // Run directly
             doPerformActionPressed(forward);
         }
+    }
+
+    private Observable<Boolean> actionObserver(Callable<Boolean> call) {
+        return Observable.fromCallable(call)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(() -> changeInProgressStatus(true))
+//                .doOnError(throwable -> mWorkflow.isBackEnabled = false)
+                .doOnTerminate(() -> changeInProgressStatus(false));
     }
 
     private void doPerformActionPressed(boolean forward) {

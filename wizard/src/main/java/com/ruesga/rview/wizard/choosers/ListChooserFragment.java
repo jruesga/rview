@@ -26,11 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.airbnb.rxgroups.AutoResubscribe;
-import com.airbnb.rxgroups.GroupLifecycleManager;
-import com.airbnb.rxgroups.ObservableGroup;
-import com.airbnb.rxgroups.ObservableManager;
-import com.airbnb.rxgroups.ResubscriptionObserver;
 import com.ruesga.rview.wizard.R;
 import com.ruesga.rview.wizard.WizardActivity;
 import com.ruesga.rview.wizard.WizardChooserFragment;
@@ -42,6 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import me.tatarka.rxloader.RxLoaderManager;
+import me.tatarka.rxloader.RxLoaderManagerCompat;
+import me.tatarka.rxloader.RxLoaderObserver;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -120,41 +118,28 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         }
     }
 
-    @AutoResubscribe
-    public final ResubscriptionObserver<List<ItemModel>> mDataProducerObserver
-            = new ResubscriptionObserver<List<ItemModel>>() {
-        @Override
-        public void onCompleted() {
-        }
+    private final RxLoaderObserver<List<ItemModel>> mDataProducerObserver =
+            new RxLoaderObserver<List<ItemModel>>() {
+                @Override
+                public void onNext(List<ItemModel> result) {
+                    mAdapter.clear();
+                    mAdapter.addAll(result);
+                    mAdapter.notifyDataSetChanged();
+                    mModel.hasData = result != null && !result.isEmpty();
+                    mBinding.setModel(mModel);
+                }
 
-        @Override
-        public void onError(Throwable e) {
-            mAdapter.clear();
-            mAdapter.notifyDataSetChanged();
-            mModel.hasData = false;
-            mBinding.setModel(mModel);
-            ((WizardActivity)getActivity()).showMessage(
-                    getString(R.string.chooser_failed_to_fetch_data));
+                @Override
+                public void onError(Throwable error) {
+                    mAdapter.clear();
+                    mAdapter.notifyDataSetChanged();
+                    mModel.hasData = false;
+                    mBinding.setModel(mModel);
+                    ((WizardActivity)getActivity()).showMessage(
+                            getString(R.string.chooser_failed_to_fetch_data));
+                }
+            };
 
-        }
-
-        @Override
-        public void onNext(List<ItemModel> result) {
-            mAdapter.clear();
-            mAdapter.addAll(result);
-            mAdapter.notifyDataSetChanged();
-            mModel.hasData = result != null && !result.isEmpty();
-            mBinding.setModel(mModel);
-        }
-
-        @Override
-        public Object resubscriptionTag() {
-            return getClass().getSimpleName();
-        }
-    };
-
-    private GroupLifecycleManager mGroupLifecycleManager;
-    private ObservableGroup mObservableGroup;
 
     private ListChooserBinding mBinding;
     private Model mModel = new Model();
@@ -183,12 +168,6 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mGroupLifecycleManager.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -198,21 +177,15 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
                 getActivity(), LinearLayoutManager.VERTICAL, false));
         mBinding.list.setAdapter(mAdapter);
 
-        // Configure RxGroups to manage rxjava fragment lifecycle
-        ObservableManager manager = ((WizardActivity) getActivity()).getObservableManager();
-        mGroupLifecycleManager = GroupLifecycleManager.onCreate(manager,
-                savedInstanceState, this);
-        mObservableGroup = mGroupLifecycleManager.group();
-        mGroupLifecycleManager.onResume();
-        refreshItems();
+        // Fetch or join current loader
+        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+        loaderManager.create(refreshItems(), mDataProducerObserver).start();
     }
 
     @Override
     public final void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
-        mGroupLifecycleManager.onPause();
-        mGroupLifecycleManager.onDestroy(getActivity());
     }
 
     @NonNull
@@ -231,13 +204,11 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         close();
     }
 
-    private void refreshItems() {
-        Observable.fromCallable(getDataProducer())
+    private Observable<List<ItemModel>> refreshItems() {
+        return Observable.fromCallable(getDataProducer())
                 .subscribeOn(Schedulers.io())
-                .compose(mObservableGroup.<List<ItemModel>>transform(getClass().getSimpleName()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(() -> ((WizardActivity)getActivity()).changeInProgressStatus(true))
-                .doOnTerminate(() -> ((WizardActivity)getActivity()).changeInProgressStatus(false))
-                .subscribe(mDataProducerObserver);
+                .doOnTerminate(() -> ((WizardActivity)getActivity()).changeInProgressStatus(false));
     }
 }

@@ -18,8 +18,6 @@ package com.ruesga.rview.wizards;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.airbnb.rxgroups.ObservableManager;
-import com.ruesga.rview.RviewApplication;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
@@ -30,11 +28,6 @@ import com.ruesga.rview.wizard.WizardActivity;
 public class SetupAccountActivity extends WizardActivity {
 
     public static final String EXTRA_ACCOUNT = "account";
-
-    @Override
-    public ObservableManager getObservableManager() {
-        return ((RviewApplication)getApplication()).observableManager();
-    }
 
     @Override
     @SuppressWarnings("unchecked")

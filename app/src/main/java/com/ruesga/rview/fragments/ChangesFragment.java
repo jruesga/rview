@@ -269,6 +269,7 @@ public class ChangesFragment extends Fragment {
         // Configure the refresh
         setupSwipeToRefresh();
 
+        // Fetch or join current loader
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
         mChangesLoader = loaderManager.create(
                 new Func2<Integer, Integer, Observable<List<ChangeInfo>>>() {

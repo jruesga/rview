@@ -45,7 +45,6 @@ import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
 import com.ruesga.rview.fragments.ChangesFragment;
 import com.ruesga.rview.fragments.ExceptionHandler;
-import com.ruesga.rview.fragments.ObservableManagerProvider;
 import com.ruesga.rview.fragments.UiInteractor;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
@@ -56,8 +55,7 @@ import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-        implements ObservableManagerProvider, ExceptionHandler, UiInteractor {
+public class MainActivity extends AppCompatActivity implements ExceptionHandler, UiInteractor {
 
     private static final int INVALID_ITEM = -1;
 
@@ -229,11 +227,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
-    }
-
-    @Override
-    public ObservableManager getObservableManager() {
-        return ((RviewApplication) getApplication()).observableManager();
     }
 
     @Override

@@ -29,7 +29,6 @@ dependencies {
     compile "com.android.support:customtabs:${libraries.support}"
     compile "io.reactivex:rxjava:${libraries.rxjava}"
     compile "io.reactivex:rxandroid:${libraries.rxandroid}"
-    compile "com.airbnb:rxgroups-android:${libraries.rxgroups}"
     compile("me.tatarka.rxloader:rxloader:${libraries.rxloader}") {
         exclude group: 'io.reactivex', module: 'rxandroid'
     }
