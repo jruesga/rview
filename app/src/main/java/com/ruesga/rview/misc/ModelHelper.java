@@ -74,7 +74,7 @@ public class ModelHelper {
         // Gravatar icons
         if (account.email != null) {
             urls.add("https://www.gravatar.com/avatar/"
-                    + computeGravatarHash(account.email) + ".png?s=" + maxSize + "&d=404");
+                    + computeGravatarHash(account.email) + ".png?s=" + ((int)maxSize) + "&d=404");
         }
 
         return urls;
