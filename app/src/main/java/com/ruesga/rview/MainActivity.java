@@ -39,7 +39,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 
-import com.airbnb.rxgroups.ObservableManager;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
