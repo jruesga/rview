@@ -102,8 +102,7 @@ public class PicassoHelper {
 
     private static HttpLoggingInterceptor createLoggingInterceptor() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(message -> Log.i(TAG ,message));
-        logging.setLevel(BuildConfig.DEBUG
-                ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.BASIC);
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
         return logging;
     }
 
