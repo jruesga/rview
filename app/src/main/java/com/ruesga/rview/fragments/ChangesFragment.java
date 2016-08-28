@@ -61,7 +61,8 @@ public class ChangesFragment extends Fragment {
 
     private static final String TAG = "ChangesFragment";
 
-    private static final ChangeOptions[] OPTIONS = {ChangeOptions.DETAILED_ACCOUNTS};
+    private static final ChangeOptions[] OPTIONS = {
+            ChangeOptions.DETAILED_ACCOUNTS, ChangeOptions.LABELS};
 
     private static final int FETCHED_CHANGES = 50;
     private static final int FETCHED_MORE_CHANGES_THRESHOLD = 10;

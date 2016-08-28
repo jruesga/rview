@@ -29,7 +29,6 @@ import android.widget.ImageView;
 
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.ruesga.rview.R;
-import com.ruesga.rview.gerrit.BuildConfig;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;

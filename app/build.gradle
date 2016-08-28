@@ -34,8 +34,9 @@ dependencies {
     }
     compile "org.apache.commons:commons-io:${libraries.commons_io}"
     compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
+    compile "com.squareup.picasso:picasso:${libraries.picasso2}"
+    compile "com.jakewharton.picasso:picasso2-okhttp3-downloader:${libraries.picasso2_okhttp3_downloader}"
+    compile "org.ocpsoft.prettytime:prettytime:${libraries.prettytime}"
 }
 
 android {
