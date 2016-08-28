@@ -48,7 +48,6 @@
                 android:padding="5dp"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_account_circle"
-                android:tint="@android:color/white"
                 android:contentDescription="@null"/>
 
             <LinearLayout

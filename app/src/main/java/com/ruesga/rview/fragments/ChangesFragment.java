@@ -39,8 +39,10 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.EndlessRecyclerViewScrollListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -108,10 +110,14 @@ public class ChangesFragment extends Fragment {
 
         final List<ChangeInfo> mData = new ArrayList<>();
         private final ItemEventHandlers mHandlers;
+        private final Picasso mPicasso;
+        private final Context mContext;
 
         public ChangesAdapter(ChangesFragment fragment) {
             setHasStableIds(true);
             mHandlers = new ItemEventHandlers(fragment);
+            mPicasso = PicassoHelper.getPicassoClient(fragment.getContext());
+            mContext = fragment.getContext();
         }
 
         private void clear() {
@@ -148,6 +154,9 @@ public class ChangesFragment extends Fragment {
                 itemViewHolder.itemView.setTag(item);
                 itemViewHolder.mBinding.setModel(item);
                 itemViewHolder.mBinding.setHandlers(mHandlers);
+                PicassoHelper.bindAvatar(mContext, mPicasso, item.owner,
+                        itemViewHolder.mBinding.avatar,
+                        PicassoHelper.getDefaultAvatar(mContext, R.color.primaryDark));
             }
         }
 

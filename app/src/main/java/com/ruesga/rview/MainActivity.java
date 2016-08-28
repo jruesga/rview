@@ -48,9 +48,11 @@ import com.ruesga.rview.fragments.UiInteractor;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
+import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -139,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
 
     private ActivityMainBinding mBinding;
     private NavigationHeaderBinding mHeaderDrawerBinding;
+    private Picasso mPicasso;
 
     private Model mModel;
     private final EventHandlers mEventHandlers = new EventHandlers(this);
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
         super.onCreate(savedInstanceState);
 
         mUiHandler = new Handler(mMessenger);
+        mPicasso = PicassoHelper.getPicassoClient(this);
 
         onRestoreInstanceState(savedInstanceState);
 
@@ -403,6 +407,10 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
         mModel.accountName = mAccount.getAccountDisplayName();
         mModel.accountRepository = mAccount.getRepositoryDisplayName();
         mHeaderDrawerBinding.setModel(mModel);
+
+        PicassoHelper.bindAvatar(this, mPicasso, mAccount.mAccount,
+                mHeaderDrawerBinding.accountAvatar,
+                PicassoHelper.getDefaultAvatar(this, android.R.color.white));
     }
 
     private void performAccountSwitch() {
@@ -415,6 +423,7 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
             // Use the first one account
             mAccount = mAccounts.get(0);
         }
+        Preferences.setAccount(this, mAccount);
 
         // Refresh the ui
         updateCurrentAccountDrawerInfo();

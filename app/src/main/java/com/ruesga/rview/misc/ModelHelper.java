@@ -16,12 +16,23 @@
 package com.ruesga.rview.misc;
 
 import android.content.Context;
+import android.widget.ImageView;
 
+import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.GerritServiceFactory;
+import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.AvatarInfo;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
+import com.squareup.picasso.Picasso;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModelHelper {
 
@@ -35,4 +46,60 @@ public class ModelHelper {
                 applicationContext, account.mRepository.mUrl, authorization);
     }
 
+    public static List<String> getAvatarUrl(Context context, AccountInfo account) {
+        List<String> urls = new ArrayList<>();
+
+        // Gerrit avatars
+        float maxSize = context.getResources().getDimension(R.dimen.max_avatar_size);
+        if (account.avatars != null && account.avatars.length > 0) {
+            int count = account.avatars.length - 1;
+            boolean hasAvatarUrl = false;
+            for (int i = count; i >= 0; i--) {
+                if (account.avatars[i].height < maxSize) {
+                    urls.add(account.avatars[i].url);
+                    hasAvatarUrl = true;
+                    break;
+                }
+            }
+            if (hasAvatarUrl) {
+                urls.add(account.avatars[0].url);
+            }
+        }
+
+        // Github identicons
+        if (account.username != null) {
+            urls.add("https://github.com/identicons/" + account.username + ".png");
+        }
+
+        // Gravatar icons
+        if (account.email != null) {
+            urls.add("https://www.gravatar.com/avatar/"
+                    + computeGravatarHash(account.email) + ".png?s=" + maxSize + "&d=404");
+        }
+
+        return urls;
+    }
+
+
+
+    @SuppressWarnings("TryWithIdenticalCatches")
+    private static String computeGravatarHash(String email) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            return hex(md.digest(email.getBytes("CP1252")));
+        } catch (NoSuchAlgorithmException e) {
+            // Ignore
+        } catch (UnsupportedEncodingException e) {
+            // Ignore
+        }
+        return null;
+    }
+
+    private static String hex(byte[] array) {
+        StringBuilder sb = new StringBuilder();
+        for (byte v : array) {
+            sb.append(Integer.toHexString((v & 0xFF) | 0x100).substring(1, 3));
+        }
+        return sb.toString();
+    }
 }

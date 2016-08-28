@@ -27,7 +27,8 @@ ext {
         rxloader            : '1.1.0',
         commons_io          : '1.3.2',
         antlrv3             : '3.5.2',
-        smoothprogressbar   : '1.1.0'
+        smoothprogressbar   : '1.1.0',
+        picasso             : '2.5.2'
     ]
 
     testLibraries = [

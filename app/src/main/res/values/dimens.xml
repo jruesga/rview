@@ -16,4 +16,5 @@
  -->
 <resources>
     <dimen name="wizard_max_content_width">400dp</dimen>
+    <dimen name="max_avatar_size">48dp</dimen>
 </resources>
