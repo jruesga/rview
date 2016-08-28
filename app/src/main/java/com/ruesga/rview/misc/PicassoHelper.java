@@ -72,8 +72,6 @@ public class PicassoHelper {
     public static void bindAvatar(Context context, Picasso picasso, AccountInfo account,
             ImageView view, Drawable placeholder) {
         final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, account);
-        // TODO Determine which one is the preferred from the about urls, because
-        // if the first url doesn't work the placeholder will be
         loadWithFallbackUrls(picasso, view, placeholder, avatarUrls);
     }
 
