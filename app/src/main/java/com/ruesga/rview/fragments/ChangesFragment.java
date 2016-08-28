@@ -317,6 +317,7 @@ public class ChangesFragment extends Fragment {
         // Fetch new
         mEndlessScroller.loadCompleted();
         mBinding.list.removeOnScrollListener(mEndlessScroller);
+        mBinding.list.addOnScrollListener(mEndlessScroller);
 
         final int count = FETCHED_CHANGES;
         final int start = 0;
