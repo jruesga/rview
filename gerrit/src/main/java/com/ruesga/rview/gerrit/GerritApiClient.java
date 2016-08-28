@@ -329,8 +329,9 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Response> getAccountAvatar(@NonNull String accountId) {
-        return mService.getAccountAvatar(accountId);
+    public Observable<Response> getAccountAvatar(
+            @NonNull String accountId, @Nullable Integer size) {
+        return mService.getAccountAvatar(accountId, size);
     }
 
     @Override

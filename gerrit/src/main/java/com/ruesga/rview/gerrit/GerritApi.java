@@ -338,7 +338,9 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-avatar"
      */
     @GET("accounts/{account-id}/avatar")
-    Observable<Response> getAccountAvatar(@NonNull @Path("account-id") String accountId);
+    Observable<Response> getAccountAvatar(
+            @NonNull @Path("account-id") String accountId,
+            @Nullable @Query("s") Integer size);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-avatar-change-url"
