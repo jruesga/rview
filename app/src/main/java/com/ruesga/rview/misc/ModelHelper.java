@@ -16,17 +16,14 @@
 package com.ruesga.rview.misc;
 
 import android.content.Context;
-import android.widget.ImageView;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.model.AccountInfo;
-import com.ruesga.rview.gerrit.model.AvatarInfo;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
-import com.squareup.picasso.Picasso;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

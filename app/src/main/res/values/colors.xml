@@ -21,4 +21,6 @@
     <color name="alert">#fbc02d</color>
     <color name="textDisabledColor">#e0e0e0</color>
     <color name="secondaryIconColor">#757575</color>
+    <color name="approved">#2e7d32</color>
+    <color name="rejected">#c62828</color>
 </resources>

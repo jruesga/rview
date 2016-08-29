@@ -16,12 +16,9 @@
 package com.ruesga.rview.misc;
 
 import android.databinding.BindingAdapter;
-import android.text.Html;
 import android.widget.TextView;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
-import com.ruesga.rview.gerrit.model.ChangeInfo;
-import com.ruesga.rview.gerrit.model.LabelInfo;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -29,14 +26,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @ProguardIgnored
+@SuppressWarnings("unused")
 public class Formatter {
     private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
-    private static final Pattern sShortLabelPattern = Pattern.compile("[A-Z]+");
 
     @BindingAdapter("prettyDateTime")
     public static void toPrettyDateTime(TextView view, Date date) {
@@ -45,49 +39,5 @@ public class Formatter {
             sPrettyTimeMap.put(locale, new PrettyTime(locale));
         }
         view.setText(sPrettyTimeMap.get(locale).format(date));
-    }
-
-    @BindingAdapter("labels")
-    public static void toLabels(TextView view, Map<String, LabelInfo> labels) {
-        // Compute and sort labels
-        if (labels == null) {
-            return;
-        }
-        Map<String, String> map = new TreeMap<>();
-        for (String label : labels.keySet()) {
-            final LabelInfo info = labels.get(label);
-            final String s;
-            if (info.blocking) {
-                s = "\u2717";
-            } else if (info.rejected != null) {
-                s = "-2";
-            } else if (info.disliked != null) {
-                s = "-1";
-            } else if (info.recommended != null) {
-                s = "+1";
-            } else if (info.approved != null) {
-                s = "\u2713";
-            } else {
-                s = "-";
-            }
-
-            map.put(toShortLabel(label), s);
-        }
-
-        // Print labels
-        StringBuilder sb = new StringBuilder();
-        for (String label : map.keySet()) {
-            sb.append("  <b>").append(label).append("</b>: ").append(map.get(label));
-        }
-        view.setText(Html.fromHtml(sb.toString()));
-    }
-
-    private static String toShortLabel(String label) {
-        Matcher matcher = sShortLabelPattern.matcher(label);
-        StringBuilder sb = new StringBuilder();
-        while (matcher.find()) {
-            sb.append(matcher.group(0));
-        }
-        return sb.toString();
     }
 }

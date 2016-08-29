@@ -153,6 +153,7 @@ public class ChangesFragment extends Fragment {
                 ChangeInfo item = mData.get(position);
                 ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
                 itemViewHolder.itemView.setTag(item);
+                itemViewHolder.mBinding.scores.setScores(item.labels);
                 itemViewHolder.mBinding.setModel(item);
                 itemViewHolder.mBinding.setHandlers(mHandlers);
                 PicassoHelper.bindAvatar(mContext, mPicasso, item.owner,

@@ -15,8 +15,8 @@
      limitations under the License.
  -->
 <layout
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -28,7 +28,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="96dp"
         android:background="?attr/selectableItemBackground"
         android:onClick="@{handlers::onItemPressed}"
         android:padding="16dp"
@@ -39,6 +38,7 @@
             android:orientation="vertical"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
+            android:layout_gravity="center_horizontal"
             tools:ignore="RtlSymmetry">
             <ImageView
                 android:id="@+id/avatar"
@@ -111,7 +111,7 @@
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/branch_block"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:layout_below="@id/project_block"
@@ -133,23 +133,21 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:textSize="12sp" />
-                <com.ruesga.rview.widget.StyleableTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:labels="@{model.labels}"
-                    android:maxLines="1"
-                    android:textSize="12sp" />
             </LinearLayout>
+            <com.ruesga.rview.widget.ScoreLabelsView
+                android:id="@+id/scores"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="3dp"
+                android:layout_below="@id/branch_block"
+                app:shortLabels="true">
+            </com.ruesga.rview.widget.ScoreLabelsView>
             <LinearLayout
                 android:id="@+id/mergeable_block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
-                android:layout_below="@id/branch_block"
+                android:layout_below="@id/scores"
                 android:visibility="@{model.mergeable ? View.GONE : View.VISIBLE}"
                 android:orientation="horizontal">
                 <ImageView
