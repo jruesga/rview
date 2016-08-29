@@ -21,8 +21,9 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
-        <variable name="handlers" type="com.ruesga.rview.fragments.ChangesFragment.ItemEventHandlers" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeListFragment.ItemEventHandlers" />
     </data>
 
     <LinearLayout
@@ -138,7 +139,7 @@
                 android:id="@+id/scores"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="5dp"
                 android:layout_below="@id/branch_block"
                 app:shortLabels="true">
             </com.ruesga.rview.widget.ScoreLabelsView>
@@ -146,9 +147,9 @@
                 android:id="@+id/mergeable_block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
+                android:layout_marginTop="5dp"
                 android:layout_below="@id/scores"
-                android:visibility="@{model.mergeable ? View.GONE : View.VISIBLE}"
+                android:visibility="@{!model.mergeable &amp;&amp; !model.status.equals(ChangeStatus.MERGED) ? View.VISIBLE : View.GONE}"
                 android:orientation="horizontal">
                 <ImageView
                     android:layout_width="16dp"

@@ -23,16 +23,14 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.design.internal.NavigationMenu;
 import android.support.design.internal.NavigationSubMenu;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,13 +39,12 @@ import android.view.View;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ActivityMainBinding;
+import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
-import com.ruesga.rview.fragments.ChangesFragment;
-import com.ruesga.rview.fragments.ExceptionHandler;
-import com.ruesga.rview.fragments.UiInteractor;
-import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.fragments.ChangeDetailsFragment;
+import com.ruesga.rview.fragments.ChangeListFragment;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.CacheHelper;
-import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
@@ -56,7 +53,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ExceptionHandler, UiInteractor {
+public class MainActivity extends BaseActivity implements OnChangeItemPressedListener {
 
     private static final int INVALID_ITEM = -1;
 
@@ -74,8 +71,10 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
         public String accountName;
         public String accountRepository;
         public boolean isAccountExpanded;
+
         public int currentNavigationItemId = INVALID_ITEM;
-        public boolean isInProgress = false;
+        public String filterName;
+        public String filterQuery;
 
         public Model() {
         }
@@ -85,6 +84,12 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
             accountRepository = in.readString();
             isAccountExpanded = in.readByte() != 0;
             currentNavigationItemId = in.readInt();
+            if (in.readByte() == 1) {
+                filterName = in.readString();
+            }
+            if (in.readByte() == 1) {
+                filterQuery = in.readString();
+            }
         }
 
         @Override
@@ -93,6 +98,10 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
             dest.writeString(accountRepository);
             dest.writeByte((byte) (isAccountExpanded ? 1 : 0));
             dest.writeInt(currentNavigationItemId);
+            dest.writeByte((byte) (filterName != null ? 1 : 0));
+            dest.writeString(filterName);
+            dest.writeByte((byte) (filterQuery != null ? 1 : 0));
+            dest.writeString(filterQuery);
         }
 
         @Override
@@ -141,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
 
     private ActivityMainBinding mBinding;
     private NavigationHeaderBinding mHeaderDrawerBinding;
-    private Picasso mPicasso;
 
     private Model mModel;
     private final EventHandlers mEventHandlers = new EventHandlers(this);
@@ -151,12 +159,12 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
 
     private Handler mUiHandler;
 
+    private boolean mIsTwoPane;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         mUiHandler = new Handler(mMessenger);
-        mPicasso = PicassoHelper.getPicassoClient(this);
+        mIsTwoPane = getResources().getBoolean(R.bool.config_is_two_pane);
 
         onRestoreInstanceState(savedInstanceState);
 
@@ -165,9 +173,10 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
             mModel = new Model();
         }
 
+        super.onCreate(savedInstanceState);
+
         loadAccounts();
         launchAddAccountIfNeeded();
-        setupToolbar();
         setupNavigationDrawer();
 
         mBinding.setModel(mModel);
@@ -175,6 +184,14 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
         mHeaderDrawerBinding.setModel(mModel);
         mHeaderDrawerBinding.setHandlers(mEventHandlers);
 
+        if (getSupportActionBar() != null) {
+            if (mModel.filterName != null) {
+                getSupportActionBar().setTitle(mModel.filterName);
+                if (mModel.filterQuery != null) {
+                    getSupportActionBar().setSubtitle(mModel.filterQuery);
+                }
+            }
+        }
 
         // Navigate to current item
         requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
@@ -233,33 +250,18 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
     }
 
     @Override
-    public void handleException(String tag, Throwable cause) {
-        showError(ExceptionHelper.exceptionToMessage(this, tag, cause));
+    public ContentBinding getContentBinding() {
+        return mBinding.pageContentLayout;
     }
 
     @Override
-    public void changeInProgressStatus(boolean status) {
-        mModel.isInProgress = status;
-        mBinding.setModel(mModel);
+    public DrawerLayout getDrawerLayout() {
+        return mBinding.drawerLayout;
     }
 
     private void loadAccounts() {
         mAccount = Preferences.getAccount(this);
         mAccounts = Preferences.getAccounts(this);
-    }
-
-    private void setupToolbar() {
-        setSupportActionBar(mBinding.pageContentLayout.toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-            if (mBinding.drawerLayout != null) {
-                ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
-                        this, mBinding.drawerLayout, mBinding.pageContentLayout.toolbar, 0, 0);
-                mBinding.drawerLayout.addDrawerListener(drawerToggle);
-                drawerToggle.syncState();
-            }
-        }
     }
 
     private void setupNavigationDrawer() {
@@ -365,9 +367,10 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
                 }
 
                 // Is a filter menu?
-                String filter = getQueryFilterExpressionFromMenuItemOrder(item.getOrder());
-                if (filter != null) {
-                    openFilterFragment(item.getTitle(), filter);
+                mModel.filterQuery = getQueryFilterExpressionFromMenuItemOrder(item.getOrder());
+                if (mModel.filterQuery != null) {
+                    mModel.filterName = item.getTitle().toString();
+                    openFilterFragment(mModel.filterName, mModel.filterQuery);
                 }
 
                 break;
@@ -408,7 +411,8 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
         mModel.accountRepository = mAccount.getRepositoryDisplayName();
         mHeaderDrawerBinding.setModel(mModel);
 
-        PicassoHelper.bindAvatar(this, mPicasso, mAccount.mAccount,
+        PicassoHelper.bindAvatar(this, PicassoHelper.getPicassoClient(this),
+                mAccount.mAccount,
                 mHeaderDrawerBinding.accountAvatar,
                 PicassoHelper.getDefaultAvatar(this, android.R.color.white));
     }
@@ -498,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
         if (oldFragment != null) {
             tx.remove(oldFragment);
         }
-        Fragment newFragment = ChangesFragment.newInstance(filter);
+        Fragment newFragment = ChangeListFragment.newInstance(filter);
         tx.replace(R.id.content, newFragment, "list").commit();
     }
 
@@ -524,11 +528,23 @@ public class MainActivity extends AppCompatActivity implements ExceptionHandler,
         return null;
     }
 
-    private void showError(@StringRes int message) {
-        AndroidHelper.showErrorSnackbar(this, mBinding.pageContentLayout.getRoot(), message);
-    }
-
-    private void showWarning(@StringRes int message) {
-        AndroidHelper.showWarningSnackbar(this, mBinding.pageContentLayout.getRoot(), message);
+    @Override
+    public void onChangeItemPressed(ChangeInfo change) {
+        if (!mIsTwoPane) {
+            // Open activity
+            Intent intent = new Intent(this, ChangeDetailsActivity.class);
+            intent.putExtra(ChangeDetailsFragment.EXTRA_CHANGE_ID, change.changeId);
+            intent.putExtra(ChangeDetailsFragment.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
+            startActivity(intent);
+        } else {
+            // Open the filter fragment
+            FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+            Fragment oldFragment = getSupportFragmentManager().findFragmentByTag("details");
+            if (oldFragment != null) {
+                tx.remove(oldFragment);
+            }
+            Fragment newFragment = ChangeDetailsFragment.newInstance(change.changeId);
+            tx.replace(R.id.details, newFragment, "details").commit();
+        }
     }
 }

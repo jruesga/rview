@@ -31,10 +31,9 @@
         android:fitsSystemWindows="true"
         tools:context=".MainActivity">
 
-        <include layout="@layout/content"
-            android:id="@+id/page_content_layout"
-             app:model="@{model}"
-             app:handlers="@{handlers}" />
+        <include
+            layout="@layout/content"
+            android:id="@+id/page_content_layout" />
 
         <android.support.design.widget.NavigationView
             android:id="@+id/drawer_navigation_view"

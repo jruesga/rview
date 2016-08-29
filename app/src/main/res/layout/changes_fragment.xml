@@ -19,7 +19,7 @@
 
     <data>
         <import type="android.view.View" />
-        <variable name="model" type="com.ruesga.rview.fragments.ChangesFragment.Model" />
+        <variable name="model" type="com.ruesga.rview.fragments.ChangeListFragment.Model" />
     </data>
 
     <android.support.v4.widget.SwipeRefreshLayout

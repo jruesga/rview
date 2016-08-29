@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.fragments;
+package com.ruesga.rview;
 
-public interface UiInteractor {
-    void changeInProgressStatus(boolean status);
+import com.ruesga.rview.gerrit.model.ChangeInfo;
+
+public interface OnChangeItemPressedListener {
+    void onChangeItemPressed(ChangeInfo change);
 }

@@ -16,12 +16,15 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
@@ -42,7 +45,7 @@ public class ScoreLabelsView extends LinearLayout {
         public boolean visible = false;
         public String label;
         public String score;
-        public int color;
+        public ColorStateList color;
     }
 
     private static final Pattern sShortLabelPattern = Pattern.compile("[A-Z]+");
@@ -81,10 +84,18 @@ public class ScoreLabelsView extends LinearLayout {
     }
 
     public void setScores(Map<String, LabelInfo> scores) {
+        if (scores.size() == 0) {
+            mScores.clear();
+            setVisibility(View.GONE);
+            return;
+        } else {
+            setVisibility(View.VISIBLE);
+        }
+
         sortScores(scores);
         int i = 0;
         for (String label : mScores.keySet()) {
-            if (i <= getChildCount()) {
+            if (i >= getChildCount()) {
                 ScoreItemBinding binding = DataBindingUtil.inflate(
                         mInflater, R.layout.score_item, this, false);
                 addView(binding.getRoot());
@@ -94,18 +105,16 @@ public class ScoreLabelsView extends LinearLayout {
             Model model = mScores.get(label);
             model.visible = true;
             ScoreItemBinding binding = mBindings.get(i);
+            ViewCompat.setBackgroundTintList(binding.scoreLayout, model.color);
             binding.setModel(model);
             i++;
         }
-        if (i < getChildCount()) {
+        while (i < getChildCount()) {
             ScoreItemBinding binding = mBindings.get(i);
             Model model = new Model();
             binding.setModel(model);
+            i++;
         }
-    }
-
-    public void setShortLabels(boolean shortLabels) {
-        mIsShortLabels = shortLabels;
     }
 
     private void sortScores(Map<String, LabelInfo> scores) {
@@ -114,28 +123,29 @@ public class ScoreLabelsView extends LinearLayout {
             for (String label : scores.keySet()) {
                 final LabelInfo info = scores.get(label);
                 final Model model = new Model();
-                model.label = (mIsShortLabels ? toShortLabel(label) : label) + ":";
+                model.label = (mIsShortLabels ? toShortLabel(label) : label) + ": ";
                 final int color;
                 if (info.blocking) {
-                    model.score = "\u2717";
+                    model.score = getContext().getString(R.string.change_score_blocking);
                     color = R.color.rejected;
                 } else if (info.rejected != null) {
-                    model.score = "-2";
+                    model.score = getContext().getString(R.string.change_score_rejected);
                     color = R.color.rejected;
                 } else if (info.disliked != null) {
-                    model.score = "-1";
+                    model.score = getContext().getString(R.string.change_score_disliked);
                     color = R.color.rejected;
                 } else if (info.recommended != null) {
-                    model.score = "+1";
+                    model.score = getContext().getString(R.string.change_score_recommended);
                     color = R.color.approved;
                 } else if (info.approved != null) {
-                    model.score = "\u2713";
+                    model.score = getContext().getString(R.string.change_score_approved);
                     color = R.color.approved;
                 } else {
-                    model.score = "-";
-                    color = android.R.color.black;
+                    model.score = getContext().getString(R.string.change_score_no_score);
+                    color = R.color.noscore;
                 }
-                model.color = ContextCompat.getColor(getContext(), color);
+                model.color = ContextCompat.getColorStateList(getContext(), color);
+                model.visible = true;
                 mScores.put(model.label, model);
             }
         }

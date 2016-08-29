@@ -29,6 +29,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ruesga.rview.BaseActivity;
+import com.ruesga.rview.OnChangeItemPressedListener;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangesFragmentBinding;
@@ -57,9 +59,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
-public class ChangesFragment extends Fragment {
+public class ChangeListFragment extends Fragment {
 
-    private static final String TAG = "ChangesFragment";
+    private static final String TAG = "ChangeListFragment";
 
     private static final ChangeOptions[] OPTIONS = {
             ChangeOptions.DETAILED_ACCOUNTS, ChangeOptions.LABELS};
@@ -88,9 +90,9 @@ public class ChangesFragment extends Fragment {
     @ProguardIgnored
     @SuppressWarnings("unused")
     public static class ItemEventHandlers {
-        ChangesFragment mFragment;
+        ChangeListFragment mFragment;
 
-        public ItemEventHandlers(ChangesFragment fragment) {
+        public ItemEventHandlers(ChangeListFragment fragment) {
             mFragment = fragment;
         }
 
@@ -114,7 +116,7 @@ public class ChangesFragment extends Fragment {
         private final Picasso mPicasso;
         private final Context mContext;
 
-        public ChangesAdapter(ChangesFragment fragment) {
+        public ChangesAdapter(ChangeListFragment fragment) {
             setHasStableIds(true);
             mHandlers = new ItemEventHandlers(fragment);
             mPicasso = PicassoHelper.getPicassoClient(fragment.getContext());
@@ -198,7 +200,7 @@ public class ChangesFragment extends Fragment {
             // Hide your progress indicator and show that there was an error.
             mModel.hasData = false;
             mBinding.setModel(mModel);
-            ((ExceptionHandler) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error);
             showProgress(false);
         }
 
@@ -231,8 +233,8 @@ public class ChangesFragment extends Fragment {
 
     private RxLoader2<Integer, Integer, List<ChangeInfo>> mChangesLoader;
 
-    public static ChangesFragment newInstance(String filter) {
-        ChangesFragment fragment = new ChangesFragment();
+    public static ChangeListFragment newInstance(String filter) {
+        ChangeListFragment fragment = new ChangeListFragment();
         Bundle arguments = new Bundle();
         arguments.putString("filter", filter);
         fragment.setArguments(arguments);
@@ -385,7 +387,7 @@ public class ChangesFragment extends Fragment {
 
     private void showProgress(boolean show) {
         if (mEndlessScroller == null || !mEndlessScroller.isLoading()) {
-            ((UiInteractor) getActivity()).changeInProgressStatus(show);
+            ((BaseActivity) getActivity()).changeInProgressStatus(show);
         } else if (!show) {
             mEndlessScroller.loadCompleted();
         }
@@ -393,5 +395,6 @@ public class ChangesFragment extends Fragment {
     }
 
     private void onItemClick(ChangeInfo item) {
+        ((OnChangeItemPressedListener) getActivity()).onChangeItemPressed(item);
     }
 }

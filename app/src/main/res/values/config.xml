@@ -15,13 +15,5 @@
      limitations under the License.
  -->
 <resources>
-    <color name="primary">#05668d</color>
-    <color name="primaryDark">#044c69</color>
-    <color name="accent">#8d2205</color>
-    <color name="alert">#fbc02d</color>
-    <color name="textDisabledColor">#e0e0e0</color>
-    <color name="secondaryIconColor">#757575</color>
-    <color name="approved">#2e7d32</color>
-    <color name="rejected">#c62828</color>
-    <color name="noscore">#757575</color>
+    <bool name="config_is_two_pane">false</bool>
 </resources>

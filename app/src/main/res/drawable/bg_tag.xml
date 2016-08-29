@@ -14,14 +14,15 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources>
-    <color name="primary">#05668d</color>
-    <color name="primaryDark">#044c69</color>
-    <color name="accent">#8d2205</color>
-    <color name="alert">#fbc02d</color>
-    <color name="textDisabledColor">#e0e0e0</color>
-    <color name="secondaryIconColor">#757575</color>
-    <color name="approved">#2e7d32</color>
-    <color name="rejected">#c62828</color>
-    <color name="noscore">#757575</color>
-</resources>
+<!--<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF"/>
+    <stroke android:width="3dip" android:color="#B1BCBE" />
+    <corners android:radius="10dip"/>
+    <padding android:left="0dip" android:top="0dip" android:right="0dip" android:bottom="0dip" />
+</shape>-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/rejected"/>
+    <!--<stroke android:width="3dip" android:color="#B1BCBE" />-->
+    <corners android:radius="2dip"/>
+    <padding android:left="3dip" android:top="2dip" android:right="3dip" android:bottom="2dip" />
+</shape>

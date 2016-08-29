@@ -20,33 +20,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
         <variable name="model" type="com.ruesga.rview.widget.ScoreLabelsView.Model" />
     </data>
 
     <LinearLayout
+        android:id="@+id/score_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="8dp"
-        android:paddingEnd="8dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginEnd="3dp"
+        android:minWidth="36dp"
         android:orientation="horizontal"
+        android:background="@drawable/bg_tag"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:visibility="@{model.visible ? View.VISIBLE : View.GONE}"
         tools:ignore="RtlSymmetry">
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorSecondary"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="@android:color/white"
             android:text="@{model.label}"
             app:font="bold"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginLeft="5dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@{model.color}"
+            android:textAppearance="?android:attr/textAppearanceSmallInverse"
+            android:textColor="@android:color/white"
             android:text="@{model.score}"
             app:font="bold"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
     </LinearLayout>
 </layout>

@@ -64,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
-                android:layout_marginTop="-2dp"
+                android:layout_marginTop="-5dp"
                 app:spb_sections_count="4"
                 app:spb_color="?attr/colorAccent"
                 app:spb_speed="1.5"
@@ -77,10 +77,31 @@
                 app:spb_progressiveStop_speed="3.4"
                 android:visibility="@{model.isInProgress ? View.VISIBLE : View.INVISIBLE}" />
 
-            <FrameLayout
-                android:id="@+id/content"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:baselineAligned="false">
+                <FrameLayout
+                    android:id="@+id/content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.35"/>
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="3dp"
+                    android:paddingStart="3dp"
+                    android:background="@drawable/bg_shadow_end"
+                    tools:ignore="RtlSymmetry"/>
+
+                <FrameLayout
+                    android:id="@+id/details"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.65"/>
+            </LinearLayout>
         </FrameLayout>
 
     </android.support.design.widget.CoordinatorLayout>

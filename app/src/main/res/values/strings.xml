@@ -114,4 +114,13 @@
 
     <!-- Changes -->
     <string name="change_merge_conflict">Merge Conflict</string>
+    <string name="change_score_blocking">\u2717</string>
+    <string name="change_score_rejected">-2</string>
+    <string name="change_score_disliked">-1</string>
+    <string name="change_score_recommended">+1</string>
+    <string name="change_score_approved">\u2713</string>
+    <string name="change_score_no_score">\u0020</string>
+
+    <!-- Change Details -->
+    <string name="change_details_title">Change #<xliff:g id="changeId" example="157838">%1$s</xliff:g></string>
 </resources>

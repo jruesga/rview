@@ -32,7 +32,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:clearTaskOnLaunch="true">
+            android:clearTaskOnLaunch="true"
+            android:theme="@style/AppTheme.NoStatusBarColor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -41,8 +42,16 @@
         </activity>
 
         <activity
+            android:name=".ChangeDetailsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".wizards.SetupAccountActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoStatusBarColor">
         </activity>
 
     </application>

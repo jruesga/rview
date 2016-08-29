@@ -18,10 +18,10 @@
     <style name="AppTheme" parent="AppThemeBase">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
     </style>
 
     <style name="AppTheme.NoStatusBarColor" parent="AppTheme">
-        <item name="android:statusBarColor">?attr/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 </resources>
