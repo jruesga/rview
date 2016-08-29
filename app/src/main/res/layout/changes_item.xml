@@ -20,6 +20,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangesFragment.ItemEventHandlers" />
     </data>
@@ -141,6 +142,32 @@
                     android:textColor="?android:attr/textColorSecondary"
                     app:labels="@{model.labels}"
                     android:maxLines="1"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/mergeable_block"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_below="@id/branch_block"
+                android:visibility="@{model.mergeable ? View.GONE : View.VISIBLE}"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_warning"
+                    android:tint="@color/accent"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    tools:ignore="ContentDescription"/>
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_merge_conflict"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:textSize="12sp" />
             </LinearLayout>
         </RelativeLayout>

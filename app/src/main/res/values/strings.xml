@@ -111,4 +111,7 @@
     <string name="account_wizard_account_ready_page_title">Account ready</string>
     <string name="account_wizard_account_ready_page_message">Your account is ready and you can start reviewing changes in &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; right now.</string>
     <string name="account_wizard_repositories_chooser_title">Choose a repository</string>
+
+    <!-- Changes -->
+    <string name="change_merge_conflict">Merge Conflict</string>
 </resources>
