@@ -198,7 +198,7 @@ public class ChangeListFragment extends Fragment {
         @Override
         public void onError(Throwable error) {
             // Hide your progress indicator and show that there was an error.
-            mModel.hasData = false;
+            mModel.hasData = mAdapter.mData.size() == 0;
             mBinding.setModel(mModel);
             ((BaseActivity) getActivity()).handleException(TAG, error);
             showProgress(false);
