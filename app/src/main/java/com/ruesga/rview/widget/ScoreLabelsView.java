@@ -32,6 +32,8 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ScoreItemBinding;
 import com.ruesga.rview.gerrit.model.LabelInfo;
 
+import org.apmem.tools.layouts.FlowLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScoreLabelsView extends LinearLayout {
+public class ScoreLabelsView extends FlowLayout {
     @ProguardIgnored
     public static class Model {
         public boolean visible = false;
