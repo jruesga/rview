@@ -76,7 +76,7 @@ public class ScoreWithReviewersView extends LinearLayout {
             ScoreWithReviewItemBinding binding = mBindings.get(n);
             int value = entry.getKey();
             binding.setScore(value);
-            ViewCompat.setBackgroundTintList(binding.score,
+            ViewCompat.setBackgroundTintList(binding.scoreItem,
                     ContextCompat.getColorStateList(getContext(),
                         value < 0 ? R.color.rejected : R.color.approved));
             binding.reviewers.with(mPicasso).from(entry.getValue());

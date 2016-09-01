@@ -43,6 +43,7 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
@@ -52,6 +53,7 @@ import com.ruesga.rview.widget.DividerItemDecoration;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +102,11 @@ public class ChangeDetailsFragment extends Fragment {
     public static class FileItemModel {
         public String file;
         public FileInfo info;
+        public boolean isTotal;
+        public int totalAdded;
+        public int totalDeleted;
+        public boolean hasGraph = true;
+        public int inlineComments;
     }
 
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
@@ -203,12 +210,50 @@ public class ChangeDetailsFragment extends Fragment {
             mFiles.clear();
             Map<String, FileInfo> files =  mChange.revisions.get(mCurrentRevision).files;
             if (files != null) {
+                int added = 0;
+                int deleted = 0;
+                // Compute the added and deleted from revision instead from the change
+                // to be accurate with the current revision info
+                for (String key : files.keySet()) {
+                    FileInfo info = files.get(key);
+                    if (info.linesInserted != null) {
+                        added += info.linesInserted;
+                    }
+                    if (info.linesDeleted != null) {
+                        deleted += info.linesDeleted;
+                    }
+                }
+
+                // Create a model from each file
                 for (String key : files.keySet()) {
                     FileItemModel model = new FileItemModel();
                     model.file = key;
                     model.info = files.get(key);
+                    model.totalAdded = added;
+                    model.totalDeleted = deleted;
+                    if (response.mInlineComments.containsKey(key)) {
+                        model.inlineComments = response.mInlineComments.get(key);
+                    }
+                    model.hasGraph =
+                            (model.info.linesInserted != null && model.info.linesInserted > 0) ||
+                            (model.info.linesDeleted != null && model.info.linesDeleted > 0) ||
+                            model.inlineComments > 0;
                     mFiles.add(model);
                 }
+
+                // And add the total
+                FileItemModel total = new FileItemModel();
+                total.info = new FileInfo();
+                if (added > 0) {
+                    total.info.linesInserted = added;
+                }
+                if (deleted > 0) {
+                    total.info.linesDeleted = deleted;
+                }
+                total.isTotal = true;
+                total.totalAdded = added;
+                total.totalDeleted = deleted;
+                mFiles.add(total);
             }
         }
 
@@ -285,7 +330,9 @@ public class ChangeDetailsFragment extends Fragment {
 
             } else if (holder instanceof FileInfoViewHolder) {
                 FileInfoViewHolder fileInfoViewHolder = (FileInfoViewHolder) holder;
-                fileInfoViewHolder.mBinding.setModel(getFileInfoFromPosition(position));
+                FileItemModel model = getFileInfoFromPosition(position);
+                fileInfoViewHolder.mBinding.addedVsDeleted.with(model);
+                fileInfoViewHolder.mBinding.setModel(model);
 
             } else if (holder instanceof MessageViewHolder) {
                 ChangeMessageInfo message = getMessageFromPosition(position);
@@ -398,6 +445,7 @@ public class ChangeDetailsFragment extends Fragment {
     public static class DataResponse {
         ChangeInfo mChange;
         SubmitType mSubmitType;
+        Map<String, Integer> mInlineComments;
     }
 
     private final RxLoaderObserver<DataResponse> mChangeObserver =
@@ -489,17 +537,8 @@ public class ChangeDetailsFragment extends Fragment {
         return api.getChange(changeId, OPTIONS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .flatMap(change -> {
-                    DataResponse response = new DataResponse();
-                    response.mChange = change;
-                    if (change != null && (mAdapter.mCurrentRevision == null
-                            || change.currentRevision.equals(mAdapter.mCurrentRevision))) {
-                        response.mSubmitType = api.getChangeRevisionSubmitType(
-                                String.valueOf(change.legacyChangeId),
-                                change.currentRevision).toBlocking().first();
-                    }
-                    return Observable.just(response);
-                })
+                .flatMap(change -> fetchRevisionSubmitType(api, change))
+                .flatMap(response -> fetchRevisionInlineComments(api, response))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -516,5 +555,37 @@ public class ChangeDetailsFragment extends Fragment {
     private void showProgress(boolean show) {
         ((BaseActivity) getActivity()).changeInProgressStatus(show);
         mBinding.refresh.setEnabled(!show);
+    }
+
+    private Observable<DataResponse> fetchRevisionSubmitType(GerritApi api, ChangeInfo change) {
+        DataResponse response = new DataResponse();
+        response.mChange = change;
+        if (change != null && (mAdapter.mCurrentRevision == null
+                || change.currentRevision.equals(mAdapter.mCurrentRevision))) {
+            response.mSubmitType = api.getChangeRevisionSubmitType(
+                    String.valueOf(change.legacyChangeId),
+                    change.currentRevision).toBlocking().first();
+        }
+        return Observable.just(response);
+    }
+
+    private Observable<DataResponse> fetchRevisionInlineComments(
+            GerritApi api, DataResponse response) {
+        Map<String, Integer> inlineComments = new HashMap<>();
+        if (response.mChange != null) {
+            String revision = mAdapter.mCurrentRevision != null
+                    ? mAdapter.mCurrentRevision : response.mChange.currentRevision;
+            Map<String, List<CommentInfo>> revisionComments =
+                    api.getChangeRevisionComments(
+                            String.valueOf(response.mChange.legacyChangeId),
+                            revision).toBlocking().first();
+            if (revisionComments != null) {
+                for (String file : revisionComments.keySet()) {
+                    inlineComments.put(file, revisionComments.get(file).size());
+                }
+            }
+        }
+        response.mInlineComments = inlineComments;
+        return Observable.just(response);
     }
 }

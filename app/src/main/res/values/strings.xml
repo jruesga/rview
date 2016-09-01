@@ -55,6 +55,7 @@
 
     <!-- Formats -->
     <string name="committer_format"><xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e, <xliff:g id="commit_date" example="2 days ago">%3$s</xliff:g></string>
+    <string name="added_vs_deleted"><xliff:g id="added" example="243 added">%1$s</xliff:g>, <xliff:g id="deleted" example="243 deleted">%2$s</xliff:g></string>
 
     <!-- Pagination -->
     <string name="pagination_fetching_more">Fetching more</string>
@@ -144,6 +145,11 @@
     <string name="change_details_commit">Commit</string>
     <string name="change_details_parents">Parent(s)</string>
     <string name="change_details_change_id">Change-Id</string>
+
+    <!-- File statuses -->
+    <string name="file_status_renamed">Renamed</string>
+    <string name="file_status_copied">Copied</string>
+    <string name="file_status_rewritten">Rewritten</string>
 
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>

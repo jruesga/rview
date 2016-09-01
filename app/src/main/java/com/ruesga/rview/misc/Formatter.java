@@ -15,12 +15,17 @@
  */
 package com.ruesga.rview.misc;
 
+import android.content.res.Resources;
 import android.databinding.BindingAdapter;
+import android.text.TextUtils;
 import android.widget.TextView;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
+import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.model.CommitInfo;
+import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
 
@@ -107,5 +112,58 @@ public class Formatter {
         }
 
         view.setText(submitType.toString().replace("_", " "));
+    }
+
+    @BindingAdapter("fileStatus")
+    public static void toFileStatus(TextView view, ChangeDetailsFragment.FileItemModel item) {
+        if (item == null) {
+            view.setText(null);
+            return;
+        }
+
+        String status = "";
+        if (item.info.status.equals(FileStatus.R)) {
+            status = "[" + view.getContext().getString(R.string.file_status_renamed) + "] ";
+        } else if (item.info.status.equals(FileStatus.C)) {
+            status = "[" + view.getContext().getString(R.string.file_status_copied) + "] ";
+        } else if (item.info.status.equals(FileStatus.W)) {
+            status = "[" + view.getContext().getString(R.string.file_status_rewritten) + "] ";
+        }
+        String txt = status;
+        if (!TextUtils.isEmpty(item.info.oldPath)) {
+            txt += item.info.oldPath + " -> ";
+        }
+        txt += item.file;
+        view.setText(txt);
+    }
+
+    @BindingAdapter("addedVsDeleted")
+    public static void toAddedVsRemoved(TextView view, FileInfo info) {
+        if (info == null) {
+            view.setText(null);
+            return;
+        }
+
+        final Resources res = view.getResources();
+        String added = null;
+        if (info.linesInserted != null && info.linesInserted > 0) {
+            added = res.getQuantityString(
+                    R.plurals.files_added, info.linesInserted, info.linesInserted);
+        }
+        String deleted = null;
+        if (info.linesDeleted != null && info.linesDeleted > 0) {
+            deleted = res.getQuantityString(
+                    R.plurals.files_deleted, info.linesDeleted, info.linesDeleted);
+        }
+
+        String txt = null;
+        if (added != null && deleted != null) {
+            txt = res.getString(R.string.added_vs_deleted, added, deleted);
+        } else if (added != null) {
+            txt = added;
+        } else if (deleted != null) {
+            txt = deleted;
+        }
+        view.setText(txt);
     }
 }

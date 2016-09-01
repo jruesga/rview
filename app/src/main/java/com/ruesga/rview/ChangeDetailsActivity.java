@@ -49,13 +49,13 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
         int legacyChangeId = getIntent().getIntExtra(EXTRA_LEGACY_CHANGE_ID, -1);
         if (legacyChangeId == -1) {
-             finish();
-             return;
+            finish();
+            return;
         }
         String changeId = getIntent().getStringExtra(EXTRA_CHANGE_ID);
         if (changeId == null) {
-             finish();
-             return;
+            finish();
+            return;
         }
 
         // Setup the title

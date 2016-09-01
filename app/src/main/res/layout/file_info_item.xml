@@ -15,26 +15,84 @@
      limitations under the License.
  -->
 <layout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.FileStatus" />
         <variable name="model" type="com.ruesga.rview.fragments.ChangeDetailsFragment.FileItemModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:minHeight="48dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <com.ruesga.rview.widget.StyleableTextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{model.file}"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="12sp" />
+            android:visibility="@{model.file == null ? View.GONE : View.VISIBLE}"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@{model.file == null ? null : model.info.status.equals(FileStatus.A) ? @drawable/ic_add_circle_outline : model.info.status.equals(FileStatus.D) ? @drawable/ic_remove_circle_outline : @drawable/ic_modify_circle_outline}"
+                tools:ignore="ContentDescription"/>
 
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:fileStatus="@{model}"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{model.hasGraph ? View.VISIBLE : View.GONE}"
+            android:orientation="horizontal">
+            <com.ruesga.rview.widget.AddedVsDeletedGraphView
+                android:id="@+id/added_vs_deleted"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="23dp"
+                android:layout_marginStart="23dp"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:visibility="@{model.inlineComments &gt; 0 ? View.VISIBLE : View.GONE}"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_comment"
+                    android:tint="?attr/colorPrimaryDark"
+                    tools:ignore="ContentDescription"/>
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginStart="3dp"
+                    android:text="@{String.valueOf(model.inlineComments)}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </layout>
