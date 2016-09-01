@@ -568,11 +568,15 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<DataResponse> fetchChange(String changeId) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return api.getChange(changeId, OPTIONS)
+        final String revision = mAdapter.mCurrentRevision == null
+                ? GerritApi.CURRENT_REVISION : mAdapter.mCurrentRevision;
+        return Observable.zip(
+                    api.getChange(changeId, OPTIONS),
+                    api.getChangeRevisionSubmitType(mChangeId, revision),
+                    api.getChangeRevisionComments(mChangeId, revision),
+                    this::combineResponse
+                )
                 .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .flatMap(change -> fetchRevisionSubmitType(api, change))
-                .flatMap(response -> fetchRevisionInlineComments(api, response))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -591,35 +595,21 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.refresh.setEnabled(!show);
     }
 
-    private Observable<DataResponse> fetchRevisionSubmitType(GerritApi api, ChangeInfo change) {
-        DataResponse response = new DataResponse();
-        response.mChange = change;
-        if (change != null && (mAdapter.mCurrentRevision == null
-                || change.currentRevision.equals(mAdapter.mCurrentRevision))) {
-            response.mSubmitType = api.getChangeRevisionSubmitType(
-                    String.valueOf(change.legacyChangeId),
-                    change.currentRevision).toBlocking().first();
-        }
-        return Observable.just(response);
-    }
-
-    private Observable<DataResponse> fetchRevisionInlineComments(
-            GerritApi api, DataResponse response) {
+    private DataResponse combineResponse(ChangeInfo change, SubmitType submitType,
+            Map<String, List<CommentInfo>> revisionComments) {
+        // Map inline comments
         Map<String, Integer> inlineComments = new HashMap<>();
-        if (response.mChange != null) {
-            String revision = mAdapter.mCurrentRevision != null
-                    ? mAdapter.mCurrentRevision : response.mChange.currentRevision;
-            Map<String, List<CommentInfo>> revisionComments =
-                    api.getChangeRevisionComments(
-                            String.valueOf(response.mChange.legacyChangeId),
-                            revision).toBlocking().first();
-            if (revisionComments != null) {
-                for (String file : revisionComments.keySet()) {
-                    inlineComments.put(file, revisionComments.get(file).size());
-                }
+        if (revisionComments != null) {
+            for (String file : revisionComments.keySet()) {
+                inlineComments.put(file, revisionComments.get(file).size());
             }
         }
+
+        DataResponse response = new DataResponse();
+        response.mChange = change;
+        response.mSubmitType = submitType;
         response.mInlineComments = inlineComments;
-        return Observable.just(response);
+        return response;
     }
+
 }

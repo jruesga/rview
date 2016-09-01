@@ -90,6 +90,11 @@ public interface GerritApi {
     String DEFAULT_DASHBOARD = "default";
 
     /**
+     * The current revision
+     */
+    String CURRENT_REVISION = "current";
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#query-account"
      */
     @GET("accounts/")
