@@ -36,6 +36,7 @@
             android:text="@{model.commit.subject}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="?android:attr/textColorPrimary"
+            android:textIsSelectable="true"
             app:font="condensed"
             android:textSize="16sp" />
 
@@ -46,7 +47,8 @@
             app:commitMessage="@{model.commit}"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorSecondary"
-            android:autoLink="email"
+            android:textIsSelectable="true"
+            android:autoLink="email|web"
             android:textSize="12sp" />
 
         <View
