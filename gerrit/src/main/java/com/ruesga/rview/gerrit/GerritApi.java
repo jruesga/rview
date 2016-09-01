@@ -105,7 +105,7 @@ public interface GerritApi {
             @NonNull @Query("q") AccountQuery query,
             @Nullable @Query("n") Integer count,
             @Nullable @Query("S") Integer start,
-            @Nullable @Query("o") AccountOptions[] options);
+            @Nullable @Query("o") List<AccountOptions> options);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account"
@@ -318,7 +318,7 @@ public interface GerritApi {
     @GET("accounts/{account-id}/capabilities")
     Observable<AccountCapabilityInfo> getAccountCapabilities(
             @NonNull @Path("account-id") String accountId,
-            @Nullable @Query("q") Capability[] filter);
+            @Nullable @Query("q") List<Capability> filter);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#check-account-capabilities"
@@ -410,7 +410,7 @@ public interface GerritApi {
     @POST("accounts/{account-id}/watched.projects")
     Observable<List<ProjectWatchInfo>> addOrUpdateAccountWatchedProjects(
             @NonNull @Path("account-id") String accountId,
-            @NonNull @Body ProjectWatchInput[] input);
+            @NonNull @Body List<ProjectWatchInput> input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-watched-projects"
@@ -419,7 +419,7 @@ public interface GerritApi {
     @POST("accounts/{account-id}/watched.projects")
     Observable<Void> deleteAccountWatchedProjects(
             @NonNull @Path("account-id") String accountId,
-            @NonNull @Body DeleteProjectWatchInput[] input);
+            @NonNull @Body List<DeleteProjectWatchInput> input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-changes-with-default-star"
@@ -507,7 +507,7 @@ public interface GerritApi {
             @NonNull @Query("q") ChangeQuery query,
             @Nullable @Query("n") Integer count,
             @Nullable @Query("S") Integer start,
-            @Nullable @Query("o") ChangeOptions[] options);
+            @Nullable @Query("o") List<ChangeOptions> options);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change"
@@ -515,7 +515,7 @@ public interface GerritApi {
     @GET("changes/{change-id}")
     Observable<ChangeInfo> getChange(
             @NonNull @Path("change-id") String changeId,
-            @Nullable @Query("o") ChangeOptions[] options);
+            @Nullable @Query("o") List<ChangeOptions> options);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-detail"
@@ -523,7 +523,7 @@ public interface GerritApi {
     @GET("changes/{change-id}/detail")
     Observable<ChangeInfo> getChangeDetail(
             @NonNull @Path("change-id") String changeId,
-            @Nullable @Query("o") ChangeOptions[] options);
+            @Nullable @Query("o") List<ChangeOptions> options);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-topic"
@@ -606,7 +606,7 @@ public interface GerritApi {
     @GET("changes/{change-id}/submitted_together")
     Observable<SubmittedTogetherInfo> getChangesSubmittedTogether(
             @NonNull @Path("change-id") String changeId,
-            @Nullable @Query("o") SubmittedTogetherOptions[] options);
+            @Nullable @Query("o") List<SubmittedTogetherOptions> options);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#publish-draft-change"
@@ -1235,7 +1235,7 @@ public interface GerritApi {
             @Nullable @Query("owned") Option owned,
             @Nullable @Query("visible-to-all") Option visibleToAll,
             @Nullable @Query("verbose") Option verbose,
-            @Nullable @Query("o") GroupOptions[] options);
+            @Nullable @Query("o") List<GroupOptions> options);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group"

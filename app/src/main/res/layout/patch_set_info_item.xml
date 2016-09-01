@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="changeId" type="java.lang.String" />
+        <variable name="revision" type="java.lang.String" />
+        <variable name="model" type="com.ruesga.rview.gerrit.model.RevisionInfo" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{model.commit.subject}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="?android:attr/textColorPrimary"
+            app:font="condensed"
+            android:textSize="16sp" />
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:commitMessage="@{model.commit}"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:autoLink="email"
+            android:textSize="12sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_margin="16dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:orientation="horizontal">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:text="@string/change_details_author"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:committer="@{model.commit.author}"
+                android:autoLink="email"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:orientation="horizontal">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:text="@string/change_details_committer"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                app:committer="@{model.commit.committer}"
+                android:autoLink="email"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:orientation="horizontal">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:text="@string/change_details_commit"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+            <include layout="@layout/commit_item"
+                app:revision="@{revision}"
+                app:commit="@{model.commit}" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:orientation="horizontal">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:text="@string/change_details_parents"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+            <com.ruesga.rview.widget.ParentCommitsView
+                android:id="@+id/parent_commits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:orientation="horizontal">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:text="@string/change_details_change_id"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:text="@{changeId}"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textIsSelectable="true"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

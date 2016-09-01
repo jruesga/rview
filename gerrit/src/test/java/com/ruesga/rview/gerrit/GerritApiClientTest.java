@@ -90,6 +90,20 @@ public class GerritApiClientTest {
     }
 
     @Test
+    public void testCacheServerVersion() {
+        final int count = 5;
+        final GerritApiClient client = getGerritClient(ENDPOINT);
+        ChangeQuery query = new ChangeQuery().status(StatusType.OPEN);
+        List<ChangeInfo> changes = client.getChanges(query, count, 0, null).toBlocking().first();
+        assertNotNull(changes);
+        assertEquals(changes.size(), count);
+
+        // And version should also be cached
+        assertNotNull(client.mServerVersion);
+        assertTrue(client.mServerVersion.getVersion() >= GerritApi.API_VERSION);
+    }
+
+    @Test
     public void testListOpenChanges() {
         final int count = 5;
         final GerritApiClient client = getGerritClient(ENDPOINT);

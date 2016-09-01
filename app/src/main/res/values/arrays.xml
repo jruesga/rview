@@ -31,4 +31,11 @@
         <item>is:starred</item>
         <item>is:watched AND is:open</item>
     </string-array>
+
+    <string-array name="change_details_headers" translatable="false">
+        <item>@string/change_details_header_patchset_details</item>
+        <item>@string/change_details_header_change_details</item>
+        <item>@string/change_details_header_files</item>
+        <item>@string/change_details_header_messages</item>
+    </string-array>
 </resources>

@@ -18,7 +18,6 @@ package com.ruesga.rview;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,20 +33,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     @ProguardIgnored
     public static class Model implements Parcelable {
         public boolean isInProgress = false;
-        public boolean hasTab = false;
 
         public Model() {
         }
 
         protected Model(Parcel in) {
             isInProgress = in.readByte() != 0;
-            hasTab = in.readByte() != 0;
         }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeByte((byte) (isInProgress ? 1 : 0));
-            dest.writeByte((byte) (hasTab ? 1 : 0));
         }
 
         @Override
@@ -71,17 +67,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private Model mModel = new Model();
 
-    public abstract ContentBinding getContentBinding();
-
     public abstract DrawerLayout getDrawerLayout();
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setupToolbar();
-    }
+    public abstract ContentBinding getContentBinding();
 
-    private void setupToolbar() {
+    protected void setupToolbar() {
         setSupportActionBar(getContentBinding().toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

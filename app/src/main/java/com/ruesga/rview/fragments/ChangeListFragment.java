@@ -56,15 +56,16 @@ import me.tatarka.rxloader.RxLoaderManagerCompat;
 import me.tatarka.rxloader.RxLoaderObserver;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 public class ChangeListFragment extends Fragment {
 
     private static final String TAG = "ChangeListFragment";
 
-    private static final ChangeOptions[] OPTIONS = {
-            ChangeOptions.DETAILED_ACCOUNTS, ChangeOptions.LABELS};
+    private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
+        add(ChangeOptions.DETAILED_ACCOUNTS);
+        add(ChangeOptions.LABELS);
+    }};
 
     private static final int FETCHED_CHANGES = 50;
     private static final int FETCHED_MORE_CHANGES_THRESHOLD = 10;
@@ -284,15 +285,8 @@ public class ChangeListFragment extends Fragment {
 
         // Fetch or join current loader
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-        mChangesLoader = loaderManager.create(
-                new Func2<Integer, Integer, Observable<List<ChangeInfo>>>() {
-                    @Override
-                    public Observable<List<ChangeInfo>> call(
-                            final Integer count, final Integer start) {
-                        return fetchChanges(count, start);
-                    }
-                },
-                mLoaderObserver)
+        mChangesLoader = loaderManager
+                .create(this::fetchChanges, mLoaderObserver)
                 .start(FETCHED_CHANGES, 0);
     }
 

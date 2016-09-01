@@ -49,7 +49,6 @@ import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -168,13 +167,14 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
 
         onRestoreInstanceState(savedInstanceState);
 
+        super.onCreate(savedInstanceState);
+
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         if (mModel == null) {
             mModel = new Model();
         }
 
-        super.onCreate(savedInstanceState);
-
+        setupToolbar();
         loadAccounts();
         launchAddAccountIfNeeded();
         setupNavigationDrawer();
@@ -543,7 +543,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
             if (oldFragment != null) {
                 tx.remove(oldFragment);
             }
-            Fragment newFragment = ChangeDetailsFragment.newInstance(change.changeId);
+            Fragment newFragment = ChangeDetailsFragment.newInstance(change.legacyChangeId);
             tx.replace(R.id.details, newFragment, "details").commit();
         }
     }

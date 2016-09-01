@@ -53,7 +53,6 @@ public class PicassoHelper {
                     Response originalResponse = chain.proceed(chain.request());
                     return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();
                 })
-                .addInterceptor(createLoggingInterceptor())
                 .cache(new Cache(cacheDir, CacheHelper.MAX_DISK_CACHE))
                 .build();
         OkHttp3Downloader downloader = new OkHttp3Downloader(client);
@@ -80,7 +79,6 @@ public class PicassoHelper {
             picasso.load(urls.get(0))
                     .placeholder(placeholder)
                     .transform(new CircleTransform())
-                    .fit()
                     .into(view, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -97,12 +95,6 @@ public class PicassoHelper {
             // Placeholder
             view.setImageDrawable(placeholder);
         }
-    }
-
-    private static HttpLoggingInterceptor createLoggingInterceptor() {
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(message -> Log.i(TAG ,message));
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        return logging;
     }
 
     // http://stackoverflow.com/questions/26112150/android-create-circular-image-with-picasso

@@ -22,7 +22,6 @@ def libraries = rootProject.ext.libraries;
 dependencies {
     compile project(':gerrit')
     compile project(':wizard')
-    //compile project(':drawer')
     compile "com.android.support:support-v4:${libraries.support}"
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:design:${libraries.support}"
@@ -37,6 +36,7 @@ dependencies {
     compile "com.squareup.picasso:picasso:${libraries.picasso2}"
     compile "com.jakewharton.picasso:picasso2-okhttp3-downloader:${libraries.picasso2_okhttp3_downloader}"
     compile "org.ocpsoft.prettytime:prettytime:${libraries.prettytime}"
+    compile "org.apmem.tools:layouts:${libraries.flowlayout}"
 }
 
 android {

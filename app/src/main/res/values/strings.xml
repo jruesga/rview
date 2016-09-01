@@ -53,6 +53,9 @@
     <string name="exception_bad_request">Bad request</string>
     <string name="exception_request_error">Request error</string>
 
+    <!-- Formats -->
+    <string name="committer_format"><xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e, <xliff:g id="commit_date" example="2 days ago">%3$s</xliff:g></string>
+
     <!-- Pagination -->
     <string name="pagination_fetching_more">Fetching more</string>
 
@@ -60,6 +63,7 @@
     <string name="validator_account_exists">Account exists</string>
 
     <!-- Accounts -->
+    <string name="account_build_bot_system_name" translatable="false">Gerrit Code Review</string>
     <string name="account_anonymous_coward">Anonymous Coward</string>
     <string name="account_deletion_title">Account deletion</string>
     <string name="account_deletion_message">This action will delete the account and all its information.</string>
@@ -123,4 +127,25 @@
 
     <!-- Change Details -->
     <string name="change_details_title">Change #<xliff:g id="changeId" example="157838">%1$s</xliff:g></string>
+    <string name="change_details_header_change_details">Change details</string>
+    <string name="change_details_header_patchset_details">Patch Set details</string>
+    <string name="change_details_header_files">Files</string>
+    <string name="change_details_header_messages">Messages</string>
+    <string name="change_details_owner">Owner</string>
+    <string name="change_details_reviewers">Reviewers</string>
+    <string name="change_details_project">Project</string>
+    <string name="change_details_branch">Branch</string>
+    <string name="change_details_topic">Topic</string>
+    <string name="change_details_strategy">Strategy</string>
+    <string name="change_details_created">Created</string>
+    <string name="change_details_updated">Updated</string>
+    <string name="change_details_author">Author</string>
+    <string name="change_details_committer">Committer</string>
+    <string name="change_details_commit">Commit</string>
+    <string name="change_details_parents">Parent(s)</string>
+    <string name="change_details_change_id">Change-Id</string>
+
+    <!-- Chips -->
+    <string name="chip_remove" translatable="false">X</string>
+
 </resources>

@@ -27,6 +27,6 @@ public class CommitInfo {
     @SerializedName("committer") public GitPersonalInfo committer;
     @SerializedName("subject") public String subject;
     @SerializedName("message") public String message;
-    @SerializedName("web_links") public WebLinkInfo webLinks;
+    @SerializedName("web_links") public WebLinkInfo[] webLinks;
 }
 

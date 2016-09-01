@@ -30,9 +30,9 @@ public class RevisionInfo {
     @SerializedName("created") public Date created;
     @SerializedName("uploader") public AccountInfo uploader;
     @SerializedName("ref") public String ref;
-    @SerializedName("fetch") public Map<FetchProtocol, FetchInfo> fetch;
+    @SerializedName("fetch") public Map<String, FetchInfo> fetch;
     @SerializedName("commit") public CommitInfo commit;
-    @SerializedName("files") public FileInfo files;
+    @SerializedName("files") public Map<String, FileInfo> files;
     @SerializedName("actions") public Map<String, ActionInfo> actions;
     @SerializedName("reviewed") public boolean reviewed;
     @SerializedName("messageWithFooter") public String messageWithFooter;

@@ -18,7 +18,11 @@ package com.ruesga.rview.misc;
 import android.databinding.BindingAdapter;
 import android.widget.TextView;
 
+import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
+import com.ruesga.rview.gerrit.model.CommitInfo;
+import com.ruesga.rview.gerrit.model.GitPersonalInfo;
+import com.ruesga.rview.gerrit.model.SubmitType;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -34,10 +38,74 @@ public class Formatter {
 
     @BindingAdapter("prettyDateTime")
     public static void toPrettyDateTime(TextView view, Date date) {
+        if (date == null) {
+            view.setText(null);
+            return;
+        }
+
         Locale locale = AndroidHelper.getCurrentLocale(view.getContext());
         if (!sPrettyTimeMap.containsKey(locale)) {
             sPrettyTimeMap.put(locale, new PrettyTime(locale));
         }
         view.setText(sPrettyTimeMap.get(locale).format(date));
+    }
+
+    @BindingAdapter("compressedText")
+    public static void toCompressedText(TextView view, String value) {
+        if (value == null) {
+            view.setText(null);
+            return;
+        }
+        view.setText(value.replaceAll("\n", " ").trim());
+    }
+
+    @BindingAdapter("commitMessage")
+    @SuppressWarnings("deprecation")
+    public static void toCommitMessage(TextView view, CommitInfo info) {
+        if (info == null || info.message == null) {
+            view.setText(null);
+            return;
+        }
+
+        String message = info.message.substring(info.subject.length()).trim();
+        view.setText(message);
+    }
+
+    @BindingAdapter("committer")
+    public static void toCommitter(TextView view, GitPersonalInfo info) {
+        if (info == null) {
+            view.setText(null);
+            return;
+        }
+
+        Locale locale = AndroidHelper.getCurrentLocale(view.getContext());
+        if (!sPrettyTimeMap.containsKey(locale)) {
+            sPrettyTimeMap.put(locale, new PrettyTime(locale));
+        }
+        String date = sPrettyTimeMap.get(locale).format(info.date);
+        String txt = view.getContext().getString(
+                R.string.committer_format, info.name, info.email, date);
+        view.setText(txt);
+    }
+
+    @BindingAdapter("score")
+    public static void toScore(TextView view, Integer score) {
+        if (score == null) {
+            view.setText(null);
+            return;
+        }
+
+        String txt = (score > 0 ? "+" : "") + String.valueOf(score);
+        view.setText(txt);
+    }
+
+    @BindingAdapter("submitType")
+    public static void toSubmitType(TextView view, SubmitType submitType) {
+        if (submitType == null) {
+            view.setText(null);
+            return;
+        }
+
+        view.setText(submitType.toString().replace("_", " "));
     }
 }

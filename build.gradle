@@ -30,7 +30,8 @@ ext {
         smoothprogressbar           : '1.1.0',
         picasso2                    : '2.5.2',
         picasso2_okhttp3_downloader : '1.0.2',
-        prettytime                  : '4.0.1.Final'
+        prettytime                  : '4.0.1.Final',
+        flowlayout                  : '1.10'
     ]
 
     testLibraries = [
