@@ -94,6 +94,20 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     @ProguardIgnored
+    @SuppressWarnings({"UnusedParameters", "unused"})
+    public static class EventHandlers {
+        private final ChangeDetailsFragment mFragment;
+
+        public EventHandlers(ChangeDetailsFragment fragment) {
+            mFragment = fragment;
+        }
+
+        public void onMessageExpandedCollapsed(View v) {
+            mFragment.mAdapter.performExpandCollapseMessage((int) v.getTag());
+        }
+    }
+
+    @ProguardIgnored
     public static class HeaderItemModel {
         public String title;
     }
@@ -159,6 +173,7 @@ public class ChangeDetailsFragment extends Fragment {
         public MessageViewHolder(MessageItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
+            mBinding.setExpanded(false);
             binding.executePendingBindings();
         }
     }
@@ -175,6 +190,7 @@ public class ChangeDetailsFragment extends Fragment {
         private SubmitType mSubmitType;
         private final List<FileItemModel> mFiles = new ArrayList<>();
         private String mCurrentRevision;
+        private boolean[] mExpandedMessages;
 
         private final HeaderItemModel[] mHeaderModels;
         private final boolean mIsTwoPane;
@@ -182,11 +198,15 @@ public class ChangeDetailsFragment extends Fragment {
         private final Picasso mPicasso;
         private final AccountInfo mBuildBotSystemAccount;
 
+        private final EventHandlers mEventHandlers;
+
         public ChangeAdapter(ChangeDetailsFragment fragment) {
             final Resources res = fragment.getResources();
             mChange = null;
             mPicasso = PicassoHelper.getPicassoClient(fragment.getContext());
             mIsTwoPane = res.getBoolean(R.bool.config_is_two_pane);
+
+            mEventHandlers = new EventHandlers(fragment);
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -255,6 +275,10 @@ public class ChangeDetailsFragment extends Fragment {
                 total.totalDeleted = deleted;
                 mFiles.add(total);
             }
+
+            // Expanded messages
+            mExpandedMessages = new boolean[
+                    mChange.messages != null ? mChange.messages.length : 0];
         }
 
         @Override
@@ -335,12 +359,17 @@ public class ChangeDetailsFragment extends Fragment {
                 fileInfoViewHolder.mBinding.setModel(model);
 
             } else if (holder instanceof MessageViewHolder) {
-                ChangeMessageInfo message = getMessageFromPosition(position);
+                int index = getMessageIndexFromPosition(position);
+                ChangeMessageInfo message = mChange.messages[index];
+                boolean expanded = mExpandedMessages[index];
                 if (message.author == null) {
                     message.author = mBuildBotSystemAccount;
                 }
                 MessageViewHolder messageViewHolder = (MessageViewHolder) holder;
+                messageViewHolder.mBinding.setExpanded(expanded);
                 messageViewHolder.mBinding.setModel(message);
+                messageViewHolder.mBinding.setHandlers(mEventHandlers);
+                messageViewHolder.mBinding.getRoot().setTag(index);
             }
         }
 
@@ -434,11 +463,16 @@ public class ChangeDetailsFragment extends Fragment {
             return mFiles.get(position - 5);
         }
 
-        private ChangeMessageInfo getMessageFromPosition(int position) {
+        private int getMessageIndexFromPosition(int position) {
             if (mIsTwoPane) {
-                return mChange.messages[position - 3 - getFileItems()];
+                return position - 3 - getFileItems();
             }
-            return mChange.messages[position - 6 - getFileItems()];
+            return position - 6 - getFileItems();
+        }
+
+        private void performExpandCollapseMessage(int message) {
+            mExpandedMessages[message] = !mExpandedMessages[message];
+            notifyItemChanged(message + getFileItems() + (mIsTwoPane ? 3 : 6));
         }
     }
 
