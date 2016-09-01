@@ -42,7 +42,8 @@
         </activity>
 
         <activity
-            android:name=".ChangeDetailsActivity">
+            android:name=".ChangeDetailsActivity"
+            android:parentActivityName=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
