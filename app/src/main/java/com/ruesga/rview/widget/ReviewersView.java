@@ -124,10 +124,12 @@ public class ReviewersView extends FlowLayout {
         List<Integer> accountIds = new ArrayList<>();
         List<AccountInfo> reviewers = new ArrayList<>();
         for (String label : change.labels.keySet()) {
-            for (ApprovalInfo approval : change.labels.get(label).all) {
-                if (!accountIds.contains(approval.owner.accountId)) {
-                    accountIds.add(approval.owner.accountId);
-                    reviewers.add(approval.owner);
+            if (change.labels.get(label).all !=  null) {
+                for (ApprovalInfo approval : change.labels.get(label).all) {
+                    if (!accountIds.contains(approval.owner.accountId)) {
+                        accountIds.add(approval.owner.accountId);
+                        reviewers.add(approval.owner);
+                    }
                 }
             }
         }
