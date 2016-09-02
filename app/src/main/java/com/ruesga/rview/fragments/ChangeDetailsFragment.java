@@ -44,6 +44,7 @@ import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
+import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.widget.DividerItemDecoration;
@@ -117,6 +118,13 @@ public class ChangeDetailsFragment extends Fragment {
         public void onMessageExpandedCollapsed(View v) {
             mFragment.mMessageAdapter.performExpandCollapseMessage((int) v.getTag());
         }
+
+        public void onWebLinkPressed(View v) {
+            String url = (String) v.getTag();
+            if (url != null) {
+                AndroidHelper.openUrlInCustomTabs(mFragment.getActivity(), url);
+            }
+        }
     }
 
     @ProguardIgnored
@@ -151,6 +159,11 @@ public class ChangeDetailsFragment extends Fragment {
 
     private static class FileAdapter extends RecyclerView.Adapter<FileInfoViewHolder> {
         private final List<FileItemModel> mFiles = new ArrayList<>();
+        private final EventHandlers mEventHandlers;
+
+        public FileAdapter(EventHandlers handlers) {
+            mEventHandlers = handlers;
+        }
 
         void update(Map<String, FileInfo> files, Map<String, Integer> inlineComments) {
             mFiles.clear();
@@ -232,10 +245,9 @@ public class ChangeDetailsFragment extends Fragment {
         private ChangeMessageInfo[] mMessages;
         private boolean[] mExpanded;
 
-        public MessageAdapter(ChangeDetailsFragment fragment) {
+        public MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers) {
             final Resources res = fragment.getResources();
-
-            mEventHandlers = new EventHandlers(fragment);
+            mEventHandlers = handlers;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -333,6 +345,7 @@ public class ChangeDetailsFragment extends Fragment {
     private FileAdapter mFileAdapter;
     private MessageAdapter mMessageAdapter;
 
+    private EventHandlers mEventHandlers;
     private final Model mModel = new Model();
     private String mCurrentRevision;
 
@@ -377,8 +390,8 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.patchSetInfo.setRevision(mCurrentRevision);
         RevisionInfo revision = change.revisions.get(mCurrentRevision);
         mBinding.patchSetInfo.setModel(revision);
-        mBinding.patchSetInfo.parentCommits.from(revision.commit);
-
+        mBinding.patchSetInfo.setHandlers(mEventHandlers);
+        mBinding.patchSetInfo.parentCommits.with(mEventHandlers).from(revision.commit);
     }
 
     private void updateChangeInfo(ChangeInfo change, SubmitType submitType) {
@@ -389,6 +402,7 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.changeInfo.labels.with(mPicasso).from(change);
         mBinding.changeInfo.setModel(change);
         mBinding.changeInfo.setSubmitType(submitType);
+        mBinding.changeInfo.setHandlers(mEventHandlers);
     }
 
     private void startLoadersWithValidContext() {
@@ -397,14 +411,16 @@ public class ChangeDetailsFragment extends Fragment {
         }
 
         if (mFileAdapter == null) {
-            mFileAdapter = new FileAdapter();
+            mEventHandlers = new EventHandlers(this);
+
+            mFileAdapter = new FileAdapter(mEventHandlers);
             mBinding.fileInfo.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.fileInfo.list.addItemDecoration(new DividerItemDecoration(
                     getContext(), LinearLayoutManager.VERTICAL));
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
-            mMessageAdapter = new MessageAdapter(this);
+            mMessageAdapter = new MessageAdapter(this, mEventHandlers);
             mBinding.messageInfo.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.messageInfo.list.addItemDecoration(new DividerItemDecoration(

@@ -15,13 +15,15 @@
      limitations under the License.
  -->
 <layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="android.view.View" />
         <variable name="revision" type="java.lang.String" />
         <variable name="commit" type="com.ruesga.rview.gerrit.model.CommitInfo" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
     <LinearLayout
@@ -50,6 +52,9 @@
             android:src="@drawable/ic_open_in_new"
             android:tint="?attr/colorPrimaryDark"
             android:tag="@{revision}"
+            android:onClick="@{handlers::onWebLinkPressed}"
+            app:commitWebLinksTag="@{commit}"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:visibility="@{commit.webLinks == null || commit.webLinks.length == 0 ? View.GONE : View.VISIBLE}"
             tools:ignore="ContentDescription"/>
     </LinearLayout>

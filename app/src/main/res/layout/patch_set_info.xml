@@ -22,6 +22,7 @@
         <variable name="changeId" type="java.lang.String" />
         <variable name="revision" type="java.lang.String" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.RevisionInfo" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
     <android.support.v7.widget.CardView
@@ -132,7 +133,8 @@
                     android:textSize="12sp" />
                 <include layout="@layout/commit_item"
                     app:revision="@{revision}"
-                    app:commit="@{model.commit}" />
+                    app:commit="@{model.commit}"
+                    app:handlers="@{handlers}"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

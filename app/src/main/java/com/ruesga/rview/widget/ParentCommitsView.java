@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.CommitItemBinding;
+import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.model.CommitInfo;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.List;
 
 public class ParentCommitsView extends LinearLayout {
     private final List<CommitItemBinding> mBindings = new ArrayList<>();
+    private ChangeDetailsFragment.EventHandlers mEventHandlers;
 
     public ParentCommitsView(Context context) {
         this(context, null);
@@ -43,6 +45,11 @@ public class ParentCommitsView extends LinearLayout {
     public ParentCommitsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOrientation(VERTICAL);
+    }
+
+    public ParentCommitsView with(ChangeDetailsFragment.EventHandlers handlers) {
+        mEventHandlers = handlers;
+        return this;
     }
 
     public ParentCommitsView from(CommitInfo commit) {
@@ -62,6 +69,7 @@ public class ParentCommitsView extends LinearLayout {
             CommitItemBinding binding = mBindings.get(i);
             binding.setRevision(commit.parents[i].commit);
             binding.setCommit(commit.parents[i]);
+            binding.setHandlers(mEventHandlers);
             binding.getRoot().setVisibility(View.VISIBLE);
         }
         for (int i = count; i < children; i++) {

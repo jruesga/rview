@@ -18,6 +18,7 @@ package com.ruesga.rview.misc;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.TextView;
 
 import com.ruesga.rview.R;
@@ -28,6 +29,7 @@ import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
+import com.ruesga.rview.gerrit.model.WebLinkInfo;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -165,5 +167,19 @@ public class Formatter {
             txt = deleted;
         }
         view.setText(txt);
+    }
+
+    @BindingAdapter("commitWebLinksTag")
+    public static void toCommitWebLinksTag(View view, CommitInfo commit) {
+        if (commit == null) {
+            view.setTag(null);
+            return;
+        }
+
+        if (commit.webLinks != null && commit.webLinks.length > 0) {
+            view.setTag(commit.webLinks[0].url);
+        } else {
+            view.setTag(null);
+        }
     }
 }
