@@ -72,6 +72,8 @@ public class ChangeListFragment extends Fragment {
 
     private static final int MESSAGE_FETCH_MORE_ITEMS = 0;
 
+    private static final int NO_SELECTION = -1;
+
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         private final ChangesItemBinding mBinding;
         public ItemViewHolder(ChangesItemBinding binding) {
@@ -116,12 +118,16 @@ public class ChangeListFragment extends Fragment {
         private final ItemEventHandlers mHandlers;
         private final Picasso mPicasso;
         private final Context mContext;
+        private final boolean mIsTwoPanel;
+
+        private int mChangeId = NO_SELECTION;
 
         public ChangesAdapter(ChangeListFragment fragment) {
             setHasStableIds(true);
             mHandlers = new ItemEventHandlers(fragment);
-            mPicasso = PicassoHelper.getPicassoClient(fragment.getContext());
             mContext = fragment.getContext();
+            mPicasso = PicassoHelper.getPicassoClient(mContext);
+            mIsTwoPanel = mContext.getResources().getBoolean(R.bool.config_is_two_pane);
         }
 
         private void clear() {
@@ -155,7 +161,8 @@ public class ChangeListFragment extends Fragment {
             if (holder instanceof ItemViewHolder) {
                 ChangeInfo item = mData.get(position);
                 ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-                itemViewHolder.itemView.setTag(item);
+                itemViewHolder.itemView.setSelected(mIsTwoPanel && mChangeId == item.legacyChangeId);
+                itemViewHolder.mBinding.item.setTag(item);
                 itemViewHolder.mBinding.scores.setScores(item.labels);
                 itemViewHolder.mBinding.setModel(item);
                 itemViewHolder.mBinding.setHandlers(mHandlers);
@@ -224,6 +231,7 @@ public class ChangeListFragment extends Fragment {
 
 
     private static final String EXTRA_FILTER = "filter";
+    private static final String EXTRA_CHANGE_ID = "changId";
 
     private Handler mUiHandler;
     private ChangesFragmentBinding mBinding;
@@ -237,7 +245,7 @@ public class ChangeListFragment extends Fragment {
     public static ChangeListFragment newInstance(String filter) {
         ChangeListFragment fragment = new ChangeListFragment();
         Bundle arguments = new Bundle();
-        arguments.putString("filter", filter);
+        arguments.putString(EXTRA_FILTER, filter);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -256,17 +264,17 @@ public class ChangeListFragment extends Fragment {
                 inflater, R.layout.changes_fragment, container, false);
         mBinding.setModel(mModel);
         mBinding.refresh.setEnabled(false);
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(savedInstanceState);
     }
 
-    private void startLoadersWithValidContext() {
+    private void startLoadersWithValidContext(Bundle savedState) {
         if (getActivity() == null) {
             return;
         }
@@ -274,6 +282,10 @@ public class ChangeListFragment extends Fragment {
         if (mAdapter == null) {
             // Configure the adapter
             mAdapter = new ChangesAdapter(this);
+            if (savedState != null) {
+                mAdapter.mChangeId = savedState.getInt(EXTRA_CHANGE_ID, NO_SELECTION);
+            }
+
             mBinding.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.list.addItemDecoration(new DividerItemDecoration(
@@ -304,6 +316,12 @@ public class ChangeListFragment extends Fragment {
     public final void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_CHANGE_ID, mAdapter != null ? mAdapter.mChangeId : NO_SELECTION);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -404,6 +422,10 @@ public class ChangeListFragment extends Fragment {
     }
 
     private void onItemClick(ChangeInfo item) {
-        ((OnChangeItemPressedListener) getActivity()).onChangeItemPressed(item);
+        if (mAdapter.mChangeId != item.legacyChangeId) {
+            mAdapter.mChangeId = item.legacyChangeId;
+            mAdapter.notifyDataSetChanged();
+            ((OnChangeItemPressedListener) getActivity()).onChangeItemPressed(item);
+        }
     }
 }

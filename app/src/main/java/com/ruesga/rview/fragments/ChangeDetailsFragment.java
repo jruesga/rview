@@ -206,7 +206,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mFiles != null ? mFiles.size() : 0;
+            return mFiles.size();
         }
 
         @Override
