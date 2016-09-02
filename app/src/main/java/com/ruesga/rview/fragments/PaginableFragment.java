@@ -71,7 +71,13 @@ public abstract class PaginableFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mBinding.viewPager.setOffscreenPageLimit(getTabs().length + 1);
-        mBinding.viewPager.setAdapter(new PageFragmentAdapter(getFragmentManager()));
+        mBinding.viewPager.setAdapter(new PageFragmentAdapter(getChildFragmentManager()));
         ((BaseActivity) getActivity()).configureTabs(mBinding.viewPager);
+    }
+
+    @Override
+    public final void onDestroyView() {
+        super.onDestroyView();
+        mBinding.unbind();
     }
 }
