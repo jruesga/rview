@@ -33,6 +33,7 @@
     <string name="menu_my_menu_category">My menu</string>
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_drafts">Drafts</string>
+    <string name="menu_draft">Draft</string>
     <string name="menu_starred">Starred</string>
     <string name="menu_watched">Watched</string>
     <string name="menu_account_settings">Account settings</string>

@@ -31,21 +31,50 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:onClick="@{handlers::onItemPressed}"
-        android:padding="16dp"
-        android:orientation="horizontal">
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:orientation="horizontal"
+        tools:ignore="RtlSymmetry">
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
             android:layout_gravity="center_horizontal"
             tools:ignore="RtlSymmetry">
             <ImageView
                 android:id="@+id/avatar"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:contentDescription="@null"/>
+            <android.support.v4.widget.Space
+                android:layout_width="1dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@{model.status.equals(ChangeStatus.MERGED) ? @drawable/ic_merged : model.status.equals(ChangeStatus.ABANDONED) ? @drawable/ic_abandoned : model.status.equals(ChangeStatus.DRAFT) ? @drawable/ic_draft : null}"
+                android:tint="?attr/colorPrimaryDark"
+                android:contentDescription="@null"/>
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="?android:attr/textColorPrimary"
+                android:text="@{model.status.equals(ChangeStatus.MERGED) ? @string/menu_merged : model.status.equals(ChangeStatus.ABANDONED) ? @string/menu_abandoned : model.status.equals(ChangeStatus.DRAFT) ? @string/menu_draft : null}"
+                app:allCaps="true"
+                app:font="condensed"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="8sp"
+                tools:ignore="SmallSp"/>
         </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
