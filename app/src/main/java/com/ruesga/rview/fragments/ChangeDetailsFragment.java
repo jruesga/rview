@@ -399,9 +399,9 @@ public class ChangeDetailsFragment extends Fragment {
                 return 0;
             }
 
-            int headersItems = mHeaderModels.length;
-            int patchSetInfoItems = 1;
-            int changeInfoItems = 1;
+            int headersItems = mHeaderModels.length - (mIsTwoPane ? 1 : 0);
+            int patchSetInfoItems = (mIsTwoPane ? 0 : 1);
+            int changeInfoItems = (mIsTwoPane ? 0 : 1);
             int fileItems = getFileItems();
             int messageItems = getMessageItems();
             return headersItems + changeInfoItems + patchSetInfoItems + fileItems + messageItems;
