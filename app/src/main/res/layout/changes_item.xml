@@ -135,20 +135,12 @@
                     android:ellipsize="end"
                     android:textSize="12sp" />
             </LinearLayout>
-            <com.ruesga.rview.widget.ScoreLabelsView
-                android:id="@+id/scores"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                android:layout_below="@id/branch_block"
-                app:shortLabels="true">
-            </com.ruesga.rview.widget.ScoreLabelsView>
             <LinearLayout
                 android:id="@+id/mergeable_block"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_below="@id/scores"
+                android:layout_marginTop="3dp"
+                android:layout_below="@id/branch_block"
                 android:visibility="@{!model.mergeable &amp;&amp; !model.status.equals(ChangeStatus.MERGED) ? View.VISIBLE : View.GONE}"
                 android:orientation="horizontal">
                 <ImageView
@@ -164,11 +156,21 @@
                     android:layout_height="wrap_content"
                     android:text="@string/change_merge_conflict"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?android:attr/textColorSecondary"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorAccent"
                     android:maxLines="1"
                     android:ellipsize="end"
+                    app:allCaps="true"
                     android:textSize="12sp" />
             </LinearLayout>
+            <com.ruesga.rview.widget.ScoreLabelsView
+                android:id="@+id/scores"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/mergeable_block"
+                app:shortLabels="true">
+            </com.ruesga.rview.widget.ScoreLabelsView>
         </RelativeLayout>
     </LinearLayout>
 </layout>
