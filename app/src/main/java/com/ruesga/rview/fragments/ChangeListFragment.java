@@ -391,7 +391,12 @@ public class ChangeListFragment extends Fragment {
 
     private void showProgress(boolean show) {
         if (mEndlessScroller == null || !mEndlessScroller.isLoading()) {
-            ((BaseActivity) getActivity()).changeInProgressStatus(show);
+            BaseActivity activity = (BaseActivity) getActivity();
+            if (show) {
+                activity.onRefreshStart();
+            } else {
+                activity.onRefreshEnd(Collections.unmodifiableList(mAdapter.mData));
+            }
         } else if (!show) {
             mEndlessScroller.loadCompleted();
         }

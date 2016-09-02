@@ -601,7 +601,12 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void showProgress(boolean show) {
-        ((BaseActivity) getActivity()).changeInProgressStatus(show);
+        BaseActivity activity = (BaseActivity) getActivity();
+        if (show) {
+            activity.onRefreshStart();
+        } else {
+            activity.onRefreshEnd(mAdapter.mChange);
+        }
         mBinding.refresh.setEnabled(!show);
     }
 

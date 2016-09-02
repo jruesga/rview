@@ -28,7 +28,7 @@ import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements OnRefreshListener {
 
     @ProguardIgnored
     public static class Model implements Parcelable {
@@ -113,8 +113,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         showError(ExceptionHelper.exceptionToMessage(this, tag, cause));
     }
 
-    public void changeInProgressStatus(boolean status) {
+    private void changeInProgressStatus(boolean status) {
         mModel.isInProgress = status;
         getContentBinding().setModel(mModel);
+    }
+
+    @Override
+    public void onRefreshStart() {
+        changeInProgressStatus(true);
+    }
+
+    @Override
+    public <T> void onRefreshEnd(T result) {
+        changeInProgressStatus(false);
     }
 }

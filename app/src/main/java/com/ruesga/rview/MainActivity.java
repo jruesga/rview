@@ -74,6 +74,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
         public int currentNavigationItemId = INVALID_ITEM;
         public String filterName;
         public String filterQuery;
+        public int selectedChangeId = INVALID_ITEM;
 
         public Model() {
         }
@@ -89,6 +90,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
             if (in.readByte() == 1) {
                 filterQuery = in.readString();
             }
+            selectedChangeId = in.readInt();
         }
 
         @Override
@@ -101,6 +103,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
             dest.writeString(filterName);
             dest.writeByte((byte) (filterQuery != null ? 1 : 0));
             dest.writeString(filterQuery);
+            dest.writeInt(selectedChangeId);
         }
 
         @Override
@@ -544,7 +547,22 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
                 tx.remove(oldFragment);
             }
             Fragment newFragment = ChangeDetailsFragment.newInstance(change.legacyChangeId);
-            tx.replace(R.id.details, newFragment, "details").commit();
+            tx.replace(mIsTwoPane ? R.id.details : R.id.content, newFragment, "details").commit();
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> void onRefreshEnd(T result) {
+        super.onRefreshEnd(result);
+
+        if (mIsTwoPane && result instanceof List) {
+            List<ChangeInfo> changes = (List<ChangeInfo>) result;
+            if (!changes.isEmpty() && mModel.selectedChangeId == INVALID_ITEM) {
+                onChangeItemPressed(changes.get(0));
+            }
+        } else if (result instanceof ChangeInfo) {
+            mModel.selectedChangeId = ((ChangeInfo) result).legacyChangeId;
         }
     }
 }
