@@ -23,7 +23,7 @@
     <string name="action_next">Next</string>
     <string name="action_done">Done</string>
     <string name="action_delete">Delete</string>
-    <string name="action_let_start">Let\u0027s start</string>
+    <string name="action_let_start">Let\'s start</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -45,7 +45,7 @@
     <!-- Exceptions -->
     <string name="exception_browser_not_found">No browser detected. Can\'t launch <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
     <string name="exception_unsupported_server_version">Gerrit server is unsupported</string>
-    <string name="exception_invalid_endpoint">Endpoint is not a gerrit instance</string>
+    <string name="exception_invalid_endpoint">Endpoint is not a Gerrit instance</string>
     <string name="exception_no_network_available">No network connectivity detected</string>
     <string name="exception_invalid_user_password">Invalid user or password</string>
     <string name="exception_invalid_request">Invalid request</string>
@@ -68,25 +68,25 @@
     <string name="account_build_bot_system_name" translatable="false">Gerrit Code Review</string>
     <string name="account_anonymous_coward">Anonymous Coward</string>
     <string name="account_deletion_title">Account deletion</string>
-    <string name="account_deletion_message">This action will delete the account and all its information.</string>
+    <string name="account_deletion_message">This action will delete the account and all information associated to it.</string>
     <string name="account_deletion_confirm_message">Account deleted</string>
-    <string name="account_account_not_exists">Account not exists</string>
+    <string name="account_account_not_exists">Account does not exist</string>
     <string name="account_exists">Account exists</string>
 
     <!-- Account wizard -->
     <!-- TRANSLATORS: The word 'Rviewer' is inferred from app name. DO NOT TRANSLATE IT! -->
     <string name="account_wizard_welcome_page_title">Welcome \u0022Rviewer\u0022</string>
-    <string name="account_wizard_welcome_page_message">We know your are willing to start reviewing changes, but first you need to setup a Gerrit repository account.\n\nIt will take just a few seconds and we will assist you in the process.</string>
+    <string name="account_wizard_welcome_page_message">We know you are willing to start reviewing changes, but first you need to setup a Gerrit repository account.\n\nIt will take just a few seconds and we will assist you in the process.</string>
     <string name="account_wizard_account_setup_page_title">Account setup</string>
-    <string name="account_wizard_account_setup_page_message">This wizard will lead you in the setup of a new Gerrit repository account.\n\nIt will take just a few seconds.</string>
+    <string name="account_wizard_account_setup_page_message">This wizard will guide you in the setup of a new Gerrit repository account.\n\nIt will take just a few seconds.</string>
     <string name="account_wizard_repository_page_title">Repository</string>
-    <string name="account_wizard_repository_page_message1">Introduce the name and location of the Gerrit repository.</string>
+    <string name="account_wizard_repository_page_message1">Please enter the name and location of the Gerrit repository.</string>
     <string name="account_wizard_repository_page_message2">Or choose between some <xliff:g id="link" example="predefined">%1$s</xliff:g> repositories.</string>
     <string name="account_wizard_repository_page_message2_predefined">predefined</string>
     <string name="account_wizard_repository_page_name">Name</string>
-    <string name="account_wizard_repository_page_url">Url</string>
+    <string name="account_wizard_repository_page_url">URL</string>
     <string name="account_wizard_account_page_title">Account</string>
-    <string name="account_wizard_account_page_message">Choose the way you want to access to &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; repository.</string>
+    <string name="account_wizard_account_page_message">Choose the way you want to access the &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; repository.</string>
     <string name="account_wizard_account_page_anonymous_access">Read-only access</string>
     <string name="account_wizard_account_page_authenticated_access">Authenticated access</string>
     <string name="account_wizard_account_page_authenticated_access_hint">If you don\'t know your username or password, click <xliff:g id="link" example="here">%1$s</xliff:g> to obtain or generate a new one. If you don\'t have an account yet, you can sign-in <xliff:g id="link" example="here">%2$s</xliff:g>. Use the help menu to obtain more information related to account authentication.</string>
