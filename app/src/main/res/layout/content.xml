@@ -43,6 +43,17 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorPrimaryDark"
+                android:visibility="@{model.mHasTabs ? View.VISIBLE : View.GONE}"
+                app:tabTextColor="?android:attr/textColorSecondaryInverse"
+                app:tabSelectedTextColor="@android:color/white"
+                app:tabIndicatorColor="@android:color/white"
+                app:tabIndicatorHeight="3dp"/>
+
         </android.support.design.widget.AppBarLayout>
 
         <FrameLayout

@@ -147,6 +147,11 @@
     <string name="change_details_parents">Parent(s)</string>
     <string name="change_details_change_id">Change-Id</string>
 
+    <!-- Dashboard -->
+    <string name="dashboard_outgoing">Outgoing</string>
+    <string name="dashboard_incoming">Incoming</string>
+    <string name="dashboard_recently_closed">Recently closed</string>
+
     <!-- File statuses -->
     <string name="file_status_renamed">Renamed</string>
     <string name="file_status_copied">Copied</string>

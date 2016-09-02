@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringRes;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     @ProguardIgnored
     public static class Model implements Parcelable {
         public boolean isInProgress = false;
+        public boolean mHasTabs = false;
 
         public Model() {
         }
@@ -83,6 +85,19 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
                 drawerToggle.syncState();
             }
         }
+    }
+
+    protected void invalidateTabs() {
+        mModel.mHasTabs = false;
+        getContentBinding().tabs.setupWithViewPager(null);
+        getContentBinding().setModel(mModel);
+    }
+
+    public void configureTabs(ViewPager pager) {
+        mModel.mHasTabs = true;
+        getContentBinding().tabs.setupWithViewPager(pager);
+        pager.getAdapter().notifyDataSetChanged();
+        getContentBinding().setModel(mModel);
     }
 
     @Override

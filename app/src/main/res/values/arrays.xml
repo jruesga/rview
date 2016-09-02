@@ -14,7 +14,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources>
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <integer-array name="query_filters_orders" translatable="false">
         <item>0</item>
         <item>1</item>
@@ -30,5 +31,16 @@
         <item>is:draft</item>
         <item>is:starred</item>
         <item>is:watched AND is:open</item>
+    </string-array>
+
+    <string-array name="dashboard_titles" translatable="false">
+        <item>@string/dashboard_outgoing</item>
+        <item>@string/dashboard_incoming</item>
+        <item>@string/dashboard_recently_closed</item>
+    </string-array>
+    <string-array name="dashboard_filters" translatable="false">
+        <item>is:open AND owner:self</item>
+        <item>is:open AND (reviewer:self AND (-(owner:self)))</item>
+        <item>is:closed AND (owner:self OR (reviewer:self)) AND (-(age:4w)))</item>
     </string-array>
 </resources>

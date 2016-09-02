@@ -43,6 +43,7 @@ import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.fragments.ChangeListFragment;
+import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.PicassoHelper;
@@ -388,6 +389,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
                 break;
 
             case R.id.menu_dashboard:
+                openDashboardFragment();
                 break;
 
             default:
@@ -525,8 +527,29 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         }
     }
 
-    private void openFilterFragment(CharSequence title, String filter) {
+    private void openDashboardFragment() {
+        mModel.filterName = getString(R.string.menu_dashboard);
+        mModel.filterQuery = null;
+
         // Setup the title
+        invalidateTabs();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.menu_dashboard);
+            getSupportActionBar().setSubtitle(null);
+        }
+
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
+        if (oldFragment != null) {
+            tx.remove(oldFragment);
+        }
+        Fragment newFragment = DashboardFragment.newInstance();
+        tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
+    }
+
+    private void openFilterFragment(CharSequence title, String filter) {
+        // Setup the title and tabs
+        invalidateTabs();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
             getSupportActionBar().setSubtitle(filter);
