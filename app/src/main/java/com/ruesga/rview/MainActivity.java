@@ -601,6 +601,9 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
     @SuppressWarnings("unchecked")
     public <T> void onRefreshEnd(T result) {
         super.onRefreshEnd(result);
+        if (result == null) {
+            return;
+        }
 
         if (mIsTwoPane && result instanceof List) {
             List<ChangeInfo> changes = (List<ChangeInfo>) result;

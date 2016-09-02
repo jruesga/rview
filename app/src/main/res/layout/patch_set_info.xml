@@ -19,15 +19,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
         <variable name="changeId" type="java.lang.String" />
         <variable name="revision" type="java.lang.String" />
+        <variable name="hasData" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.RevisionInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="@{hasData != null &amp;&amp; hasData ? View.VISIBLE : View.GONE}">
 
         <LinearLayout
             android:layout_width="match_parent"

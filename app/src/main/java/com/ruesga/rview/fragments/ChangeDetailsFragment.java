@@ -302,26 +302,24 @@ public class ChangeDetailsFragment extends Fragment {
                 @Override
                 public void onNext(DataResponse result) {
                     mModel.hasData = result != null;
-                    if (!mModel.hasData) {
-                        return;
+                    ChangeInfo change = null;
+                    if (mModel.hasData) {
+                        change = result.mChange;
+                        if (mCurrentRevision == null
+                                || !change.revisions.containsKey(mCurrentRevision)) {
+                            mCurrentRevision = change.currentRevision;
+                        }
+
+                        updatePatchSetInfo(change);
+                        updateChangeInfo(change, result.mSubmitType);
+
+                        Map<String, FileInfo> files = change.revisions.get(mCurrentRevision).files;
+                        mModel.filesListModel.visible = files != null && !files.isEmpty();
+                        mFileAdapter.update(files, result.mInlineComments);
+                        mModel.msgListModel.visible =
+                                change.messages != null && change.messages.length > 0;
+                        mMessageAdapter.update(change.messages);
                     }
-
-                    final ChangeInfo change = result.mChange;
-                    if (mCurrentRevision == null
-                            || !change.revisions.containsKey(mCurrentRevision)) {
-                        mCurrentRevision = change.currentRevision;
-                    }
-
-                    updatePatchSetInfo(change);
-                    updateChangeInfo(change, result.mSubmitType);
-
-                    Map<String, FileInfo> files =  change.revisions.get(mCurrentRevision).files;
-                    mModel.filesListModel.visible = files != null && !files.isEmpty();
-                    mFileAdapter.update(files, result.mInlineComments);
-
-                    mModel.msgListModel.visible =
-                            change.messages != null && change.messages.length > 0;
-                    mMessageAdapter.update(change.messages);
 
                     mBinding.setModel(mModel);
                     showProgress(false, change);
@@ -392,6 +390,7 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.patchSetInfo.setModel(revision);
         mBinding.patchSetInfo.setHandlers(mEventHandlers);
         mBinding.patchSetInfo.parentCommits.with(mEventHandlers).from(revision.commit);
+        mBinding.patchSetInfo.setHasData(true);
     }
 
     private void updateChangeInfo(ChangeInfo change, SubmitType submitType) {
@@ -403,6 +402,7 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.changeInfo.setModel(change);
         mBinding.changeInfo.setSubmitType(submitType);
         mBinding.changeInfo.setHandlers(mEventHandlers);
+        mBinding.changeInfo.setHasData(true);
     }
 
     private void startLoadersWithValidContext() {
