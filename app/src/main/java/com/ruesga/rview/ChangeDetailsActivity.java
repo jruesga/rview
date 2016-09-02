@@ -16,6 +16,7 @@
 package com.ruesga.rview;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -41,6 +42,15 @@ public class ChangeDetailsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
+
+        boolean isTablet = getResources().getBoolean(R.bool.config_is_table);
+        int orientation = getResources().getConfiguration().orientation;
+        if (isTablet && orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // Tablets have a two panel layout in landscape, so finish this activity
+            // to show in the change in the proper activity
+            finish();
+            return;
+        }
 
         // Check we have valid arguments
         if (getIntent() == null) {

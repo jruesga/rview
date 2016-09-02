@@ -17,6 +17,7 @@ package com.ruesga.rview;
 
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 
-public interface OnChangeItemPressedListener {
+public interface OnChangeItemListener {
     void onChangeItemPressed(ChangeInfo change);
+    void onChangeItemRestored(int changeId);
 }

@@ -30,7 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ruesga.rview.BaseActivity;
-import com.ruesga.rview.OnChangeItemPressedListener;
+import com.ruesga.rview.OnChangeItemListener;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangesFragmentBinding;
@@ -118,7 +118,6 @@ public class ChangeListFragment extends Fragment {
         private final ItemEventHandlers mHandlers;
         private final Picasso mPicasso;
         private final Context mContext;
-        private final boolean mIsTwoPanel;
 
         private int mChangeId = NO_SELECTION;
 
@@ -127,7 +126,6 @@ public class ChangeListFragment extends Fragment {
             mHandlers = new ItemEventHandlers(fragment);
             mContext = fragment.getContext();
             mPicasso = PicassoHelper.getPicassoClient(mContext);
-            mIsTwoPanel = mContext.getResources().getBoolean(R.bool.config_is_two_pane);
         }
 
         private void clear() {
@@ -161,7 +159,7 @@ public class ChangeListFragment extends Fragment {
             if (holder instanceof ItemViewHolder) {
                 ChangeInfo item = mData.get(position);
                 ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-                itemViewHolder.itemView.setSelected(mIsTwoPanel && mChangeId == item.legacyChangeId);
+                itemViewHolder.itemView.setSelected(mChangeId == item.legacyChangeId);
                 itemViewHolder.mBinding.item.setTag(item);
                 itemViewHolder.mBinding.scores.setScores(item.labels);
                 itemViewHolder.mBinding.setModel(item);
@@ -236,6 +234,7 @@ public class ChangeListFragment extends Fragment {
     private Handler mUiHandler;
     private ChangesFragmentBinding mBinding;
     private final Model mModel = new Model();
+    private boolean mIsTwoPanel;
 
     private ChangesAdapter mAdapter;
     private EndlessRecyclerViewScrollListener mEndlessScroller;
@@ -279,11 +278,13 @@ public class ChangeListFragment extends Fragment {
             return;
         }
 
+        mIsTwoPanel = getResources().getBoolean(R.bool.config_is_two_pane);
         if (mAdapter == null) {
             // Configure the adapter
             mAdapter = new ChangesAdapter(this);
             if (savedState != null) {
                 mAdapter.mChangeId = savedState.getInt(EXTRA_CHANGE_ID, NO_SELECTION);
+                notifyItemRestored();
             }
 
             mBinding.list.setLayoutManager(new LinearLayoutManager(
@@ -422,10 +423,15 @@ public class ChangeListFragment extends Fragment {
     }
 
     private void onItemClick(ChangeInfo item) {
-        if (mAdapter.mChangeId != item.legacyChangeId) {
+        if (!mIsTwoPanel || mAdapter.mChangeId != item.legacyChangeId) {
             mAdapter.mChangeId = item.legacyChangeId;
             mAdapter.notifyDataSetChanged();
-            ((OnChangeItemPressedListener) getActivity()).onChangeItemPressed(item);
+            ((OnChangeItemListener) getActivity()).onChangeItemPressed(item);
         }
     }
+
+    private void notifyItemRestored() {
+        ((OnChangeItemListener) getActivity()).onChangeItemRestored(mAdapter.mChangeId);
+    }
+
 }

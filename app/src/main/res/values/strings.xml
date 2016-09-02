@@ -128,7 +128,7 @@
     <string name="change_score_no_score">\u0020</string>
 
     <!-- Change Details -->
-    <string name="change_details_title">Change #<xliff:g id="changeId" example="157838">%1$s</xliff:g></string>
+    <string name="change_details_title">Change #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>
     <string name="change_details_header_change_details">Change details</string>
     <string name="change_details_header_patchset_details">Patch Set details</string>
     <string name="change_details_header_files">Files</string>

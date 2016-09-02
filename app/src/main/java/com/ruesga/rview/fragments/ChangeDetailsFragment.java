@@ -69,6 +69,8 @@ public class ChangeDetailsFragment extends Fragment {
     public static final String EXTRA_CHANGE_ID = "changeId";
     public static final String EXTRA_LEGACY_CHANGE_ID = "legacyChangeId";
 
+    private static final int INVALID_CHANGE_ID = -1;
+
     private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.DETAILED_LABELS);
@@ -288,6 +290,9 @@ public class ChangeDetailsFragment extends Fragment {
                 @Override
                 public void onNext(DataResponse result) {
                     mModel.hasData = result != null;
+                    if (!mModel.hasData) {
+                        return;
+                    }
 
                     final ChangeInfo change = result.mChange;
                     if (mCurrentRevision == null
@@ -332,7 +337,7 @@ public class ChangeDetailsFragment extends Fragment {
     private String mCurrentRevision;
 
     private RxLoader1<String, DataResponse> mChangeLoader;
-    private String mChangeId;
+    private int mChangeId;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
         ChangeDetailsFragment fragment = new ChangeDetailsFragment();
@@ -345,7 +350,7 @@ public class ChangeDetailsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mChangeId = String.valueOf(getArguments().getInt(EXTRA_CHANGE_ID, 0));
+        mChangeId = getArguments().getInt(EXTRA_CHANGE_ID, INVALID_CHANGE_ID);
         mPicasso = PicassoHelper.getPicassoClient(getContext());
     }
 
@@ -365,6 +370,14 @@ public class ChangeDetailsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         startLoadersWithValidContext();
+    }
+
+    public void updateFromChangeId(int changeId) {
+System.out.println("jrc: changeId: " + changeId);
+        if (mChangeId != changeId && changeId != INVALID_CHANGE_ID) {
+            mChangeId = changeId;
+            forceRefresh();
+        }
     }
 
     private void updatePatchSetInfo(ChangeInfo change) {
@@ -394,14 +407,14 @@ public class ChangeDetailsFragment extends Fragment {
         if (mFileAdapter == null) {
             mFileAdapter = new FileAdapter();
             mBinding.fileInfo.list.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.VERTICAL, false));;
+                    getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.fileInfo.list.addItemDecoration(new DividerItemDecoration(
                     getContext(), LinearLayoutManager.VERTICAL));
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
             mMessageAdapter = new MessageAdapter(this);
             mBinding.messageInfo.list.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.VERTICAL, false));;
+                    getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.messageInfo.list.addItemDecoration(new DividerItemDecoration(
                     getContext(), LinearLayoutManager.VERTICAL));
             mBinding.messageInfo.list.setAdapter(mMessageAdapter);
@@ -412,7 +425,7 @@ public class ChangeDetailsFragment extends Fragment {
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mChangeLoader = loaderManager.create(this::fetchChange, mChangeObserver)
-                    .start(mChangeId);
+                    .start(String.valueOf(mChangeId));
         }
     }
 
@@ -428,10 +441,11 @@ public class ChangeDetailsFragment extends Fragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         final String revision = mCurrentRevision == null
                 ? GerritApi.CURRENT_REVISION : mCurrentRevision;
+        final String change = String.valueOf(mChangeId);
         return Observable.zip(
                     api.getChange(changeId, OPTIONS),
-                    api.getChangeRevisionSubmitType(mChangeId, revision),
-                    api.getChangeRevisionComments(mChangeId, revision),
+                    api.getChangeRevisionSubmitType(change, revision),
+                    api.getChangeRevisionComments(change, revision),
                     this::combineResponse
                 )
                 .subscribeOn(Schedulers.io())
@@ -441,11 +455,13 @@ public class ChangeDetailsFragment extends Fragment {
     private void setupSwipeToRefresh() {
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
-        mBinding.refresh.setOnRefreshListener(() -> {
-            mBinding.refresh.setRefreshing(false);
-            mChangeLoader.restart(mChangeId);
-        });
+        mBinding.refresh.setOnRefreshListener(this::forceRefresh);
         mBinding.refresh.setEnabled(false);
+    }
+
+    private void forceRefresh() {
+        startLoadersWithValidContext();
+        mChangeLoader.restart(String.valueOf(mChangeId));
     }
 
     private void showProgress(boolean show, ChangeInfo change) {

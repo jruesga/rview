@@ -52,7 +52,7 @@ import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements OnChangeItemPressedListener {
+public class MainActivity extends BaseActivity implements OnChangeItemListener {
 
     private static final int INVALID_ITEM = -1;
 
@@ -64,6 +64,9 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
     private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 100;
 
     private static final int DEFAULT_MENU = R.id.menu_open;
+
+    private static final String FRAGMENT_TAG_LIST = "list";
+    private static final String FRAGMENT_TAG_DETAILS = "details";
 
     @ProguardIgnored
     public static class Model implements Parcelable {
@@ -196,9 +199,29 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
             }
         }
 
-        // Navigate to current item
-        requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
-                ? DEFAULT_MENU : mModel.currentNavigationItemId);
+        if (savedInstanceState != null) {
+            Fragment detailsFragment = getSupportFragmentManager().getFragment(
+                    savedInstanceState, FRAGMENT_TAG_DETAILS);
+            Fragment listFragment = getSupportFragmentManager().getFragment(
+                    savedInstanceState, FRAGMENT_TAG_LIST);
+            if (listFragment != null) {
+                FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+                tx.replace(R.id.content, listFragment, FRAGMENT_TAG_LIST);
+                if (detailsFragment != null) {
+                    tx.replace(R.id.details, detailsFragment, FRAGMENT_TAG_DETAILS);
+                }
+                tx.commit();
+
+            } else {
+                // Navigate to current item
+                requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
+                        ? DEFAULT_MENU : mModel.currentNavigationItemId);
+            }
+        } else {
+            // Navigate to current item
+            requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
+                    ? DEFAULT_MENU : mModel.currentNavigationItemId);
+        }
     }
 
     @Override
@@ -213,6 +236,16 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(getClass().getSimpleName() + "_model", mModel);
+
+        //Save the fragment's instance
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
+        if (fragment != null) {
+            getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG_LIST, fragment);
+        }
+        fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_DETAILS);
+        if (fragment != null) {
+            getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG_DETAILS, fragment);
+        }
     }
 
     @Override
@@ -501,12 +534,12 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
 
         // Open the filter fragment
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag("list");
+        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
         if (oldFragment != null) {
             tx.remove(oldFragment);
         }
         Fragment newFragment = ChangeListFragment.newInstance(filter);
-        tx.replace(R.id.content, newFragment, "list").commit();
+        tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
     }
 
     private boolean launchAddAccountIfNeeded() {
@@ -541,13 +574,26 @@ public class MainActivity extends BaseActivity implements OnChangeItemPressedLis
             startActivity(intent);
         } else {
             // Open the filter fragment
-            FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-            Fragment oldFragment = getSupportFragmentManager().findFragmentByTag("details");
-            if (oldFragment != null) {
-                tx.remove(oldFragment);
-            }
-            Fragment newFragment = ChangeDetailsFragment.newInstance(change.legacyChangeId);
-            tx.replace(mIsTwoPane ? R.id.details : R.id.content, newFragment, "details").commit();
+            loadChangeDetailsFragment(change.legacyChangeId);
+        }
+    }
+
+    private void loadChangeDetailsFragment(int changeId) {
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(
+                FRAGMENT_TAG_DETAILS);
+        if (oldFragment != null) {
+            tx.remove(oldFragment);
+        }
+        Fragment newFragment = ChangeDetailsFragment.newInstance(changeId);
+        tx.replace(mIsTwoPane ? R.id.details : R.id.content, newFragment,
+                FRAGMENT_TAG_DETAILS).commit();
+    }
+
+    @Override
+    public void onChangeItemRestored(int changeId) {
+        if (mIsTwoPane && changeId != mModel.selectedChangeId) {
+            loadChangeDetailsFragment(changeId);
         }
     }
 
