@@ -534,28 +534,38 @@ public class ChangeDetailsFragment extends Fragment {
                 inflater, R.layout.change_details_fragment, container, false);
         mBinding.setModel(mModel);
         mBinding.refresh.setEnabled(false);
+        startLoadersWithValidContext();
         return mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        startLoadersWithValidContext();
+    }
 
-        // Configure the adapter
-        mAdapter = new ChangeAdapter(this);
-        mBinding.list.setLayoutManager(new LinearLayoutManager(
-                getActivity(), LinearLayoutManager.VERTICAL, false));
-        mBinding.list.addItemDecoration(new DividerItemDecoration(
-                getContext(), LinearLayoutManager.VERTICAL));
-        mBinding.list.setAdapter(mAdapter);
+    private void startLoadersWithValidContext() {
+        if (getActivity() == null) {
+            return;
+        }
 
-        // Configure the refresh
-        setupSwipeToRefresh();
+        if (mAdapter == null) {
+            // Configure the adapter
+            mAdapter = new ChangeAdapter(this);
+            mBinding.list.setLayoutManager(new LinearLayoutManager(
+                    getActivity(), LinearLayoutManager.VERTICAL, false));
+            mBinding.list.addItemDecoration(new DividerItemDecoration(
+                    getContext(), LinearLayoutManager.VERTICAL));
+            mBinding.list.setAdapter(mAdapter);
 
-        // Fetch or join current loader
-        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-        mChangeLoader = loaderManager.create(this::fetchChange, mChangeObserver)
-                .start(mChangeId);
+            // Configure the refresh
+            setupSwipeToRefresh();
+
+            // Fetch or join current loader
+            RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mChangeLoader = loaderManager.create(this::fetchChange, mChangeObserver)
+                    .start(mChangeId);
+        }
     }
 
     @Override

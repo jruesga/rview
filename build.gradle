@@ -60,18 +60,20 @@ allprojects {
 
 subprojects {
     afterEvaluate {project ->
-        android {
-            compileSdkVersion 24
-            buildToolsVersion '24.0.2'
+        if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
+            android {
+                compileSdkVersion 24
+                buildToolsVersion '24.0.2'
 
-            defaultConfig {
-                minSdkVersion 16
-                targetSdkVersion 24
-            }
+                defaultConfig {
+                    minSdkVersion 16
+                    targetSdkVersion 24
+                }
 
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_1_8
-                targetCompatibility = JavaVersion.VERSION_1_8
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_1_8
+                    targetCompatibility = JavaVersion.VERSION_1_8
+                }
             }
         }
     }

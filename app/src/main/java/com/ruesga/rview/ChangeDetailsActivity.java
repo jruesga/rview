@@ -66,8 +66,24 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
 
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment newFragment = ChangeDetailsFragment.newInstance(legacyChangeId);
-        tx.replace(R.id.content, newFragment, "details").commit();
+        Fragment fragment;
+        if (savedInstanceState != null) {
+            fragment = getSupportFragmentManager().getFragment(savedInstanceState, "details");
+        } else {
+            fragment = ChangeDetailsFragment.newInstance(legacyChangeId);
+        }
+        tx.replace(R.id.content, fragment, "details").commit();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        //Save the fragment's instance
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag("details");
+        if (fragment != null) {
+            getSupportFragmentManager().putFragment(outState, "details", fragment);
+        }
     }
 
     @Override

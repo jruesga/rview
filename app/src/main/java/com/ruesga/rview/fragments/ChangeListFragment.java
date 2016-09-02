@@ -256,38 +256,48 @@ public class ChangeListFragment extends Fragment {
                 inflater, R.layout.changes_fragment, container, false);
         mBinding.setModel(mModel);
         mBinding.refresh.setEnabled(false);
+        startLoadersWithValidContext();
         return mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        startLoadersWithValidContext();
+    }
 
-        // Configure the adapter
-        mAdapter = new ChangesAdapter(this);
-        mBinding.list.setLayoutManager(new LinearLayoutManager(
-                getActivity(), LinearLayoutManager.VERTICAL, false));
-        mBinding.list.addItemDecoration(new DividerItemDecoration(
-                getContext(), LinearLayoutManager.VERTICAL));
-        mBinding.list.setAdapter(mAdapter);
-        mEndlessScroller = new EndlessRecyclerViewScrollListener(
-                mBinding.list.getLayoutManager()) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                Message.obtain(mUiHandler, MESSAGE_FETCH_MORE_ITEMS).sendToTarget();
-            }
-        };
-        mEndlessScroller.setVisibleThreshold(2);
-        mBinding.list.addOnScrollListener(mEndlessScroller);
+    private void startLoadersWithValidContext() {
+        if (getActivity() == null) {
+            return;
+        }
 
-        // Configure the refresh
-        setupSwipeToRefresh();
+        if (mAdapter == null) {
+            // Configure the adapter
+            mAdapter = new ChangesAdapter(this);
+            mBinding.list.setLayoutManager(new LinearLayoutManager(
+                    getActivity(), LinearLayoutManager.VERTICAL, false));
+            mBinding.list.addItemDecoration(new DividerItemDecoration(
+                    getContext(), LinearLayoutManager.VERTICAL));
+            mBinding.list.setAdapter(mAdapter);
+            mEndlessScroller = new EndlessRecyclerViewScrollListener(
+                    mBinding.list.getLayoutManager()) {
+                @Override
+                public void onLoadMore(int page, int totalItemsCount) {
+                    Message.obtain(mUiHandler, MESSAGE_FETCH_MORE_ITEMS).sendToTarget();
+                }
+            };
+            mEndlessScroller.setVisibleThreshold(2);
+            mBinding.list.addOnScrollListener(mEndlessScroller);
 
-        // Fetch or join current loader
-        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-        mChangesLoader = loaderManager
-                .create(this::fetchChanges, mLoaderObserver)
-                .start(FETCHED_CHANGES, 0);
+            // Configure the refresh
+            setupSwipeToRefresh();
+
+            // Fetch or join current loader
+            RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mChangesLoader = loaderManager
+                    .create(this::fetchChanges, mLoaderObserver)
+                    .start(FETCHED_CHANGES, 0);
+        }
     }
 
     @Override
