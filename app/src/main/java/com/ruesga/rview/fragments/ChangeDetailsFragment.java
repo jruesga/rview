@@ -372,14 +372,6 @@ public class ChangeDetailsFragment extends Fragment {
         startLoadersWithValidContext();
     }
 
-    public void updateFromChangeId(int changeId) {
-System.out.println("jrc: changeId: " + changeId);
-        if (mChangeId != changeId && changeId != INVALID_CHANGE_ID) {
-            mChangeId = changeId;
-            forceRefresh();
-        }
-    }
-
     private void updatePatchSetInfo(ChangeInfo change) {
         mBinding.patchSetInfo.setChangeId(change.changeId);
         mBinding.patchSetInfo.setRevision(mCurrentRevision);

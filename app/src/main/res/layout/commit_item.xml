@@ -48,6 +48,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:src="@drawable/ic_open_in_new"
+            android:tint="?attr/colorPrimaryDark"
             android:tag="@{revision}"
             android:visibility="@{commit.webLinks == null || commit.webLinks.length == 0 ? View.GONE : View.VISIBLE}"
             tools:ignore="ContentDescription"/>
