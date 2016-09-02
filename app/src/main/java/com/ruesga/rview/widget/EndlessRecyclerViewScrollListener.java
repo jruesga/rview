@@ -71,6 +71,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // but first we check if we are waiting for the previous load to finish.
     @Override
     public void onScrolled(RecyclerView view, int dx, int dy) {
+        boolean isAtBeginning = false;
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
 
@@ -79,9 +80,18 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
                     findLastVisibleItemPositions(null);
             // get maximum element within the list
             lastVisibleItemPosition = getLastVisibleItem(lastVisibleItemPositions);
+
+
+            int[] firstItem = new int[1];
+            ((StaggeredGridLayoutManager) mLayoutManager).
+                    findFirstCompletelyVisibleItemPositions(firstItem);
+            isAtBeginning = firstItem[0] <= 0;
+
         } else if (mLayoutManager instanceof LinearLayoutManager) {
             lastVisibleItemPosition = ((LinearLayoutManager) mLayoutManager).
                     findLastVisibleItemPosition();
+            isAtBeginning = ((LinearLayoutManager) mLayoutManager).
+                    findFirstCompletelyVisibleItemPosition() <= 0;
         }
 
         // If the total item count is zero and the previous isn't, assume the
@@ -104,7 +114,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
         // the visibleThreshold and need to reload more data.
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
-        if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
+        if (!isAtBeginning && !loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
             currentPage++;
             onLoadMore(currentPage, totalItemCount);
             loading = true;
