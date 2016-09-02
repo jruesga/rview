@@ -37,38 +37,45 @@
                     android:layout_height="wrap_content"
                     android:visibility="@{model.hasData ? View.VISIBLE : View.GONE}"
                     android:orientation="vertical">
-                    <include
-                        android:id="@+id/patch_set_info"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
-                        layout="@layout/patch_set_info" />
-                    <include
-                        android:id="@+id/change_info"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
-                        layout="@layout/change_info" />
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:orientation="horizontal">
+                        <include
+                            android:id="@+id/patch_set_info"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:layout_marginRight="2dp"
+                            android:layout_marginEnd="2dp"
+                            layout="@layout/patch_set_info" />
+                        <include
+                            android:id="@+id/change_info"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:layout_marginLeft="2dp"
+                            android:layout_marginStart="2dp"
+                            layout="@layout/change_info" />
+                    </LinearLayout>
                     <include
                         android:id="@+id/file_info"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
+                        android:layout_margin="4dp"
                         app:model="@{model.filesListModel}"
                         layout="@layout/list_with_header" />
                     <include
                         android:id="@+id/message_info"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
+                        android:layout_margin="4dp"
                         app:model="@{model.msgListModel}"
                         layout="@layout/list_with_header" />
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

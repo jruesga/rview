@@ -20,6 +20,7 @@ import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,13 +32,9 @@ import android.view.ViewGroup;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
-import com.ruesga.rview.databinding.ChangeAndPatchSetInfoItemBinding;
 import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
-import com.ruesga.rview.databinding.ChangeInfoItemBinding;
 import com.ruesga.rview.databinding.FileInfoItemBinding;
-import com.ruesga.rview.databinding.HeaderItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
-import com.ruesga.rview.databinding.PatchSetInfoItemBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -89,8 +86,21 @@ public class ChangeDetailsFragment extends Fragment {
     }};
 
     @ProguardIgnored
+    public static class ListModel {
+        @StringRes
+        public int header;
+        public boolean visible;
+        private ListModel(int h) {
+            header = h;
+            visible = false;
+        }
+    }
+
+    @ProguardIgnored
     public static class Model {
         public boolean hasData = true;
+        public ListModel filesListModel = new ListModel(R.string.change_details_header_files);
+        public ListModel msgListModel = new ListModel(R.string.change_details_header_messages);
     }
 
     @ProguardIgnored
@@ -103,13 +113,8 @@ public class ChangeDetailsFragment extends Fragment {
         }
 
         public void onMessageExpandedCollapsed(View v) {
-            mFragment.mAdapter.performExpandCollapseMessage((int) v.getTag());
+            mFragment.mMessageAdapter.performExpandCollapseMessage((int) v.getTag());
         }
-    }
-
-    @ProguardIgnored
-    public static class HeaderItemModel {
-        public String title;
     }
 
     @ProguardIgnored
@@ -121,42 +126,6 @@ public class ChangeDetailsFragment extends Fragment {
         public int totalDeleted;
         public boolean hasGraph = true;
         public int inlineComments;
-    }
-
-    public static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        private final HeaderItemBinding mBinding;
-        public HeaderViewHolder(HeaderItemBinding binding) {
-            super(binding.getRoot());
-            mBinding = binding;
-            binding.executePendingBindings();
-        }
-    }
-
-    public static class ChangeAndPatchSetInfoViewHolder extends RecyclerView.ViewHolder {
-        private final ChangeAndPatchSetInfoItemBinding mBinding;
-        public ChangeAndPatchSetInfoViewHolder(ChangeAndPatchSetInfoItemBinding binding) {
-            super(binding.getRoot());
-            mBinding = binding;
-            binding.executePendingBindings();
-        }
-    }
-
-    public static class ChangeInfoViewHolder extends RecyclerView.ViewHolder {
-        private final ChangeInfoItemBinding mBinding;
-        public ChangeInfoViewHolder(ChangeInfoItemBinding binding) {
-            super(binding.getRoot());
-            mBinding = binding;
-            binding.executePendingBindings();
-        }
-    }
-
-    public static class PatchSetInfoViewHolder extends RecyclerView.ViewHolder {
-        private final PatchSetInfoItemBinding mBinding;
-        public PatchSetInfoViewHolder(PatchSetInfoItemBinding binding) {
-            super(binding.getRoot());
-            mBinding = binding;
-            binding.executePendingBindings();
-        }
     }
 
     public static class FileInfoViewHolder extends RecyclerView.ViewHolder {
@@ -178,301 +147,133 @@ public class ChangeDetailsFragment extends Fragment {
         }
     }
 
-    private static class ChangeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private static final int HEADER_VIEW = 0;
-        private static final int CHANGE_AND_PATCH_SET_INFO_VIEW = 1;
-        private static final int PATCH_SET_INFO_VIEW = 2;
-        private static final int CHANGE_INFO_VIEW = 3;
-        private static final int FILE_INFO_VIEW = 4;
-        private static final int MESSAGE_VIEW = 5;
-
-        private ChangeInfo mChange;
-        private SubmitType mSubmitType;
+    private static class FileAdapter extends RecyclerView.Adapter<FileInfoViewHolder> {
         private final List<FileItemModel> mFiles = new ArrayList<>();
-        private String mCurrentRevision;
-        private boolean[] mExpandedMessages;
 
-        private final HeaderItemModel[] mHeaderModels;
-        private final boolean mIsTwoPane;
+        void update(Map<String, FileInfo> files, Map<String, Integer> inlineComments) {
+            mFiles.clear();
+            if (files == null) {
+                notifyDataSetChanged();
+                return;
+            }
 
-        private final Picasso mPicasso;
+            int added = 0;
+            int deleted = 0;
+            // Compute the added and deleted from revision instead from the change
+            // to be accurate with the current revision info
+            for (String key : files.keySet()) {
+                FileInfo info = files.get(key);
+                if (info.linesInserted != null) {
+                    added += info.linesInserted;
+                }
+                if (info.linesDeleted != null) {
+                    deleted += info.linesDeleted;
+                }
+            }
+
+            // Create a model from each file
+            for (String key : files.keySet()) {
+                FileItemModel model = new FileItemModel();
+                model.file = key;
+                model.info = files.get(key);
+                model.totalAdded = added;
+                model.totalDeleted = deleted;
+                model.inlineComments =
+                        inlineComments.containsKey(key) ? inlineComments.get(key) : 0;
+                model.hasGraph =
+                        (model.info.linesInserted != null && model.info.linesInserted > 0) ||
+                                (model.info.linesDeleted != null && model.info.linesDeleted > 0) ||
+                                model.inlineComments > 0;
+                mFiles.add(model);
+            }
+
+            // And add the total
+            FileItemModel total = new FileItemModel();
+            total.info = new FileInfo();
+            if (added > 0) {
+                total.info.linesInserted = added;
+            }
+            if (deleted > 0) {
+                total.info.linesDeleted = deleted;
+            }
+            total.isTotal = true;
+            total.totalAdded = added;
+            total.totalDeleted = deleted;
+            mFiles.add(total);
+
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getItemCount() {
+            return mFiles != null ? mFiles.size() : 0;
+        }
+
+        @Override
+        public FileInfoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            return new FileInfoViewHolder(DataBindingUtil.inflate(
+                    inflater, R.layout.file_info_item, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(FileInfoViewHolder holder, int position) {
+            FileItemModel model = mFiles.get(position);
+            holder.mBinding.addedVsDeleted.with(model);
+            holder.mBinding.setModel(model);
+        }
+    }
+
+    private static class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
         private final AccountInfo mBuildBotSystemAccount;
-
         private final EventHandlers mEventHandlers;
+        private ChangeMessageInfo[] mMessages;
+        private boolean[] mExpanded;
 
-        public ChangeAdapter(ChangeDetailsFragment fragment) {
+        public MessageAdapter(ChangeDetailsFragment fragment) {
             final Resources res = fragment.getResources();
-            mChange = null;
-            mPicasso = PicassoHelper.getPicassoClient(fragment.getContext());
-            mIsTwoPane = res.getBoolean(R.bool.config_is_two_pane);
 
             mEventHandlers = new EventHandlers(fragment);
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
-
-            String[] titles = res.getStringArray(R.array.change_details_headers);
-            int headers = titles.length;
-            mHeaderModels = new HeaderItemModel[headers];
-            for (int i = 0; i < headers; i++) {
-                mHeaderModels[i] = new HeaderItemModel();
-                mHeaderModels[i].title = titles[i];
-            }
         }
 
-        void update(DataResponse response) {
-            mChange = response.mChange;
-            mSubmitType = response.mSubmitType;
-            if (mCurrentRevision == null || !mChange.revisions.containsKey(mCurrentRevision)) {
-                mCurrentRevision = mChange.currentRevision;
-            }
 
-            mFiles.clear();
-            Map<String, FileInfo> files =  mChange.revisions.get(mCurrentRevision).files;
-            if (files != null) {
-                int added = 0;
-                int deleted = 0;
-                // Compute the added and deleted from revision instead from the change
-                // to be accurate with the current revision info
-                for (String key : files.keySet()) {
-                    FileInfo info = files.get(key);
-                    if (info.linesInserted != null) {
-                        added += info.linesInserted;
-                    }
-                    if (info.linesDeleted != null) {
-                        deleted += info.linesDeleted;
-                    }
-                }
-
-                // Create a model from each file
-                for (String key : files.keySet()) {
-                    FileItemModel model = new FileItemModel();
-                    model.file = key;
-                    model.info = files.get(key);
-                    model.totalAdded = added;
-                    model.totalDeleted = deleted;
-                    if (response.mInlineComments.containsKey(key)) {
-                        model.inlineComments = response.mInlineComments.get(key);
-                    }
-                    model.hasGraph =
-                            (model.info.linesInserted != null && model.info.linesInserted > 0) ||
-                            (model.info.linesDeleted != null && model.info.linesDeleted > 0) ||
-                            model.inlineComments > 0;
-                    mFiles.add(model);
-                }
-
-                // And add the total
-                FileItemModel total = new FileItemModel();
-                total.info = new FileInfo();
-                if (added > 0) {
-                    total.info.linesInserted = added;
-                }
-                if (deleted > 0) {
-                    total.info.linesDeleted = deleted;
-                }
-                total.isTotal = true;
-                total.totalAdded = added;
-                total.totalDeleted = deleted;
-                mFiles.add(total);
-            }
-
-            // Expanded messages
-            mExpandedMessages = new boolean[
-                    mChange.messages != null ? mChange.messages.length : 0];
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            switch (viewType) {
-                case HEADER_VIEW:
-                    return new HeaderViewHolder(DataBindingUtil.inflate(
-                            inflater, R.layout.header_item, parent, false));
-                case CHANGE_AND_PATCH_SET_INFO_VIEW:
-                    return new ChangeAndPatchSetInfoViewHolder(DataBindingUtil.inflate(
-                            inflater, R.layout.change_and_patch_set_info_item, parent, false));
-                case PATCH_SET_INFO_VIEW:
-                    return new PatchSetInfoViewHolder(DataBindingUtil.inflate(
-                            inflater, R.layout.patch_set_info_item, parent, false));
-                case CHANGE_INFO_VIEW:
-                    return new ChangeInfoViewHolder(DataBindingUtil.inflate(
-                            inflater, R.layout.change_info_item, parent, false));
-                case FILE_INFO_VIEW:
-                    return new FileInfoViewHolder(DataBindingUtil.inflate(
-                            inflater, R.layout.file_info_item, parent, false));
-                case MESSAGE_VIEW:
-                    return new MessageViewHolder(DataBindingUtil.inflate(
-                            inflater, R.layout.message_item, parent, false));
-            }
-            return null;
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof HeaderViewHolder) {
-                HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-                headerViewHolder.mBinding.setModel(getHeaderItemModelFromPosition(position));
-
-            } else if (holder instanceof ChangeAndPatchSetInfoViewHolder) {
-                ChangeAndPatchSetInfoViewHolder vh = (ChangeAndPatchSetInfoViewHolder) holder;
-
-                // Headers
-                vh.mBinding.setPatchSetHeader(mHeaderModels[0]);
-                vh.mBinding.setChangeHeader(mHeaderModels[1]);
-
-                // Patch set
-                vh.mBinding.setChangeId(mChange.changeId);
-                vh.mBinding.setRevisionId(mCurrentRevision);
-                RevisionInfo revision = mChange.revisions.get(mCurrentRevision);
-                vh.mBinding.setRevision(revision);
-                vh.mBinding.patchSetItem.parentCommits.from(revision.commit);
-
-                // Change
-                vh.mBinding.changeItem.owner.with(mPicasso).from(mChange.owner);
-                vh.mBinding.changeItem.reviewers.with(mPicasso).withRemovableReviewers(true)
-                        .from(mChange);
-                vh.mBinding.changeItem.labels.with(mPicasso).from(mChange);
-                vh.mBinding.setChange(mChange);
-                vh.mBinding.setSubmitType(mSubmitType);
-
-            } else if (holder instanceof PatchSetInfoViewHolder) {
-                PatchSetInfoViewHolder patchSetInfoViewHolder = (PatchSetInfoViewHolder) holder;
-                patchSetInfoViewHolder.mBinding.setChangeId(mChange.changeId);
-                patchSetInfoViewHolder.mBinding.setRevision(mCurrentRevision);
-                RevisionInfo revision = mChange.revisions.get(mCurrentRevision);
-                patchSetInfoViewHolder.mBinding.setModel(revision);
-                patchSetInfoViewHolder.mBinding.parentCommits.from(revision.commit);
-
-            } else if (holder instanceof ChangeInfoViewHolder) {
-                ChangeInfoViewHolder changeInfoViewHolder = (ChangeInfoViewHolder) holder;
-                changeInfoViewHolder.mBinding.owner.with(mPicasso).from(mChange.owner);
-                changeInfoViewHolder.mBinding.reviewers.with(mPicasso).withRemovableReviewers(true)
-                        .from(mChange);
-                changeInfoViewHolder.mBinding.labels.with(mPicasso).from(mChange);
-                changeInfoViewHolder.mBinding.setModel(mChange);
-                changeInfoViewHolder.mBinding.setSubmitType(mSubmitType);
-
-            } else if (holder instanceof FileInfoViewHolder) {
-                FileInfoViewHolder fileInfoViewHolder = (FileInfoViewHolder) holder;
-                FileItemModel model = getFileInfoFromPosition(position);
-                fileInfoViewHolder.mBinding.addedVsDeleted.with(model);
-                fileInfoViewHolder.mBinding.setModel(model);
-
-            } else if (holder instanceof MessageViewHolder) {
-                int index = getMessageIndexFromPosition(position);
-                ChangeMessageInfo message = mChange.messages[index];
-                boolean expanded = mExpandedMessages[index];
-                if (message.author == null) {
-                    message.author = mBuildBotSystemAccount;
-                }
-                MessageViewHolder messageViewHolder = (MessageViewHolder) holder;
-                messageViewHolder.mBinding.setExpanded(expanded);
-                messageViewHolder.mBinding.setModel(message);
-                messageViewHolder.mBinding.setHandlers(mEventHandlers);
-                messageViewHolder.mBinding.getRoot().setTag(index);
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (isHeaderView(position)) {
-                return HEADER_VIEW;
-            }
-            if (isChangeAndPatchSetInfoView(position)) {
-                return CHANGE_AND_PATCH_SET_INFO_VIEW;
-            }
-            if (isPatchSetInfoView(position)) {
-                return PATCH_SET_INFO_VIEW;
-            }
-            if (isChangeInfoView(position)) {
-                return CHANGE_INFO_VIEW;
-            }
-            if (isFileInfoView(position)) {
-                return FILE_INFO_VIEW;
-            }
-            return MESSAGE_VIEW;
+        void update(ChangeMessageInfo[] messages) {
+            mMessages = messages;
+            mExpanded = new boolean[messages != null ? messages.length : 0];
+            notifyDataSetChanged();
         }
 
         @Override
         public int getItemCount() {
-            if (mChange == null) {
-                return 0;
+            return mMessages != null ? mMessages.length : 0;
+        }
+
+        @Override
+        public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            return new MessageViewHolder(DataBindingUtil.inflate(
+                    inflater, R.layout.message_item, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(MessageViewHolder holder, int position) {
+            ChangeMessageInfo message = mMessages[position];
+            boolean expanded = mExpanded[position];
+            if (message.author == null) {
+                message.author = mBuildBotSystemAccount;
             }
-
-            int headersItems = mHeaderModels.length - (mIsTwoPane ? 1 : 0);
-            int patchSetInfoItems = (mIsTwoPane ? 0 : 1);
-            int changeInfoItems = (mIsTwoPane ? 0 : 1);
-            int fileItems = getFileItems();
-            int messageItems = getMessageItems();
-            return headersItems + changeInfoItems + patchSetInfoItems + fileItems + messageItems;
+            holder.mBinding.setExpanded(expanded);
+            holder.mBinding.setModel(message);
+            holder.mBinding.setHandlers(mEventHandlers);
+            holder.mBinding.getRoot().setTag(position);
         }
 
-        private boolean isHeaderView(int position) {
-            if (mIsTwoPane) {
-                return position == 1 || position == getFileItems() + 2;
-            }
-            return position == 0 || position == 2 || position == 4
-                    || position == getFileItems() + 4 + 1;
-        }
-
-        private boolean isChangeAndPatchSetInfoView(int position) {
-            return mIsTwoPane && position == 0;
-        }
-
-        private boolean isPatchSetInfoView(int position) {
-            return !mIsTwoPane && position == 1;
-        }
-
-        private boolean isChangeInfoView(int position) {
-            return !mIsTwoPane && position == 3;
-        }
-
-        private boolean isFileInfoView(int position) {
-            if (mIsTwoPane) {
-                return position > 1 && position <= (1 + getFileItems());
-            }
-            return position > 4 && position <= (4 + getFileItems());
-        }
-
-        private int getFileItems() {
-            return mFiles.size();
-        }
-
-        private int getMessageItems() {
-            ChangeMessageInfo[] messages =  mChange.messages;
-            return messages == null ? 0 : messages.length;
-        }
-
-        private HeaderItemModel getHeaderItemModelFromPosition(int position) {
-            if (!mIsTwoPane && position == 0) {
-                return mHeaderModels[0];
-            }
-            if (!mIsTwoPane && position == 2) {
-                return mHeaderModels[1];
-            }
-            if ((!mIsTwoPane && position == 4) || (mIsTwoPane && position == 1)) {
-                return mHeaderModels[2];
-            }
-            return mHeaderModels[3];
-        }
-
-        private FileItemModel getFileInfoFromPosition(int position) {
-            if (mIsTwoPane) {
-                return mFiles.get(position - 2);
-            }
-            return mFiles.get(position - 5);
-        }
-
-        private int getMessageIndexFromPosition(int position) {
-            if (mIsTwoPane) {
-                return position - 3 - getFileItems();
-            }
-            return position - 6 - getFileItems();
-        }
-
-        private void performExpandCollapseMessage(int message) {
-            mExpandedMessages[message] = !mExpandedMessages[message];
-            notifyItemChanged(message + getFileItems() + (mIsTwoPane ? 3 : 6));
+        private void performExpandCollapseMessage(int position) {
+            mExpanded[position] = !mExpanded[position];
+            notifyItemChanged(position);
         }
     }
 
@@ -487,28 +288,49 @@ public class ChangeDetailsFragment extends Fragment {
                 @Override
                 public void onNext(DataResponse result) {
                     mModel.hasData = result != null;
-                    mAdapter.update(result);
-                    mAdapter.notifyDataSetChanged();
+
+                    final ChangeInfo change = result.mChange;
+                    if (mCurrentRevision == null
+                            || !change.revisions.containsKey(mCurrentRevision)) {
+                        mCurrentRevision = change.currentRevision;
+                    }
+
+                    updatePatchSetInfo(change);
+                    updateChangeInfo(change, result.mSubmitType);
+
+                    Map<String, FileInfo> files =  change.revisions.get(mCurrentRevision).files;
+                    mModel.filesListModel.visible = files != null && !files.isEmpty();
+                    mFileAdapter.update(files, result.mInlineComments);
+
+                    mModel.msgListModel.visible =
+                            change.messages != null && change.messages.length > 0;
+                    mMessageAdapter.update(change.messages);
+
                     mBinding.setModel(mModel);
-                    showProgress(false);
+                    showProgress(false, change);
                 }
 
                 @Override
                 public void onError(Throwable error) {
                     ((BaseActivity) getActivity()).handleException(TAG, error);
-                    showProgress(false);
+                    showProgress(false, null);
                 }
 
                 @Override
                 public void onStarted() {
-                    showProgress(true);
+                    showProgress(true, null);
                 }
             };
 
     private ChangeDetailsFragmentBinding mBinding;
-    private ChangeAdapter mAdapter;
+    private Picasso mPicasso;
+
+    private FileAdapter mFileAdapter;
+    private MessageAdapter mMessageAdapter;
 
     private final Model mModel = new Model();
+    private String mCurrentRevision;
+
     private RxLoader1<String, DataResponse> mChangeLoader;
     private String mChangeId;
 
@@ -524,6 +346,7 @@ public class ChangeDetailsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mChangeId = String.valueOf(getArguments().getInt(EXTRA_CHANGE_ID, 0));
+        mPicasso = PicassoHelper.getPicassoClient(getContext());
     }
 
     @Nullable
@@ -544,19 +367,44 @@ public class ChangeDetailsFragment extends Fragment {
         startLoadersWithValidContext();
     }
 
+    private void updatePatchSetInfo(ChangeInfo change) {
+        mBinding.patchSetInfo.setChangeId(change.changeId);
+        mBinding.patchSetInfo.setRevision(mCurrentRevision);
+        RevisionInfo revision = change.revisions.get(mCurrentRevision);
+        mBinding.patchSetInfo.setModel(revision);
+        mBinding.patchSetInfo.parentCommits.from(revision.commit);
+
+    }
+
+    private void updateChangeInfo(ChangeInfo change, SubmitType submitType) {
+        mBinding.changeInfo.owner.with(mPicasso).from(change.owner);
+        mBinding.changeInfo.reviewers.with(mPicasso)
+                .withRemovableReviewers(true)
+                .from(change);
+        mBinding.changeInfo.labels.with(mPicasso).from(change);
+        mBinding.changeInfo.setModel(change);
+        mBinding.changeInfo.setSubmitType(submitType);
+    }
+
     private void startLoadersWithValidContext() {
         if (getActivity() == null) {
             return;
         }
 
-        if (mAdapter == null) {
-            // Configure the adapter
-            mAdapter = new ChangeAdapter(this);
-            mBinding.list.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.VERTICAL, false));
-            mBinding.list.addItemDecoration(new DividerItemDecoration(
+        if (mFileAdapter == null) {
+            mFileAdapter = new FileAdapter();
+            mBinding.fileInfo.list.setLayoutManager(new LinearLayoutManager(
+                    getActivity(), LinearLayoutManager.VERTICAL, false));;
+            mBinding.fileInfo.list.addItemDecoration(new DividerItemDecoration(
                     getContext(), LinearLayoutManager.VERTICAL));
-            mBinding.list.setAdapter(mAdapter);
+            mBinding.fileInfo.list.setAdapter(mFileAdapter);
+
+            mMessageAdapter = new MessageAdapter(this);
+            mBinding.messageInfo.list.setLayoutManager(new LinearLayoutManager(
+                    getActivity(), LinearLayoutManager.VERTICAL, false));;
+            mBinding.messageInfo.list.addItemDecoration(new DividerItemDecoration(
+                    getContext(), LinearLayoutManager.VERTICAL));
+            mBinding.messageInfo.list.setAdapter(mMessageAdapter);
 
             // Configure the refresh
             setupSwipeToRefresh();
@@ -578,8 +426,8 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<DataResponse> fetchChange(String changeId) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        final String revision = mAdapter.mCurrentRevision == null
-                ? GerritApi.CURRENT_REVISION : mAdapter.mCurrentRevision;
+        final String revision = mCurrentRevision == null
+                ? GerritApi.CURRENT_REVISION : mCurrentRevision;
         return Observable.zip(
                     api.getChange(changeId, OPTIONS),
                     api.getChangeRevisionSubmitType(mChangeId, revision),
@@ -600,12 +448,12 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.refresh.setEnabled(false);
     }
 
-    private void showProgress(boolean show) {
+    private void showProgress(boolean show, ChangeInfo change) {
         BaseActivity activity = (BaseActivity) getActivity();
         if (show) {
             activity.onRefreshStart();
         } else {
-            activity.onRefreshEnd(mAdapter.mChange);
+            activity.onRefreshEnd(change);
         }
         mBinding.refresh.setEnabled(!show);
     }
