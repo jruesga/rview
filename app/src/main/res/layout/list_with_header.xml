@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/HeaderLabel"
-                android:text="@{model.header}" />
+                android:text="@{model.header == 0 ? null : context.getString(model.header)}" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/list"
