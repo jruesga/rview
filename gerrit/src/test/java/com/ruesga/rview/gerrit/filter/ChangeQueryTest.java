@@ -61,6 +61,17 @@ public class ChangeQueryTest {
                 new ChangeQuery().added(Relation.EQUALS_THAN, 2));
         testParseQuery("added:>=2",
                 new ChangeQuery().added(Relation.GREATER_OR_EQUALS_THAN, 2));
+        testParseQuery("is:open AND owner:self",
+                new ChangeQuery().is(IsType.OPEN).and(new ChangeQuery().ownerSelf()));
+        testParseQuery("is:open AND (reviewer:self AND (-(owner:self)))",
+                new ChangeQuery().is(IsType.OPEN).and(
+                        new ChangeQuery().reviewerSelf().and(
+                                new ChangeQuery().negate(new ChangeQuery().ownerSelf()))));
+        testParseQuery("is:closed AND (owner:self OR (reviewer:self)) AND (-(age:4w)))",
+                new ChangeQuery().is(IsType.CLOSED)
+                        .and(new ChangeQuery().ownerSelf()
+                                .or(new ChangeQuery().reviewerSelf()))
+                        .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.WEEKS, 4))));
     }
 
     private void testParseQuery(String expression, ChangeQuery expectedResult) {

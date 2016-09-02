@@ -334,11 +334,22 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                 case QueryLexer.AND:
                 case QueryLexer.OR:
                     addField(tree.getChild(0), query);
-                    if (tree.getChild(1).getType() == QueryLexer.FIELD_NAME) {
-                        if (tree.getType() == QueryLexer.AND) {
-                            query.and(toChangeQuery(tree.getChild(1)));
-                        } else {
-                            query.or(toChangeQuery(tree.getChild(1)));
+                    for (int i = 1; i < tree.getChildCount(); i++) {
+                        int childType = tree.getChild(i).getType();
+                        if (childType == QueryLexer.FIELD_NAME) {
+                            if (tree.getType() == QueryLexer.AND) {
+                                query.and(toChangeQuery(tree.getChild(i)));
+                            } else {
+                                query.or(toChangeQuery(tree.getChild(i)));
+                            }
+                        } else if (childType == QueryLexer.AND || childType == QueryLexer.OR
+                                || childType == QueryLexer.NOT) {
+                            ChangeQuery childQuery = toChangeQuery(tree.getChild(i));
+                            if (tree.getType() == QueryLexer.AND) {
+                                query.and(childQuery);
+                            } else {
+                                query.or(childQuery);
+                            }
                         }
                     }
                     break;
