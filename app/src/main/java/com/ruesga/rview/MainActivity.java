@@ -632,6 +632,26 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
     }
 
     @Override
+    public void onChangeItemSelected(int changeId) {
+        // This event is only interesting for the two pane layout
+        if (mIsTwoPane) {
+            if (changeId == ChangeListFragment.NO_SELECTION) {
+                // Remove the details fragment
+                FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+                Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(
+                        FRAGMENT_TAG_DETAILS);
+                if (oldFragment != null) {
+                    tx.remove(oldFragment);
+                }
+                tx.commit();
+            } else {
+                // Load the details of the change
+                loadChangeDetailsFragment(changeId);
+            }
+        }
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> void onRefreshEnd(T result) {
         super.onRefreshEnd(result);

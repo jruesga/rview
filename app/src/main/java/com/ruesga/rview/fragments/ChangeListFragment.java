@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,7 +57,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class ChangeListFragment extends Fragment {
+public class ChangeListFragment extends SelectableFragment {
 
     private static final String TAG = "ChangeListFragment";
 
@@ -72,7 +71,7 @@ public class ChangeListFragment extends Fragment {
 
     private static final int MESSAGE_FETCH_MORE_ITEMS = 0;
 
-    private static final int NO_SELECTION = -1;
+    public static final int NO_SELECTION = -1;
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         private final ChangesItemBinding mBinding;
@@ -448,4 +447,13 @@ public class ChangeListFragment extends Fragment {
         ((OnChangeItemListener) getActivity()).onChangeItemRestored(mAdapter.mChangeId);
     }
 
+    @Override
+    public void onFragmentSelected() {
+        if (mAdapter == null || mAdapter.mData.isEmpty()) {
+            ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);
+        } else {
+            int changeId = mAdapter.mData.get(0).legacyChangeId;
+            ((OnChangeItemListener) getActivity()).onChangeItemSelected(changeId);
+        }
+    }
 }

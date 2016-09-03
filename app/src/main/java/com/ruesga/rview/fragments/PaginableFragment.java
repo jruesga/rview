@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +30,28 @@ import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ViewPagerBinding;
 
+import java.lang.ref.WeakReference;
+
 public abstract class PaginableFragment extends Fragment {
 
-    private class PageFragmentAdapter extends FragmentPagerAdapter {
+    public class PageFragmentAdapter extends FragmentPagerAdapter {
+        private final SparseArray<WeakReference<Fragment>> mFragments = new SparseArray<>();
 
         public PageFragmentAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+            mFragments.put(position, new WeakReference<>(fragment));
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            super.destroyItem(container, position, object);
+            mFragments.remove(position);
         }
 
         @Override
@@ -50,6 +67,11 @@ public abstract class PaginableFragment extends Fragment {
         @Override
         public CharSequence getPageTitle(int position) {
             return getTabs()[position];
+        }
+
+        public Fragment getCacheFragment(int position) {
+            WeakReference<Fragment> ref = mFragments.get(position);
+            return ref != null ? ref.get() : null;
         }
     }
 

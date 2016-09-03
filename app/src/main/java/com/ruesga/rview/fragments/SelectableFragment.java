@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview;
+package com.ruesga.rview.fragments;
 
-import com.ruesga.rview.gerrit.model.ChangeInfo;
+import android.support.v4.app.Fragment;
 
-public interface OnChangeItemListener {
-    void onChangeItemPressed(ChangeInfo change);
-    void onChangeItemRestored(int changeId);
-    void onChangeItemSelected(int changeId);
+public abstract class SelectableFragment extends Fragment {
+    public abstract void onFragmentSelected();
 }

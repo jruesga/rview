@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,6 +28,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
+import com.ruesga.rview.fragments.PaginableFragment;
+import com.ruesga.rview.fragments.PaginableFragment.PageFragmentAdapter;
+import com.ruesga.rview.fragments.SelectableFragment;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
 
@@ -69,6 +74,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
 
     private Model mModel = new Model();
 
+    private ViewPager mViewPager;
+
     public abstract DrawerLayout getDrawerLayout();
 
     public abstract ContentBinding getContentBinding();
@@ -94,8 +101,27 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     public void configureTabs(ViewPager pager) {
+        mViewPager = pager;
         mModel.mHasTabs = true;
         getContentBinding().tabs.setupWithViewPager(pager);
+        getContentBinding().tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                PageFragmentAdapter adapter = (PageFragmentAdapter) mViewPager.getAdapter();
+                Fragment fragment = adapter.getCacheFragment(tab.getPosition());
+                if (fragment != null && fragment instanceof SelectableFragment) {
+                    ((SelectableFragment) fragment).onFragmentSelected();
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
         pager.getAdapter().notifyDataSetChanged();
         getContentBinding().setModel(mModel);
     }
