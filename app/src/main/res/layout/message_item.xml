@@ -25,75 +25,58 @@
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{handlers::onMessageExpandedCollapsed}">
-        <LinearLayout
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp" />
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/avatar"
+            android:layout_toEndOf="@id/avatar"
+            android:layout_alignParentTop="true"
+            android:text="@{model.author.name}"
+            app:font="bold"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/tv_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_toRightOf="@id/author"
+            android:layout_toEndOf="@id/author"
+            android:layout_alignBaseline="@id/author"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignWithParentIfMissing="true"
+            android:gravity="right|end"
+            app:prettyDateTime="@{model.date}"
+            android:textAppearance="@style/TextAppearance.VerySmall" />
+
+        <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:padding="16dp"
-            android:visibility="@{!expanded ? View.VISIBLE : View.GONE}"
-            android:orientation="horizontal">
-            <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="96dp"
-                android:layout_height="wrap_content"
-                android:text="@{model.author.name}"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp" />
-            <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:compressedText="@{model.message}"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="12sp" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:padding="16dp"
-            android:visibility="@{expanded ? View.VISIBLE : View.GONE}"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <com.ruesga.rview.widget.StyleableTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{model.author.name}"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="12sp" />
-                <com.ruesga.rview.widget.StyleableTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:prettyDateTime="@{model.date}"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
-            </LinearLayout>
-            <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="@{model.message}"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </FrameLayout>
+            android:layout_marginTop="2dp"
+            android:layout_below="@id/author"
+            android:layout_toRightOf="@id/avatar"
+            android:layout_toEndOf="@id/avatar"
+            android:layout_alignWithParentIfMissing="true"
+            android:text="@{model.message}"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textIsSelectable="true" />
+
+    </RelativeLayout>
 </layout>

@@ -45,4 +45,8 @@
         <item name="font">boldCondensed</item>
         <item name="allCaps">true</item>
     </style>
+
+    <style name="TextAppearance.VerySmall" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>

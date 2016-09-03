@@ -25,16 +25,20 @@
         <variable name="model" type="com.ruesga.rview.fragments.ChangeDetailsFragment.FileItemModel" />
     </data>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:minHeight="?attr/listPreferredItemHeightSmall"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:gravity="center_vertical"
         android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@{model.file == null ? null : model.info.status.equals(FileStatus.A) ? @drawable/ic_add_circle_outline : model.info.status.equals(FileStatus.D) ? @drawable/ic_remove_circle_outline : @drawable/ic_modify_circle_outline}"
+            tools:ignore="ContentDescription" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,5 +98,5 @@
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 </layout>

@@ -30,14 +30,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
             android:paddingBottom="16dp"
             android:orientation="vertical">
 
             <com.ruesga.rview.widget.StyleableTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
                 style="@style/HeaderLabel"
                 android:text="@{model.header == 0 ? null : context.getString(model.header)}" />
 

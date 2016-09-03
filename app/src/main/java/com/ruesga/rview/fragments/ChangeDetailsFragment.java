@@ -115,10 +115,6 @@ public class ChangeDetailsFragment extends Fragment {
             mFragment = fragment;
         }
 
-        public void onMessageExpandedCollapsed(View v) {
-            mFragment.mMessageAdapter.performExpandCollapseMessage((int) v.getTag());
-        }
-
         public void onWebLinkPressed(View v) {
             String url = (String) v.getTag();
             if (url != null) {
@@ -243,7 +239,6 @@ public class ChangeDetailsFragment extends Fragment {
         private final AccountInfo mBuildBotSystemAccount;
         private final EventHandlers mEventHandlers;
         private ChangeMessageInfo[] mMessages;
-        private boolean[] mExpanded;
 
         public MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers) {
             final Resources res = fragment.getResources();
@@ -256,7 +251,6 @@ public class ChangeDetailsFragment extends Fragment {
 
         void update(ChangeMessageInfo[] messages) {
             mMessages = messages;
-            mExpanded = new boolean[messages != null ? messages.length : 0];
             notifyDataSetChanged();
         }
 
@@ -274,20 +268,16 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(MessageViewHolder holder, int position) {
+            final Context context = holder.mBinding.getRoot().getContext();
             ChangeMessageInfo message = mMessages[position];
-            boolean expanded = mExpanded[position];
             if (message.author == null) {
                 message.author = mBuildBotSystemAccount;
             }
-            holder.mBinding.setExpanded(expanded);
+            PicassoHelper.bindAvatar(context, PicassoHelper.getPicassoClient(context),
+                    message.author, holder.mBinding.avatar,
+                    PicassoHelper.getDefaultAvatar(context, R.color.primaryDark));
             holder.mBinding.setModel(message);
             holder.mBinding.setHandlers(mEventHandlers);
-            holder.mBinding.getRoot().setTag(position);
-        }
-
-        private void performExpandCollapseMessage(int position) {
-            mExpanded[position] = !mExpanded[position];
-            notifyItemChanged(position);
         }
     }
 
@@ -422,10 +412,14 @@ public class ChangeDetailsFragment extends Fragment {
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
             mMessageAdapter = new MessageAdapter(this, mEventHandlers);
+            int leftPadding = getResources().getDimensionPixelSize(
+                    R.dimen.message_list_left_padding);
+            DividerItemDecoration messageDivider = new DividerItemDecoration(
+                    getContext(), LinearLayoutManager.VERTICAL);
+            messageDivider.setMargins(leftPadding, 0);
             mBinding.messageInfo.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false));
-            mBinding.messageInfo.list.addItemDecoration(new DividerItemDecoration(
-                    getContext(), LinearLayoutManager.VERTICAL));
+            mBinding.messageInfo.list.addItemDecoration(messageDivider);
             mBinding.messageInfo.list.setNestedScrollingEnabled(false);
             mBinding.messageInfo.list.setAdapter(mMessageAdapter);
 
