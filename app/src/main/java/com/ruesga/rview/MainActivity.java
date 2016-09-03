@@ -285,7 +285,9 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
             }
         } else if (requestCode == REQUEST_ACCOUNT_SETTINGS) {
             // Refresh current view
-            mModel.currentNavigationItemId = Preferences.getAccountHomePageId(this, mAccount);
+            if (mModel.currentNavigationItemId == INVALID_ITEM) {
+                mModel.currentNavigationItemId = Preferences.getAccountHomePageId(this, mAccount);
+            }
             performNavigateTo();
         }
     }
