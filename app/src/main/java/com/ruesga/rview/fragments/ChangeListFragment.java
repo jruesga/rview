@@ -383,25 +383,25 @@ public class ChangeListFragment extends SelectableFragment {
             mBinding.list.removeOnScrollListener(mEndlessScroller);
         }
 
-        for (ChangeInfo oldChange : oldChanges) {
-            if (oldChange.id == null) {
-                continue;
-            }
-
+        List<ChangeInfo> combined = new ArrayList<>(oldChanges);
+        if (!oldChanges.isEmpty() && oldChanges.get(oldChanges.size() - 1).id == null) {
+            combined.remove(oldChanges.size() - 1);
+        }
+        for (ChangeInfo newChange : newChanges) {
             boolean exists = false;
-            for (ChangeInfo newChange : newChanges) {
-                if (newChange.id.equals(oldChange.id)) {
+            for (ChangeInfo change : combined) {
+                if (newChange.id.equals(change.id)) {
                     exists = true;
                     break;
                 }
             }
 
             if (!exists) {
-                newChanges.add(oldChange);
+                combined.add(newChange);
             }
         }
 
-        return newChanges;
+        return combined;
     }
 
     private void setupSwipeToRefresh() {
