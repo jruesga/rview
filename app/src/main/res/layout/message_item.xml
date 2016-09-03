@@ -74,7 +74,8 @@
             android:layout_toEndOf="@id/avatar"
             android:layout_alignWithParentIfMissing="true"
             android:text="@{model.message}"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:autoLink="all"
+            android:textAppearance="@style/TextAppearance.VerySmall"
             android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true" />
 
