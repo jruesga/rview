@@ -41,12 +41,15 @@
                 android:minHeight="?attr/actionBarSize"
                 android:background="?attr/colorPrimaryDark"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:layout_collapseMode="pin"
+                app:toolbarScrollFlags="@{model.mHasTabs}" />
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="bottom"
                 android:background="?attr/colorPrimaryDark"
                 android:visibility="@{model.mHasTabs ? View.VISIBLE : View.GONE}"
                 app:tabTextColor="?android:attr/textColorSecondaryInverse"
