@@ -236,6 +236,10 @@ public class ChangeListFragment extends Fragment {
     private final Model mModel = new Model();
     private boolean mIsTwoPanel;
 
+    // In case is inside a viewpager, it will call setMenuVisibility to false
+    // in those fragments invisible to the user
+    private boolean mIsVisibleToUser = true;
+
     private ChangesAdapter mAdapter;
     private EndlessRecyclerViewScrollListener mEndlessScroller;
 
@@ -271,6 +275,12 @@ public class ChangeListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         startLoadersWithValidContext(savedInstanceState);
+    }
+
+    @Override
+    public void setMenuVisibility(final boolean visible) {
+        super.setMenuVisibility(visible);
+        mIsVisibleToUser = visible;
     }
 
     private void startLoadersWithValidContext(Bundle savedState) {
@@ -411,15 +421,19 @@ public class ChangeListFragment extends Fragment {
     private void showProgress(boolean show) {
         if (mEndlessScroller == null || !mEndlessScroller.isLoading()) {
             BaseActivity activity = (BaseActivity) getActivity();
-            if (show) {
-                activity.onRefreshStart();
-            } else {
-                activity.onRefreshEnd(Collections.unmodifiableList(mAdapter.mData));
+            if (mIsVisibleToUser) {
+                if (show) {
+                    activity.onRefreshStart();
+                } else {
+                    activity.onRefreshEnd(Collections.unmodifiableList(mAdapter.mData));
+                }
             }
         } else if (!show) {
             mEndlessScroller.loadCompleted();
         }
-        mBinding.refresh.setEnabled(!show);
+        if (mIsVisibleToUser) {
+            mBinding.refresh.setEnabled(!show);
+        }
     }
 
     private void onItemClick(ChangeInfo item) {

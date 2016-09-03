@@ -70,6 +70,8 @@ public abstract class PaginableFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        final boolean isTwoPane = getResources().getBoolean(R.bool.config_is_two_pane);
+        mBinding.viewPager.setSwipeable(!isTwoPane);
         mBinding.viewPager.setOffscreenPageLimit(getTabs().length + 1);
         mBinding.viewPager.setAdapter(new PageFragmentAdapter(getChildFragmentManager()));
         ((BaseActivity) getActivity()).configureTabs(mBinding.viewPager);

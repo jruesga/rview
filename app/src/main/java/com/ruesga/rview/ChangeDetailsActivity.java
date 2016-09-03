@@ -57,13 +57,15 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
         int legacyChangeId = getIntent().getIntExtra(EXTRA_LEGACY_CHANGE_ID, -1);
         if (legacyChangeId == -1) {
-            finish();
-            return;
+            legacyChangeId = 158921;
+            //finish();
+            //return;
         }
         String changeId = getIntent().getStringExtra(EXTRA_CHANGE_ID);
         if (changeId == null) {
-            finish();
-            return;
+            changeId = "Ibe984d862df0e1a5910ea80a66c44d599c299f10";
+            //finish();
+            //return;
         }
 
         // Setup the title

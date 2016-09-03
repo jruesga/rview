@@ -538,8 +538,14 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
             getSupportActionBar().setSubtitle(null);
         }
 
+        // Open the dashboard fragment
+        mModel.selectedChangeId = INVALID_ITEM;
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
+        if (oldFragment != null) {
+            tx.remove(oldFragment);
+        }
+        oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_DETAILS);
         if (oldFragment != null) {
             tx.remove(oldFragment);
         }
@@ -556,8 +562,13 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         }
 
         // Open the filter fragment
+        mModel.selectedChangeId = INVALID_ITEM;
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
+        if (oldFragment != null) {
+            tx.remove(oldFragment);
+        }
+        oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_DETAILS);
         if (oldFragment != null) {
             tx.remove(oldFragment);
         }
