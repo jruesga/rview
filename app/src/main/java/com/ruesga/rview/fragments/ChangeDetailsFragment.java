@@ -418,6 +418,7 @@ public class ChangeDetailsFragment extends Fragment {
                     getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.fileInfo.list.addItemDecoration(new DividerItemDecoration(
                     getContext(), LinearLayoutManager.VERTICAL));
+            mBinding.fileInfo.list.setNestedScrollingEnabled(false);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
             mMessageAdapter = new MessageAdapter(this, mEventHandlers);
@@ -425,6 +426,7 @@ public class ChangeDetailsFragment extends Fragment {
                     getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.messageInfo.list.addItemDecoration(new DividerItemDecoration(
                     getContext(), LinearLayoutManager.VERTICAL));
+            mBinding.messageInfo.list.setNestedScrollingEnabled(false);
             mBinding.messageInfo.list.setAdapter(mMessageAdapter);
 
             // Configure the refresh
