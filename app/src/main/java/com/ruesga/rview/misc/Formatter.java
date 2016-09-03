@@ -33,6 +33,7 @@ import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.widget.StyleableTextView;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -85,6 +86,12 @@ public class Formatter {
             accountDisplayName = accountInfo.username;
         }
         view.setText(accountDisplayName);
+    }
+
+    @BindingAdapter("highlightText")
+    public static void toHighlightedText(StyleableTextView view, boolean highlight) {
+        view.setTypeface(TypefaceCache.getTypeface(view.getContext(),
+                highlight ? TypefaceCache.TF_BOLD_CONDENSED : TypefaceCache.TF_CONDENSED));
     }
 
     @BindingAdapter("compressedText")

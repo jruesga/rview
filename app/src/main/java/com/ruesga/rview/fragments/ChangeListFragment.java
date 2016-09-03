@@ -401,14 +401,6 @@ public class ChangeListFragment extends SelectableFragment {
             }
         }
 
-        // Sort the collection
-        Collections.sort(newChanges, (o1, o2) -> {
-            if (o1.id.equals(o2.id)) {
-                return 0;
-            }
-            return o2.updated.compareTo(o1.updated);
-        });
-
         return newChanges;
     }
 
