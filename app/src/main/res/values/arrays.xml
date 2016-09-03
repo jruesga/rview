@@ -14,20 +14,39 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <integer-array name="query_filters_orders" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-    </integer-array>
+<resources>
+    <string-array name="query_filters_ids_names" translatable="false">
+        <item>menu_open</item>
+        <item>menu_merged</item>
+        <item>menu_abandoned</item>
+        <item>menu_dashboard</item>
+        <item>menu_drafts</item>
+        <item>menu_starred</item>
+        <item>menu_watched</item>
+    </string-array>
+    <string-array name="query_filters_ids_titles" translatable="false">
+        <item>@string/menu_open</item>
+        <item>@string/menu_merged</item>
+        <item>@string/menu_abandoned</item>
+        <item>@string/menu_dashboard</item>
+        <item>@string/menu_drafts</item>
+        <item>@string/menu_starred</item>
+        <item>@string/menu_watched</item>
+    </string-array>
+    <string-array name="query_filters_auth" translatable="false">
+        <item>false</item>
+        <item>false</item>
+        <item>false</item>
+        <item>true</item>
+        <item>true</item>
+        <item>true</item>
+        <item>true</item>
+    </string-array>
     <string-array name="query_filters_values" translatable="false">
         <item>status:open</item>
         <item>status:merged</item>
         <item>status:abandoned</item>
+        <item />
         <item>is:draft</item>
         <item>is:starred</item>
         <item>is:watched AND is:open</item>
@@ -42,5 +61,23 @@
         <item>is:open AND owner:self</item>
         <item>is:open AND (reviewer:self AND (-(owner:self)))</item>
         <item>is:closed AND (owner:self OR (reviewer:self)) AND (-(age:4w)))</item>
+    </string-array>
+
+    <string-array name="account_fetched_items_values" translatable="false">
+        <item>25</item>
+        <item>50</item>
+        <item>75</item>
+        <item>100</item>
+    </string-array>
+
+    <string-array name="account_display_format_labels" translatable="false">
+        <item>@string/account_settings_display_format_name</item>
+        <item>@string/account_settings_display_format_email</item>
+        <item>@string/account_settings_display_format_username</item>
+    </string-array>
+    <string-array name="account_display_format_values" translatable="false">
+        <item>name</item>
+        <item>email</item>
+        <item>username</item>
     </string-array>
 </resources>

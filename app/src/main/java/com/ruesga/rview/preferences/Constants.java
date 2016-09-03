@@ -17,13 +17,27 @@ package com.ruesga.rview.preferences;
 
 public class Constants {
     /**
-     * The minimal server version supported.
+     * The minimal Gerrit server version supported.
      */
     public static final double MINIMAL_SUPPORTED_VERSION = 2.11d;
 
 
-    // --- Preference Keys
+    public static final String DEFAULT_AUTHENTICATED_HOME = "menu_dashboard";
+    public static final String DEFAULT_ANONYMOUS_HOME = "menu_open";
+    public static final String DEFAULT_FETCHED_ITEMS = "25";
+    public static final String DEFAULT_DISPLAY_FORMAT = "name";
+
+    public static final String ACCOUNT_DISPLAY_FORMAT_NAME = "name";
+    public static final String ACCOUNT_DISPLAY_FORMAT_EMAIL = "email";
+    public static final String ACCOUNT_DISPLAY_FORMAT_USERNAME = "username";
+
+    // --- Preference keys
     public static final String PREF_IS_FIRST_RUN = "first_run";
     public static final String PREF_ACCOUNT = "account";
     public static final String PREF_ACCOUNTS = "accounts";
+
+    // -- Account preferences keys
+    public static final String PREF_ACCOUNT_HOME_PAGE = "account_home_page";
+    public static final String PREF_ACCOUNT_FETCHED_ITEMS = "account_fetched_items";
+    public static final String PREF_ACCOUNT_DISPLAY_FORMAT = "account_display_format";
 }

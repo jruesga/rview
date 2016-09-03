@@ -16,6 +16,7 @@
  -->
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -35,7 +36,8 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp" />
+            android:layout_marginEnd="16dp"
+            tools:ignore="ContentDescription"/>
 
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/author"
@@ -44,7 +46,7 @@
             android:layout_toRightOf="@id/avatar"
             android:layout_toEndOf="@id/avatar"
             android:layout_alignParentTop="true"
-            android:text="@{model.author.name}"
+            app:accountDisplayName="@{model.author}"
             app:font="bold"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorPrimary" />
@@ -61,7 +63,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_alignWithParentIfMissing="true"
-            android:gravity="right|end"
+            android:gravity="end"
             app:prettyDateTime="@{model.date}"
             android:textAppearance="@style/TextAppearance.VerySmall" />
 

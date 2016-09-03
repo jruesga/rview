@@ -41,6 +41,7 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.EndlessRecyclerViewScrollListener;
 import com.squareup.picasso.Picasso;
@@ -66,7 +67,6 @@ public class ChangeListFragment extends SelectableFragment {
         add(ChangeOptions.LABELS);
     }};
 
-    private static final int FETCHED_CHANGES = 50;
     private static final int FETCHED_MORE_CHANGES_THRESHOLD = 10;
 
     private static final int MESSAGE_FETCH_MORE_ITEMS = 0;
@@ -242,6 +242,8 @@ public class ChangeListFragment extends SelectableFragment {
     private ChangesAdapter mAdapter;
     private EndlessRecyclerViewScrollListener mEndlessScroller;
 
+    private int mItemsToFetch;
+
     private RxLoader2<Integer, Integer, List<ChangeInfo>> mChangesLoader;
 
     public static ChangeListFragment newInstance(String filter) {
@@ -289,6 +291,9 @@ public class ChangeListFragment extends SelectableFragment {
 
         mIsTwoPanel = getResources().getBoolean(R.bool.config_is_two_pane);
         if (mAdapter == null) {
+            mItemsToFetch = Preferences.getAccountFetchedItems(
+                    getContext(), Preferences.getAccount(getContext()));
+
             // Configure the adapter
             mAdapter = new ChangesAdapter(this);
             if (savedState != null) {
@@ -318,7 +323,7 @@ public class ChangeListFragment extends SelectableFragment {
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mChangesLoader = loaderManager
                     .create(this::fetchChanges, mLoaderObserver)
-                    .start(FETCHED_CHANGES, 0);
+                    .start(mItemsToFetch, 0);
         }
     }
 
@@ -355,7 +360,7 @@ public class ChangeListFragment extends SelectableFragment {
         mBinding.list.removeOnScrollListener(mEndlessScroller);
         mBinding.list.addOnScrollListener(mEndlessScroller);
 
-        final int count = FETCHED_CHANGES;
+        final int count = mItemsToFetch;
         final int start = 0;
         mChangesLoader.restart(count, start);
     }
@@ -366,7 +371,7 @@ public class ChangeListFragment extends SelectableFragment {
         mAdapter.notifyItemInserted(mAdapter.mData.size() - 1);
 
         // Fetch more
-        final int count = FETCHED_CHANGES + FETCHED_MORE_CHANGES_THRESHOLD;
+        final int count = mItemsToFetch + FETCHED_MORE_CHANGES_THRESHOLD;
         final int start = mAdapter.mData.size() - FETCHED_MORE_CHANGES_THRESHOLD;
         mChangesLoader.restart(count, start);
     }

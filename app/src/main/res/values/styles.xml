@@ -26,6 +26,10 @@
     <style name="AppTheme.NoStatusBarColor" parent="AppTheme">
     </style>
 
+    <style name="AppTheme.Settings" parent="AppTheme">
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    </style>
+
     <style name="AppTheme.DrawerMenu" parent="AppTheme">
         <item name="colorPrimary">@color/accent</item>
     </style>

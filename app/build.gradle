@@ -25,6 +25,7 @@ dependencies {
     compile "com.android.support:support-v4:${libraries.support}"
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:cardview-v7:${libraries.support}"
+    compile "com.android.support:preference-v14:${libraries.support}"
     compile "com.android.support:design:${libraries.support}"
     compile "com.android.support:customtabs:${libraries.support}"
     compile "io.reactivex:rxjava:${libraries.rxjava}"

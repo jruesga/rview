@@ -30,18 +30,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
-import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
-import static com.ruesga.rview.preferences.Constants.PREF_IS_FIRST_RUN;
+import static com.ruesga.rview.preferences.Constants.*;
 
 public class Preferences {
 
+    public static String getPreferencesName(Context context) {
+        return context.getPackageName();
+    }
+
     private static SharedPreferences getPreferences(Context context) {
-        return context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+        return context.getSharedPreferences(getPreferencesName(context), Context.MODE_PRIVATE);
+    }
+
+    public static String getAccountPreferencesName(Account account) {
+        return account.getAccountHash();
     }
 
     private static SharedPreferences getAccountPreferences(Context context, Account account) {
-        return context.getSharedPreferences(account.getAccountHash(), Context.MODE_PRIVATE);
+        return context.getSharedPreferences(getAccountPreferencesName(account), Context.MODE_PRIVATE);
+    }
+
+    public static String getDefaultHomePageForAccount(Account account) {
+        return account.hasAuthenticatedAccessMode() ?
+                DEFAULT_AUTHENTICATED_HOME : DEFAULT_ANONYMOUS_HOME;
     }
 
     public static boolean isFirstRun(Context context) {
@@ -118,5 +129,25 @@ public class Preferences {
         Editor editor = getAccountPreferences(context, account).edit();
         editor.clear();
         editor.apply();
+    }
+
+    public static String getAccountHomePage(Context context, Account account) {
+        return getAccountPreferences(context, account).getString(PREF_ACCOUNT_HOME_PAGE,
+                getDefaultHomePageForAccount(account));
+    }
+
+    public static int getAccountHomePageId(Context context, Account account) {
+        return context.getResources().getIdentifier(
+                getAccountHomePage(context, account), "id", context.getPackageName());
+    }
+
+    public static int getAccountFetchedItems(Context context, Account account) {
+        return Integer.valueOf(getAccountPreferences(context, account).getString(
+                PREF_ACCOUNT_FETCHED_ITEMS, DEFAULT_FETCHED_ITEMS));
+    }
+
+    public static String getAccountDisplayFormat(Context context, Account account) {
+        return getAccountPreferences(context, account).getString(
+                PREF_ACCOUNT_DISPLAY_FORMAT, DEFAULT_DISPLAY_FORMAT);
     }
 }

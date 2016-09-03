@@ -15,7 +15,8 @@
      limitations under the License.
  -->
 <layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="android.view.View" />
@@ -50,7 +51,7 @@
             android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold"
             android:textSize="12sp"
-            android:text="@{model.name}" />
+            app:accountDisplayName="@{model}" />
 
         <View
             android:layout_width="1dp"

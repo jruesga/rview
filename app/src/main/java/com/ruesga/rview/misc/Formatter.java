@@ -24,12 +24,15 @@ import android.widget.TextView;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.CommitInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
-import com.ruesga.rview.gerrit.model.WebLinkInfo;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.preferences.Preferences;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -55,6 +58,33 @@ public class Formatter {
             sPrettyTimeMap.put(locale, new PrettyTime(locale));
         }
         view.setText(sPrettyTimeMap.get(locale).format(date));
+    }
+
+    @BindingAdapter("accountDisplayName")
+    public static void toAccountDisplayName(TextView view, AccountInfo accountInfo) {
+        if (accountInfo == null) {
+            view.setText(null);
+            return;
+        }
+
+        Account account = Preferences.getAccount(view.getContext());
+        String format = Preferences.getAccountDisplayFormat(view.getContext(), account);
+        String accountDisplayName = null;
+        switch (format) {
+            case Constants.ACCOUNT_DISPLAY_FORMAT_NAME:
+                accountDisplayName = accountInfo.name;
+                break;
+            case Constants.ACCOUNT_DISPLAY_FORMAT_EMAIL:
+                accountDisplayName = accountInfo.email;
+                break;
+            case Constants.ACCOUNT_DISPLAY_FORMAT_USERNAME:
+                accountDisplayName = accountInfo.username;
+                break;
+        }
+        if (TextUtils.isEmpty(accountDisplayName)) {
+            accountDisplayName = accountInfo.username;
+        }
+        view.setText(accountDisplayName);
     }
 
     @BindingAdapter("compressedText")

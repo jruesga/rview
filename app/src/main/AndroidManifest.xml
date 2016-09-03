@@ -50,6 +50,15 @@
         </activity>
 
         <activity
+            android:name=".AccountSettingsActivity"
+            android:theme="@style/AppTheme.Settings"
+            android:parentActivityName=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".wizards.SetupAccountActivity"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.NoStatusBarColor">

@@ -27,14 +27,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ContentBinding;
-import com.ruesga.rview.fragments.ChangeDetailsFragment;
+import com.ruesga.rview.fragments.AccountSettingsFragment;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Preferences;
 
-import static com.ruesga.rview.fragments.ChangeDetailsFragment.EXTRA_CHANGE_ID;
-import static com.ruesga.rview.fragments.ChangeDetailsFragment.EXTRA_LEGACY_CHANGE_ID;
+public class AccountSettingsActivity extends BaseActivity {
 
-public class ChangeDetailsActivity extends BaseActivity {
-
-    private static final String FRAGMENT_TAG = "details";
+    private static final String FRAGMENT_TAG = "settings";
 
     private ContentBinding mBinding;
 
@@ -42,37 +41,24 @@ public class ChangeDetailsActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Check we have a valid account
+        Account account = Preferences.getAccount(this);
+        if (account == null) {
+            // Not sure how can get here
+            setResult(RESULT_CANCELED);
+            finish();
+            return;
+        }
+
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
-
-        boolean isTwoPanel = getResources().getBoolean(R.bool.config_is_two_pane);
-        if (isTwoPanel) {
-            // Tablets have a two panel layout in landscape, so finish the current activity
-            // to show the change in the proper activity
-            finish();
-            return;
-        }
-
-        // Check we have valid arguments
-        if (getIntent() == null) {
-            finish();
-            return;
-        }
-        int legacyChangeId = getIntent().getIntExtra(EXTRA_LEGACY_CHANGE_ID, -1);
-        if (legacyChangeId == -1) {
-            finish();
-            return;
-        }
-        String changeId = getIntent().getStringExtra(EXTRA_CHANGE_ID);
-        if (changeId == null) {
-            finish();
-            return;
-        }
+        setResult(RESULT_OK);
 
         // Setup the title
         setupToolbar();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
-            getSupportActionBar().setSubtitle(changeId);
+            getSupportActionBar().setTitle(getString(R.string.account_settings_title));
+            getSupportActionBar().setSubtitle(getString(R.string.account_settings_subtitle,
+                    account.getRepositoryDisplayName(), account.getAccountDisplayName()));
         }
 
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
@@ -80,10 +66,12 @@ public class ChangeDetailsActivity extends BaseActivity {
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
         } else {
-            fragment = ChangeDetailsFragment.newInstance(legacyChangeId);
+            fragment = AccountSettingsFragment.newInstance();
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
     }
+
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

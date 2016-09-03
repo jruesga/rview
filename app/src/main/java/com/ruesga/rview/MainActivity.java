@@ -58,13 +58,12 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
     private static final int INVALID_ITEM = -1;
 
     private static final int REQUEST_WIZARD = 1;
+    private static final int REQUEST_ACCOUNT_SETTINGS = 2;
 
     private static final int MESSAGE_NAVIGATE_TO = 0;
     private static final int MESSAGE_DELETE_ACCOUNT = 1;
 
     private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 100;
-
-    private static final int DEFAULT_MENU = R.id.menu_open;
 
     private static final String FRAGMENT_TAG_LIST = "list";
     private static final String FRAGMENT_TAG_DETAILS = "details";
@@ -200,6 +199,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
             }
         }
 
+        int defaultMenu = Preferences.getAccountHomePageId(this, mAccount);
         if (savedInstanceState != null) {
             Fragment detailsFragment = getSupportFragmentManager().getFragment(
                     savedInstanceState, FRAGMENT_TAG_DETAILS);
@@ -216,12 +216,12 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
             } else {
                 // Navigate to current item
                 requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
-                        ? DEFAULT_MENU : mModel.currentNavigationItemId);
+                        ? defaultMenu : mModel.currentNavigationItemId);
             }
         } else {
             // Navigate to current item
             requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
-                    ? DEFAULT_MENU : mModel.currentNavigationItemId);
+                    ? defaultMenu : mModel.currentNavigationItemId);
         }
     }
 
@@ -283,6 +283,10 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
                     finish();
                 }
             }
+        } else if (requestCode == REQUEST_ACCOUNT_SETTINGS) {
+            // Refresh current view
+            mModel.currentNavigationItemId = Preferences.getAccountHomePageId(this, mAccount);
+            performNavigateTo();
         }
     }
 
@@ -405,7 +409,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
                 }
 
                 // Is a filter menu?
-                mModel.filterQuery = getQueryFilterExpressionFromMenuItemOrder(item.getOrder());
+                mModel.filterQuery = getQueryFilterExpressionFromMenuItemId(item.getItemId());
                 if (mModel.filterQuery != null) {
                     mModel.filterName = item.getTitle().toString();
                     openFilterFragment(mModel.filterName, mModel.filterQuery);
@@ -472,7 +476,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         updateAccountsDrawerInfo();
 
         // And navigate to the default menu
-        requestNavigateTo(DEFAULT_MENU);
+        requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount));
     }
 
     private void requestAccountDeletion() {
@@ -523,7 +527,8 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
 
     private void openAccountSettings() {
         if (mAccount != null) {
-            // FIXME Open account settings activity
+            Intent i = new Intent(this, AccountSettingsActivity.class);
+            startActivityForResult(i, REQUEST_ACCOUNT_SETTINGS);
         }
     }
 
@@ -585,13 +590,14 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         return false;
     }
 
-    private String getQueryFilterExpressionFromMenuItemOrder(int order) {
-        int[] orders = getResources().getIntArray(R.array.query_filters_orders);
+    private String getQueryFilterExpressionFromMenuItemId(int itemId) {
+        String[] names = getResources().getStringArray(R.array.query_filters_ids_names);
         String[] filters = getResources().getStringArray(R.array.query_filters_values);
 
-        int count = orders.length;
+        int count = names.length;
         for (int i = 0; i < count; i++) {
-            if (orders[i] == order) {
+            int id = getResources().getIdentifier(names[i], "id", getPackageName());
+            if (itemId == id) {
                 return filters[i];
             }
         }

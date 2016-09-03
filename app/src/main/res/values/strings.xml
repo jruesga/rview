@@ -152,6 +152,18 @@
     <string name="dashboard_incoming">Incoming</string>
     <string name="dashboard_recently_closed">Recently closed</string>
 
+    <!-- Account Settings -->
+    <string name="account_settings_title">Settings</string>
+    <string name="account_settings_subtitle" translatable="false"><xliff:g id="repo" example="CyanogenMod">%1$s</xliff:g> - <xliff:g id="username" example="John Doe">%2$s</xliff:g></string>
+    <string name="account_settings_display_category">Display</string>
+    <string name="account_settings_home_page">Home page</string>
+    <string name="account_settings_fetched_items">Number of fetched items</string>
+    <string name="account_settings_fetched_items_format"><xliff:g id="items" example="25">%1$s</xliff:g> items</string>
+    <string name="account_settings_display_format">Display format</string>
+    <string name="account_settings_display_format_name">Name</string>
+    <string name="account_settings_display_format_email">Email</string>
+    <string name="account_settings_display_format_username">Username</string>
+
     <!-- File statuses -->
     <string name="file_status_renamed">Renamed</string>
     <string name="file_status_copied">Copied</string>
