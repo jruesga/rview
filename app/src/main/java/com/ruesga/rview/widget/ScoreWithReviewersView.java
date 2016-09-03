@@ -22,6 +22,7 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
@@ -58,6 +59,8 @@ public class ScoreWithReviewersView extends LinearLayout {
     }
 
     public ScoreWithReviewersView from(LabelInfo label) {
+        setOrientation(VERTICAL);
+
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         Map<Integer, List<AccountInfo>> scores = sortByScores(label);
 
@@ -67,7 +70,8 @@ public class ScoreWithReviewersView extends LinearLayout {
             for (int i = children; i < count; i++) {
                 ScoreWithReviewItemBinding binding = DataBindingUtil.inflate(
                         layoutInflater, R.layout.score_with_review_item, this, false);
-                addView(binding.getRoot());
+                addView(binding.getRoot(), new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 mBindings.add(binding);
             }
         }
