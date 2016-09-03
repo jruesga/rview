@@ -23,19 +23,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.view.ViewCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.ruesga.rview.databinding.ContentBinding;
+import com.ruesga.rview.databinding.SettingsBinding;
 import com.ruesga.rview.fragments.AccountSettingsFragment;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
-public class AccountSettingsActivity extends BaseActivity {
+public class AccountSettingsActivity extends AppCompatActivity {
 
     private static final String FRAGMENT_TAG = "settings";
 
-    private ContentBinding mBinding;
+    private SettingsBinding mBinding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class AccountSettingsActivity extends BaseActivity {
             return;
         }
 
-        mBinding = DataBindingUtil.setContentView(this, R.layout.content);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.settings);
         setResult(RESULT_OK);
 
         // Setup the title
@@ -71,7 +72,13 @@ public class AccountSettingsActivity extends BaseActivity {
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
     }
 
-
+    protected void setupToolbar() {
+        setSupportActionBar(mBinding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -82,16 +89,6 @@ public class AccountSettingsActivity extends BaseActivity {
         if (fragment != null) {
             getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG, fragment);
         }
-    }
-
-    @Override
-    public DrawerLayout getDrawerLayout() {
-        return null;
-    }
-
-    @Override
-    public ContentBinding getContentBinding() {
-        return mBinding;
     }
 
     @Override
