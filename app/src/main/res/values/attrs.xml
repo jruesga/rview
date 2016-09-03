@@ -29,4 +29,7 @@
     <declare-styleable name="ScoreLabelsView">
         <attr name="shortLabels" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="AddedVsDeletedGraphView">
+        <attr name="rightAligned" format="boolean"/>
+    </declare-styleable>
 </resources>

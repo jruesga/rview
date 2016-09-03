@@ -35,6 +35,7 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
 import com.ruesga.rview.databinding.FileInfoItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
+import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -127,7 +128,6 @@ public class ChangeDetailsFragment extends Fragment {
     public static class FileItemModel {
         public String file;
         public FileInfo info;
-        public boolean isTotal;
         public int totalAdded;
         public int totalDeleted;
         public boolean hasGraph = true;
@@ -137,6 +137,15 @@ public class ChangeDetailsFragment extends Fragment {
     public static class FileInfoViewHolder extends RecyclerView.ViewHolder {
         private final FileInfoItemBinding mBinding;
         public FileInfoViewHolder(FileInfoItemBinding binding) {
+            super(binding.getRoot());
+            mBinding = binding;
+            binding.executePendingBindings();
+        }
+    }
+
+    public static class TotalAddedDeletedViewHolder extends RecyclerView.ViewHolder {
+        private final TotalAddedDeletedBinding mBinding;
+        public TotalAddedDeletedViewHolder(TotalAddedDeletedBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             binding.executePendingBindings();
@@ -153,8 +162,9 @@ public class ChangeDetailsFragment extends Fragment {
         }
     }
 
-    private static class FileAdapter extends RecyclerView.Adapter<FileInfoViewHolder> {
+    private static class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final List<FileItemModel> mFiles = new ArrayList<>();
+        private FileItemModel mTotals;
         private final EventHandlers mEventHandlers;
 
         public FileAdapter(EventHandlers handlers) {
@@ -163,6 +173,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         void update(Map<String, FileInfo> files, Map<String, Integer> inlineComments) {
             mFiles.clear();
+            mTotals = null;
             if (files == null) {
                 notifyDataSetChanged();
                 return;
@@ -199,39 +210,54 @@ public class ChangeDetailsFragment extends Fragment {
             }
 
             // And add the total
-            FileItemModel total = new FileItemModel();
-            total.info = new FileInfo();
+            mTotals = new FileItemModel();
+            mTotals.info = new FileInfo();
             if (added > 0) {
-                total.info.linesInserted = added;
+                mTotals.info.linesInserted = added;
             }
             if (deleted > 0) {
-                total.info.linesDeleted = deleted;
+                mTotals.info.linesDeleted = deleted;
             }
-            total.isTotal = true;
-            total.totalAdded = added;
-            total.totalDeleted = deleted;
-            mFiles.add(total);
+            mTotals.totalAdded = added;
+            mTotals.totalDeleted = deleted;
 
             notifyDataSetChanged();
         }
 
         @Override
         public int getItemCount() {
-            return mFiles.size();
+            return mFiles.size() + (mTotals != null ? 1 : 0);
         }
 
         @Override
-        public FileInfoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public int getItemViewType(int position) {
+            return position == getItemCount() - 1 ? 1 : 0;
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            return new FileInfoViewHolder(DataBindingUtil.inflate(
-                    inflater, R.layout.file_info_item, parent, false));
+            if (viewType == 1) {
+                return new TotalAddedDeletedViewHolder(DataBindingUtil.inflate(
+                        inflater, R.layout.total_added_deleted, parent, false));
+            } else {
+                return new FileInfoViewHolder(DataBindingUtil.inflate(
+                        inflater, R.layout.file_info_item, parent, false));
+            }
         }
 
         @Override
-        public void onBindViewHolder(FileInfoViewHolder holder, int position) {
-            FileItemModel model = mFiles.get(position);
-            holder.mBinding.addedVsDeleted.with(model);
-            holder.mBinding.setModel(model);
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (holder instanceof TotalAddedDeletedViewHolder) {
+                TotalAddedDeletedBinding binding = ((TotalAddedDeletedViewHolder) holder).mBinding;
+                binding.addedVsDeleted.with(mTotals);
+                binding.setModel(mTotals);
+            } else {
+                FileItemModel model = mFiles.get(position);
+                FileInfoItemBinding binding = ((FileInfoViewHolder) holder).mBinding;
+                binding.addedVsDeleted.with(model);
+                binding.setModel(model);
+            }
         }
     }
 
@@ -406,8 +432,6 @@ public class ChangeDetailsFragment extends Fragment {
             mFileAdapter = new FileAdapter(mEventHandlers);
             mBinding.fileInfo.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false));
-            mBinding.fileInfo.list.addItemDecoration(new DividerItemDecoration(
-                    getContext(), LinearLayoutManager.VERTICAL));
             mBinding.fileInfo.list.setNestedScrollingEnabled(false);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 

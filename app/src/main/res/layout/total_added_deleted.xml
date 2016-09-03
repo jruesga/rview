@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" />
+        <variable name="model" type="com.ruesga.rview.fragments.ChangeDetailsFragment.FileItemModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/listPreferredItemHeightSmall"
+        android:paddingLeft="36dp"
+        android:paddingStart="36dp"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:addedVsDeleted="@{model.info}"
+            app:font="bold"
+            android:layout_toRightOf="@id/action"
+            android:layout_toEndOf="@id/action"
+            android:layout_toLeftOf="@id/added_vs_deleted"
+            android:layout_toStartOf="@id/added_vs_deleted"
+            android:textAppearance="@style/TextAppearance.VerySmall"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <com.ruesga.rview.widget.AddedVsDeletedGraphView
+            android:id="@+id/added_vs_deleted"
+            android:layout_width="96dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            app:rightAligned="true"
+            android:visibility="@{model.hasGraph ? View.VISIBLE : View.GONE}" />
+
+    </LinearLayout>
+
+</layout>

@@ -16,9 +16,11 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -28,6 +30,7 @@ import com.ruesga.rview.fragments.ChangeDetailsFragment;
 
 public class AddedVsDeletedGraphView extends FrameLayout {
     private AddedVsDeletedBinding mBinding;
+    private boolean mRightAligned;
 
     public AddedVsDeletedGraphView(Context context) {
         this(context, null);
@@ -39,6 +42,11 @@ public class AddedVsDeletedGraphView extends FrameLayout {
 
     public AddedVsDeletedGraphView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AddedVsDeletedGraphView,
+                defStyleAttr, 0);
+        mRightAligned = a.getBoolean(R.styleable.AddedVsDeletedGraphView_rightAligned, false);
+        a.recycle();
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         mBinding = DataBindingUtil.inflate(
@@ -56,11 +64,17 @@ public class AddedVsDeletedGraphView extends FrameLayout {
         if (item.info.linesDeleted != null) {
             deleted = Math.max(0.05f, item.info.linesDeleted / total);
         }
-        ((LinearLayout.LayoutParams) mBinding.added.getLayoutParams()).weight = added;
-        ((LinearLayout.LayoutParams) mBinding.deleted.getLayoutParams()).weight = deleted;
-        ((LinearLayout.LayoutParams) mBinding.spacer.getLayoutParams()).weight = 1 - added - deleted;
+        View usedSpacer = mRightAligned ? mBinding.spacerLeft : mBinding.spacerRight;
+        View unusedSpacer = mRightAligned ? mBinding.spacerRight : mBinding.spacerLeft;
+        applyWeight(mBinding.added, added);
+        applyWeight(mBinding.deleted, deleted);
+        applyWeight(usedSpacer, 1 - added - deleted);
+        applyWeight(unusedSpacer, 0);
         mBinding.graph.requestLayout();
-        mBinding.setModel(item.info);
         return this;
+    }
+
+    private void applyWeight(View view, float weight) {
+        ((LinearLayout.LayoutParams) view.getLayoutParams()).weight = weight;
     }
 }
