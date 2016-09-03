@@ -436,11 +436,11 @@ public class ChangeListFragment extends SelectableFragment {
     }
 
     private void onItemClick(ChangeInfo item) {
-        if (!mIsTwoPanel || mAdapter.mChangeId != item.legacyChangeId) {
+        if (mIsTwoPanel && mAdapter.mChangeId != item.legacyChangeId) {
             mAdapter.mChangeId = item.legacyChangeId;
             mAdapter.notifyDataSetChanged();
-            ((OnChangeItemListener) getActivity()).onChangeItemPressed(item);
         }
+        ((OnChangeItemListener) getActivity()).onChangeItemPressed(item);
     }
 
     private void notifyItemRestored() {
