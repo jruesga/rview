@@ -150,4 +150,9 @@ public class Preferences {
         return getAccountPreferences(context, account).getString(
                 PREF_ACCOUNT_DISPLAY_FORMAT, DEFAULT_DISPLAY_FORMAT);
     }
+
+    public static boolean isAccountHighlightNotReviewed(Context context, Account account) {
+        return getAccountPreferences(context, account).getBoolean(
+                PREF_ACCOUNT_HIGHLIGHT_NOT_REVIEWED, true);
+    }
 }

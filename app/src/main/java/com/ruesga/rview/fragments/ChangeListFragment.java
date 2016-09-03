@@ -65,6 +65,7 @@ public class ChangeListFragment extends SelectableFragment {
     private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.LABELS);
+        add(ChangeOptions.REVIEWED);
     }};
 
     private static final int FETCHED_MORE_CHANGES_THRESHOLD = 10;

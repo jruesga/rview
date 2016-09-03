@@ -163,6 +163,7 @@
     <string name="account_settings_display_format_name">Name</string>
     <string name="account_settings_display_format_email">Email</string>
     <string name="account_settings_display_format_username">Username</string>
+    <string name="account_settings_highlight_not_reviewed">Highlight not reviewed</string>
 
     <!-- File statuses -->
     <string name="file_status_renamed">Renamed</string>

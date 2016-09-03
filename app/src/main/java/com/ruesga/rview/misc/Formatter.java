@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.text.TextUtils;
@@ -46,6 +47,14 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class Formatter {
     private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
+    private static String sDisplayFormat;
+    private static boolean sHighlightNotReviewed;
+
+    public static void refreshCachedPreferences(Context context) {
+        Account account = Preferences.getAccount(context);
+        sDisplayFormat = Preferences.getAccountDisplayFormat(context, account);
+        sHighlightNotReviewed = Preferences.isAccountHighlightNotReviewed(context, account);
+    }
 
     @BindingAdapter("prettyDateTime")
     public static void toPrettyDateTime(TextView view, Date date) {
@@ -68,10 +77,8 @@ public class Formatter {
             return;
         }
 
-        Account account = Preferences.getAccount(view.getContext());
-        String format = Preferences.getAccountDisplayFormat(view.getContext(), account);
         String accountDisplayName = null;
-        switch (format) {
+        switch (sDisplayFormat) {
             case Constants.ACCOUNT_DISPLAY_FORMAT_NAME:
                 accountDisplayName = accountInfo.name;
                 break;
@@ -88,10 +95,11 @@ public class Formatter {
         view.setText(accountDisplayName);
     }
 
-    @BindingAdapter("highlightText")
-    public static void toHighlightedText(StyleableTextView view, boolean highlight) {
+    @BindingAdapter("highlightNotReviewed")
+    public static void toHighlightedNotReviewed(StyleableTextView view, boolean reviewed) {
         view.setTypeface(TypefaceCache.getTypeface(view.getContext(),
-                highlight ? TypefaceCache.TF_BOLD_CONDENSED : TypefaceCache.TF_CONDENSED));
+                sHighlightNotReviewed && !reviewed
+                        ? TypefaceCache.TF_BOLD_CONDENSED : TypefaceCache.TF_CONDENSED));
     }
 
     @BindingAdapter("compressedText")

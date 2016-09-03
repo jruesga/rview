@@ -115,7 +115,7 @@
                     android:text="@{model.subject}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="?android:attr/textColorPrimary"
-                    app:highlightText="@{model.reviewed}"
+                    app:highlightNotReviewed="@{model.reviewed}"
                     android:maxLines="2"
                     android:ellipsize="end"
                     android:textSize="16sp" />

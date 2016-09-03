@@ -46,6 +46,7 @@ import com.ruesga.rview.fragments.ChangeListFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
@@ -269,6 +270,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
                     mAccount = newAccount;
                     mAccounts = Preferences.addAccount(this, mAccount);
                     Preferences.setAccount(this, mAccount);
+                    Formatter.refreshCachedPreferences(this);
                     CacheHelper.createAccountCacheDir(this, mAccount);
                 } else {
                     showWarning(R.string.account_exists);
@@ -288,6 +290,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
             if (mModel.currentNavigationItemId == INVALID_ITEM) {
                 mModel.currentNavigationItemId = Preferences.getAccountHomePageId(this, mAccount);
             }
+            Formatter.refreshCachedPreferences(this);
             performNavigateTo();
         }
     }
@@ -305,6 +308,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
     private void loadAccounts() {
         mAccount = Preferences.getAccount(this);
         mAccounts = Preferences.getAccounts(this);
+        Formatter.refreshCachedPreferences(this);
     }
 
     private void setupNavigationDrawer() {
@@ -472,6 +476,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
             mAccount = mAccounts.get(0);
         }
         Preferences.setAccount(this, mAccount);
+        Formatter.refreshCachedPreferences(this);
 
         // Refresh the ui
         updateCurrentAccountDrawerInfo();
@@ -513,6 +518,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         // Remove the account
         Preferences.removeAccount(this, mAccount);
         Preferences.setAccount(this, null);
+        Formatter.refreshCachedPreferences(this);
         Preferences.removeAccountPreferences(this, mAccount);
         CacheHelper.removeAccountCacheDir(this, mAccount);
         mAccount = null;

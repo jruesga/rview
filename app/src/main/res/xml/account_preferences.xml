@@ -37,6 +37,11 @@
             android:entries="@array/account_display_format_labels"
             android:entryValues="@array/account_display_format_values"
             android:defaultValue="name" />
+
+        <SwitchPreference
+            android:key="account_highlight_not_reviewed"
+            android:title="@string/account_settings_highlight_not_reviewed"
+            android:defaultValue="true" />
     </PreferenceCategory>
 
 </PreferenceScreen>
