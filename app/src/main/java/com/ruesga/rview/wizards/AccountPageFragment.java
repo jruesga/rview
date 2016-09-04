@@ -368,7 +368,7 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     private void bindHelpLinks() {
-        mBinding.accountAuthenticationHint.setMovementMethod(new LinkMovementMethod());
+        mBinding.accountAuthenticationHint.setMovementMethod(LinkMovementMethod.getInstance());
         String msg = getString(R.string.account_wizard_account_page_authenticated_access_hint);
         String link = getString(R.string.account_wizard_account_page_password_hint_here);
         String text = String.format(Locale.getDefault(), msg, link, link);
@@ -408,12 +408,12 @@ public class AccountPageFragment extends WizardPageFragment {
 
     private void openHttpPasswordUrl() {
         final String url = mModel.repoUrl + GerritApi.HTTP_PASSWORD_URI;
-        AndroidHelper.openUrlInCustomTabs(getActivity(), url);
+        AndroidHelper.openUriInCustomTabs(getActivity(), url);
     }
 
     private void openSignInUrl() {
         final String url = mModel.repoUrl + GerritApi.LOGIN_URI;
-        AndroidHelper.openUrlInCustomTabs(getActivity(), url);
+        AndroidHelper.openUriInCustomTabs(getActivity(), url);
     }
 
     private void openHelp() {

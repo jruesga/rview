@@ -49,8 +49,8 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class Formatter {
     private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
-    private static String sDisplayFormat;
-    private static boolean sHighlightNotReviewed;
+    private static String sDisplayFormat = "";
+    private static boolean sHighlightNotReviewed = true;
 
     public static void refreshCachedPreferences(Context context) {
         Account account = Preferences.getAccount(context);

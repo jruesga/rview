@@ -119,7 +119,7 @@ public class ChangeDetailsFragment extends Fragment {
         public void onWebLinkPressed(View v) {
             String url = (String) v.getTag();
             if (url != null) {
-                AndroidHelper.openUrlInCustomTabs(mFragment.getActivity(), url);
+                AndroidHelper.openUriInCustomTabs(mFragment.getActivity(), url);
             }
         }
     }

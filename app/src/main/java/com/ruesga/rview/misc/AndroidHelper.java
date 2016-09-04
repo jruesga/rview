@@ -45,28 +45,36 @@ public class AndroidHelper {
         return context.getResources().getConfiguration().locale;
     }
 
-    public static void openUrlInCustomTabs(Activity activity, String url) {
+    public static void openUriInCustomTabs(Activity activity, String uri) {
+        openUriInCustomTabs(activity, Uri.parse(uri));
+    }
+
+    public static void openUri(Context ctx, String uri) {
+        openUri(ctx, Uri.parse(uri));
+    }
+
+    public static void openUriInCustomTabs(Activity activity, Uri uri) {
         try {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setShowTitle(true);
             builder.setToolbarColor(ContextCompat.getColor(activity, R.color.primaryDark));
             CustomTabsIntent intent = builder.build();
-            intent.launchUrl(activity, Uri.parse(url));
+            intent.launchUrl(activity, uri);
 
         } catch (ActivityNotFoundException ex) {
             // Fallback to default browser
-            openUrl(activity, url);
+            openUri(activity, uri);
         }
     }
 
-    public static void openUrl(Context ctx, String url) {
+    public static void openUri(Context ctx, Uri uri) {
         try {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             ctx.startActivity(intent);
 
         } catch (ActivityNotFoundException ex) {
             // Fallback to default browser
-            String msg = ctx.getString(R.string.exception_browser_not_found, url);
+            String msg = ctx.getString(R.string.exception_browser_not_found, uri.toString());
             Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
         }
     }
@@ -85,5 +93,14 @@ public class AndroidHelper {
         View v = snackbar.getView();
         v.setBackgroundColor(ContextCompat.getColor(context, R.color.alert));
         snackbar.show();
+    }
+
+    public static Uri buildUriAndEnsureScheme(String src) {
+        Uri uri = Uri.parse(src);
+        if (uri.getScheme() == null) {
+            // Assume we are talking about an http url
+            uri = Uri.parse("http://" + src);
+        }
+        return uri;
     }
 }

@@ -57,7 +57,7 @@
                 app:highlightUnreviewed="@{change.reviewed}"
                 android:textSize="16sp" />
 
-            <com.ruesga.rview.widget.StyleableTextView
+            <com.ruesga.rview.widget.RegExLinkifyTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -65,7 +65,6 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textIsSelectable="true"
-                android:autoLink="email|web"
                 android:textSize="12sp" />
 
             <View
