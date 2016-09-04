@@ -493,6 +493,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
                 .setPositiveButton(R.string.action_delete, (dialogInterface, i) -> {
                     Message.obtain(mUiHandler, MESSAGE_DELETE_ACCOUNT).sendToTarget();
                 })
+                .setNegativeButton(R.string.action_cancel, null)
                 .create();
         dialog.show();
     }

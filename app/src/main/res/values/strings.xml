@@ -23,6 +23,7 @@
     <string name="action_next">Next</string>
     <string name="action_done">Done</string>
     <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
     <string name="action_let_start">Let\'s start</string>
 
     <!-- Menu options -->
