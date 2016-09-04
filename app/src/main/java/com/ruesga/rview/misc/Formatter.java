@@ -160,6 +160,7 @@ public class Formatter {
             return;
         }
 
+        // FIXME: Map to string resources
         view.setText(submitType.toString().replace("_", " "));
     }
 
@@ -180,7 +181,7 @@ public class Formatter {
         }
         String txt = status;
         if (!TextUtils.isEmpty(item.info.oldPath)) {
-            txt += item.info.oldPath + " -> ";
+            txt += item.info.oldPath + " \u2192 ";
         }
         txt += item.file;
         view.setText(txt);
@@ -193,18 +194,18 @@ public class Formatter {
             return;
         }
 
-        String status = null;
         if (change.status.equals(ChangeStatus.NEW)) {
             // TODO Convert labels to status (Needs Code-Review, Ready to Submit, ...)
-            status = view.getContext().getString(R.string.menu_open);
+            view.setText(R.string.menu_open);
         } else if (change.status.equals(ChangeStatus.MERGED)) {
-            status = view.getContext().getString(R.string.menu_merged);
+            view.setText(R.string.menu_merged);
         } else if (change.status.equals(ChangeStatus.ABANDONED)) {
-            status = view.getContext().getString(R.string.menu_abandoned);
+            view.setText(R.string.menu_abandoned);
         } else if (change.status.equals(ChangeStatus.DRAFT)) {
-            status = view.getContext().getString(R.string.menu_draft);
+            view.setText(R.string.menu_draft);
+        } else {
+            view.setText(null);
         }
-        view.setText(status);
     }
 
     @BindingAdapter("addedVsDeleted")
@@ -239,12 +240,7 @@ public class Formatter {
 
     @BindingAdapter("commitWebLinksTag")
     public static void toCommitWebLinksTag(View view, CommitInfo commit) {
-        if (commit == null) {
-            view.setTag(null);
-            return;
-        }
-
-        if (commit.webLinks != null && commit.webLinks.length > 0) {
+        if (commit != null && commit.webLinks != null && commit.webLinks.length > 0) {
             view.setTag(commit.webLinks[0].url);
         } else {
             view.setTag(null);
