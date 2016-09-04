@@ -352,13 +352,14 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         final MenuItem item = menu.findItem(itemId);
         if (item != null) {
-            boolean navigate = force || !item.isCheckable()
-                    || itemId != mModel.currentNavigationItemId;
             if (item.isCheckable()) {
+                boolean changed = itemId != mModel.currentNavigationItemId;
                 mBinding.drawerNavigationView.setCheckedItem(item.getItemId());
+                mModel.currentNavigationItemId = itemId;
+                return force || changed;
+            } else {
+                performNavigationAction(item);
             }
-            mModel.currentNavigationItemId = itemId;
-            return navigate;
         }
         return false;
     }
@@ -379,13 +380,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         }
     }
 
-    private void performNavigateTo() {
-        final Menu menu = mBinding.drawerNavigationView.getMenu();
-        final MenuItem item = menu.findItem(mModel.currentNavigationItemId);
-        if (item == null || mAccount == null) {
-            return;
-        }
-
+    private void performNavigationAction(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_account_settings:
                 openAccountSettings();
@@ -397,11 +392,6 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
                 Intent i = new Intent(this, SetupAccountActivity.class);
                 startActivityForResult(i, REQUEST_WIZARD);
                 break;
-
-            case R.id.menu_dashboard:
-                openDashboardFragment();
-                break;
-
             default:
                 // Other accounts group?
                 if (item.getGroupId() == R.id.category_other_accounts) {
@@ -411,21 +401,32 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
                         mAccount = account;
                         performAccountSwitch();
                     }
-                    return;
                 }
+                break;
+        }
+    }
 
+    private void performNavigateTo() {
+        final Menu menu = mBinding.drawerNavigationView.getMenu();
+        final MenuItem item = menu.findItem(mModel.currentNavigationItemId);
+        if (item == null || mAccount == null) {
+            return;
+        }
+
+        switch (item.getItemId()) {
+            case R.id.menu_dashboard:
+                openDashboardFragment();
+                break;
+
+            default:
                 // Is a filter menu?
                 mModel.filterQuery = getQueryFilterExpressionFromMenuItemId(item.getItemId());
                 if (mModel.filterQuery != null) {
                     mModel.filterName = item.getTitle().toString();
                     openFilterFragment(mModel.filterName, mModel.filterQuery);
                 }
-
                 break;
         }
-
-        // Hide account info
-        performShowAccount(false);
     }
 
     private void updateAccountsDrawerInfo() {
@@ -481,6 +482,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         // Refresh the ui
         updateCurrentAccountDrawerInfo();
         updateAccountsDrawerInfo();
+        performShowAccount(false);
 
         // And navigate to the default menu
         requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount));
@@ -496,6 +498,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
                 .setNegativeButton(R.string.action_cancel, null)
                 .create();
         dialog.show();
+        performShowAccount(false);
     }
 
     private void performDeleteAccount() {
@@ -538,6 +541,7 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         if (mAccount != null) {
             Intent i = new Intent(this, AccountSettingsActivity.class);
             startActivityForResult(i, REQUEST_ACCOUNT_SETTINGS);
+            performShowAccount(false);
         }
     }
 
