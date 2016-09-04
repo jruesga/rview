@@ -29,6 +29,7 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.gerrit.model.CommitInfo;
+import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
@@ -36,14 +37,19 @@ import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.widget.RegExLinkifyTextView;
+import com.ruesga.rview.widget.RegExLinkifyTextView.RegExLink;
 import com.ruesga.rview.widget.StyleableTextView;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 @ProguardIgnored
 @SuppressWarnings("unused")
@@ -114,7 +120,6 @@ public class Formatter {
     }
 
     @BindingAdapter("commitMessage")
-    @SuppressWarnings("deprecation")
     public static void toCommitMessage(TextView view, CommitInfo info) {
         if (info == null || info.message == null) {
             view.setText(null);
@@ -123,6 +128,39 @@ public class Formatter {
 
         String message = info.message.substring(info.subject.length()).trim();
         view.setText(message);
+    }
+
+    @BindingAdapter("regexpLinkify")
+    public static void toRegExLinkify(RegExLinkifyTextView view, ConfigInfo info) {
+        if (info == null || info.commentLinks == null || info.commentLinks.isEmpty()) {
+            return;
+        }
+
+        List<RegExLink> linksScanners = new ArrayList<>();
+        for (String key : info.commentLinks.keySet()) {
+            switch (key) {
+                case "changeid":
+                    linksScanners.add(RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX);
+                    break;
+                case "commit":
+                    linksScanners.add(RegExLinkifyTextView.GERRIT_COMMIT_REGEX);
+                    break;
+                default:
+                    String link = info.commentLinks.get(key).link;
+                    if (TextUtils.isEmpty(link) &&
+                            !TextUtils.isEmpty(info.commentLinks.get(key).html)) {
+                        Matcher matcher = RegExLinkifyTextView.WEB_LINK_REGEX.mPattern.matcher(
+                                info.commentLinks.get(key).html);
+                        if (matcher.find()) {
+                            link = matcher.group();
+                            linksScanners.add(new RegExLink(
+                                    info.commentLinks.get(key).match, link));
+                        }
+                    }
+                    break;
+            }
+        }
+        view.addRegEx(linksScanners.toArray(new RegExLink[linksScanners.size()]));
     }
 
     @BindingAdapter("committer")

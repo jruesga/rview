@@ -42,6 +42,7 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.CommentInfo;
+import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
@@ -275,8 +276,8 @@ public class ChangeDetailsFragment extends Fragment {
         }
 
 
-        void update(ChangeMessageInfo[] messages) {
-            mMessages = messages;
+        void update(DataResponse response) {
+            mMessages = response.mChange.messages;
             notifyDataSetChanged();
         }
 
@@ -311,6 +312,7 @@ public class ChangeDetailsFragment extends Fragment {
         ChangeInfo mChange;
         SubmitType mSubmitType;
         Map<String, Integer> mInlineComments;
+        ConfigInfo mProjectConfig;
     }
 
     private final RxLoaderObserver<DataResponse> mChangeObserver =
@@ -326,15 +328,15 @@ public class ChangeDetailsFragment extends Fragment {
                             mCurrentRevision = change.currentRevision;
                         }
 
-                        updatePatchSetInfo(change);
-                        updateChangeInfo(change, result.mSubmitType);
+                        updatePatchSetInfo(result);
+                        updateChangeInfo(result);
 
                         Map<String, FileInfo> files = change.revisions.get(mCurrentRevision).files;
                         mModel.filesListModel.visible = files != null && !files.isEmpty();
                         mFileAdapter.update(files, result.mInlineComments);
                         mModel.msgListModel.visible =
                                 change.messages != null && change.messages.length > 0;
-                        mMessageAdapter.update(change.messages);
+                        mMessageAdapter.update(result);
                     }
 
                     mBinding.setModel(mModel);
@@ -399,25 +401,26 @@ public class ChangeDetailsFragment extends Fragment {
         startLoadersWithValidContext();
     }
 
-    private void updatePatchSetInfo(ChangeInfo change) {
-        mBinding.patchSetInfo.setChangeId(change.changeId);
+    private void updatePatchSetInfo(DataResponse response) {
+        mBinding.patchSetInfo.setChangeId(response.mChange.changeId);
         mBinding.patchSetInfo.setRevision(mCurrentRevision);
-        RevisionInfo revision = change.revisions.get(mCurrentRevision);
-        mBinding.patchSetInfo.setChange(change);
+        RevisionInfo revision = response.mChange.revisions.get(mCurrentRevision);
+        mBinding.patchSetInfo.setChange(response.mChange);
+        mBinding.patchSetInfo.setConfig(response.mProjectConfig);
         mBinding.patchSetInfo.setModel(revision);
         mBinding.patchSetInfo.setHandlers(mEventHandlers);
         mBinding.patchSetInfo.parentCommits.with(mEventHandlers).from(revision.commit);
         mBinding.patchSetInfo.setHasData(true);
     }
 
-    private void updateChangeInfo(ChangeInfo change, SubmitType submitType) {
-        mBinding.changeInfo.owner.with(mPicasso).from(change.owner);
+    private void updateChangeInfo(DataResponse response) {
+        mBinding.changeInfo.owner.with(mPicasso).from(response.mChange.owner);
         mBinding.changeInfo.reviewers.with(mPicasso)
                 .withRemovableReviewers(true)
-                .from(change);
-        mBinding.changeInfo.labels.with(mPicasso).from(change);
-        mBinding.changeInfo.setModel(change);
-        mBinding.changeInfo.setSubmitType(submitType);
+                .from(response.mChange);
+        mBinding.changeInfo.labels.with(mPicasso).from(response.mChange);
+        mBinding.changeInfo.setModel(response.mChange);
+        mBinding.changeInfo.setSubmitType(response.mChange.submitType);
         mBinding.changeInfo.setHandlers(mEventHandlers);
         mBinding.changeInfo.setHasData(true);
         mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
@@ -471,11 +474,22 @@ public class ChangeDetailsFragment extends Fragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         final String revision = mCurrentRevision == null
                 ? GerritApi.CURRENT_REVISION : mCurrentRevision;
-        final String change = String.valueOf(mChangeId);
         return Observable.zip(
-                    api.getChange(changeId, OPTIONS),
-                    api.getChangeRevisionSubmitType(change, revision),
-                    api.getChangeRevisionComments(change, revision),
+                    Observable.fromCallable(() -> {
+                        DataResponse dataResponse = new DataResponse();
+                        dataResponse.mChange = api.getChange(
+                                changeId, OPTIONS).toBlocking().first();
+
+                        // Obtain the project configuration
+                        if (dataResponse.mChange != null) {
+                            dataResponse.mProjectConfig = api.getProjectConfig(
+                                    dataResponse.mChange.project).toBlocking().first();
+                        }
+
+                        return dataResponse;
+                    }),
+                    api.getChangeRevisionSubmitType(changeId, revision),
+                    api.getChangeRevisionComments(changeId, revision),
                     this::combineResponse
                 )
                 .subscribeOn(Schedulers.io())
@@ -504,8 +518,8 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.refresh.setEnabled(!show);
     }
 
-    private DataResponse combineResponse(ChangeInfo change, SubmitType submitType,
-            Map<String, List<CommentInfo>> revisionComments) {
+    private DataResponse combineResponse(DataResponse response, SubmitType submitType,
+                Map<String, List<CommentInfo>> revisionComments) {
         // Map inline comments
         Map<String, Integer> inlineComments = new HashMap<>();
         if (revisionComments != null) {
@@ -514,8 +528,6 @@ public class ChangeDetailsFragment extends Fragment {
             }
         }
 
-        DataResponse response = new DataResponse();
-        response.mChange = change;
         response.mSubmitType = submitType;
         response.mInlineComments = inlineComments;
         return response;

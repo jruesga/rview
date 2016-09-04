@@ -36,8 +36,8 @@ import java.util.regex.Pattern;
 
 public class RegExLinkifyTextView extends TextView {
     public static class RegExLink {
-        private final Pattern mPattern;
-        private final String mLink;
+        public final Pattern mPattern;
+        public final String mLink;
 
         public RegExLink(String regEx, String link) {
             mPattern = Pattern.compile(regEx,
@@ -50,7 +50,7 @@ public class RegExLinkifyTextView extends TextView {
             "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}",
             "mailto:$1");
     public static final RegExLink WEB_LINK_REGEX = new RegExLink(
-            "(?:^|[\\W])((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
+            "((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
             "$1");
     public static final RegExLink GERRIT_CHANGE_ID_REGEX = new RegExLink(
             "(I[0-9a-f]{8,40})",
@@ -72,7 +72,7 @@ public class RegExLinkifyTextView extends TextView {
     public RegExLinkifyTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setMovementMethod(LinkMovementMethod.getInstance());
-        addRegEx(EMAIL_REGEX, WEB_LINK_REGEX, GERRIT_CHANGE_ID_REGEX, GERRIT_COMMIT_REGEX);
+        addRegEx(EMAIL_REGEX, WEB_LINK_REGEX);
     }
 
     @Override
@@ -84,15 +84,7 @@ public class RegExLinkifyTextView extends TextView {
                 for (final RegExLink regEx : mRegEx) {
                     final Matcher matcher = regEx.mPattern.matcher(text);
                     while (matcher.find()) {
-                        final String url = matcher.group().trim();
-                        int start = matcher.start();
-                        int end = matcher.end();
-                        if (matcher.group().startsWith(" ")) {
-                            start++;
-                        }
-                        if (matcher.group().endsWith(" ")) {
-                            end--;
-                        }
+                        final String url = matcher.group();
                         span.setSpan(new ClickableSpan() {
                             @Override
                             public void onClick(View v) {
@@ -103,7 +95,7 @@ public class RegExLinkifyTextView extends TextView {
                                 AndroidHelper.openUriInCustomTabs((Activity) getContext(),
                                         AndroidHelper.buildUriAndEnsureScheme(link));
                             }
-                        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
                 }
             }

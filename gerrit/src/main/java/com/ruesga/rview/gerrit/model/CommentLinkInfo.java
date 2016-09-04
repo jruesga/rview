@@ -23,5 +23,6 @@ import com.google.gson.annotations.SerializedName;
 public class CommentLinkInfo {
     @SerializedName("match") public String match;
     @SerializedName("link") public String link;
+    @SerializedName("html") public String html;
 }
 

@@ -59,7 +59,7 @@ public class AndroidHelper {
             builder.setShowTitle(true);
             builder.setToolbarColor(ContextCompat.getColor(activity, R.color.primaryDark));
             CustomTabsIntent intent = builder.build();
-            intent.launchUrl(activity, uri);
+            intent.launchUrl(activity, Uri.parse("https://jira.cyngn.com/browse/CYNGNOS-2121"));
 
         } catch (ActivityNotFoundException ex) {
             // Fallback to default browser

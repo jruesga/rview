@@ -25,6 +25,7 @@
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.RevisionInfo" />
         <variable name="change" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
+        <variable name="config" type="com.ruesga.rview.gerrit.model.ConfigInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
@@ -62,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 app:commitMessage="@{model.commit}"
+                app:regexpLinkify="@{config}"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textIsSelectable="true"
