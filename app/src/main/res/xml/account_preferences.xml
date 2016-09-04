@@ -39,8 +39,8 @@
             android:defaultValue="name" />
 
         <SwitchPreference
-            android:key="account_highlight_not_reviewed"
-            android:title="@string/account_settings_highlight_not_reviewed"
+            android:key="account_highlight_unreviewed"
+            android:title="@string/account_settings_highlight_unreviewed"
             android:defaultValue="true" />
     </PreferenceCategory>
 

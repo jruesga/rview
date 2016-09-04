@@ -403,6 +403,7 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.patchSetInfo.setChangeId(change.changeId);
         mBinding.patchSetInfo.setRevision(mCurrentRevision);
         RevisionInfo revision = change.revisions.get(mCurrentRevision);
+        mBinding.patchSetInfo.setChange(change);
         mBinding.patchSetInfo.setModel(revision);
         mBinding.patchSetInfo.setHandlers(mEventHandlers);
         mBinding.patchSetInfo.parentCommits.with(mEventHandlers).from(revision.commit);
@@ -419,6 +420,7 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.changeInfo.setSubmitType(submitType);
         mBinding.changeInfo.setHandlers(mEventHandlers);
         mBinding.changeInfo.setHasData(true);
+        mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
     }
 
     private void startLoadersWithValidContext() {

@@ -40,5 +40,5 @@ public class Constants {
     public static final String PREF_ACCOUNT_HOME_PAGE = "account_home_page";
     public static final String PREF_ACCOUNT_FETCHED_ITEMS = "account_fetched_items";
     public static final String PREF_ACCOUNT_DISPLAY_FORMAT = "account_display_format";
-    public static final String PREF_ACCOUNT_HIGHLIGHT_NOT_REVIEWED = "account_highlight_not_reviewed";
+    public static final String PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED = "account_highlight_unreviewed";
 }

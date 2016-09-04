@@ -24,6 +24,7 @@
         <variable name="revision" type="java.lang.String" />
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.RevisionInfo" />
+        <variable name="change" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
@@ -53,7 +54,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textIsSelectable="true"
-                app:font="condensed"
+                app:highlightUnreviewed="@{change.reviewed}"
                 android:textSize="16sp" />
 
             <com.ruesga.rview.widget.StyleableTextView

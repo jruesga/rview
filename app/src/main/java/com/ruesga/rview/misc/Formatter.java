@@ -26,6 +26,8 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.gerrit.model.CommitInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
@@ -53,7 +55,7 @@ public class Formatter {
     public static void refreshCachedPreferences(Context context) {
         Account account = Preferences.getAccount(context);
         sDisplayFormat = Preferences.getAccountDisplayFormat(context, account);
-        sHighlightNotReviewed = Preferences.isAccountHighlightNotReviewed(context, account);
+        sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, account);
     }
 
     @BindingAdapter("prettyDateTime")
@@ -95,8 +97,8 @@ public class Formatter {
         view.setText(accountDisplayName);
     }
 
-    @BindingAdapter("highlightNotReviewed")
-    public static void toHighlightedNotReviewed(StyleableTextView view, boolean reviewed) {
+    @BindingAdapter("highlightUnreviewed")
+    public static void toHighlightedUnreviewed(StyleableTextView view, boolean reviewed) {
         view.setTypeface(TypefaceCache.getTypeface(view.getContext(),
                 sHighlightNotReviewed && !reviewed
                         ? TypefaceCache.TF_BOLD_CONDENSED : TypefaceCache.TF_CONDENSED));
@@ -182,6 +184,27 @@ public class Formatter {
         }
         txt += item.file;
         view.setText(txt);
+    }
+
+    @BindingAdapter("changeStatus")
+    public static void toChangeStatus(TextView view, ChangeInfo change) {
+        if (change == null) {
+            view.setText(null);
+            return;
+        }
+
+        String status = null;
+        if (change.status.equals(ChangeStatus.NEW)) {
+            // TODO Convert labels to status (Needs Code-Review, Ready to Submit, ...)
+            status = view.getContext().getString(R.string.menu_open);
+        } else if (change.status.equals(ChangeStatus.MERGED)) {
+            status = view.getContext().getString(R.string.menu_merged);
+        } else if (change.status.equals(ChangeStatus.ABANDONED)) {
+            status = view.getContext().getString(R.string.menu_abandoned);
+        } else if (change.status.equals(ChangeStatus.DRAFT)) {
+            status = view.getContext().getString(R.string.menu_draft);
+        }
+        view.setText(status);
     }
 
     @BindingAdapter("addedVsDeleted")

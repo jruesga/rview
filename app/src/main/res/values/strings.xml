@@ -133,6 +133,8 @@
     <string name="change_details_header_patchset_details">Patch Set details</string>
     <string name="change_details_header_files">Files</string>
     <string name="change_details_header_messages">Messages</string>
+    <string name="change_details_id">Id.</string>
+    <string name="change_details_status">Status</string>
     <string name="change_details_owner">Owner</string>
     <string name="change_details_reviewers">Reviewers</string>
     <string name="change_details_project">Project</string>
@@ -163,7 +165,7 @@
     <string name="account_settings_display_format_name">Name</string>
     <string name="account_settings_display_format_email">Email</string>
     <string name="account_settings_display_format_username">Username</string>
-    <string name="account_settings_highlight_not_reviewed">Highlight not reviewed</string>
+    <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>
 
     <!-- File statuses -->
     <string name="file_status_renamed">Renamed</string>
