@@ -24,7 +24,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.jakewharton.picasso.OkHttp3Downloader;
@@ -40,7 +39,6 @@ import java.util.List;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public class PicassoHelper {
 

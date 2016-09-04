@@ -41,10 +41,6 @@
             android:layout_weight="1"
             app:addedVsDeleted="@{model.info}"
             app:font="bold"
-            android:layout_toRightOf="@id/action"
-            android:layout_toEndOf="@id/action"
-            android:layout_toLeftOf="@id/added_vs_deleted"
-            android:layout_toStartOf="@id/added_vs_deleted"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:textColor="?android:attr/textColorPrimary" />
 

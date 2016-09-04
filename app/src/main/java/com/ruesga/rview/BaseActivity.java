@@ -28,7 +28,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
-import com.ruesga.rview.fragments.PaginableFragment;
 import com.ruesga.rview.fragments.PaginableFragment.PageFragmentAdapter;
 import com.ruesga.rview.fragments.SelectableFragment;
 import com.ruesga.rview.misc.AndroidHelper;

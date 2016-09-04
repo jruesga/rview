@@ -18,5 +18,6 @@ package com.ruesga.rview.wizard;
 public class ActionResult {
     public boolean mResult;
     public void onResultCallback() {
+        // Ignore
     }
 }
