@@ -901,9 +901,9 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<DiffInfo> getChangeRevisionFileDiff(@NonNull String changeId,
             @NonNull String revisionId, @NonNull String fileId, @Nullable Integer base,
-            @Nullable Option intraline) {
+            @Nullable Option intraline, @Nullable Option weblinksOnly) {
         return withVersionRequestCheck(mService.getChangeRevisionFileDiff(
-                changeId, revisionId, fileId, base, intraline));
+                changeId, revisionId, fileId, base, intraline, weblinksOnly));
     }
 
     @Override
