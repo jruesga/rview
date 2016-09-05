@@ -1054,7 +1054,9 @@ public interface GerritApi {
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
             @NonNull @Path("file-id") String fileId,
-            @Nullable @Query("intraline") Option intraline);
+            @Nullable @Query("base") Integer base,
+            @Nullable @Query("intraline") Option intraline,
+            @Nullable @Query("weblinks-only") Option weblinksOnly);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-blame"
