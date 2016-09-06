@@ -21,9 +21,9 @@ import com.google.gson.annotations.SerializedName;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#diff-content"
  */
 public class DiffContentInfo {
-    @SerializedName("a") public String a;
-    @SerializedName("b") public String b;
-    @SerializedName("ab") public String ab;
+    @SerializedName("a") public String[] a;
+    @SerializedName("b") public String[] b;
+    @SerializedName("ab") public String[] ab;
     @SerializedName("edit_a") public DiffIntralineInfo editA;
     @SerializedName("edit_b") public DiffIntralineInfo editB;
     @SerializedName("skip") public int skip;

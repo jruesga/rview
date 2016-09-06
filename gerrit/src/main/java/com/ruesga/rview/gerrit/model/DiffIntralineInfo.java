@@ -15,11 +15,11 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#diff-intraline-info"
  */
-public class DiffIntralineInfo extends LinkedHashMap<Integer, Integer> {
+public class DiffIntralineInfo extends ArrayList<ArrayList<Integer>> {
 }
 
