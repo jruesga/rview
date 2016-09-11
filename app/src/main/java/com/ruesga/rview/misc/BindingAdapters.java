@@ -18,6 +18,8 @@ package com.ruesga.rview.misc;
 import android.databinding.BindingAdapter;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 
@@ -30,5 +32,20 @@ public class BindingAdapters {
         AppBarLayout.LayoutParams params = ((AppBarLayout.LayoutParams) toolbar.getLayoutParams());
         params.setScrollFlags(hasTabs ? AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
                 | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS : 0);
+    }
+
+    @BindingAdapter("wrapLayoutWidth")
+    public static void wrapLayoutWidth(View v, boolean wrap) {
+        v.getLayoutParams().width = wrap
+                ? ViewGroup.LayoutParams.MATCH_PARENT
+                : ViewGroup.LayoutParams.WRAP_CONTENT;
+        v.requestLayout();
+    }
+
+    @BindingAdapter("bindLayoutWidth")
+    public static void bindLayoutWidth(View v, int width) {
+        v.getLayoutParams().width = width < 0
+                ? ViewGroup.LayoutParams.MATCH_PARENT
+                : width;
     }
 }

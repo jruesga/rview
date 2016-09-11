@@ -25,4 +25,12 @@
     <color name="noscore">#757575</color>
     <color name="primaryBackgroundColor">#e0e0e0</color>
     <color name="selectedItem">#e3e8f7</color>
+
+    <color name="diffLineBackgroundColor">#f5f5f5</color>
+    <color name="diffAddedBackgroundColor">#cce2cd</color>
+    <color name="diffDeletedBackgroundColor">#e2cccc</color>
+    <color name="diffAddedForegroundColor">#81c784</color>
+    <color name="diffDeletedForegroundColor">#e48787</color>
+    <color name="diffSkipBackgroundColor">#ddeeff</color>
+    <color name="diffCommentBackgroundColor">#fffecc</color>
 </resources>
