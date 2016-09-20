@@ -23,6 +23,8 @@
         <import type="android.view.View" />
 
         <variable name="hasData" type="java.lang.Boolean" />
+        <variable name="isLocked" type="java.lang.Boolean" />
+        <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="isTwoPane" type="java.lang.Boolean" />
 
         <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
@@ -44,11 +46,32 @@
             android:paddingBottom="16dp"
             android:orientation="vertical">
 
-            <com.ruesga.rview.widget.StyleableTextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/HeaderLabel"
-                android:text="@string/change_details_header_change_details" />
+                android:orientation="horizontal">
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/HeaderLabel"
+                    android:text="@string/change_details_header_change_details" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
+                    app:bindSelected="@{model.starred}"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/selector_starred"
+                    android:onClick="@{handlers::onStarredPressed}"
+                    android:tint="@color/starred"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

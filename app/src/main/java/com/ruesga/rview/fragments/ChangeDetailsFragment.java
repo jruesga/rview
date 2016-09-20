@@ -384,7 +384,7 @@ public class ChangeDetailsFragment extends Fragment {
         @Override
         public void onNext(Boolean value) {
             mResponse.mChange.starred = value;
-            updatePatchSetInfo(mResponse);
+            updateChangeInfo(mResponse);
         }
 
         @Override
@@ -476,15 +476,15 @@ public class ChangeDetailsFragment extends Fragment {
             return;
         }
 
-        // Set authenticated mode
-        Account account = Preferences.getAccount(getContext());
-        if (account != null) {
-            mModel.isAuthenticated = account.hasAuthenticatedAccessMode();
-        }
-        updateAuthenticated();
-
-
         if (mFileAdapter == null) {
+            // Set authenticated mode
+            Account account = Preferences.getAccount(getContext());
+            if (account != null) {
+                mModel.isAuthenticated = account.hasAuthenticatedAccessMode();
+            }
+            updateAuthenticated();
+
+
             mEventHandlers = new EventHandlers(this);
 
             mFileAdapter = new FileAdapter(mEventHandlers);
@@ -635,6 +635,10 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void showPatchSetChooser(View anchor) {
+        if (mModel.isLocked) {
+            return;
+        }
+
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         PatchSetsAdapter adapter = new PatchSetsAdapter(
                 getContext(), mAllRevisions, mCurrentRevision);
@@ -655,9 +659,13 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void updateLocked() {
         mBinding.patchSetInfo.setIsLocked(mModel.isLocked);
+        mBinding.changeInfo.setIsLocked(mModel.isLocked);
+        mBinding.executePendingBindings();
     }
 
     private void updateAuthenticated() {
         mBinding.patchSetInfo.setIsAuthenticated(mModel.isAuthenticated);
+        mBinding.changeInfo.setIsAuthenticated(mModel.isAuthenticated);
+        mBinding.executePendingBindings();
     }
 }

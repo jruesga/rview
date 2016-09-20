@@ -50,7 +50,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="0dp"
@@ -81,20 +82,6 @@
                         app:srcCompat="@drawable/ic_arrow_drop_down"
                         tools:ignore="ContentDescription" />
                 </LinearLayout>
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
-                    app:bindSelected="@{change.starred}"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    app:srcCompat="@drawable/selector_starred"
-                    android:onClick="@{handlers::onStarredPressed}"
-                    android:tint="@color/starred"
-                    tools:ignore="ContentDescription" />
             </LinearLayout>
 
             <com.ruesga.rview.widget.StyleableTextView
