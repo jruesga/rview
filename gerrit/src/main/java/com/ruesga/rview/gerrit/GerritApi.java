@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.gerrit;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -58,6 +59,19 @@ public interface GerritApi {
      * The uri of the page where to login into the repository.
      */
     String LOGIN_URI = "login";
+
+
+    // ===============================
+    // Non-Api operations
+    // ===============================
+
+    /**
+     * Return the uri for download a complete change's patchset
+     */
+    Uri getDownloadPatchSetUri(
+            @NonNull String changeId,
+            @NonNull String revisionId,
+            @NonNull DownloadFormat format);
 
 
     // ===============================

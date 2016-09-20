@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.gerrit;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -34,6 +35,7 @@ import com.ruesga.rview.gerrit.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,6 +51,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
+    private final String mEndPoint;
     private final GerritApi mService;
     private final PlatformAbstractionLayer mAbstractionLayer;
     protected ServerVersion mServerVersion;
@@ -56,6 +59,7 @@ public class GerritApiClient implements GerritApi {
     public GerritApiClient(String endpoint, Authorization authorization,
             PlatformAbstractionLayer abstractionLayer) {
         mAbstractionLayer = abstractionLayer;
+        mEndPoint = endpoint;
 
         DispatchingAuthenticator authenticator = null;
         if (authorization != null && !authorization.isAnonymousUser()) {
@@ -172,6 +176,20 @@ public class GerritApiClient implements GerritApi {
             }
         }
         return filter;
+    }
+
+    // ===============================
+    // Non-Api operations
+    // ===============================
+
+    @Override
+    public Uri getDownloadPatchSetUri(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull DownloadFormat format) {
+        String unauthenticatedEndpoint = mEndPoint.endsWith("/a/")
+                ? mEndPoint.substring(0, mEndPoint.length() - 2)
+                : mEndPoint;
+        return Uri.parse(String.format(Locale.US, "%schanges/%s/revisions/%s/archive?format=%s",
+                unauthenticatedEndpoint, changeId, revisionId, format.toString().toLowerCase()));
     }
 
 

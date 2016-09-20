@@ -15,9 +15,13 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -46,6 +50,7 @@ import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
+import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
@@ -135,6 +140,14 @@ public class ChangeDetailsFragment extends Fragment {
 
         public void onAddReviewerPressed(View v) {
 
+        }
+
+        public void onRelatedChangesPressed(View v) {
+
+        }
+
+        public void onDownloadPatchSetPressed(View v) {
+            mFragment.performDownloadPatchSet();
         }
 
         public void onWebLinkPressed(View v) {
@@ -767,5 +780,24 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.patchSetInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.changeInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.executePendingBindings();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void performDownloadPatchSet() {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        Uri uri = api.getDownloadPatchSetUri(
+                String.valueOf(mLegacyChangeId), mCurrentRevision, DownloadFormat.TBZ2);
+
+        // Use the download manager to perform the download
+        DownloadManager downloadManager =
+                (DownloadManager) getContext().getSystemService(Activity.DOWNLOAD_SERVICE);
+        Request request = new Request(uri)
+                        .setAllowedOverMetered(false)
+                        .setAllowedOverRoaming(false)
+                        .setMimeType("application/x-tar-bz2")
+                        .setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.allowScanningByMediaScanner();
+        downloadManager.enqueue(request);
     }
 }
