@@ -226,14 +226,16 @@ public class Formatter {
         view.setText(txt);
     }
 
-    @BindingAdapter("changeStatus")
-    public static void toChangeStatus(TextView view, ChangeInfo change) {
+    @BindingAdapter({"changeStatus", "currentRevision"})
+    public static void toChangeStatus(TextView view, ChangeInfo change, boolean currentRevision) {
         if (change == null) {
             view.setText(null);
             return;
         }
 
-        if (change.status.equals(ChangeStatus.NEW)) {
+        if (!currentRevision) {
+            view.setText(R.string.change_statuses_not_current);
+        } else if (change.status.equals(ChangeStatus.NEW)) {
             // TODO Convert labels to status (Needs Code-Review, Ready to Submit, ...)
             view.setText(R.string.menu_open);
         } else if (change.status.equals(ChangeStatus.MERGED)) {

@@ -465,10 +465,12 @@ public class ChangeDetailsFragment extends Fragment {
                 .from(response.mChange);
         mBinding.changeInfo.labels.with(mPicasso).from(response.mChange);
         mBinding.changeInfo.setModel(response.mChange);
-        mBinding.changeInfo.setSubmitType(response.mChange.submitType);
+        mBinding.changeInfo.setSubmitType(response.mSubmitType);
         mBinding.changeInfo.setHandlers(mEventHandlers);
         mBinding.changeInfo.setHasData(true);
         mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
+        mBinding.changeInfo.setIsCurrentRevision(
+                mCurrentRevision.equals(response.mChange.currentRevision));
     }
 
     private void startLoadersWithValidContext() {
