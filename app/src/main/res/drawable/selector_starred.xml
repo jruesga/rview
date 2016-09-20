@@ -14,11 +14,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources>
-    <dimen name="wizard_max_content_width">400dp</dimen>
-    <dimen name="max_avatar_size">48dp</dimen>
-    <dimen name="chips_margin">3dp</dimen>
-    <dimen name="label_min_width">72dp</dimen>
-    <dimen name="message_list_left_padding">56dp</dimen>
-    <dimen name="revision_min_width">96dp</dimen>
-</resources>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:drawable="@drawable/ic_starred" />
+    <item android:drawable="@drawable/ic_unstarred" />
+</selector>

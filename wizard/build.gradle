@@ -35,6 +35,7 @@ dependencies {
 
 android {
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         consumerProguardFiles file('proguard-consumer.txt')
     }
 

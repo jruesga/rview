@@ -444,7 +444,7 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#unstar-change"
      */
-    @PUT("accounts/{account-id}/starred.changes/{change-id}")
+    @DELETE("accounts/{account-id}/starred.changes/{change-id}")
     Observable<Void> removeDefaultStarFromChange(
             @NonNull @Path("account-id") String accountId,
             @NonNull @Path("change-id") String changeId);

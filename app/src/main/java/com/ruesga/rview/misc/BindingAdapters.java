@@ -20,6 +20,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 
@@ -47,5 +48,15 @@ public class BindingAdapters {
         v.getLayoutParams().width = width < 0
                 ? ViewGroup.LayoutParams.MATCH_PARENT
                 : width;
+    }
+
+    @BindingAdapter("bindLayoutWeight")
+    public static void bindLayoutWeight(View v, float weight) {
+        ((LinearLayout.LayoutParams)v.getLayoutParams()).weight = weight;
+    }
+
+    @BindingAdapter("bindSelected")
+    public static void bindSelected(View v, boolean selected) {
+        v.setSelected(selected);
     }
 }

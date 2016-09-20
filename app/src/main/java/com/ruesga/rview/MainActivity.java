@@ -49,6 +49,7 @@ import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
 
@@ -308,7 +309,9 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
     private void loadAccounts() {
         mAccount = Preferences.getAccount(this);
         mAccounts = Preferences.getAccounts(this);
-        Formatter.refreshCachedPreferences(this);
+        if (mAccount != null) {
+            Formatter.refreshCachedPreferences(this);
+        }
     }
 
     private void setupNavigationDrawer() {
@@ -492,9 +495,8 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.account_deletion_title)
                 .setMessage(R.string.account_deletion_message)
-                .setPositiveButton(R.string.action_delete, (dialogInterface, i) -> {
-                    Message.obtain(mUiHandler, MESSAGE_DELETE_ACCOUNT).sendToTarget();
-                })
+                .setPositiveButton(R.string.action_delete, (dialogInterface, i) ->
+                        Message.obtain(mUiHandler, MESSAGE_DELETE_ACCOUNT).sendToTarget())
                 .setNegativeButton(R.string.action_cancel, null)
                 .create();
         dialog.show();
@@ -622,8 +624,8 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
         if (!mIsTwoPane) {
             // Open activity
             Intent intent = new Intent(this, ChangeDetailsActivity.class);
-            intent.putExtra(ChangeDetailsFragment.EXTRA_CHANGE_ID, change.changeId);
-            intent.putExtra(ChangeDetailsFragment.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
+            intent.putExtra(Constants.EXTRA_CHANGE_ID, change.changeId);
+            intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
             startActivity(intent);
         } else {
             // Open the filter fragment

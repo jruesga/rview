@@ -24,6 +24,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import android.view.ViewGroup;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
+import com.ruesga.rview.adapters.PatchSetsAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
 import com.ruesga.rview.databinding.FileInfoItemBinding;
@@ -49,10 +51,14 @@ import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,9 +75,6 @@ public class ChangeDetailsFragment extends Fragment {
 
     private static final String TAG = "ChangeDetailsFragment";
 
-    public static final String EXTRA_CHANGE_ID = "changeId";
-    public static final String EXTRA_LEGACY_CHANGE_ID = "legacyChangeId";
-
     private static final int INVALID_CHANGE_ID = -1;
 
     private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
@@ -84,7 +87,6 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.CHANGE_ACTIONS);
         add(ChangeOptions.REVIEWED);
         add(ChangeOptions.CHECK);
-        add(ChangeOptions.REVIEWER_UPDATES);
         add(ChangeOptions.PUSH_CERTIFICATES);
         add(ChangeOptions.COMMIT_FOOTERS);
         add(ChangeOptions.WEB_LINKS);
@@ -104,6 +106,8 @@ public class ChangeDetailsFragment extends Fragment {
     @ProguardIgnored
     public static class Model {
         public boolean hasData = true;
+        boolean isLocked = false;
+        boolean isAuthenticated = false;
         public ListModel filesListModel = new ListModel(R.string.change_details_header_files);
         public ListModel msgListModel = new ListModel(R.string.change_details_header_messages);
     }
@@ -117,11 +121,23 @@ public class ChangeDetailsFragment extends Fragment {
             mFragment = fragment;
         }
 
+        public void onPatchSetPressed(View v) {
+            mFragment.showPatchSetChooser(v);
+        }
+
+        public void onStarredPressed(View v) {
+            mFragment.performStarred(!v.isSelected());
+        }
+
         public void onWebLinkPressed(View v) {
             String url = (String) v.getTag();
             if (url != null) {
                 AndroidHelper.openUriInCustomTabs(mFragment.getActivity(), url);
             }
+        }
+
+        public void onFileItemClick(View v) {
+            mFragment.onFileItemClick((String) v.getTag());
         }
     }
 
@@ -137,7 +153,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     public static class FileInfoViewHolder extends RecyclerView.ViewHolder {
         private final FileInfoItemBinding mBinding;
-        public FileInfoViewHolder(FileInfoItemBinding binding) {
+        FileInfoViewHolder(FileInfoItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             binding.executePendingBindings();
@@ -146,7 +162,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     public static class TotalAddedDeletedViewHolder extends RecyclerView.ViewHolder {
         private final TotalAddedDeletedBinding mBinding;
-        public TotalAddedDeletedViewHolder(TotalAddedDeletedBinding binding) {
+        TotalAddedDeletedViewHolder(TotalAddedDeletedBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             binding.executePendingBindings();
@@ -155,7 +171,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         private final MessageItemBinding mBinding;
-        public MessageViewHolder(MessageItemBinding binding) {
+        MessageViewHolder(MessageItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             mBinding.setExpanded(false);
@@ -168,7 +184,7 @@ public class ChangeDetailsFragment extends Fragment {
         private FileItemModel mTotals;
         private final EventHandlers mEventHandlers;
 
-        public FileAdapter(EventHandlers handlers) {
+        FileAdapter(EventHandlers handlers) {
             mEventHandlers = handlers;
         }
 
@@ -258,6 +274,7 @@ public class ChangeDetailsFragment extends Fragment {
                 FileInfoItemBinding binding = ((FileInfoViewHolder) holder).mBinding;
                 binding.addedVsDeleted.with(model);
                 binding.setModel(model);
+                binding.setHandlers(mEventHandlers);
             }
         }
     }
@@ -267,7 +284,7 @@ public class ChangeDetailsFragment extends Fragment {
         private final EventHandlers mEventHandlers;
         private ChangeMessageInfo[] mMessages;
 
-        public MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers) {
+        MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
 
@@ -319,8 +336,12 @@ public class ChangeDetailsFragment extends Fragment {
             new RxLoaderObserver<DataResponse>() {
                 @Override
                 public void onNext(DataResponse result) {
-                    mModel.hasData = result != null;
+                    mModel.isLocked = false;
+                    updateLocked();
+                    mResponse = result;
+
                     ChangeInfo change = null;
+                    mModel.hasData = result != null;
                     if (mModel.hasData) {
                         change = result.mChange;
                         if (mCurrentRevision == null
@@ -328,6 +349,7 @@ public class ChangeDetailsFragment extends Fragment {
                             mCurrentRevision = change.currentRevision;
                         }
 
+                        sortRevisions(change);
                         updatePatchSetInfo(result);
                         updateChangeInfo(result);
 
@@ -351,9 +373,25 @@ public class ChangeDetailsFragment extends Fragment {
 
                 @Override
                 public void onStarted() {
+                    mModel.isLocked = true;
+                    updateLocked();
+
                     showProgress(true, null);
                 }
             };
+
+    private final RxLoaderObserver<Boolean> mStarredObserver = new RxLoaderObserver<Boolean>() {
+        @Override
+        public void onNext(Boolean value) {
+            mResponse.mChange.starred = value;
+            updatePatchSetInfo(mResponse);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
 
     private ChangeDetailsFragmentBinding mBinding;
     private Picasso mPicasso;
@@ -364,14 +402,17 @@ public class ChangeDetailsFragment extends Fragment {
     private EventHandlers mEventHandlers;
     private final Model mModel = new Model();
     private String mCurrentRevision;
+    private DataResponse mResponse;
+    private final List<RevisionInfo> mAllRevisions = new ArrayList<>();
 
     private RxLoader1<String, DataResponse> mChangeLoader;
-    private int mChangeId;
+    private RxLoader1<Boolean, Boolean> mStarredLoader;
+    private int mLegacyChangeId;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
         ChangeDetailsFragment fragment = new ChangeDetailsFragment();
         Bundle arguments = new Bundle();
-        arguments.putInt(EXTRA_CHANGE_ID, changeId);
+        arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, changeId);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -379,7 +420,8 @@ public class ChangeDetailsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mChangeId = getArguments().getInt(EXTRA_CHANGE_ID, INVALID_CHANGE_ID);
+        mLegacyChangeId = getArguments().getInt(
+                Constants.EXTRA_LEGACY_CHANGE_ID, INVALID_CHANGE_ID);
         mPicasso = PicassoHelper.getPicassoClient(getContext());
     }
 
@@ -408,6 +450,9 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.patchSetInfo.setChange(response.mChange);
         mBinding.patchSetInfo.setConfig(response.mProjectConfig);
         mBinding.patchSetInfo.setModel(revision);
+        final String pathset = getContext().getString(R.string.change_details_header_patchsets,
+                revision.number, response.mChange.revisions.size());
+        mBinding.patchSetInfo.setPatchset(pathset);
         mBinding.patchSetInfo.setHandlers(mEventHandlers);
         mBinding.patchSetInfo.parentCommits.with(mEventHandlers).from(revision.commit);
         mBinding.patchSetInfo.setHasData(true);
@@ -430,6 +475,14 @@ public class ChangeDetailsFragment extends Fragment {
         if (getActivity() == null) {
             return;
         }
+
+        // Set authenticated mode
+        Account account = Preferences.getAccount(getContext());
+        if (account != null) {
+            mModel.isAuthenticated = account.hasAuthenticatedAccessMode();
+        }
+        updateAuthenticated();
+
 
         if (mFileAdapter == null) {
             mEventHandlers = new EventHandlers(this);
@@ -457,8 +510,9 @@ public class ChangeDetailsFragment extends Fragment {
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-            mChangeLoader = loaderManager.create(this::fetchChange, mChangeObserver)
-                    .start(String.valueOf(mChangeId));
+            mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver)
+                    .start(String.valueOf(mLegacyChangeId));
+            mStarredLoader = loaderManager.create("starred", this::starredChange, mStarredObserver);
         }
     }
 
@@ -496,6 +550,26 @@ public class ChangeDetailsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Boolean> starredChange(Boolean starred) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                Observable<Void> call;
+                if (starred) {
+                    call = api.putDefaultStarOnChange(
+                            GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
+                } else {
+                    call = api.removeDefaultStarFromChange(
+                            GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
+                }
+                call.toBlocking().first();
+                return starred;
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
     private void setupSwipeToRefresh() {
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
@@ -505,7 +579,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void forceRefresh() {
         startLoadersWithValidContext();
-        mChangeLoader.restart(String.valueOf(mChangeId));
+        mChangeLoader.restart(String.valueOf(mLegacyChangeId));
     }
 
     private void showProgress(boolean show, ChangeInfo change) {
@@ -533,4 +607,57 @@ public class ChangeDetailsFragment extends Fragment {
         return response;
     }
 
+    private void onFileItemClick(String file) {
+        /* FIXME Restore when activity is build
+        Intent i = new Intent(getContext(), DiffViewerActivity.class);
+        i.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
+        i.putExtra(Constants.EXTRA_REVISION_ID, mCurrentRevision);
+        i.putExtra(Constants.EXTRA_FILE_ID, file);
+        startActivity(i);*/
+    }
+
+    private void sortRevisions(ChangeInfo change) {
+        mAllRevisions.clear();
+        for (String revision : change.revisions.keySet()) {
+            RevisionInfo rev = change.revisions.get(revision);
+            rev.commit.commit = revision;
+            mAllRevisions.add(rev);
+        }
+        Collections.sort(mAllRevisions, (o1, o2) -> {
+            if (o1.number > o2.number) {
+                return -1;
+            }
+            if (o1.number < o2.number) {
+                return 1;
+            }
+            return 0;
+        });
+    }
+
+    private void showPatchSetChooser(View anchor) {
+        final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
+        PatchSetsAdapter adapter = new PatchSetsAdapter(
+                getContext(), mAllRevisions, mCurrentRevision);
+        popupWindow.setAnchorView(anchor);
+        popupWindow.setAdapter(adapter);
+        popupWindow.setWidth(adapter.measureContentWidth());
+        popupWindow.setOnItemClickListener((parent, view, position, id) -> {
+            popupWindow.dismiss();
+            mCurrentRevision = mAllRevisions.get(position).commit.commit;
+            forceRefresh();
+        });
+        popupWindow.show();
+    }
+
+    private void performStarred(boolean starred) {
+        mStarredLoader.restart(starred);
+    }
+
+    private void updateLocked() {
+        mBinding.patchSetInfo.setIsLocked(mModel.isLocked);
+    }
+
+    private void updateAuthenticated() {
+        mBinding.patchSetInfo.setIsAuthenticated(mModel.isAuthenticated);
+    }
 }

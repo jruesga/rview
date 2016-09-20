@@ -129,7 +129,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_folder"
+                        app:srcCompat="@drawable/ic_folder"
                         android:tint="@color/secondaryIconColor"
                         android:layout_marginEnd="4dp"
                         android:layout_marginRight="4dp"
@@ -154,7 +154,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_branch"
+                        app:srcCompat="@drawable/ic_branch"
                         android:tint="@color/secondaryIconColor"
                         android:layout_marginEnd="4dp"
                         android:layout_marginRight="4dp"

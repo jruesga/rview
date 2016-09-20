@@ -39,12 +39,23 @@ public class DashboardFragment extends PaginableFragment {
     }
 
     @Override
-    public String[] getTabs() {
+    public String[] getPages() {
         return mDashboardTabs;
     }
 
     @Override
     public Fragment getFragment(int position) {
         return ChangeListFragment.newInstance(mDashboardFilters[position]);
+    }
+
+    @Override
+    public boolean isSwipeable() {
+        final boolean isTwoPane = getResources().getBoolean(R.bool.config_is_two_pane);
+        return !isTwoPane;
+    }
+
+    @Override
+    public int getOffscreenPageLimit() {
+        return mDashboardTabs.length + 1;
     }
 }

@@ -34,7 +34,7 @@
             android:id="@+id/avatar"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_account_circle"
+            app:srcCompat="@drawable/ic_account_circle"
             android:contentDescription="@null"/>
 
         <com.ruesga.rview.widget.StyleableTextView

@@ -33,6 +33,7 @@ import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
+import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -283,5 +284,23 @@ public class Formatter {
         } else {
             view.setTag(null);
         }
+    }
+
+    @BindingAdapter("revisionNumber")
+    public static void toRevisionNumber(TextView view, RevisionInfo revision) {
+        if (revision == null) {
+            view.setText(null);
+            return;
+        }
+        view.setText(String.format(Locale.US, "#%02d", revision.number));
+    }
+
+    @BindingAdapter("revisionCommit")
+    public static void toRevisionCommit(TextView view, RevisionInfo revision) {
+        if (revision == null) {
+            view.setText(null);
+            return;
+        }
+        view.setText(revision.commit.commit.substring(0, 10));
     }
 }

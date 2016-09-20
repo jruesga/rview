@@ -137,6 +137,10 @@ public class Preferences {
     }
 
     public static int getAccountHomePageId(Context context, Account account) {
+        if (account == null) {
+            return context.getResources().getIdentifier(Constants.DEFAULT_ANONYMOUS_HOME,
+                    "id", context.getPackageName());
+        }
         return context.getResources().getIdentifier(
                 getAccountHomePage(context, account), "id", context.getPackageName());
     }

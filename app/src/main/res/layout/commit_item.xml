@@ -44,12 +44,13 @@
             android:textIsSelectable="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            tools:ignore="Deprecated" />
         <ImageView
             android:id="@+id/revision_web_link"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/ic_open_in_new"
+            app:srcCompat="@drawable/ic_open_in_new"
             android:tint="?attr/colorPrimaryDark"
             android:tag="@{revision}"
             android:onClick="@{handlers::onWebLinkPressed}"

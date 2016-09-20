@@ -84,9 +84,7 @@ public class LabelsView extends LinearLayout {
     private List<String> sortLabels(ChangeInfo change) {
         List<String> labels = new ArrayList<>();
         if (change.labels != null) {
-            for (String label : change.labels.keySet()) {
-                labels.add(label);
-            }
+            labels.addAll(change.labels.keySet());
         }
         Collections.sort(labels);
         return labels;

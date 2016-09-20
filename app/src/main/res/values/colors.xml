@@ -33,4 +33,6 @@
     <color name="diffDeletedForegroundColor">#e48787</color>
     <color name="diffSkipBackgroundColor">#ddeeff</color>
     <color name="diffCommentBackgroundColor">#fffecc</color>
+
+    <color name="starred">#ffd76e</color>
 </resources>

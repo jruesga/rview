@@ -51,7 +51,7 @@
                     android:layout_marginStart="32dp"
                     android:layout_gravity="bottom"
                     android:background="?attr/colorPrimaryDark"
-                    android:visibility="@{model.mHasTabs ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
                     app:tabTextColor="?android:attr/textColorSecondary"
                     app:tabSelectedTextColor="@android:color/white"
                     app:tabIndicatorColor="@android:color/white"

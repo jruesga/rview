@@ -15,22 +15,17 @@
  */
 package com.ruesga.rview;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.widget.DrawerLayout;
 import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
-
-import static com.ruesga.rview.fragments.ChangeDetailsFragment.EXTRA_CHANGE_ID;
-import static com.ruesga.rview.fragments.ChangeDetailsFragment.EXTRA_LEGACY_CHANGE_ID;
+import com.ruesga.rview.preferences.Constants;
 
 public class ChangeDetailsActivity extends BaseActivity {
 
@@ -57,12 +52,12 @@ public class ChangeDetailsActivity extends BaseActivity {
             finish();
             return;
         }
-        int legacyChangeId = getIntent().getIntExtra(EXTRA_LEGACY_CHANGE_ID, -1);
+        int legacyChangeId = getIntent().getIntExtra(Constants.EXTRA_LEGACY_CHANGE_ID, -1);
         if (legacyChangeId == -1) {
             finish();
             return;
         }
-        String changeId = getIntent().getStringExtra(EXTRA_CHANGE_ID);
+        String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
         if (changeId == null) {
             finish();
             return;
@@ -110,14 +105,7 @@ public class ChangeDetailsActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case android.R.id.home:
-                Intent upIntent = NavUtils.getParentActivityIntent(this);
-                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
-                    TaskStackBuilder.create(this)
-                            .addNextIntentWithParentStack(upIntent)
-                            .startActivities();
-                } else {
-                    NavUtils.navigateUpTo(this, upIntent);
-                }
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

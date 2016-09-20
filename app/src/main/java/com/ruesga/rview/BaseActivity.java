@@ -38,18 +38,23 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     @ProguardIgnored
     public static class Model implements Parcelable {
         public boolean isInProgress = false;
-        public boolean mHasTabs = false;
+        public boolean hasTabs = false;
+        public boolean useTowPane = true;
 
         public Model() {
         }
 
         protected Model(Parcel in) {
             isInProgress = in.readByte() != 0;
+            hasTabs = in.readByte() != 0;
+            useTowPane = in.readByte() != 0;
         }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeByte((byte) (isInProgress ? 1 : 0));
+            dest.writeByte((byte) (hasTabs ? 1 : 0));
+            dest.writeByte((byte) (useTowPane ? 1 : 0));
         }
 
         @Override
@@ -93,15 +98,20 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         }
     }
 
+    protected void setUseTwoPanel(boolean useTwoPanel) {
+        mModel.useTowPane = useTwoPanel;
+        getContentBinding().setModel(mModel);
+    }
+
     protected void invalidateTabs() {
-        mModel.mHasTabs = false;
+        mModel.hasTabs = false;
         getContentBinding().tabs.setupWithViewPager(null);
         getContentBinding().setModel(mModel);
     }
 
     public void configureTabs(ViewPager pager) {
         mViewPager = pager;
-        mModel.mHasTabs = true;
+        mModel.hasTabs = true;
         getContentBinding().tabs.setupWithViewPager(pager);
         getContentBinding().tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

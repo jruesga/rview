@@ -61,12 +61,12 @@ public abstract class PaginableFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return getTabs().length;
+            return getPages().length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return getTabs()[position];
+            return getPages()[position];
         }
 
         public Fragment getCacheFragment(int position) {
@@ -77,9 +77,17 @@ public abstract class PaginableFragment extends Fragment {
 
     private ViewPagerBinding mBinding;
 
-    public abstract String[] getTabs();
+    public abstract String[] getPages();
 
     public abstract Fragment getFragment(int position);
+
+    public int getOffscreenPageLimit() {
+        return 3;
+    }
+
+    public boolean isSwipeable() {
+        return true;
+    }
 
     @Nullable
     @Override
@@ -92,9 +100,8 @@ public abstract class PaginableFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final boolean isTwoPane = getResources().getBoolean(R.bool.config_is_two_pane);
-        mBinding.viewPager.setSwipeable(!isTwoPane);
-        mBinding.viewPager.setOffscreenPageLimit(getTabs().length + 1);
+        mBinding.viewPager.setSwipeable(isSwipeable());
+        mBinding.viewPager.setOffscreenPageLimit(getOffscreenPageLimit());
         mBinding.viewPager.setAdapter(new PageFragmentAdapter(getChildFragmentManager()));
         ((BaseActivity) getActivity()).configureTabs(mBinding.viewPager);
     }

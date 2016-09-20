@@ -25,25 +25,64 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
 
     private int mOffset;
 
+    private boolean mCanScrollHorizontally;
+    private boolean mCanScrollVertically;
+
     public UnwrappedLinearLayoutManager(Context context) {
         super(context);
     }
 
     @Override
     public boolean canScrollHorizontally() {
-        return true;
+        if (!mCanScrollHorizontally) {
+            if (getOrientation() == LinearLayoutManager.HORIZONTAL) {
+                return super.canScrollHorizontally();
+            }
+
+            if (getChildCount() == 0) {
+                return false;
+            }
+
+            final View view = getChildAt(0);
+            int decoratedRight = getDecoratedRight(view);
+            int decoratedLeft = getDecoratedLeft(view);
+            int decoratedWidth = decoratedRight - decoratedLeft;
+            if (view instanceof ViewGroup) {
+                decoratedWidth = getMeasuredChildWidth((ViewGroup) view);
+            }
+            mCanScrollHorizontally = decoratedWidth > getHorizontalSpace();
+        }
+        return mCanScrollHorizontally;
     }
 
     @Override
     public boolean canScrollVertically() {
-        return true;
+        if (!mCanScrollVertically) {
+            if (getOrientation() == LinearLayoutManager.VERTICAL) {
+                return super.canScrollVertically();
+            }
+
+            if (getChildCount() == 0) {
+                return false;
+            }
+
+            final View view = getChildAt(0);
+            int decoratedBottom = getDecoratedBottom(view);
+            int decoratedTop = getDecoratedTop(view);
+            int decoratedHeight = decoratedBottom - decoratedTop;
+            if (view instanceof ViewGroup) {
+                decoratedHeight = getMeasuredChildWidth((ViewGroup) view);
+            }
+            mCanScrollVertically = decoratedHeight > getVerticalSpace();
+        }
+        return mCanScrollVertically;
     }
 
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
         if (getOrientation() == LinearLayoutManager.HORIZONTAL) {
-            return  super.scrollHorizontallyBy(dx, recycler, state);
+            return super.scrollHorizontallyBy(dx, recycler, state);
         }
 
         if (getChildCount() == 0) {
@@ -92,7 +131,7 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
         if (getOrientation() == LinearLayoutManager.VERTICAL) {
-            return  super.scrollVerticallyBy(dy, recycler, state);
+            return super.scrollVerticallyBy(dy, recycler, state);
         }
 
         if (getChildCount() == 0) {

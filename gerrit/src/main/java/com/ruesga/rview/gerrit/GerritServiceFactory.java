@@ -31,7 +31,7 @@ public class GerritServiceFactory {
         private static final String TAG = "Gerrit";
         private Context mApplicationContext;
 
-        public AndroidPlatformAbstractionLayer(Context applicationContext) {
+        AndroidPlatformAbstractionLayer(Context applicationContext) {
             mApplicationContext = applicationContext;
         }
 
@@ -65,7 +65,6 @@ public class GerritServiceFactory {
     }
 
     private final static Map<String, GerritApiClient> sInstances = new HashMap<>();
-    private static AndroidPlatformAbstractionLayer sAbstractionLayer;
 
     public static GerritApiClient getInstance(Context applicationContext, String endpoint) {
         return getInstance(applicationContext, endpoint, null);
@@ -73,9 +72,6 @@ public class GerritServiceFactory {
 
     public static GerritApiClient getInstance(Context applicationContext,
                 String endpoint, Authorization authorization) {
-        if (sAbstractionLayer == null) {
-            sAbstractionLayer = new AndroidPlatformAbstractionLayer(applicationContext);
-        }
 
         // Ensure we have a correct endpoint to invoke gerrit
         endpoint = sanitizeEndpoint(endpoint);
@@ -97,7 +93,8 @@ public class GerritServiceFactory {
         // Have a cached instance?
         if (!sInstances.containsKey(endpointHash)) {
             sInstances.put(endpointHash,
-                    new GerritApiClient(endpoint, authorization, sAbstractionLayer));
+                    new GerritApiClient(endpoint, authorization,
+                            new AndroidPlatformAbstractionLayer(applicationContext)));
         }
         return sInstances.get(endpointHash);
     }

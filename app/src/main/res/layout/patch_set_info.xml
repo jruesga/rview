@@ -16,13 +16,19 @@
  -->
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="android.view.View" />
+
+        <variable name="hasData" type="java.lang.Boolean" />
+        <variable name="isLocked" type="java.lang.Boolean" />
+        <variable name="isAuthenticated" type="java.lang.Boolean" />
+
         <variable name="changeId" type="java.lang.String" />
         <variable name="revision" type="java.lang.String" />
-        <variable name="hasData" type="java.lang.Boolean" />
+        <variable name="patchset" type="java.lang.String" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.RevisionInfo" />
         <variable name="change" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="config" type="com.ruesga.rview.gerrit.model.ConfigInfo" />
@@ -42,11 +48,54 @@
             android:paddingBottom="16dp"
             android:orientation="vertical">
 
-            <com.ruesga.rview.widget.StyleableTextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/HeaderLabel"
-                android:text="@string/change_details_header_patchset_details" />
+                android:layout_height="wrap_content">
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/HeaderLabel"
+                    android:text="@string/change_details_header_patchset_details" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="3dp"
+                    android:onClick="@{handlers::onPatchSetPressed}"
+                    android:background="?attr/selectableItemBackground">
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:text="@{patchset}"
+                        android:gravity="center"
+                        android:textSize="12sp"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_arrow_drop_down"
+                        tools:ignore="ContentDescription" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
+                    app:bindSelected="@{change.starred}"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/selector_starred"
+                    android:onClick="@{handlers::onStarredPressed}"
+                    android:tint="@color/starred"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
 
             <com.ruesga.rview.widget.StyleableTextView
                 android:layout_width="match_parent"
@@ -185,7 +234,8 @@
                     android:textIsSelectable="true"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tools:ignore="Deprecated" />
             </LinearLayout>
         </LinearLayout>
 

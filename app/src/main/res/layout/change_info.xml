@@ -21,9 +21,11 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
+
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="isTwoPane" type="java.lang.Boolean" />
+
+        <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="submitType" type="com.ruesga.rview.gerrit.model.SubmitType" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
@@ -287,7 +289,7 @@
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:src="@drawable/ic_warning"
+                    app:srcCompat="@drawable/ic_warning"
                     android:tint="@color/accent"
                     android:layout_marginEnd="4dp"
                     android:layout_marginRight="4dp"

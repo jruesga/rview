@@ -23,6 +23,7 @@
         <import type="android.view.View" />
         <import type="com.ruesga.rview.gerrit.model.FileStatus" />
         <variable name="model" type="com.ruesga.rview.fragments.ChangeDetailsFragment.FileItemModel" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
     <RelativeLayout
@@ -32,6 +33,9 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:gravity="center_vertical"
+        android:background="?attr/selectableItemBackground"
+        android:onClick="@{handlers::onFileItemClick}"
+        android:tag="@{model.file}"
         android:visibility="@{model.file == null ? View.GONE : View.VISIBLE}"
         android:orientation="vertical">
 
@@ -47,7 +51,7 @@
 
         <com.ruesga.rview.widget.AddedVsDeletedGraphView
             android:id="@+id/added_vs_deleted"
-            android:layout_width="96dp"
+            android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
@@ -79,7 +83,7 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/ic_comment"
+                app:srcCompat="@drawable/ic_comment"
                 android:tint="?attr/colorPrimaryDark"
                 tools:ignore="ContentDescription" />
             <com.ruesga.rview.widget.StyleableTextView

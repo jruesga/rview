@@ -51,7 +51,7 @@
                     android:layout_marginStart="32dp"
                     android:layout_gravity="bottom"
                     android:background="?attr/colorPrimaryDark"
-                    android:visibility="@{model.mHasTabs ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
                     app:tabTextColor="?android:attr/textColorSecondary"
                     app:tabSelectedTextColor="@android:color/white"
                     app:tabIndicatorColor="@android:color/white"
@@ -91,7 +91,8 @@
                     android:id="@+id/content"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.35"/>
+                    app:bindLayoutWeight="@{model.useTowPane ? 0.35f : 1f}"
+                    tools:ignore="Suspicious0dp"/>
 
                 <View
                     android:layout_width="5dp"
@@ -99,13 +100,16 @@
                     android:paddingLeft="3dp"
                     android:paddingStart="3dp"
                     android:background="@drawable/bg_shadow_end"
+                    android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
                     tools:ignore="RtlSymmetry"/>
 
                 <FrameLayout
                     android:id="@+id/details"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.65"/>
+                    app:bindLayoutWeight="@{model.useTowPane ? 0.65f : 0f}"
+                    android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
+                    tools:ignore="Suspicious0dp"/>
             </LinearLayout>
         </FrameLayout>
 

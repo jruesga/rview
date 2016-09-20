@@ -58,11 +58,11 @@ public class AddedVsDeletedGraphView extends FrameLayout {
         float total = item.totalAdded + item.totalDeleted;
         float added = 0f;
         if (item.info.linesInserted != null) {
-            added = Math.max(0.05f, item.info.linesInserted / total);
+            added = Math.max(0.15f, item.info.linesInserted / total);
         }
         float deleted = 0f;
         if (item.info.linesDeleted != null) {
-            deleted = Math.max(0.05f, item.info.linesDeleted / total);
+            deleted = Math.max(0.15f, item.info.linesDeleted / total);
         }
         View usedSpacer = mRightAligned ? mBinding.spacerLeft : mBinding.spacerRight;
         View unusedSpacer = mRightAligned ? mBinding.spacerRight : mBinding.spacerLeft;

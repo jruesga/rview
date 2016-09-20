@@ -21,6 +21,11 @@ public class Constants {
      */
     public static final double MINIMAL_SUPPORTED_VERSION = 2.11d;
 
+    public static final String EXTRA_CHANGE_ID = "changeId";
+    public static final String EXTRA_LEGACY_CHANGE_ID = "legacyChangeId";
+    public static final String EXTRA_REVISION_ID = "revisionId";
+    public static final String EXTRA_FILE_ID = "fileId";
+
 
     public static final String DEFAULT_AUTHENTICATED_HOME = "menu_dashboard";
     public static final String DEFAULT_ANONYMOUS_HOME = "menu_open";

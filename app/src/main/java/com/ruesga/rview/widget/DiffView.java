@@ -728,6 +728,7 @@ public class DiffView extends FrameLayout {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mDiffAdapter = new DiffAdapter(mDiffMode);
         mRecyclerView.setAdapter(mDiffAdapter);
+        mRecyclerView.setVerticalScrollBarEnabled(true);
         addView(mRecyclerView, params);
     }
 
