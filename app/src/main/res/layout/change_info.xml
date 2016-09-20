@@ -156,12 +156,30 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="12sp" />
-                <com.ruesga.rview.widget.ReviewersView
-                    android:id="@+id/reviewers"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginLeft="5dp" />
+                    android:orientation="vertical">
+                    <com.ruesga.rview.widget.ReviewersView
+                        android:id="@+id/reviewers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp" />
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
+                        android:onClick="@{handlers::onAddReviewerPressed}"
+                        android:background="?attr/selectableItemBackground"
+                        android:text="@string/change_details_add_reviewer"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?attr/colorAccent"
+                        android:textStyle="bold"
+                        app:allCaps="true"
+                        android:textSize="12sp"/>
+                </LinearLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

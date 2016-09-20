@@ -139,6 +139,7 @@
     <string name="change_details_status">Status</string>
     <string name="change_details_owner">Owner</string>
     <string name="change_details_reviewers">Reviewers</string>
+    <string name="change_details_add_reviewer">Add reviewer</string>
     <string name="change_details_project">Project</string>
     <string name="change_details_branch">Branch</string>
     <string name="change_details_topic">Topic</string>

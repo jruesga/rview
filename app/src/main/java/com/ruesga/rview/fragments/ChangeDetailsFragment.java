@@ -133,6 +133,10 @@ public class ChangeDetailsFragment extends Fragment {
             mFragment.performStarred(!v.isSelected());
         }
 
+        public void onAddReviewerPressed(View v) {
+
+        }
+
         public void onWebLinkPressed(View v) {
             String url = (String) v.getTag();
             if (url != null) {
