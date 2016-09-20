@@ -19,17 +19,48 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.AccountChipBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.squareup.picasso.Picasso;
 
 public class AccountChipView extends FrameLayout {
+
+    public interface OnAccountChipClickedListener {
+        void onAccountChipClicked(AccountInfo account);
+    }
+
+    public interface OnAccountChipRemovedListener {
+        void onAccountChipRemoved(AccountInfo account);
+    }
+
+    @ProguardIgnored
+    public static class EventHandlers {
+        private AccountChipView mView;
+
+        public EventHandlers(AccountChipView v) {
+            mView = v;
+        }
+
+        public void onChipPressed(View v) {
+            mView.onAccountChipClicked((AccountInfo) v.getTag());
+        }
+
+        public void onRemovePressed(View v) {
+            mView.onAccountChipRemoved((AccountInfo) v.getTag());
+        }
+    }
+
     private AccountChipBinding mBinding;
     private Picasso mPicasso;
+    private OnAccountChipClickedListener mOnAccountChipClickedListener;
+    private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
+    private EventHandlers mHandlers;
 
     public AccountChipView(Context context) {
         this(context, null);
@@ -43,8 +74,10 @@ public class AccountChipView extends FrameLayout {
         super(context, attrs, defStyleAttr);
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
+        mHandlers = new EventHandlers(this);
         mBinding = DataBindingUtil.inflate(layoutInflater, R.layout.account_chip, this, false);
         mBinding.setRemovable(false);
+        mBinding.setHandlers(mHandlers);
         addView(mBinding.getRoot());
     }
 
@@ -58,10 +91,32 @@ public class AccountChipView extends FrameLayout {
         return this;
     }
 
+    public AccountChipView listenOn(OnAccountChipClickedListener cb) {
+        mOnAccountChipClickedListener = cb;
+        return this;
+    }
+
+    public AccountChipView listenOn(OnAccountChipRemovedListener cb) {
+        mOnAccountChipRemovedListener = cb;
+        return this;
+    }
+
     public AccountChipView from(AccountInfo account) {
         PicassoHelper.bindAvatar(getContext(), mPicasso, account, mBinding.avatar,
                 PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDark));
         mBinding.setModel(account);
         return this;
+    }
+
+    private void onAccountChipClicked(AccountInfo account) {
+        if (mOnAccountChipClickedListener != null) {
+            mOnAccountChipClickedListener.onAccountChipClicked(account);
+        }
+    }
+
+    private void onAccountChipRemoved(AccountInfo account) {
+        if (mOnAccountChipRemovedListener != null) {
+            mOnAccountChipRemovedListener.onAccountChipRemoved(account);
+        }
     }
 }

@@ -22,12 +22,15 @@
         <import type="android.view.View" />
         <variable name="removable" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.AccountInfo" />
+        <variable name="handlers" type="com.ruesga.rview.widget.AccountChipView.EventHandlers" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_chip"
+        android:tag="@{model}"
+        android:onClick="@{handlers::onChipPressed}"
         android:orientation="horizontal">
 
         <ImageView
@@ -64,6 +67,7 @@
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:tag="@{model}"
             android:paddingLeft="8dp"
             android:paddingStart="8dp"
             android:paddingRight="8dp"
@@ -73,6 +77,7 @@
             android:textStyle="bold"
             android:textSize="12sp"
             android:visibility="@{removable ? View.VISIBLE : View.GONE}"
+            android:onClick="@{handlers::onRemovePressed}"
             android:text="@string/chip_remove" />
     </LinearLayout>
 </layout>

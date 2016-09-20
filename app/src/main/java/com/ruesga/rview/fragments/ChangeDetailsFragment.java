@@ -40,12 +40,14 @@ import com.ruesga.rview.databinding.MessageItemBinding;
 import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.misc.AndroidHelper;
@@ -54,6 +56,8 @@ import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
+import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.squareup.picasso.Picasso;
 
@@ -393,6 +397,68 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<AccountInfo> mRemoveReviewerObserver
+            = new RxLoaderObserver<AccountInfo>() {
+        @Override
+        public void onNext(AccountInfo account) {
+            // Update internal objects
+            if (mResponse.mChange.reviewers != null) {
+                for (ReviewerStatus status : mResponse.mChange.reviewers.keySet()) {
+                    mResponse.mChange.reviewers.put(status,
+                            removeAccount(account, mResponse.mChange.reviewers.get(status)));
+                }
+            }
+            if (mResponse.mChange.labels != null) {
+                for (String label : mResponse.mChange.labels.keySet()) {
+                    if (mResponse.mChange.labels.get(label).all !=  null) {
+                        mResponse.mChange.labels.get(label).all =
+                                removeApproval(account, mResponse.mChange.labels.get(label).all);
+                    }
+                }
+            }
+            mResponse.mChange.removableReviewers = removeAccount(
+                    account, mResponse.mChange.removableReviewers);
+
+            updateChangeInfo(mResponse);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+
+        private AccountInfo[] removeAccount(AccountInfo account, AccountInfo[] accounts) {
+            if (accounts == null) {
+                return null;
+            }
+            List<AccountInfo> newAccounts = new ArrayList<>();
+            for (AccountInfo a : accounts) {
+                if (a.accountId != account.accountId) {
+                    newAccounts.add(a);
+                }
+            }
+            return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
+        }
+
+        private ApprovalInfo[] removeApproval(AccountInfo account, ApprovalInfo[] approvals) {
+            if (approvals == null) {
+                return null;
+            }
+            List<ApprovalInfo> newApprovals = new ArrayList<>();
+            for (ApprovalInfo a : approvals) {
+                if (a.owner != null && a.owner.accountId != account.accountId) {
+                    newApprovals.add(a);
+                }
+            }
+            return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
+        }
+    };
+
+    private final OnAccountChipClickedListener mOnAccountChipClickedListener
+            = this::performAccountClicked;
+    private final OnAccountChipRemovedListener mOnAccountChipRemovedListener
+            = this::performRemoveAccount;
+
     private ChangeDetailsFragmentBinding mBinding;
     private Picasso mPicasso;
 
@@ -407,6 +473,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     private RxLoader1<String, DataResponse> mChangeLoader;
     private RxLoader1<Boolean, Boolean> mStarredLoader;
+    private RxLoader1<AccountInfo, AccountInfo> mRemoveRevieverLoader;
     private int mLegacyChangeId;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
@@ -461,6 +528,8 @@ public class ChangeDetailsFragment extends Fragment {
     private void updateChangeInfo(DataResponse response) {
         mBinding.changeInfo.owner.with(mPicasso).from(response.mChange.owner);
         mBinding.changeInfo.reviewers.with(mPicasso)
+                .listenOn(mOnAccountChipClickedListener)
+                .listenOn(mOnAccountChipRemovedListener)
                 .withRemovableReviewers(true)
                 .from(response.mChange);
         mBinding.changeInfo.labels.with(mPicasso).from(response.mChange);
@@ -515,6 +584,8 @@ public class ChangeDetailsFragment extends Fragment {
             mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver)
                     .start(String.valueOf(mLegacyChangeId));
             mStarredLoader = loaderManager.create("starred", this::starredChange, mStarredObserver);
+            mRemoveRevieverLoader = loaderManager.create(
+                    "remove_reviewer", this::removeReviewer, mRemoveReviewerObserver);
         }
     }
 
@@ -553,23 +624,38 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Boolean> starredChange(Boolean starred) {
+    private Observable<Boolean> starredChange(final Boolean starred) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.fromCallable(() -> {
-                Observable<Void> call;
-                if (starred) {
-                    call = api.putDefaultStarOnChange(
-                            GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
-                } else {
-                    call = api.removeDefaultStarFromChange(
-                            GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
-                }
-                call.toBlocking().first();
-                return starred;
-            })
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread());
+            Observable<Void> call;
+            if (starred) {
+                call = api.putDefaultStarOnChange(
+                        GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
+            } else {
+                call = api.deleteDefaultStarFromChange(
+                        GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
+            }
+            call.toBlocking().first();
+            return starred;
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<AccountInfo> removeReviewer(final AccountInfo account) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                    api.deleteChangeReviewer(
+                            String.valueOf(mLegacyChangeId),
+                            String.valueOf(account.accountId))
+                        .toBlocking().first();
+                    return account;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private void setupSwipeToRefresh() {
@@ -657,6 +743,14 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performStarred(boolean starred) {
         mStarredLoader.restart(starred);
+    }
+
+    private void performAccountClicked(AccountInfo account) {
+        // TODO Open change list with account filter
+    }
+
+    private void performRemoveAccount(AccountInfo account) {
+        mRemoveRevieverLoader.restart(account);
     }
 
     private void updateLocked() {

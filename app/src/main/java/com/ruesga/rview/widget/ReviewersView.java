@@ -26,6 +26,8 @@ import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
+import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.squareup.picasso.Picasso;
 
 import org.apmem.tools.layouts.FlowLayout;
@@ -39,6 +41,8 @@ import java.util.List;
 public class ReviewersView extends FlowLayout {
     private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
+    private OnAccountChipClickedListener mOnAccountChipClickedListener;
+    private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
 
     public ReviewersView(Context context) {
         this(context, null);
@@ -77,6 +81,8 @@ public class ReviewersView extends FlowLayout {
             view.with(mPicasso)
                     .removable(mIsRemovableReviewers &&
                             removableReviewers.contains(reviewers.get(i).accountId))
+                    .listenOn(mOnAccountChipClickedListener)
+                    .listenOn(mOnAccountChipRemovedListener)
                     .from(reviewers.get(i));
             view.setVisibility(View.VISIBLE);
         }
@@ -108,6 +114,16 @@ public class ReviewersView extends FlowLayout {
 
     public ReviewersView withRemovableReviewers(boolean removable) {
         mIsRemovableReviewers = removable;
+        return this;
+    }
+
+    public ReviewersView listenOn(OnAccountChipClickedListener cb) {
+        mOnAccountChipClickedListener = cb;
+        return this;
+    }
+
+    public ReviewersView listenOn(OnAccountChipRemovedListener cb) {
+        mOnAccountChipRemovedListener = cb;
         return this;
     }
 
