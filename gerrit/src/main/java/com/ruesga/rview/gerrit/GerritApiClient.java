@@ -452,9 +452,9 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Void> removeDefaultStarFromChange(
+    public Observable<Void> deleteDefaultStarFromChange(
             @NonNull String accountId, @NonNull String changeId) {
-        return withVersionRequestCheck(mService.removeDefaultStarFromChange(accountId, changeId));
+        return withVersionRequestCheck(mService.deleteDefaultStarFromChange(accountId, changeId));
     }
 
     @Override
