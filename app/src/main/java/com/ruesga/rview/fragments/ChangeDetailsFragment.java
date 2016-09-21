@@ -761,7 +761,9 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performStarred(boolean starred) {
-        mStarredLoader.restart(starred);
+        if (!mModel.isLocked) {
+            mStarredLoader.restart(starred);
+        }
     }
 
     private void performAccountClicked(AccountInfo account) {
@@ -769,7 +771,9 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performRemoveAccount(AccountInfo account) {
-        mRemoveRevieverLoader.restart(account);
+        if (!mModel.isLocked) {
+            mRemoveRevieverLoader.restart(account);
+        }
     }
 
     private void updateLocked() {
