@@ -41,7 +41,6 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
-import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.fragments.ChangeListFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -49,15 +48,12 @@ import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.model.Account;
-import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
 
-public class MainActivity extends BaseActivity implements OnChangeItemListener {
-
-    private static final int INVALID_ITEM = -1;
+public class MainActivity extends ChangeListBaseActivity {
 
     private static final int REQUEST_WIZARD = 1;
     private static final int REQUEST_ACCOUNT_SETTINGS = 2;
@@ -66,9 +62,6 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
     private static final int MESSAGE_DELETE_ACCOUNT = 1;
 
     private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 100;
-
-    private static final String FRAGMENT_TAG_LIST = "list";
-    private static final String FRAGMENT_TAG_DETAILS = "details";
 
     @ProguardIgnored
     public static class Model implements Parcelable {
@@ -225,6 +218,11 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
             requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
                     ? defaultMenu : mModel.currentNavigationItemId);
         }
+    }
+
+    @Override
+    public int getSelectedChangeId() {
+        return mModel.selectedChangeId;
     }
 
     @Override
@@ -617,59 +615,6 @@ public class MainActivity extends BaseActivity implements OnChangeItemListener {
             }
         }
         return null;
-    }
-
-    @Override
-    public void onChangeItemPressed(ChangeInfo change) {
-        if (!mIsTwoPane) {
-            // Open activity
-            Intent intent = new Intent(this, ChangeDetailsActivity.class);
-            intent.putExtra(Constants.EXTRA_CHANGE_ID, change.changeId);
-            intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
-            startActivity(intent);
-        } else {
-            // Open the filter fragment
-            loadChangeDetailsFragment(change.legacyChangeId);
-        }
-    }
-
-    private void loadChangeDetailsFragment(int changeId) {
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(
-                FRAGMENT_TAG_DETAILS);
-        if (oldFragment != null) {
-            tx.remove(oldFragment);
-        }
-        Fragment newFragment = ChangeDetailsFragment.newInstance(changeId);
-        tx.replace(mIsTwoPane ? R.id.details : R.id.content, newFragment,
-                FRAGMENT_TAG_DETAILS).commit();
-    }
-
-    @Override
-    public void onChangeItemRestored(int changeId) {
-        if (mIsTwoPane && changeId != mModel.selectedChangeId) {
-            loadChangeDetailsFragment(changeId);
-        }
-    }
-
-    @Override
-    public void onChangeItemSelected(int changeId) {
-        // This event is only interesting for the two pane layout
-        if (mIsTwoPane) {
-            if (changeId == ChangeListFragment.NO_SELECTION) {
-                // Remove the details fragment
-                FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-                Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(
-                        FRAGMENT_TAG_DETAILS);
-                if (oldFragment != null) {
-                    tx.remove(oldFragment);
-                }
-                tx.commit();
-            } else {
-                // Load the details of the change
-                loadChangeDetailsFragment(changeId);
-            }
-        }
     }
 
     @Override

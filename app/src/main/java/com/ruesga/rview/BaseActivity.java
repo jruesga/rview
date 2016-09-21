@@ -35,6 +35,9 @@ import com.ruesga.rview.misc.ExceptionHelper;
 
 public abstract class BaseActivity extends AppCompatActivity implements OnRefreshListener {
 
+    public static final String FRAGMENT_TAG_LIST = "list";
+    public static final String FRAGMENT_TAG_DETAILS = "details";
+
     @ProguardIgnored
     public static class Model implements Parcelable {
         public boolean isInProgress = false;

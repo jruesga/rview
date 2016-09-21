@@ -25,12 +25,13 @@ import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.RelatedChangesFragment;
-import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 
-public class RelatedChangesActivity extends BaseActivity implements OnChangeItemListener {
+public class RelatedChangesActivity extends ChangeListBaseActivity {
 
-    private static final String FRAGMENT_TAG = "details";
+    private int mSelectedChangeId = INVALID_ITEM;
+
+    private final String EXTRA_SELECTED_ITEM = "selected_item";
 
     private ContentBinding mBinding;
 
@@ -81,25 +82,54 @@ public class RelatedChangesActivity extends BaseActivity implements OnChangeItem
             getSupportActionBar().setSubtitle(changeId);
         }
 
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment fragment;
         if (savedInstanceState != null) {
-            fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
+            mSelectedChangeId = savedInstanceState.getInt(EXTRA_SELECTED_ITEM, INVALID_ITEM);
+
+            Fragment detailsFragment = getSupportFragmentManager().getFragment(
+                    savedInstanceState, FRAGMENT_TAG_DETAILS);
+            Fragment listFragment = getSupportFragmentManager().getFragment(
+                    savedInstanceState, FRAGMENT_TAG_LIST);
+            if (listFragment != null) {
+                FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+                tx.replace(R.id.content, listFragment, FRAGMENT_TAG_LIST);
+                if (detailsFragment != null) {
+                    tx.replace(R.id.details, detailsFragment, FRAGMENT_TAG_DETAILS);
+                }
+                tx.commit();
+            } else {
+                openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId);
+            }
         } else {
-            fragment = RelatedChangesFragment.newInstance(
-                    legacyChangeId, changeId, projectId, revisionId);
+            openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId);
         }
-        tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
+    }
+
+    private void openRelatedChangesFragment(
+            int legacyChangeId, String changeId, String projectId, String revisionId) {
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        Fragment fragment = RelatedChangesFragment.newInstance(
+                legacyChangeId, changeId, projectId, revisionId);
+        tx.replace(R.id.content, fragment, FRAGMENT_TAG_LIST).commit();
+    }
+
+    @Override
+    public int getSelectedChangeId() {
+        return mSelectedChangeId;
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_SELECTED_ITEM, mSelectedChangeId);
 
         //Save the fragment's instance
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
         if (fragment != null) {
-            getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG, fragment);
+            getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG_LIST, fragment);
+        }
+        fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_DETAILS);
+        if (fragment != null) {
+            getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG_DETAILS, fragment);
         }
     }
 
@@ -122,20 +152,5 @@ public class RelatedChangesActivity extends BaseActivity implements OnChangeItem
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onChangeItemPressed(ChangeInfo change) {
-
-    }
-
-    @Override
-    public void onChangeItemRestored(int changeId) {
-
-    }
-
-    @Override
-    public void onChangeItemSelected(int changeId) {
-
     }
 }
