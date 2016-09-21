@@ -299,7 +299,9 @@ public class ChangeListFragment extends SelectableFragment {
             mAdapter = new ChangesAdapter(this);
             if (savedState != null) {
                 mAdapter.mChangeId = savedState.getInt(EXTRA_CHANGE_ID, NO_SELECTION);
-                notifyItemRestored();
+                if (mAdapter.mChangeId != NO_SELECTION) {
+                    notifyItemRestored();
+                }
             }
 
             mBinding.list.setLayoutManager(new LinearLayoutManager(
