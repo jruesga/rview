@@ -27,6 +27,10 @@ public class ServerVersion {
 
     public ServerVersion(String version) {
         String[] v = version.split("\\.");
+        if (v.length == 2 && version.contains("-")) {
+            build = version.substring(version.indexOf("-") + 1);
+            v = version.substring(0, version.indexOf("-")).split("\\.");
+        }
         if (v.length > 0) {
             major = readSafeValue(v[0]);
         }
