@@ -41,14 +41,6 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
 
-        boolean isTwoPanel = getResources().getBoolean(R.bool.config_is_two_pane);
-        if (isTwoPanel) {
-            // Tablets have a two panel layout in landscape, so finish the current activity
-            // to show the change in the proper activity
-            finish();
-            return;
-        }
-
         // Check we have valid arguments
         if (getIntent() == null) {
             finish();
