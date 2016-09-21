@@ -89,10 +89,10 @@
         <item>@string/cherry_picks</item>
     </string-array>
     <string-array name="related_changes_filters" translatable="false">
-        <item>status:open AND owner:self</item> <!-- FIXME -->
+        <item />
         <item>status:open AND is:mergeable AND conflicts:<xliff:g id="legacyChangeId">%1$d</xliff:g></item>
-        <item>status:open AND topic:ride-stable AND -(change:<xliff:g id="legacyChangeId">%1$d</xliff:g>)</item>
-        <item>status:open AND owner:self</item> <!-- FIXME -->
+        <item>status:open AND topic:<xliff:g id="topic">%1$s</xliff:g> AND -(change:<xliff:g id="legacyChangeId">%2$d</xliff:g>)</item>
+        <item />
         <item>project:<xliff:g id="changeId">%1$s</xliff:g> AND change:<xliff:g id="changeId">%2$s</xliff:g> AND -(change:<xliff:g id="legacyChangeId">%3$d</xliff:g>) AND -(is:abandoned)</item>
     </string-array>
 </resources>

@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.preferences.Constants;
@@ -26,17 +27,23 @@ import java.util.Locale;
 
 public class RelatedChangesFragment extends PaginableFragment {
 
+    private static final String NULL_TOPIC = "|null|";
+
     private String[] mDashboardTabs;
     private String[] mDashboardFilters;
 
-    public static RelatedChangesFragment newInstance(
-            int legacyChangeId, String changeId, String projectId, String revisionId) {
+    private int mLegacyChangeId;
+    private String mRevisionId;
+
+    public static RelatedChangesFragment newInstance(int legacyChangeId, String changeId,
+                String projectId, String revisionId, String topic) {
         RelatedChangesFragment fragment = new RelatedChangesFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putString(Constants.EXTRA_CHANGE_ID, changeId);
         arguments.putString(Constants.EXTRA_PROJECT_ID, projectId);
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
+        arguments.putString(Constants.EXTRA_TOPIC, TextUtils.isEmpty(topic) ? NULL_TOPIC : topic);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -46,16 +53,19 @@ public class RelatedChangesFragment extends PaginableFragment {
         mDashboardTabs = getResources().getStringArray(R.array.related_changes_labels);
         mDashboardFilters = getResources().getStringArray(R.array.related_changes_filters);
 
-        int legacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
+        mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         String changeId = getArguments().getString(Constants.EXTRA_CHANGE_ID);
         String projectId = getArguments().getString(Constants.EXTRA_PROJECT_ID);
-        String revisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
+        mRevisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
+        String topic = getArguments().getString(Constants.EXTRA_PROJECT_ID);
 
         // Setup filters
-        mDashboardFilters[1] = String.format(Locale.US, mDashboardFilters[1], legacyChangeId);
-        mDashboardFilters[2] = String.format(Locale.US, mDashboardFilters[2], legacyChangeId);
+        mDashboardFilters[1] = String.format(Locale.US, mDashboardFilters[1],
+                mLegacyChangeId);
+        mDashboardFilters[2] = String.format(Locale.US, mDashboardFilters[2],
+                topic, mLegacyChangeId);
         mDashboardFilters[4] = String.format(Locale.US, mDashboardFilters[4],
-                projectId, changeId, legacyChangeId);
+                projectId, changeId, mLegacyChangeId);
 
         super.onActivityCreated(savedInstanceState);
     }
@@ -67,7 +77,15 @@ public class RelatedChangesFragment extends PaginableFragment {
 
     @Override
     public Fragment getFragment(int position) {
-        return ChangeListFragment.newInstance(mDashboardFilters[position]);
+        if (position == 0) {
+            // Related changes
+            return RevisionRelatedChangesFragment.newInstance(mLegacyChangeId, mRevisionId);
+        }
+        if (position == 3) {
+            // Submitted together changes
+            return SubmittedTogetherFragment.newInstance(mLegacyChangeId);
+        }
+        return ChangeListByFilterFragment.newInstance(mDashboardFilters[position]);
     }
 
     @Override

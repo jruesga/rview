@@ -35,11 +35,7 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangesFragmentBinding;
 import com.ruesga.rview.databinding.ChangesItemBinding;
 import com.ruesga.rview.databinding.FetchingMoreItemBinding;
-import com.ruesga.rview.gerrit.GerritApi;
-import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
-import com.ruesga.rview.gerrit.model.ChangeOptions;
-import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DividerItemDecoration;
@@ -55,28 +51,22 @@ import me.tatarka.rxloader.RxLoaderManager;
 import me.tatarka.rxloader.RxLoaderManagerCompat;
 import me.tatarka.rxloader.RxLoaderObserver;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
-public class ChangeListFragment extends SelectableFragment {
+public abstract class ChangeListFragment extends SelectableFragment {
 
     private static final String TAG = "ChangeListFragment";
 
-    private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
-        add(ChangeOptions.DETAILED_ACCOUNTS);
-        add(ChangeOptions.LABELS);
-        add(ChangeOptions.REVIEWED);
-    }};
+    public static final int NO_SELECTION = -1;
 
-    private static final int FETCHED_MORE_CHANGES_THRESHOLD = 10;
+    public static final int FETCHED_MORE_CHANGES_THRESHOLD = 10;
 
     private static final int MESSAGE_FETCH_MORE_ITEMS = 0;
 
-    public static final int NO_SELECTION = -1;
+    private static final String EXTRA_CHANGE_ID = "changeId";
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         private final ChangesItemBinding mBinding;
-        public ItemViewHolder(ChangesItemBinding binding) {
+        ItemViewHolder(ChangesItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             binding.executePendingBindings();
@@ -84,7 +74,7 @@ public class ChangeListFragment extends SelectableFragment {
     }
 
     public static class FetchingMoreViewHolder extends RecyclerView.ViewHolder {
-        public FetchingMoreViewHolder(FetchingMoreItemBinding binding) {
+        FetchingMoreViewHolder(FetchingMoreItemBinding binding) {
             super(binding.getRoot());
             binding.executePendingBindings();
         }
@@ -95,7 +85,7 @@ public class ChangeListFragment extends SelectableFragment {
     public static class ItemEventHandlers {
         ChangeListFragment mFragment;
 
-        public ItemEventHandlers(ChangeListFragment fragment) {
+        ItemEventHandlers(ChangeListFragment fragment) {
             mFragment = fragment;
         }
 
@@ -121,7 +111,7 @@ public class ChangeListFragment extends SelectableFragment {
 
         private int mChangeId = NO_SELECTION;
 
-        public ChangesAdapter(ChangeListFragment fragment) {
+        ChangesAdapter(ChangeListFragment fragment) {
             setHasStableIds(true);
             mHandlers = new ItemEventHandlers(fragment);
             mContext = fragment.getContext();
@@ -219,17 +209,12 @@ public class ChangeListFragment extends SelectableFragment {
     private final Handler.Callback mUiMessenger = message -> {
         switch (message.what) {
             case MESSAGE_FETCH_MORE_ITEMS:
+                showMoreView();
                 fetchMoreItems();
                 return true;
         }
         return false;
     };
-
-
-
-
-    private static final String EXTRA_FILTER = "filter";
-    private static final String EXTRA_CHANGE_ID = "changId";
 
     private Handler mUiHandler;
     private ChangesFragmentBinding mBinding;
@@ -243,16 +228,56 @@ public class ChangeListFragment extends SelectableFragment {
     private ChangesAdapter mAdapter;
     private EndlessRecyclerViewScrollListener mEndlessScroller;
 
-    private int mItemsToFetch;
-
     private RxLoader2<Integer, Integer, List<ChangeInfo>> mChangesLoader;
 
-    public static ChangeListFragment newInstance(String filter) {
-        ChangeListFragment fragment = new ChangeListFragment();
-        Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_FILTER, filter);
-        fragment.setArguments(arguments);
-        return fragment;
+    abstract Observable<List<ChangeInfo>> fetchChanges(Integer count, Integer start);
+
+    abstract void fetchNewItems();
+
+    abstract void fetchMoreItems();
+
+    boolean hasMoreItems(int size, int expected) {
+        return size < expected;
+    }
+
+    RxLoader2<Integer, Integer, List<ChangeInfo>> getChangesLoader() {
+        return mChangesLoader;
+    }
+
+    List<ChangeInfo> getCurrentData() {
+        return Collections.unmodifiableList(mAdapter.mData);
+    }
+
+    void notifyNoMoreItems() {
+        mBinding.list.removeOnScrollListener(mEndlessScroller);
+    }
+
+    List<ChangeInfo> combineChanges(
+            List<ChangeInfo> oldChanges, List<ChangeInfo> newChanges, Integer count) {
+        // Check if we end fetching changes
+        if (hasMoreItems(newChanges.size(), count)) {
+            notifyNoMoreItems();
+        }
+
+        List<ChangeInfo> combined = new ArrayList<>(oldChanges);
+        if (!oldChanges.isEmpty() && oldChanges.get(oldChanges.size() - 1).id == null) {
+            combined.remove(oldChanges.size() - 1);
+        }
+        for (ChangeInfo newChange : newChanges) {
+            boolean exists = false;
+            for (ChangeInfo change : combined) {
+                if (newChange.id.equals(change.id)) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                combined.add(newChange);
+            }
+        }
+
+        return combined;
     }
 
     @Override
@@ -292,7 +317,7 @@ public class ChangeListFragment extends SelectableFragment {
 
         mIsTwoPanel = getResources().getBoolean(R.bool.config_is_two_pane);
         if (mAdapter == null) {
-            mItemsToFetch = Preferences.getAccountFetchedItems(
+            int itemsToFetch = Preferences.getAccountFetchedItems(
                     getContext(), Preferences.getAccount(getContext()));
 
             // Configure the adapter
@@ -326,7 +351,7 @@ public class ChangeListFragment extends SelectableFragment {
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mChangesLoader = loaderManager
                     .create(this::fetchChanges, mLoaderObserver)
-                    .start(mItemsToFetch, 0);
+                    .start(itemsToFetch, 0);
         }
     }
 
@@ -342,76 +367,17 @@ public class ChangeListFragment extends SelectableFragment {
         outState.putInt(EXTRA_CHANGE_ID, mAdapter != null ? mAdapter.mChangeId : NO_SELECTION);
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private Observable<List<ChangeInfo>> fetchChanges(Integer count, Integer start) {
-        final ChangeQuery query = ChangeQuery.parse(getArguments().getString(EXTRA_FILTER));
-        final Context ctx = getActivity();
-        final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.zip(
-                Observable.just(Collections.unmodifiableList(mAdapter.mData)),
-                api.getChanges(query, count, start, OPTIONS),
-                Observable.just(count),
-                this::combineChanges
-            )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    private void fetchNewItems() {
-        // Fetch new
-        mEndlessScroller.loadCompleted();
-        mBinding.list.removeOnScrollListener(mEndlessScroller);
-        mBinding.list.addOnScrollListener(mEndlessScroller);
-
-        final int count = mItemsToFetch;
-        final int start = 0;
-        mChangesLoader.restart(count, start);
-    }
-
-    private void fetchMoreItems() {
-        // Add the fetching more waiting view
-        mAdapter.add(new ChangeInfo());
-        mAdapter.notifyItemInserted(mAdapter.mData.size() - 1);
-
-        // Fetch more
-        final int count = mItemsToFetch + FETCHED_MORE_CHANGES_THRESHOLD;
-        final int start = mAdapter.mData.size() - FETCHED_MORE_CHANGES_THRESHOLD;
-        mChangesLoader.restart(count, start);
-    }
-
-    private List<ChangeInfo> combineChanges(
-            List<ChangeInfo> oldChanges, List<ChangeInfo> newChanges, Integer count) {
-        // Check if we end fetching changes
-        if (newChanges.size() < count) {
-            mBinding.list.removeOnScrollListener(mEndlessScroller);
-        }
-
-        List<ChangeInfo> combined = new ArrayList<>(oldChanges);
-        if (!oldChanges.isEmpty() && oldChanges.get(oldChanges.size() - 1).id == null) {
-            combined.remove(oldChanges.size() - 1);
-        }
-        for (ChangeInfo newChange : newChanges) {
-            boolean exists = false;
-            for (ChangeInfo change : combined) {
-                if (newChange.id.equals(change.id)) {
-                    exists = true;
-                    break;
-                }
-            }
-
-            if (!exists) {
-                combined.add(newChange);
-            }
-        }
-
-        return combined;
-    }
-
     private void setupSwipeToRefresh() {
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
         mBinding.refresh.setOnRefreshListener(() -> {
             mBinding.refresh.setRefreshing(false);
+
+            // Readd the endless scroll
+            mEndlessScroller.loadCompleted();
+            mBinding.list.removeOnScrollListener(mEndlessScroller);
+            mBinding.list.addOnScrollListener(mEndlessScroller);
+
             fetchNewItems();
         });
         mBinding.refresh.setEnabled(false);
@@ -455,5 +421,11 @@ public class ChangeListFragment extends SelectableFragment {
             int changeId = mAdapter.mData.get(0).legacyChangeId;
             ((OnChangeItemListener) getActivity()).onChangeItemSelected(changeId);
         }
+    }
+
+    private void showMoreView() {
+        // Add the fetching more waiting view
+        mAdapter.add(new ChangeInfo());
+        mAdapter.notifyItemInserted(mAdapter.mData.size() - 1);
     }
 }

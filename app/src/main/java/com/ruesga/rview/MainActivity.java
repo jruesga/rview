@@ -41,7 +41,7 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
-import com.ruesga.rview.fragments.ChangeListFragment;
+import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.CacheHelper;
@@ -69,10 +69,10 @@ public class MainActivity extends ChangeListBaseActivity {
         public String accountRepository;
         public boolean isAccountExpanded;
 
-        public int currentNavigationItemId = INVALID_ITEM;
-        public String filterName;
-        public String filterQuery;
-        public int selectedChangeId = INVALID_ITEM;
+        int currentNavigationItemId = INVALID_ITEM;
+        String filterName;
+        String filterQuery;
+        int selectedChangeId = INVALID_ITEM;
 
         public Model() {
         }
@@ -590,7 +590,7 @@ public class MainActivity extends ChangeListBaseActivity {
         if (oldFragment != null) {
             tx.remove(oldFragment);
         }
-        Fragment newFragment = ChangeListFragment.newInstance(filter);
+        Fragment newFragment = ChangeListByFilterFragment.newInstance(filter);
         tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
     }
 

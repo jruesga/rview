@@ -26,7 +26,7 @@ public class Constants {
     public static final String EXTRA_PROJECT_ID = "projectId";
     public static final String EXTRA_REVISION_ID = "revisionId";
     public static final String EXTRA_FILE_ID = "fileId";
-
+    public static final String EXTRA_TOPIC = "topic";
 
     public static final String DEFAULT_AUTHENTICATED_HOME = "menu_dashboard";
     public static final String DEFAULT_ANONYMOUS_HOME = "menu_open";

@@ -66,6 +66,7 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
             finish();
             return;
         }
+        String topic = getIntent().getStringExtra(Constants.EXTRA_TOPIC);
 
         // Setup the title
         setupToolbar();
@@ -89,18 +90,18 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
                 }
                 tx.commit();
             } else {
-                openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId);
+                openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId, topic);
             }
         } else {
-            openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId);
+            openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId, topic);
         }
     }
 
-    private void openRelatedChangesFragment(
-            int legacyChangeId, String changeId, String projectId, String revisionId) {
+    private void openRelatedChangesFragment(int legacyChangeId, String changeId,
+            String projectId, String revisionId, String topic) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         Fragment fragment = RelatedChangesFragment.newInstance(
-                legacyChangeId, changeId, projectId, revisionId);
+                legacyChangeId, changeId, projectId, revisionId, topic);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG_LIST).commit();
     }
 

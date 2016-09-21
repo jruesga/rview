@@ -623,7 +623,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#submitted-together"
      */
     @GET("changes/{change-id}/submitted_together")
-    Observable<SubmittedTogetherInfo> getChangesSubmittedTogether(
+    Observable<List<ChangeInfo>> getChangesSubmittedTogether(
             @NonNull @Path("change-id") String changeId,
             @Nullable @Query("o") List<SubmittedTogetherOptions> options);
 

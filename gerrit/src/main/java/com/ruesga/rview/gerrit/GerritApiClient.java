@@ -76,7 +76,7 @@ public class GerritApiClient implements GerritApi {
         // OkHttp client
         OkHttpClient.Builder clientBuilder = OkHttpHelper.getSafeClientBuilder();
         clientBuilder.followRedirects(true)
-                .readTimeout(30000, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .readTimeout(60000, java.util.concurrent.TimeUnit.MILLISECONDS)
                 .followSslRedirects(true)
                 .addInterceptor(createConnectivityCheckInterceptor())
                 .addInterceptor(createLoggingInterceptor())
@@ -593,7 +593,7 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<SubmittedTogetherInfo> getChangesSubmittedTogether(
+    public Observable<List<ChangeInfo>> getChangesSubmittedTogether(
             @NonNull String changeId, @Nullable List<SubmittedTogetherOptions> options) {
         return withVersionRequestCheck(mService.getChangesSubmittedTogether(changeId, options));
     }

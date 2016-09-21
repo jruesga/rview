@@ -45,7 +45,7 @@ public class DashboardFragment extends PaginableFragment {
 
     @Override
     public Fragment getFragment(int position) {
-        return ChangeListFragment.newInstance(mDashboardFilters[position]);
+        return ChangeListByFilterFragment.newInstance(mDashboardFilters[position]);
     }
 
     @Override
