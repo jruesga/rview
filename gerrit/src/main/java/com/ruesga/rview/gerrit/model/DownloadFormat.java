@@ -16,5 +16,11 @@
 package com.ruesga.rview.gerrit.model;
 
 public enum DownloadFormat {
-    TGZ, TAR, TBZ2, TXZ
+    TGZ("application/x-gzip"), TAR("application/x-tar"), TBZ2("application/x-tar-bz2"),
+    TXZ("application/x-xz");
+
+    public final String mMimeType;
+    DownloadFormat(String mimeType) {
+        mMimeType = mimeType;
+    }
 }

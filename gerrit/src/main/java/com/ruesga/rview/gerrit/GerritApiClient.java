@@ -182,14 +182,24 @@ public class GerritApiClient implements GerritApi {
     // Non-Api operations
     // ===============================
 
+    private String toUnauthenticatedEndpoint(String endPoint) {
+        return mEndPoint.endsWith("/a/")
+                ? mEndPoint.substring(0, mEndPoint.length() - 2)
+                : mEndPoint;
+    }
+
+    @Override
+    public Uri getViewPatchSetUri(@NonNull String changeId, @NonNull String revisionNumber) {
+        return Uri.parse(String.format(Locale.US, "%s#/c/%s/%s",
+                toUnauthenticatedEndpoint(mEndPoint), changeId, revisionNumber));
+    }
+
     @Override
     public Uri getDownloadPatchSetUri(
             @NonNull String changeId, @NonNull String revisionId, @NonNull DownloadFormat format) {
-        String unauthenticatedEndpoint = mEndPoint.endsWith("/a/")
-                ? mEndPoint.substring(0, mEndPoint.length() - 2)
-                : mEndPoint;
         return Uri.parse(String.format(Locale.US, "%schanges/%s/revisions/%s/archive?format=%s",
-                unauthenticatedEndpoint, changeId, revisionId, format.toString().toLowerCase()));
+                toUnauthenticatedEndpoint(mEndPoint),
+                changeId, revisionId, format.toString().toLowerCase()));
     }
 
 

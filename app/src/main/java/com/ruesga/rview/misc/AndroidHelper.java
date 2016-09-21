@@ -17,12 +17,15 @@ package com.ruesga.rview.misc;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.app.DownloadManager.Request;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.design.widget.Snackbar;
@@ -102,5 +105,20 @@ public class AndroidHelper {
             uri = Uri.parse("http://" + src);
         }
         return uri;
+    }
+
+    public static void downloadUri(Context context, Uri uri, @Nullable String mimeType) {
+        // Use the download manager to perform the download
+        DownloadManager downloadManager =
+                (DownloadManager) context.getSystemService(Activity.DOWNLOAD_SERVICE);
+        Request request = new Request(uri)
+                .setAllowedOverMetered(false)
+                .setAllowedOverRoaming(false)
+                .setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        if (mimeType != null) {
+            request.setMimeType(mimeType);
+        }
+        request.allowScanningByMediaScanner();
+        downloadManager.enqueue(request);
     }
 }

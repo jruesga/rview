@@ -15,9 +15,6 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.app.Activity;
-import android.app.DownloadManager;
-import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -150,6 +147,10 @@ public class ChangeDetailsFragment extends Fragment {
 
         public void onDownloadPatchSetPressed(View v) {
             mFragment.performDownloadPatchSet();
+        }
+
+        public void onViewPatchSetPressed(View v) {
+            mFragment.performViewPatchSet();
         }
 
         public void onWebLinkPressed(View v) {
@@ -799,21 +800,23 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
+    private void performViewPatchSet() {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        RevisionInfo revision = mResponse.mChange.revisions.get(mCurrentRevision);
+        Uri uri = api.getViewPatchSetUri(
+                String.valueOf(mLegacyChangeId), String.valueOf(revision.number));
+
+        AndroidHelper.openUriInCustomTabs(getActivity(), uri);
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private void performDownloadPatchSet() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         Uri uri = api.getDownloadPatchSetUri(
                 String.valueOf(mLegacyChangeId), mCurrentRevision, DownloadFormat.TBZ2);
 
-        // Use the download manager to perform the download
-        DownloadManager downloadManager =
-                (DownloadManager) getContext().getSystemService(Activity.DOWNLOAD_SERVICE);
-        Request request = new Request(uri)
-                        .setAllowedOverMetered(false)
-                        .setAllowedOverRoaming(false)
-                        .setMimeType("application/x-tar-bz2")
-                        .setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.allowScanningByMediaScanner();
-        downloadManager.enqueue(request);
+        AndroidHelper.downloadUri(getContext(), uri, DownloadFormat.TBZ2.mMimeType);
     }
 }
