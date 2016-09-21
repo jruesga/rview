@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -36,6 +37,7 @@ import android.view.ViewGroup;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
+import com.ruesga.rview.RelatedChangesActivity;
 import com.ruesga.rview.adapters.PatchSetsAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
@@ -143,7 +145,7 @@ public class ChangeDetailsFragment extends Fragment {
         }
 
         public void onRelatedChangesPressed(View v) {
-
+            mFragment.performOpenRelatedChanges();
         }
 
         public void onDownloadPatchSetPressed(View v) {
@@ -780,6 +782,15 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.patchSetInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.changeInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.executePendingBindings();
+    }
+
+    private void performOpenRelatedChanges() {
+        Intent i = new Intent(getContext(), RelatedChangesActivity.class);
+        i.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
+        i.putExtra(Constants.EXTRA_CHANGE_ID, mResponse.mChange.changeId);
+        i.putExtra(Constants.EXTRA_PROJECT_ID, mResponse.mChange.project);
+        i.putExtra(Constants.EXTRA_REVISION_ID, mCurrentRevision);
+        startActivity(i);
     }
 
     @SuppressWarnings("ConstantConditions")

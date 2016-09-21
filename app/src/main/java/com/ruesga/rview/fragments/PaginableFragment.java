@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -103,7 +104,9 @@ public abstract class PaginableFragment extends Fragment {
         mBinding.viewPager.setSwipeable(isSwipeable());
         mBinding.viewPager.setOffscreenPageLimit(getOffscreenPageLimit());
         mBinding.viewPager.setAdapter(new PageFragmentAdapter(getChildFragmentManager()));
-        ((BaseActivity) getActivity()).configureTabs(mBinding.viewPager);
+        boolean fixedMode = getResources().getConfiguration().orientation
+                != Configuration.ORIENTATION_PORTRAIT || getPages().length <= 3;
+        ((BaseActivity) getActivity()).configureTabs(mBinding.viewPager, fixedMode);
     }
 
     @Override

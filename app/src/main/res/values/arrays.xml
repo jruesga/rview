@@ -14,7 +14,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string-array name="query_filters_ids_names" translatable="false">
         <item>menu_open</item>
         <item>menu_merged</item>
@@ -79,5 +79,20 @@
         <item>name</item>
         <item>email</item>
         <item>username</item>
+    </string-array>
+
+    <string-array name="related_changes_labels" translatable="false">
+        <item>@string/related_changes</item>
+        <item>@string/conflicts_with</item>
+        <item>@string/same_topic</item>
+        <item>@string/submitted_together</item>
+        <item>@string/cherry_picks</item>
+    </string-array>
+    <string-array name="related_changes_filters" translatable="false">
+        <item>status:open AND owner:self</item> <!-- FIXME -->
+        <item>status:open AND is:mergeable AND conflicts:<xliff:g id="legacyChangeId">%1$d</xliff:g></item>
+        <item>status:open AND topic:ride-stable AND -(change:<xliff:g id="legacyChangeId">%1$d</xliff:g>)</item>
+        <item>status:open AND owner:self</item> <!-- FIXME -->
+        <item>project:<xliff:g id="changeId">%1$s</xliff:g> AND change:<xliff:g id="changeId">%2$s</xliff:g> AND -(change:<xliff:g id="legacyChangeId">%3$d</xliff:g>) AND -(is:abandoned)</item>
     </string-array>
 </resources>

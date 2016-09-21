@@ -109,9 +109,11 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         getContentBinding().setModel(mModel);
     }
 
-    public void configureTabs(ViewPager pager) {
+    public void configureTabs(ViewPager pager, boolean fixedMode) {
         mViewPager = pager;
         mModel.hasTabs = true;
+        getContentBinding().tabs.setTabMode(
+                fixedMode ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE);
         getContentBinding().tabs.setupWithViewPager(pager);
         getContentBinding().tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
