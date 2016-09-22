@@ -44,4 +44,20 @@
             android:defaultValue="true" />
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/account_settings_external_category">
+
+        <SwitchPreference
+            android:key="account_use_custom_tabs"
+            android:title="@string/account_settings_use_custom_tabs"
+            android:defaultValue="true" />
+
+        <ListPreference
+            android:key="account_download_format"
+            android:title="@string/account_settings_download_format"
+            android:summary="%s"
+            android:entries="@array/account_settings_download_formats"
+            android:entryValues="@array/account_settings_download_formats"
+            android:defaultValue="TBZ2" />
+    </PreferenceCategory>
 </PreferenceScreen>

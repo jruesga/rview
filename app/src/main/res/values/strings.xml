@@ -172,6 +172,9 @@
     <string name="account_settings_display_format_email">Email</string>
     <string name="account_settings_display_format_username">Username</string>
     <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>
+    <string name="account_settings_external_category">External</string>
+    <string name="account_settings_use_custom_tabs">Use custom tabs</string>
+    <string name="account_settings_download_format">Download format</string>
 
     <!-- File statuses -->
     <string name="file_status_renamed">Renamed</string>

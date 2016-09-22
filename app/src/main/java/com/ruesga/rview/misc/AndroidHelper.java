@@ -34,6 +34,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.preferences.Preferences;
 
 import java.util.Locale;
 
@@ -57,6 +58,12 @@ public class AndroidHelper {
     }
 
     public static void openUriInCustomTabs(Activity activity, Uri uri) {
+        // Check user preferences
+        if (!Preferences.isAccountUseCustomTabs(activity, Preferences.getAccount(activity))) {
+            openUri(activity, uri);
+            return;
+        }
+
         try {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
             builder.setShowTitle(true);

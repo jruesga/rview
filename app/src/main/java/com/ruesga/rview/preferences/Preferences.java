@@ -21,6 +21,7 @@ import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
+import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 
@@ -51,6 +52,9 @@ public class Preferences {
     }
 
     public static String getDefaultHomePageForAccount(Account account) {
+        if (account == null) {
+            return DEFAULT_ANONYMOUS_HOME;
+        }
         return account.hasAuthenticatedAccessMode() ?
                 DEFAULT_AUTHENTICATED_HOME : DEFAULT_ANONYMOUS_HOME;
     }
@@ -132,6 +136,9 @@ public class Preferences {
     }
 
     public static String getAccountHomePage(Context context, Account account) {
+        if (account == null) {
+            return getDefaultHomePageForAccount(null);
+        }
         return getAccountPreferences(context, account).getString(PREF_ACCOUNT_HOME_PAGE,
                 getDefaultHomePageForAccount(account));
     }
@@ -146,17 +153,37 @@ public class Preferences {
     }
 
     public static int getAccountFetchedItems(Context context, Account account) {
+        if (account == null) {
+            return Integer.valueOf(DEFAULT_FETCHED_ITEMS);
+        }
         return Integer.valueOf(getAccountPreferences(context, account).getString(
                 PREF_ACCOUNT_FETCHED_ITEMS, DEFAULT_FETCHED_ITEMS));
     }
 
     public static String getAccountDisplayFormat(Context context, Account account) {
+        if (account == null) {
+            return DEFAULT_DISPLAY_FORMAT;
+        }
         return getAccountPreferences(context, account).getString(
                 PREF_ACCOUNT_DISPLAY_FORMAT, DEFAULT_DISPLAY_FORMAT);
     }
 
     public static boolean isAccountHighlightUnreviewed(Context context, Account account) {
-        return getAccountPreferences(context, account).getBoolean(
-                PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED, true);
+        return account == null || getAccountPreferences(context, account)
+                .getBoolean(PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED, true);
+    }
+
+    public static boolean isAccountUseCustomTabs(Context context, Account account) {
+        return account == null || getAccountPreferences(context, account)
+                .getBoolean(PREF_ACCOUNT_USE_CUSTOM_TABS, true);
+    }
+
+    public static DownloadFormat getAccountDownloadFormat(Context context, Account account) {
+        if (account == null) {
+            return DownloadFormat.TBZ2;
+        }
+        return DownloadFormat.valueOf(
+                getAccountPreferences(context, account).getString(
+                        PREF_ACCOUNT_DOWNLOAD_FORMAT, DownloadFormat.TBZ2.toString()));
     }
 }

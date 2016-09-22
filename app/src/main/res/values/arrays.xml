@@ -95,4 +95,11 @@
         <item />
         <item>project:<xliff:g id="changeId">%1$s</xliff:g> AND change:<xliff:g id="changeId">%2$s</xliff:g> AND -(change:<xliff:g id="legacyChangeId">%3$d</xliff:g>) AND -(is:abandoned)</item>
     </string-array>
+
+    <string-array name="account_settings_download_formats" translatable="false">
+        <item>TGZ</item>
+        <item>TAR</item>
+        <item>TBZ2</item>
+        <item>TXZ</item>
+    </string-array>
 </resources>

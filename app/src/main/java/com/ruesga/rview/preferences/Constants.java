@@ -47,4 +47,6 @@ public class Constants {
     public static final String PREF_ACCOUNT_FETCHED_ITEMS = "account_fetched_items";
     public static final String PREF_ACCOUNT_DISPLAY_FORMAT = "account_display_format";
     public static final String PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED = "account_highlight_unreviewed";
+    public static final String PREF_ACCOUNT_USE_CUSTOM_TABS = "account_use_custom_tabs";
+    public static final String PREF_ACCOUNT_DOWNLOAD_FORMAT = "account_download_format";
 }

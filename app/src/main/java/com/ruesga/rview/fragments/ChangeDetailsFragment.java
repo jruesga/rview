@@ -812,11 +812,14 @@ public class ChangeDetailsFragment extends Fragment {
 
     @SuppressWarnings("ConstantConditions")
     private void performDownloadPatchSet() {
+        DownloadFormat downloadFormat = Preferences.getAccountDownloadFormat(
+                getContext(), Preferences.getAccount(getContext()));
+
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         Uri uri = api.getDownloadPatchSetUri(
-                String.valueOf(mLegacyChangeId), mCurrentRevision, DownloadFormat.TBZ2);
+                String.valueOf(mLegacyChangeId), mCurrentRevision, downloadFormat);
 
-        AndroidHelper.downloadUri(getContext(), uri, DownloadFormat.TBZ2.mMimeType);
+        AndroidHelper.downloadUri(getContext(), uri, downloadFormat.mMimeType);
     }
 }
