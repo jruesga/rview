@@ -756,7 +756,7 @@ public class ChangeDetailsFragment extends Fragment {
                 getContext(), mAllRevisions, mCurrentRevision);
         popupWindow.setAnchorView(anchor);
         popupWindow.setAdapter(adapter);
-        popupWindow.setWidth(adapter.measureContentWidth());
+        popupWindow.setContentWidth(adapter.measureContentWidth());
         popupWindow.setOnItemClickListener((parent, view, position, id) -> {
             popupWindow.dismiss();
             mCurrentRevision = mAllRevisions.get(position).commit.commit;
