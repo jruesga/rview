@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#reviewer-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#review-input"
  */
 public class ReviewInput {
     @Nullable @SerializedName("message") public String message;
