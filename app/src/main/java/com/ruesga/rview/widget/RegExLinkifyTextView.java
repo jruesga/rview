@@ -79,7 +79,8 @@ public class RegExLinkifyTextView extends TextView {
     @SuppressWarnings("ConstantConditions")
     public void setText(CharSequence text, BufferType type) {
         if (text != null) {
-            Spannable span = Spannable.Factory.getInstance().newSpannable(text);
+            Spannable span = text instanceof Spannable
+                    ? (Spannable) text : Spannable.Factory.getInstance().newSpannable(text);
             if (mRegEx != null) {
                 for (final RegExLink regEx : mRegEx) {
                     final Matcher matcher = regEx.mPattern.matcher(text);
