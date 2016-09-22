@@ -203,7 +203,6 @@ public class ChangeDetailsFragment extends Fragment {
         MessageViewHolder(MessageItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
-            mBinding.setExpanded(false);
             binding.executePendingBindings();
         }
     }
@@ -312,6 +311,7 @@ public class ChangeDetailsFragment extends Fragment {
         private final AccountInfo mBuildBotSystemAccount;
         private final EventHandlers mEventHandlers;
         private ChangeMessageInfo[] mMessages;
+        private ConfigInfo mConfig;
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers) {
             final Resources res = fragment.getResources();
@@ -324,6 +324,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         void update(DataResponse response) {
             mMessages = response.mChange.messages;
+            mConfig = response.mProjectConfig;
             notifyDataSetChanged();
         }
 
@@ -350,6 +351,7 @@ public class ChangeDetailsFragment extends Fragment {
                     message.author, holder.mBinding.avatar,
                     PicassoHelper.getDefaultAvatar(context, R.color.primaryDark));
             holder.mBinding.setModel(message);
+            holder.mBinding.setConfig(mConfig);
             holder.mBinding.setHandlers(mEventHandlers);
         }
     }

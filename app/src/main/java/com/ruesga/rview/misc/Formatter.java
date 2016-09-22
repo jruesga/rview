@@ -131,6 +131,16 @@ public class Formatter {
                 info.message.substring(info.subject.length()).trim()));
     }
 
+    @BindingAdapter("userMessage")
+    public static void toUserMessage(TextView view, String msg) {
+        if (msg == null) {
+            view.setText(null);
+            return;
+        }
+
+        view.setText(msg);
+    }
+
     @BindingAdapter("regexpLinkify")
     public static void toRegExLinkify(RegExLinkifyTextView view, ConfigInfo info) {
         if (info == null || info.commentLinks == null || info.commentLinks.isEmpty()) {
