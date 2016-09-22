@@ -18,6 +18,10 @@ package com.ruesga.rview.misc;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -38,6 +42,7 @@ import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.text.QuotedSpan;
 import com.ruesga.rview.widget.RegExLinkifyTextView;
 import com.ruesga.rview.widget.RegExLinkifyTextView.RegExLink;
 import com.ruesga.rview.widget.StyleableTextView;
@@ -58,6 +63,10 @@ public class Formatter {
     private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
     private static String sDisplayFormat = "";
     private static boolean sHighlightNotReviewed = true;
+
+    private static int sQuoteColor = -1;
+    private static int sQuoteWidth = -1;
+    private static int sQuoteMargin = -1;
 
     public static void refreshCachedPreferences(Context context) {
         Account account = Preferences.getAccount(context);
@@ -138,7 +147,35 @@ public class Formatter {
             return;
         }
 
-        view.setText(msg);
+        String preparedQuote = StringHelper.prepareForQuote(StringHelper.removeLineBreaks(msg));
+        if (!preparedQuote.contains(StringHelper.NON_PRINTABLE_CHAR)) {
+            // there is not quoted messages here, just a simple message
+            view.setText(preparedQuote);
+            return;
+        }
+
+        if (sQuoteColor == -1) {
+            sQuoteColor = ContextCompat.getColor(view.getContext(), R.color.quote);
+            sQuoteWidth = (int) view.getContext().getResources().getDimension(R.dimen.quote_width);
+            sQuoteMargin = (int) view.getContext().getResources().getDimension(R.dimen.quote_margin);
+        }
+
+        String[] lines = preparedQuote.split("\n");
+        Spannable spannable = Spannable.Factory.getInstance().newSpannable(
+                preparedQuote.replaceAll(StringHelper.NON_PRINTABLE_CHAR, ""));
+        int start = 0;
+        for (String line : lines) {
+            int maxIndent = StringHelper.countOccurrences(StringHelper.NON_PRINTABLE_CHAR, line);
+            for (int i = 0; i < maxIndent; i++) {
+                QuotedSpan span = new QuotedSpan(
+                        sQuoteColor, sQuoteWidth, sQuoteMargin, i, maxIndent);
+                spannable.setSpan(span, start, start + line.length() - maxIndent,
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            start += line.length() - maxIndent + 1;
+        }
+
+        view.setText(spannable);
     }
 
     @BindingAdapter("regexpLinkify")

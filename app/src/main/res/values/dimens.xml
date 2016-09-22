@@ -21,4 +21,6 @@
     <dimen name="label_min_width">72dp</dimen>
     <dimen name="message_list_left_padding">56dp</dimen>
     <dimen name="revision_min_width">96dp</dimen>
+    <dimen name="quote_margin">1.5dp</dimen>
+    <dimen name="quote_width">2.5dp</dimen>
 </resources>

@@ -35,4 +35,6 @@
     <color name="diffCommentBackgroundColor">#fffecc</color>
 
     <color name="starred">#d9b864</color>
+
+    <color name="quote">#9e9e9e</color>
 </resources>
