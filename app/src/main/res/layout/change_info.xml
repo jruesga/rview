@@ -72,6 +72,18 @@
                     android:onClick="@{handlers::onStarredPressed}"
                     android:tint="@color/starred"
                     tools:ignore="ContentDescription" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/ic_share"
+                    android:onClick="@{handlers::onSharePressed}"
+                    android:tint="?attr/colorAccent"
+                    tools:ignore="ContentDescription" />
             </LinearLayout>
 
             <LinearLayout

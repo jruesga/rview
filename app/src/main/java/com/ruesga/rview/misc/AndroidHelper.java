@@ -89,6 +89,14 @@ public class AndroidHelper {
         }
     }
 
+    public static void shareTextPlain(Context ctx, String text, String title) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        ctx.startActivity(Intent.createChooser(sendIntent, title));
+    }
+
     public static void showErrorSnackbar(Context context, @NonNull View parent,
             @StringRes int message) {
         Snackbar snackbar =  Snackbar.make(parent, message, Snackbar.LENGTH_LONG);

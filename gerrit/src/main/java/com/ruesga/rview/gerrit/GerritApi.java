@@ -66,14 +66,19 @@ public interface GerritApi {
     // ===============================
 
     /**
-     * Return the uri for view a change's patchset
+     * Return the uri of a change
      */
-    Uri getViewPatchSetUri(@NonNull String changeId,@NonNull String revisionNumber);
+    Uri getChangeUri(@NonNull String changeId);
 
     /**
-     * Return the uri for download a complete change's patchset
+     * Return the uri of a change's revision
      */
-    Uri getDownloadPatchSetUri(
+    Uri getRevisionUri(@NonNull String changeId, @NonNull String revisionNumber);
+
+    /**
+     * Return the uri for download a complete change's revision
+     */
+    Uri getDownloadRevisionUri(
             @NonNull String changeId,
             @NonNull String revisionId,
             @NonNull DownloadFormat format);

@@ -25,6 +25,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_let_start">Let\'s start</string>
+    <string name="action_share">Share</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>

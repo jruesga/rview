@@ -137,6 +137,10 @@ public class ChangeDetailsFragment extends Fragment {
             mFragment.performStarred(!v.isSelected());
         }
 
+        public void onSharePressed(View v) {
+            mFragment.performShare();
+        }
+
         public void onAddReviewerPressed(View v) {
 
         }
@@ -804,7 +808,7 @@ public class ChangeDetailsFragment extends Fragment {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         RevisionInfo revision = mResponse.mChange.revisions.get(mCurrentRevision);
-        Uri uri = api.getViewPatchSetUri(
+        Uri uri = api.getRevisionUri(
                 String.valueOf(mLegacyChangeId), String.valueOf(revision.number));
 
         AndroidHelper.openUriInCustomTabs(getActivity(), uri);
@@ -817,9 +821,18 @@ public class ChangeDetailsFragment extends Fragment {
 
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        Uri uri = api.getDownloadPatchSetUri(
+        Uri uri = api.getDownloadRevisionUri(
                 String.valueOf(mLegacyChangeId), mCurrentRevision, downloadFormat);
 
         AndroidHelper.downloadUri(getContext(), uri, downloadFormat.mMimeType);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void performShare() {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        Uri uri = api.getChangeUri(String.valueOf(mLegacyChangeId));
+
+        AndroidHelper.shareTextPlain(getContext(), uri.toString(), getString(R.string.action_share));
     }
 }

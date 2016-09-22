@@ -189,13 +189,19 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Uri getViewPatchSetUri(@NonNull String changeId, @NonNull String revisionNumber) {
+    public Uri getChangeUri(@NonNull String changeId) {
+        return Uri.parse(String.format(Locale.US, "%s#/c/%s",
+                toUnauthenticatedEndpoint(mEndPoint), changeId));
+    }
+
+    @Override
+    public Uri getRevisionUri(@NonNull String changeId, @NonNull String revisionNumber) {
         return Uri.parse(String.format(Locale.US, "%s#/c/%s/%s",
                 toUnauthenticatedEndpoint(mEndPoint), changeId, revisionNumber));
     }
 
     @Override
-    public Uri getDownloadPatchSetUri(
+    public Uri getDownloadRevisionUri(
             @NonNull String changeId, @NonNull String revisionId, @NonNull DownloadFormat format) {
         return Uri.parse(String.format(Locale.US, "%schanges/%s/revisions/%s/archive?format=%s",
                 toUnauthenticatedEndpoint(mEndPoint),
