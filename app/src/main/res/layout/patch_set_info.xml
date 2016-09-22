@@ -45,12 +45,12 @@
             android:layout_height="wrap_content"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:paddingBottom="16dp"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:orientation="horizontal">
 
                 <com.ruesga.rview.widget.StyleableTextView
@@ -66,7 +66,7 @@
                     android:layout_gravity="center"
                     android:padding="3dp"
                     android:onClick="@{handlers::onPatchSetPressed}"
-                    android:background="?attr/selectableItemBackground">
+                    android:background="?attr/selectableItemBackgroundBorderless">
                     <com.ruesga.rview.widget.StyleableTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -229,13 +229,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
                 android:background="?android:attr/listDivider" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
                 android:orientation="horizontal"
+                android:background="@android:color/transparent"
                 android:gravity="end">
 
                 <com.ruesga.rview.widget.StyleableTextView
@@ -244,7 +246,7 @@
                     android:minWidth="72dp"
                     android:padding="5dp"
                     android:gravity="center"
-                    android:background="?attr/selectableItemBackground"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onRelatedChangesPressed}"
                     android:text="@string/change_details_related_changes"
                     android:textAppearance="?android:attr/textAppearanceSmall"
@@ -261,7 +263,7 @@
                     android:paddingStart="8dp"
                     android:padding="5dp"
                     android:gravity="center"
-                    android:background="?attr/selectableItemBackground"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onDownloadPatchSetPressed}"
                     android:text="@string/change_details_download_patchset"
                     android:textAppearance="?android:attr/textAppearanceSmall"
@@ -279,7 +281,7 @@
                     android:paddingStart="8dp"
                     android:padding="5dp"
                     android:gravity="center"
-                    android:background="?attr/selectableItemBackground"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onViewPatchSetPressed}"
                     android:text="@string/change_details_view_patchset"
                     android:textAppearance="?android:attr/textAppearanceSmall"
