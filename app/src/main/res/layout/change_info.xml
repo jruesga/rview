@@ -70,7 +70,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:srcCompat="@drawable/selector_starred"
                     android:onClick="@{handlers::onStarredPressed}"
-                    android:tint="@color/starred"
+                    android:tint="?attr/colorAccent"
                     tools:ignore="ContentDescription" />
 
                 <ImageView
@@ -362,17 +362,23 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="?android:attr/listDivider" />
+                android:layout_height="wrap_content"
+                android:visibility="@{(isCurrentRevision != null &amp;&amp; !isCurrentRevision) || submitType == null ? View.GONE : View.VISIBLE}"
+                android:orientation="vertical">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="?android:attr/listDivider" />
 
-            <com.ruesga.rview.widget.LabelsView
-                android:id="@+id/labels"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <com.ruesga.rview.widget.LabelsView
+                    android:id="@+id/labels"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
         </LinearLayout>
     </android.support.v7.widget.CardView>
