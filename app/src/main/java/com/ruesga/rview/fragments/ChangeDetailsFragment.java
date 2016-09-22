@@ -66,6 +66,7 @@ import com.ruesga.rview.widget.DividerItemDecoration;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -541,12 +542,21 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.patchSetInfo.setChange(response.mChange);
         mBinding.patchSetInfo.setConfig(response.mProjectConfig);
         mBinding.patchSetInfo.setModel(revision);
-        final String pathset = getContext().getString(R.string.change_details_header_patchsets,
-                revision.number, response.mChange.revisions.size());
-        mBinding.patchSetInfo.setPatchset(pathset);
+        final int maxRevision = computeMaxRevisionNumber(response.mChange.revisions.values());
+        final String patchSetText = getContext().getString(R.string.change_details_header_patchsets,
+                revision.number, maxRevision);
+        mBinding.patchSetInfo.setPatchset(patchSetText);
         mBinding.patchSetInfo.setHandlers(mEventHandlers);
         mBinding.patchSetInfo.parentCommits.with(mEventHandlers).from(revision.commit);
         mBinding.patchSetInfo.setHasData(true);
+    }
+
+    private int computeMaxRevisionNumber(Collection<RevisionInfo> revisions) {
+        int max = 0;
+        for (RevisionInfo revision : revisions) {
+            max = Math.max(revision.number, max);
+        }
+        return max;
     }
 
     private void updateChangeInfo(DataResponse response) {
