@@ -184,7 +184,7 @@
                         android:padding="5dp"
                         android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
                         android:onClick="@{handlers::onAddReviewerPressed}"
-                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:background="?attr/selectableItemBackground"
                         android:text="@string/change_details_add_reviewer"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?attr/colorAccent"
