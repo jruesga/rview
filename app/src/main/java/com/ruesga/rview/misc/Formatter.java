@@ -127,20 +127,8 @@ public class Formatter {
             return;
         }
 
-        String message = info.message.substring(info.subject.length()).trim();
-        String[] lines= message.split("\\r?\\n");
-        StringBuilder sb = new StringBuilder();
-        int count = lines.length;
-        for (int i = 0; i < count; i++) {
-            sb.append(lines[i]);
-            if (lines[i].isEmpty() || lines[i].trim().endsWith(".")
-                    || (i < (count - 1) && lines[i + 1].isEmpty())) {
-                sb.append("\n");
-            } else if(i < (count - 1) && !lines[i + 1].startsWith(" ")) {
-                sb.append(" ");
-            }
-        }
-        view.setText(sb);
+        view.setText(StringHelper.removeLineBreaks(
+                info.message.substring(info.subject.length()).trim()));
     }
 
     @BindingAdapter("regexpLinkify")
