@@ -70,7 +70,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:srcCompat="@drawable/selector_starred"
                     android:onClick="@{handlers::onStarredPressed}"
-                    android:tint="?attr/colorAccent"
+                    android:tint="@color/starred"
                     tools:ignore="ContentDescription" />
 
                 <ImageView

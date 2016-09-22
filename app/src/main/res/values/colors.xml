@@ -34,5 +34,5 @@
     <color name="diffSkipBackgroundColor">#ddeeff</color>
     <color name="diffCommentBackgroundColor">#fffecc</color>
 
-    <color name="starred">#ffd76e</color>
+    <color name="starred">#d9b864</color>
 </resources>
