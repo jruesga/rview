@@ -18,7 +18,6 @@ package com.ruesga.rview.misc;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.Spanned;
@@ -61,7 +60,7 @@ import java.util.regex.Matcher;
 @SuppressWarnings("unused")
 public class Formatter {
     private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
-    private static String sDisplayFormat = "";
+    private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
 
     private static int sQuoteColor = -1;
