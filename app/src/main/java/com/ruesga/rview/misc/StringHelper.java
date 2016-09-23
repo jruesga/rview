@@ -34,6 +34,8 @@ public class StringHelper {
     private static final Pattern REPLACED_QUOTE2 = Pattern.compile(NON_PRINTABLE_CHAR + " > ");
     private static final Pattern REPLACED_QUOTE3 = Pattern.compile(NON_PRINTABLE_CHAR + " ");
     private static final Pattern REPLACED_QUOTE4 = Pattern.compile(NON_PRINTABLE_CHAR + "\n");
+    private static final Pattern REPLACED_QUOTE5 = Pattern.compile(
+            "(\\w)(\n" + NON_PRINTABLE_CHAR +")(\\w)", Pattern.MULTILINE);
 
     public static String removeLineBreaks(String message) {
         String[] lines = message.split("\\r?\\n");
@@ -67,6 +69,10 @@ public class StringHelper {
             msg = REPLACED_QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + NON_PRINTABLE_CHAR);
             msg = REPLACED_QUOTE3.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
             msg = REPLACED_QUOTE4.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + " \n");
+            Matcher matcher = REPLACED_QUOTE5.matcher(msg);
+            if (matcher.find()) {
+                msg = matcher.replaceAll("$1 $3");
+            }
             if (msg.equals(m)) {
                 break;
             }
