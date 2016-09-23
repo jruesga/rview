@@ -177,6 +177,15 @@ public class Formatter {
         view.setText(spannable);
     }
 
+    @BindingAdapter("regexpLinkifyCommitsOnly")
+    public static void toRegExLinkifyCommitsOnly(RegExLinkifyTextView view, Boolean only) {
+        if (only) {
+            view.addRegEx(
+                    RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX,
+                    RegExLinkifyTextView.GERRIT_COMMIT_REGEX);
+        }
+    }
+
     @BindingAdapter("regexpLinkify")
     public static void toRegExLinkify(RegExLinkifyTextView view, ConfigInfo info) {
         if (info == null || info.commentLinks == null || info.commentLinks.isEmpty()) {

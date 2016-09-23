@@ -22,7 +22,6 @@
     <data>
         <import type="android.view.View" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeMessageInfo" />
-        <variable name="config" type="com.ruesga.rview.gerrit.model.ConfigInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
@@ -76,7 +75,7 @@
             android:layout_toEndOf="@id/avatar"
             android:layout_alignWithParentIfMissing="true"
             app:userMessage="@{model.message}"
-            app:regexpLinkify="@{config}"
+            app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true" />

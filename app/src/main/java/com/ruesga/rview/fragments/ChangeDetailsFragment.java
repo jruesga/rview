@@ -351,7 +351,6 @@ public class ChangeDetailsFragment extends Fragment {
                     message.author, holder.mBinding.avatar,
                     PicassoHelper.getDefaultAvatar(context, R.color.primaryDark));
             holder.mBinding.setModel(message);
-            holder.mBinding.setConfig(mConfig);
             holder.mBinding.setHandlers(mEventHandlers);
         }
     }
