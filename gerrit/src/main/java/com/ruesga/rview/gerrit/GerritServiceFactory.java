@@ -15,29 +15,66 @@
  */
 package com.ruesga.rview.gerrit;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.security.auth.x500.X500Principal;
 
 public class GerritServiceFactory {
 
     private static class AndroidPlatformAbstractionLayer implements PlatformAbstractionLayer {
         private static final String TAG = "Gerrit";
+
+        private static final X500Principal DEBUG_DN =
+                new X500Principal("CN=Android Debug,O=Android,C=US");
+
         private Context mApplicationContext;
+        private final boolean mDebuggable;
 
         AndroidPlatformAbstractionLayer(Context applicationContext) {
             mApplicationContext = applicationContext;
+            mDebuggable = isApkDebugSigned(mApplicationContext);
+        }
+
+        @SuppressLint("PackageManagerGetSignatures")
+        private boolean isApkDebugSigned(Context ctx) {
+            try {
+                PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(
+                        ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+                Signature signatures[] = packageInfo.signatures;
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                for (Signature signature : signatures) {
+                    ByteArrayInputStream stream =
+                            new ByteArrayInputStream(signature.toByteArray());
+                    X509Certificate cert = (X509Certificate) cf.generateCertificate(stream);
+                    boolean debuggable = cert.getSubjectX500Principal().equals(DEBUG_DN);
+                    if (debuggable) {
+                        return true;
+                    }
+                }
+            } catch (Exception e) {
+                // Ignore
+            }
+            return false;
         }
 
         @Override
         public boolean isDebugBuild() {
-            return BuildConfig.DEBUG;
+            return mDebuggable;
         }
 
         @Override
