@@ -19,6 +19,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.RelatedChangeAndCommitInfo;
@@ -85,8 +86,16 @@ public class RevisionRelatedChangesFragment extends ChangeListFragment {
     private List<ChangeInfo> fetchChanges(GerritApi api, List<RelatedChangeAndCommitInfo> related) {
         List<ChangeInfo> c = new ArrayList<>(related.size());
         for (RelatedChangeAndCommitInfo r : related) {
-            c.add(api.getChange(String.valueOf(r.changeNumber), OPTIONS)
-                    .toBlocking().first());
+            if (r.changeNumber != null) {
+                c.add(api.getChange(String.valueOf(r.changeNumber), OPTIONS)
+                        .toBlocking().first());
+            } else {
+                ChangeQuery query = new ChangeQuery().commit(r.commit.commit);
+                List<ChangeInfo> changes = api.getChanges(query, 1, 0, OPTIONS).toBlocking().first();
+                if (changes != null && !changes.isEmpty()) {
+                    c.add(changes.get(0));
+                }
+            }
         }
         return c;
     }
