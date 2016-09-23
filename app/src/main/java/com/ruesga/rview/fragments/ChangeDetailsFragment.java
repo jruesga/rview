@@ -773,6 +773,7 @@ public class ChangeDetailsFragment extends Fragment {
             mCurrentRevision = mAllRevisions.get(position).commit.commit;
             forceRefresh();
         });
+        popupWindow.setModal(true);
         popupWindow.show();
     }
 
