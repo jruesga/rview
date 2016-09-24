@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
 public class AddReviewerResultInfo extends AccountInfo {
     @SerializedName("input") public ReviewerInput input;
     @SerializedName("reviewers") public ReviewerInfo[] reviewers;
-    @SerializedName("input") public ReviewerInfo[] ccs;
+    @SerializedName("ccs") public ReviewerInfo[] ccs;
     @SerializedName("error") public String error;
     @SerializedName("confirm") public boolean confirm;
 }
