@@ -15,9 +15,13 @@
      limitations under the License.
  -->
 <layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <data />
+    <data>
+        <variable name="isGroup" type="java.lang.Boolean" />
+    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,17 +31,23 @@
         android:minHeight="?attr/listPreferredItemHeightSmall"
         android:gravity="center_vertical"
         android:orientation="horizontal">
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:tint="?attr/colorPrimaryDark"
+            app:reviewerKind="@{isGroup}"
+            tools:ignore="ContentDescription"/>
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:minWidth="@dimen/revision_min_width"
-            android:paddingStart="3dp"
-            android:paddingEnd="3dp"
             android:maxLines="1"
             android:ellipsize="end"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorSecondary"
-            android:textSize="12sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 </layout>

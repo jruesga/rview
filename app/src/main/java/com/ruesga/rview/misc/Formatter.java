@@ -23,6 +23,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ruesga.rview.R;
@@ -359,5 +360,11 @@ public class Formatter {
             return;
         }
         view.setText(revision.commit.commit.substring(0, 10));
+    }
+
+    @BindingAdapter("reviewerKind")
+    public static void toReviewerKind(ImageView view, Boolean isGroup) {
+        view.setImageResource(isGroup != null && isGroup
+                ? R.drawable.ic_group : R.drawable.ic_person);
     }
 }

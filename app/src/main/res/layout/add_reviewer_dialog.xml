@@ -44,7 +44,7 @@
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="12sp"
                 android:maxLines="1"
-                android:completionThreshold="3"
+                android:completionThreshold="2"
                 app:delay="300"
                 android:inputType="textNoSuggestions"
                 android:hint="@string/add_reviewer_label">

@@ -19,7 +19,6 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ import android.widget.Filterable;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ReviewerDropdownItemBinding;
 import com.ruesga.rview.gerrit.GerritApi;
-import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.misc.ModelHelper;
 
@@ -84,6 +82,7 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
         SuggestedReviewerInfo reviewer = mReviewers.get(position);
         ReviewerDropdownItemBinding binding = (ReviewerDropdownItemBinding) v.getTag();
         binding.item.setText(formatSuggestionReviewer(reviewer, true));
+        binding.setIsGroup(reviewer.account == null);
         binding.executePendingBindings();
 
         return v;
@@ -98,7 +97,7 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
             SuggestedReviewerInfo reviewer, boolean highlight) {
         String text = null;
         if (reviewer.account != null) {
-            text = formatAccount(reviewer.account);
+            text = ModelHelper.formatAccountWithEmail(reviewer.account);
         } else if (reviewer.group != null) {
             text = reviewer.group.name;
         }
@@ -106,25 +105,6 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
             return highlightOccurrences(text);
         }
         return text;
-    }
-
-    private String formatAccount(AccountInfo account) {
-        StringBuilder sb = new StringBuilder();
-        if (!TextUtils.isEmpty(account.name)) {
-            sb.append(account.name);
-        } else if (!TextUtils.isEmpty(account.username)) {
-            sb.append(account.username);
-        } else {
-            sb.append(account.username);
-        }
-        if (!TextUtils.isEmpty(account.email)) {
-            if (sb.length() == 0) {
-                sb.append(account.email);
-            } else {
-                sb.append(" <").append(account.email).append(">");
-            }
-        }
-        return sb.toString().trim();
     }
 
     private Spannable highlightOccurrences(String s) {

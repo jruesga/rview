@@ -16,6 +16,7 @@
 package com.ruesga.rview.misc;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
@@ -75,6 +76,25 @@ public class ModelHelper {
         }
 
         return urls;
+    }
+
+    public static String formatAccountWithEmail(AccountInfo account) {
+        StringBuilder sb = new StringBuilder();
+        if (!TextUtils.isEmpty(account.name)) {
+            sb.append(account.name);
+        } else if (!TextUtils.isEmpty(account.username)) {
+            sb.append(account.username);
+        } else {
+            sb.append(account.username);
+        }
+        if (!TextUtils.isEmpty(account.email)) {
+            if (sb.length() == 0) {
+                sb.append(account.email);
+            } else {
+                sb.append(" <").append(account.email).append(">");
+            }
+        }
+        return sb.toString().trim();
     }
 
 
