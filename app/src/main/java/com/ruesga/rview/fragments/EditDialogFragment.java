@@ -105,7 +105,7 @@ public class EditDialogFragment extends RevealFragmentDialog {
         if (mModel.value == null) {
             mModel.value = "";
         }
-        mModel.allowEmpty = getArguments().getBoolean(EXTRA_VALUE, false);
+        mModel.allowEmpty = getArguments().getBoolean(EXTRA_ALLOW_EMPTY, false);
         mOriginalValue = mModel.value;
     }
 
