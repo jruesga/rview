@@ -130,7 +130,10 @@ public class ReviewersView extends FlowLayout {
     private List<AccountInfo> fromReviewers(ChangeInfo change) {
         List<AccountInfo> reviewers = new ArrayList<>();
         for (ReviewerStatus status : change.reviewers.keySet()) {
-            reviewers.addAll(Arrays.asList(change.reviewers.get(status)));
+            AccountInfo[] accounts = change.reviewers.get(status);
+            if (accounts != null) {
+                reviewers.addAll(Arrays.asList(change.reviewers.get(status)));
+            }
         }
         return sortReviewers(reviewers);
     }

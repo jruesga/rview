@@ -19,7 +19,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="android.view.View" />
         <variable name="model" type="com.ruesga.rview.fragments.AddReviewerDialogFragment.Model" />
     </data>
 
@@ -44,6 +43,7 @@
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp"
                 android:maxLines="1"
+                android:tag="@{model.reviewer}"
                 android:completionThreshold="2"
                 app:delay="300"
                 android:inputType="textNoSuggestions"
@@ -51,22 +51,5 @@
                 <requestFocus />
             </com.ruesga.rview.widget.DelayedAutocompleteTextView>
         </android.support.design.widget.TextInputLayout>
-
-        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:indeterminate="true"
-            app:spb_sections_count="4"
-            app:spb_color="?attr/colorAccent"
-            app:spb_speed="1.5"
-            app:spb_stroke_width="4dp"
-            app:spb_stroke_separator_length="8dp"
-            app:spb_reversed="false"
-            app:spb_mirror_mode="false"
-            app:spb_progressiveStart_activated="false"
-            app:spb_progressiveStart_speed="1.5"
-            app:spb_progressiveStop_speed="3.4"
-            android:visibility="@{model.mIsLoading ? View.VISIBLE : View.GONE}" />
     </FrameLayout>
 </layout>

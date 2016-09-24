@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,12 +26,14 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.ReviewersAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.AddReviewerDialogBinding;
+import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.preferences.Constants;
 
 public class AddReviewerDialogFragment extends RevealFragmentDialog {
@@ -39,7 +42,11 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
 
     @ProguardIgnored
     public static class Model {
-        public boolean mIsLoading;
+        public String reviewer;
+    }
+
+    public interface OnReviewerSelected {
+        void onReviewerSelected(String reviewer);
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -53,7 +60,11 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
 
         @Override
         public void afterTextChanged(Editable s) {
-            enabledOrDisableButtons(s.toString());
+            String text = s.toString();
+            enabledOrDisableButtons(text);
+
+            mModel.reviewer = text;
+            mBinding.setModel(mModel);
         }
     };
 
@@ -69,10 +80,15 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
 
     private AddReviewerDialogBinding mBinding;
     private final Model mModel = new Model();
+    private OnReviewerSelected mCallback;
 
     private int mLegacyChangeId;
 
     public AddReviewerDialogFragment() {
+    }
+
+    public void setOnReviewerSelected(OnReviewerSelected cb) {
+        mCallback = cb;
     }
 
     @Override
@@ -94,7 +110,16 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.add_reviewer_dialog, container, true);
         mBinding.reviewer.addTextChangedListener(mTextWatcher);
-        mBinding.reviewer.setAdapter(new ReviewersAdapter(getContext(), mLegacyChangeId));
+        mBinding.reviewer.setOnItemClickListener((parent, view, position, id) -> {
+            SuggestedReviewerInfo reviewer =
+                    ((ReviewersAdapter) (parent.getAdapter())).getSuggestedReviewerAt(position);
+            mModel.reviewer = reviewer.account != null
+                    ? String.valueOf(reviewer.account.accountId) : reviewer.group.id;
+            mBinding.setModel(mModel);
+            hideSoftKeyboard();
+        });
+        ReviewersAdapter adapter = new ReviewersAdapter(getContext(), mLegacyChangeId);
+        mBinding.reviewer.setAdapter(adapter);
         mBinding.setModel(mModel);
         return mBinding.getRoot();
     }
@@ -110,11 +135,8 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
         mBinding.unbind();
     }
 
-
-
     private void performAddReviewer() {
-        mModel.mIsLoading = true;
-        mBinding.setModel(mModel);
+        mCallback.onReviewerSelected(mModel.reviewer);
     }
 
     private void enabledOrDisableButtons(String query) {
@@ -124,6 +146,19 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
             if (button != null) {
                 button.setEnabled(query.length() >= mBinding.reviewer.getThreshold());
             }
+        }
+    }
+
+    private void hideSoftKeyboard() {
+        if (getDialog() == null || getDialog().getWindow() == null) {
+            return;
+        }
+
+        View view = getDialog().getWindow().getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }

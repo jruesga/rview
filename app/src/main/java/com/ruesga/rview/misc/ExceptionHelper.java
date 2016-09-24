@@ -21,6 +21,7 @@ import android.util.Log;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.exceptions.IllegalQueryExpressionException;
+import com.ruesga.rview.exceptions.OperationFailedException;
 import com.ruesga.rview.gerrit.NoConnectivityException;
 
 import retrofit2.adapter.rxjava.HttpException;
@@ -53,6 +54,10 @@ public class ExceptionHelper {
                     message = R.string.exception_bad_request;
                     break;
             }
+
+        } else if (cause instanceof OperationFailedException) {
+            message = R.string.exception_operation_failed;
+
         } else if (cause instanceof NoConnectivityException) {
             message = R.string.exception_no_network_available;
 

@@ -56,6 +56,7 @@
     <string name="exception_not_found">Request data not found</string>
     <string name="exception_bad_request">Bad request</string>
     <string name="exception_request_error">Request error</string>
+    <string name="exception_operation_failed">Operation failed</string>
 
     <!-- Formats -->
     <string name="committer_format"><xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e, <xliff:g id="commit_date" example="2 days ago">%3$s</xliff:g></string>

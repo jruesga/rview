@@ -58,10 +58,6 @@ public class ChangeDetailsActivity extends BaseActivity {
             return;
         }
         String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
-        if (changeId == null) {
-            finish();
-            return;
-        }
 
         // Setup the title
         setupToolbar();

@@ -28,6 +28,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,8 +42,10 @@ import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
 import com.ruesga.rview.databinding.FileInfoItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
 import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
+import com.ruesga.rview.exceptions.OperationFailedException;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
@@ -51,6 +54,8 @@ import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.gerrit.model.ReviewerInfo;
+import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
@@ -70,6 +75,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import me.tatarka.rxloader.RxLoader1;
@@ -428,16 +434,14 @@ public class ChangeDetailsFragment extends Fragment {
             // Update internal objects
             if (mResponse.mChange.reviewers != null) {
                 for (ReviewerStatus status : mResponse.mChange.reviewers.keySet()) {
-                    mResponse.mChange.reviewers.put(status,
-                            removeAccount(account, mResponse.mChange.reviewers.get(status)));
+                    AccountInfo[] reviewers = mResponse.mChange.reviewers.get(status);
+                    mResponse.mChange.reviewers.put(status, removeAccount(account, reviewers));
                 }
             }
             if (mResponse.mChange.labels != null) {
                 for (String label : mResponse.mChange.labels.keySet()) {
-                    if (mResponse.mChange.labels.get(label).all !=  null) {
-                        mResponse.mChange.labels.get(label).all =
-                                removeApproval(account, mResponse.mChange.labels.get(label).all);
-                    }
+                    ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
+                    mResponse.mChange.labels.get(label).all = removeApproval(account, approvals);
                 }
             }
             mResponse.mChange.removableReviewers = removeAccount(
@@ -478,6 +482,113 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<AddReviewerResultInfo> mAddReviewerObserver
+            = new RxLoaderObserver<AddReviewerResultInfo>() {
+        @Override
+        public void onNext(AddReviewerResultInfo result) {
+            if (!TextUtils.isEmpty(result.error) || result.confirm) {
+                onError(new OperationFailedException(String.format(Locale.US,
+                        "error: %s; confirm: %s", result.error, String.valueOf(result.confirm))));
+                return;
+            }
+
+            // Update internal objects
+            if (mResponse.mChange.reviewers != null) {
+                // Update reviewers
+                AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
+                mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
+                        addReviewers(result.reviewers, reviewers));
+            }
+            if (mResponse.mChange.labels != null) {
+                // Update labels
+                for (String label : mResponse.mChange.labels.keySet()) {
+                    ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
+                    mResponse.mChange.labels.get(label).all =
+                            addApprovals(result.reviewers, approvals);
+                }
+            }
+            updateRemovableReviewers(result);
+
+            updateChangeInfo(mResponse);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+
+        private AccountInfo[] addReviewers(ReviewerInfo[] reviewers, AccountInfo[] accounts) {
+            List<AccountInfo> newAccounts = new ArrayList<>();
+            if (accounts != null) {
+                Collections.addAll(newAccounts, accounts);
+            }
+            for (ReviewerInfo reviewer : reviewers) {
+                boolean exists = false;
+                for (AccountInfo a : newAccounts) {
+                    if (a.accountId == reviewer.accountId) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    newAccounts.add(reviewer);
+                }
+            }
+            return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
+        }
+
+        private ApprovalInfo[] addApprovals(ReviewerInfo[] reviewers, ApprovalInfo[] approvals) {
+            List<ApprovalInfo> newApprovals = new ArrayList<>();
+            if (approvals != null) {
+                Collections.addAll(newApprovals, approvals);
+            }
+            for (ReviewerInfo reviewer : reviewers) {
+                boolean exists = false;
+                for (ApprovalInfo a : newApprovals) {
+                    if (a.owner.accountId == reviewer.accountId) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    ApprovalInfo approvalInfo = new ApprovalInfo();
+                    approvalInfo.owner = reviewer;
+                    newApprovals.add(approvalInfo);
+                    newApprovals.add(approvalInfo);
+                }
+            }
+            return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
+        }
+
+        @SuppressWarnings("ConstantConditions")
+        private void updateRemovableReviewers(AddReviewerResultInfo result) {
+            List<AccountInfo> newRemovableAccounts = new ArrayList<>();
+            Collections.addAll(newRemovableAccounts, mResponse.mChange.removableReviewers);
+
+            Account account = Preferences.getAccount(getContext());
+            for (ReviewerInfo reviewer : result.reviewers) {
+                boolean removable = false;
+
+                // Owner of the change
+                if (mResponse.mChange.owner.accountId == account.mAccount.accountId) {
+                    removable = true;
+                }
+
+                // Reviewer is me
+                if (reviewer.accountId == account.mAccount.accountId) {
+                    removable = true;
+                }
+
+                if (removable) {
+                    newRemovableAccounts.add(reviewer);
+                }
+            }
+
+            mResponse.mChange.removableReviewers = newRemovableAccounts.toArray(
+                    new AccountInfo[newRemovableAccounts.size()]);
+        }
+    };
+
     private final OnAccountChipClickedListener mOnAccountChipClickedListener
             = this::performAccountClicked;
     private final OnAccountChipRemovedListener mOnAccountChipRemovedListener
@@ -497,7 +608,8 @@ public class ChangeDetailsFragment extends Fragment {
 
     private RxLoader1<String, DataResponse> mChangeLoader;
     private RxLoader1<Boolean, Boolean> mStarredLoader;
-    private RxLoader1<AccountInfo, AccountInfo> mRemoveRevieverLoader;
+    private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
+    private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private int mLegacyChangeId;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
@@ -617,7 +729,9 @@ public class ChangeDetailsFragment extends Fragment {
             mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver)
                     .start(String.valueOf(mLegacyChangeId));
             mStarredLoader = loaderManager.create("starred", this::starredChange, mStarredObserver);
-            mRemoveRevieverLoader = loaderManager.create(
+            mAddReviewerLoader = loaderManager.create(
+                    "add_reviewer", this::addReviewer, mAddReviewerObserver);
+            mRemoveReviewerLoader = loaderManager.create(
                     "remove_reviewer", this::removeReviewer, mRemoveReviewerObserver);
         }
     }
@@ -677,16 +791,31 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
+    private Observable<AddReviewerResultInfo> addReviewer(final String reviewer) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                    ReviewerInput input = new ReviewerInput();
+                    input.reviewerId = reviewer;
+                    return api.addChangeReviewer(String.valueOf(mLegacyChangeId), input)
+                            .toBlocking()
+                            .first();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private Observable<AccountInfo> removeReviewer(final AccountInfo account) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.fromCallable(() -> {
-                    api.deleteChangeReviewer(
-                            String.valueOf(mLegacyChangeId),
-                            String.valueOf(account.accountId))
-                        .toBlocking().first();
-                    return account;
-                })
+            api.deleteChangeReviewer(
+                    String.valueOf(mLegacyChangeId),
+                    String.valueOf(account.accountId))
+                    .toBlocking().first();
+            return account;
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -785,9 +914,15 @@ public class ChangeDetailsFragment extends Fragment {
         // TODO Open change list with account filter
     }
 
+    private void performAddReviewer(String reviewer) {
+        if (!mModel.isLocked) {
+            mAddReviewerLoader.restart(reviewer);
+        }
+    }
+
     private void performRemoveAccount(AccountInfo account) {
         if (!mModel.isLocked) {
-            mRemoveRevieverLoader.restart(account);
+            mRemoveReviewerLoader.restart(account);
         }
     }
 
@@ -849,6 +984,7 @@ public class ChangeDetailsFragment extends Fragment {
     private void performShowAddReviewerDialog(View v) {
         AddReviewerDialogFragment fragment =
                 AddReviewerDialogFragment.newInstance(mLegacyChangeId, v);
+        fragment.setOnReviewerSelected(this::performAddReviewer);
         fragment.show(getChildFragmentManager(), AddReviewerDialogFragment.TAG);
     }
 }

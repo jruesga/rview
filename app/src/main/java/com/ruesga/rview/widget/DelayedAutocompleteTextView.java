@@ -19,13 +19,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.util.AttributeSet;
-import android.widget.AutoCompleteTextView;
 
 import com.ruesga.rview.R;
 
 // http://makovkastar.github.io/blog/2014/04/12/android-autocompletetextview-with-suggestions-from-a-web-service/
-public class DelayedAutocompleteTextView extends AutoCompleteTextView {
+public class DelayedAutocompleteTextView extends AppCompatAutoCompleteTextView {
 
     private static final int MESSAGE_TEXT_CHANGED = 1;
 
