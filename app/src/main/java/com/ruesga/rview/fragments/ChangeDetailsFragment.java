@@ -79,6 +79,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import me.tatarka.rxloader.RxLoader;
 import me.tatarka.rxloader.RxLoader1;
 import me.tatarka.rxloader.RxLoaderManager;
 import me.tatarka.rxloader.RxLoaderManagerCompat;
@@ -106,6 +107,9 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.PUSH_CERTIFICATES);
         add(ChangeOptions.COMMIT_FOOTERS);
         add(ChangeOptions.WEB_LINKS);
+    }};
+    private static final List<ChangeOptions> MESSAGES_OPTIONS = new ArrayList<ChangeOptions>() {{
+        add(ChangeOptions.MESSAGES);
     }};
 
     @ProguardIgnored
@@ -339,8 +343,8 @@ public class ChangeDetailsFragment extends Fragment {
         }
 
 
-        void update(DataResponse response) {
-            mMessages = response.mChange.messages;
+        void update(ChangeMessageInfo[] messages) {
+            mMessages = messages;
             notifyDataSetChanged();
         }
 
@@ -405,7 +409,7 @@ public class ChangeDetailsFragment extends Fragment {
                         mFileAdapter.update(files, result.mInlineComments);
                         mModel.msgListModel.visible =
                                 change.messages != null && change.messages.length > 0;
-                        mMessageAdapter.update(result);
+                        mMessageAdapter.update(change.messages);
                     }
 
                     mBinding.setModel(mModel);
@@ -443,9 +447,26 @@ public class ChangeDetailsFragment extends Fragment {
     private final RxLoaderObserver<String> mChangeTopicObserver = new RxLoaderObserver<String>() {
         @Override
         public void onNext(String newTopic) {
-            // TODO Refresh messages
             mResponse.mChange.topic = newTopic;
             updateChangeInfo(mResponse);
+
+            // Refresh messages
+            performMessagesRefresh();
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
+    private final RxLoaderObserver<ChangeMessageInfo[]> mMessagesRefreshObserver
+            = new RxLoaderObserver<ChangeMessageInfo[]>() {
+        @Override
+        public void onNext(ChangeMessageInfo[] messages) {
+            mResponse.mChange.messages = messages;
+            mModel.msgListModel.visible = messages != null && messages.length > 0;
+            mMessageAdapter.update(messages);
         }
 
         @Override
@@ -638,6 +659,7 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
+    private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
     private int mLegacyChangeId;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
@@ -763,6 +785,8 @@ public class ChangeDetailsFragment extends Fragment {
                     "add_reviewer", this::addReviewer, mAddReviewerObserver);
             mRemoveReviewerLoader = loaderManager.create(
                     "remove_reviewer", this::removeReviewer, mRemoveReviewerObserver);
+            mMessagesRefreshLoader = loaderManager.create(
+                    "messages_refresh", fetchMessages(), mMessagesRefreshObserver);
         }
     }
 
@@ -860,12 +884,26 @@ public class ChangeDetailsFragment extends Fragment {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.fromCallable(() -> {
-            api.deleteChangeReviewer(
-                    String.valueOf(mLegacyChangeId),
-                    String.valueOf(account.accountId))
-                    .toBlocking().first();
-            return account;
-        })
+                    api.deleteChangeReviewer(
+                            String.valueOf(mLegacyChangeId),
+                            String.valueOf(account.accountId))
+                            .toBlocking().first();
+                    return account;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<ChangeMessageInfo[]> fetchMessages() {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                    final ChangeInfo change = api.getChange(
+                            String.valueOf(mLegacyChangeId), MESSAGES_OPTIONS)
+                                .toBlocking().first();
+                    return change.messages;
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -979,6 +1017,12 @@ public class ChangeDetailsFragment extends Fragment {
     private void performRemoveAccount(AccountInfo account) {
         if (!mModel.isLocked) {
             mRemoveReviewerLoader.restart(account);
+        }
+    }
+
+    private void performMessagesRefresh() {
+        if (!mModel.isLocked) {
+            mMessagesRefreshLoader.restart();
         }
     }
 
