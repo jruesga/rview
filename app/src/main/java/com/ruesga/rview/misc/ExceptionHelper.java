@@ -27,19 +27,24 @@ import com.ruesga.rview.gerrit.NoConnectivityException;
 import retrofit2.adapter.rxjava.HttpException;
 
 public class ExceptionHelper {
-    public static <T extends Exception> boolean isException(Throwable cause, Class<T> c) {
-        if (cause.getCause() != null) {
-            if (isException(cause.getCause(), c)) {
-                return true;
-            }
-        }
-        return c.isInstance(cause);
+    public static <T extends Throwable> boolean isException(Throwable cause, Class<T> c) {
+        return !(!c.isInstance(cause) && cause.getCause() != null)
+                || isException(cause.getCause(), c);
     }
 
+    public static <T extends Throwable> Throwable getCause(Throwable cause, Class<T> c) {
+        if (!c.isInstance(cause) && cause.getCause() != null) {
+            return getCause(cause.getCause(), c);
+        }
+        return c.isInstance(cause) ? cause : null;
+    }
+
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
     public static @StringRes int exceptionToMessage(Context context, String tag, Throwable cause) {
         int message;
-        if (cause instanceof HttpException) {
-            final int code = ((HttpException) cause).code();
+        if (isException(cause, HttpException.class)) {
+            HttpException httpException = (HttpException) getCause(cause, HttpException.class);
+            final int code = httpException.code();
             switch (code) {
                 case 400: //Bad request
                     message = R.string.exception_invalid_request;
@@ -55,13 +60,13 @@ public class ExceptionHelper {
                     break;
             }
 
-        } else if (cause instanceof OperationFailedException) {
+        } else if (isException(cause, OperationFailedException.class)) {
             message = R.string.exception_operation_failed;
 
-        } else if (cause instanceof NoConnectivityException) {
+        } else if (isException(cause, NoConnectivityException.class)) {
             message = R.string.exception_no_network_available;
 
-        } else if (cause instanceof IllegalQueryExpressionException) {
+        } else if (isException(cause, IllegalQueryExpressionException.class)) {
             message = R.string.exception_invalid_request;
 
         } else {

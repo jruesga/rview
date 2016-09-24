@@ -59,6 +59,7 @@ import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
+import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
@@ -157,6 +158,10 @@ public class ChangeDetailsFragment extends Fragment {
             if (account != null) {
                 mFragment.performAddReviewer(String.valueOf(account.mAccount.accountId));
             }
+        }
+
+        public void onTopicEditPressed(View v) {
+            mFragment.performShowChangeTopicDialog(v);
         }
 
         public void onRelatedChangesPressed(View v) {
@@ -435,6 +440,20 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<String> mChangeTopicObserver = new RxLoaderObserver<String>() {
+        @Override
+        public void onNext(String newTopic) {
+            // TODO Refresh messages
+            mResponse.mChange.topic = newTopic;
+            updateChangeInfo(mResponse);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
     private final RxLoaderObserver<AccountInfo> mRemoveReviewerObserver
             = new RxLoaderObserver<AccountInfo>() {
         @Override
@@ -618,6 +637,7 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader1<Boolean, Boolean> mStarredLoader;
     private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
+    private RxLoader1<String, String> mChangeTopicLoader;
     private int mLegacyChangeId;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
@@ -736,7 +756,9 @@ public class ChangeDetailsFragment extends Fragment {
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver)
                     .start(String.valueOf(mLegacyChangeId));
-            mStarredLoader = loaderManager.create("starred", this::starredChange, mStarredObserver);
+            mStarredLoader = loaderManager.create("starred", this::changeStarred, mStarredObserver);
+            mChangeTopicLoader = loaderManager.create(
+                    "change_topic", this::changeTopic, mChangeTopicObserver);
             mAddReviewerLoader = loaderManager.create(
                     "add_reviewer", this::addReviewer, mAddReviewerObserver);
             mRemoveReviewerLoader = loaderManager.create(
@@ -779,21 +801,41 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Boolean> starredChange(final Boolean starred) {
+    private Observable<Boolean> changeStarred(final Boolean starred) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.fromCallable(() -> {
-            Observable<Void> call;
-            if (starred) {
-                call = api.putDefaultStarOnChange(
-                        GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
-            } else {
-                call = api.deleteDefaultStarFromChange(
-                        GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
-            }
-            call.toBlocking().first();
-            return starred;
-        })
+                    Observable<Void> call;
+                    if (starred) {
+                        call = api.putDefaultStarOnChange(
+                                GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
+                    } else {
+                        call = api.deleteDefaultStarFromChange(
+                                GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
+                    }
+                    call.toBlocking().first();
+                    return starred;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<String> changeTopic(final String newTopic) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                    if (!TextUtils.isEmpty(newTopic)) {
+                        TopicInput input = new TopicInput();
+                        input.topic = newTopic;
+                        api.setChangeTopic(String.valueOf(mLegacyChangeId), input)
+                                .toBlocking().first();
+                    } else {
+                        api.deleteChangeTopic(String.valueOf(mLegacyChangeId))
+                                .toBlocking().first();
+                    }
+                    return newTopic;
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -918,6 +960,12 @@ public class ChangeDetailsFragment extends Fragment {
         }
     }
 
+    private void performChangeTopic(String newTopic) {
+        if (!mModel.isLocked) {
+            mChangeTopicLoader.restart(newTopic);
+        }
+    }
+
     private void performAccountClicked(AccountInfo account) {
         // TODO Open change list with account filter
     }
@@ -999,5 +1047,14 @@ public class ChangeDetailsFragment extends Fragment {
                 AddReviewerDialogFragment.newInstance(mLegacyChangeId, v);
         fragment.setOnReviewerSelected(this::performAddReviewer);
         fragment.show(getChildFragmentManager(), AddReviewerDialogFragment.TAG);
+    }
+
+    private void performShowChangeTopicDialog(View v) {
+        String title = getString(R.string.change_topic_title);
+
+        EditDialogFragment fragment = EditDialogFragment.newInstance(
+                title, mResponse.mChange.topic, true, v);
+        fragment.setOnEditChanged(this::performChangeTopic);
+        fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 }

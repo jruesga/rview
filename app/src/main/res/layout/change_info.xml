@@ -278,14 +278,28 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="12sp" />
                 <com.ruesga.rview.widget.StyleableTextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginEnd="3dp"
                     android:text="@{model.topic}"
+                    android:visibility="@{model.topic == null || model.topic.isEmpty() ? View.GONE : View.VISIBLE}"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="12sp" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    app:srcCompat="@drawable/ic_edit"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:tint="@color/accent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onTopicEditPressed}"
+                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; isOwner ? View.VISIBLE : View.GONE}"
+                    tools:ignore="ContentDescription"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
