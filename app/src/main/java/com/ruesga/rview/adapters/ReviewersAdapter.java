@@ -32,8 +32,11 @@ import com.ruesga.rview.databinding.ReviewerDropdownItemBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Preferences;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ReviewersAdapter extends BaseAdapter implements Filterable {
@@ -139,6 +142,8 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
             if (constraint != null) {
                 List<SuggestedReviewerInfo> reviewers =
                         fetchSuggestedReviewers(constraint.toString());
+                removeSelfFromReviewers(reviewers);
+
                 results.values = reviewers;
                 results.count = reviewers.size();
             }
@@ -166,6 +171,19 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
                     .first();
         }
 
+        private void removeSelfFromReviewers(List<SuggestedReviewerInfo> reviewers) {
+            Account account = Preferences.getAccount(mContext);
+            if (account != null) {
+                Iterator<SuggestedReviewerInfo> it = reviewers.iterator();
+                while (it.hasNext()) {
+                    SuggestedReviewerInfo reviewer = it.next();
+                    if (reviewer.account.accountId == account.mAccount.accountId) {
+                        it.remove();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
 }
