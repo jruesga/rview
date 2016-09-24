@@ -25,6 +25,7 @@
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="isLocked" type="java.lang.Boolean" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
+        <variable name="isOwner" type="java.lang.Boolean" />
         <variable name="isTwoPane" type="java.lang.Boolean" />
         <variable name="isCurrentRevision" type="java.lang.Boolean" />
 
@@ -172,25 +173,50 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-                    <com.ruesga.rview.widget.ReviewersView
-                        android:id="@+id/reviewers"
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp" />
-                    <com.ruesga.rview.widget.StyleableTextView
-                        android:layout_width="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:minHeight="16dp">
+                        <com.ruesga.rview.widget.ReviewersView
+                            android:id="@+id/reviewers"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </FrameLayout>
+                    <org.apmem.tools.layouts.FlowLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="5dp"
-                        android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
-                        android:onClick="@{handlers::onAddReviewerPressed}"
-                        android:background="?attr/selectableItemBackground"
-                        android:text="@string/change_details_add_reviewer"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="?attr/colorAccent"
-                        android:textStyle="bold"
-                        app:allCaps="true"
-                        android:textSize="12sp"/>
+                        android:orientation="horizontal"
+                        android:padding="5dp">
+                        <com.ruesga.rview.widget.StyleableTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
+                            android:onClick="@{handlers::onAddReviewerPressed}"
+                            android:background="?attr/selectableItemBackground"
+                            android:text="@string/change_details_add_reviewer"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="?attr/colorAccent"
+                            android:textStyle="bold"
+                            app:allCaps="true"
+                            android:textSize="12sp"/>
+
+                        <com.ruesga.rview.widget.StyleableTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="5dp"
+                            android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; !isOwner ? View.VISIBLE : View.GONE}"
+                            android:onClick="@{handlers::onAddMeAsReviewerPressed}"
+                            android:background="?attr/selectableItemBackground"
+                            android:text="@string/change_details_add_me_as_reviewer"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="?attr/colorAccent"
+                            android:textStyle="bold"
+                            app:allCaps="true"
+                            android:textSize="12sp"/>
+                    </org.apmem.tools.layouts.FlowLayout>
                 </LinearLayout>
             </LinearLayout>
             <LinearLayout

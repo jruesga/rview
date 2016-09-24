@@ -152,6 +152,13 @@ public class ChangeDetailsFragment extends Fragment {
             mFragment.performShowAddReviewerDialog(v);
         }
 
+        public void onAddMeAsReviewerPressed(View v) {
+            Account account = Preferences.getAccount(v.getContext());
+            if (account != null) {
+                mFragment.performAddReviewer(String.valueOf(account.mAccount.accountId));
+            }
+        }
+
         public void onRelatedChangesPressed(View v) {
             mFragment.performOpenRelatedChanges();
         }
@@ -373,6 +380,7 @@ public class ChangeDetailsFragment extends Fragment {
                     mModel.isLocked = false;
                     updateLocked();
                     mResponse = result;
+                    updateAuthenticatedAndOwnerStatus();
 
                     ChangeInfo change = null;
                     mModel.hasData = result != null;
@@ -698,7 +706,7 @@ public class ChangeDetailsFragment extends Fragment {
             if (account != null) {
                 mModel.isAuthenticated = account.hasAuthenticatedAccessMode();
             }
-            updateAuthenticated();
+            updateAuthenticatedAndOwnerStatus();
 
 
             mEventHandlers = new EventHandlers(this);
@@ -932,9 +940,14 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.executePendingBindings();
     }
 
-    private void updateAuthenticated() {
+    @SuppressWarnings("ConstantConditions")
+    private void updateAuthenticatedAndOwnerStatus() {
         mBinding.patchSetInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.changeInfo.setIsAuthenticated(mModel.isAuthenticated);
+
+        Account account = Preferences.getAccount(getContext());
+        mBinding.changeInfo.setIsOwner(mModel.isAuthenticated && mResponse != null
+                && mResponse.mChange.owner.accountId == account.mAccount.accountId);
         mBinding.executePendingBindings();
     }
 
