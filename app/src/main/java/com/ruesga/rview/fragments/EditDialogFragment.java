@@ -102,6 +102,9 @@ public class EditDialogFragment extends RevealFragmentDialog {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mModel.value = getArguments().getString(EXTRA_VALUE);
+        if (mModel.value == null) {
+            mModel.value = "";
+        }
         mModel.allowEmpty = getArguments().getBoolean(EXTRA_VALUE, false);
         mOriginalValue = mModel.value;
     }
