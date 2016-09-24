@@ -43,6 +43,9 @@ public abstract class RevealFragmentDialog extends DialogFragment {
 
     public abstract void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState);
 
+    public void onDialogReveled() {
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +87,24 @@ public abstract class RevealFragmentDialog extends DialogFragment {
         Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, finalRadius);
         anim.setDuration(350);
         anim.setInterpolator(new AccelerateInterpolator());
+        anim.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                onDialogReveled();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
         anim.start();
     }
 

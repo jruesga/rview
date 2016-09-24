@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,14 +53,7 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
 
         @Override
         public void afterTextChanged(Editable s) {
-            String q = s.toString();
-            if (getDialog() != null) {
-                final AlertDialog dialog = ((AlertDialog) getDialog());
-                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                if (button != null) {
-                    button.setEnabled(q.length() >= mBinding.reviewer.getThreshold());
-                }
-            }
+            enabledOrDisableButtons(s.toString());
         }
     };
 
@@ -89,9 +81,7 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
                 .setView(onCreateView(LayoutInflater.from(getContext()), null, savedInstanceState))
                 .setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_account_circle))
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.action_add, (dialog, which) -> {
-                    performAddReviewer();
-                });
+                .setPositiveButton(R.string.action_add, (dialog, which) -> performAddReviewer());
     }
 
     @Override
@@ -110,8 +100,8 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onDialogReveled() {
+        enabledOrDisableButtons(mBinding.reviewer.getText().toString());
     }
 
     @Override
@@ -120,8 +110,20 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
         mBinding.unbind();
     }
 
+
+
     private void performAddReviewer() {
         mModel.mIsLoading = true;
         mBinding.setModel(mModel);
+    }
+
+    private void enabledOrDisableButtons(String query) {
+        if (getDialog() != null) {
+            final AlertDialog dialog = ((AlertDialog) getDialog());
+            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            if (button != null) {
+                button.setEnabled(query.length() >= mBinding.reviewer.getThreshold());
+            }
+        }
     }
 }
