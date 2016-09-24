@@ -13,18 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.gerrit.model;
+package com.ruesga.rview.exceptions;
 
-import com.google.gson.annotations.SerializedName;
-
-/**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#add-reviewer-result"
- */
-public class AddReviewerResultInfo extends AccountInfo {
-    @SerializedName("input") public String input;
-    @SerializedName("reviewers") public ReviewerInfo[] reviewers;
-    @SerializedName("ccs") public ReviewerInfo[] ccs;
-    @SerializedName("error") public String error;
-    @SerializedName("confirm") public boolean confirm;
+public class OperationFailedException extends Exception {
 }
-
