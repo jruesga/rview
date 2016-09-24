@@ -28,15 +28,23 @@ import retrofit2.adapter.rxjava.HttpException;
 
 public class ExceptionHelper {
     public static <T extends Throwable> boolean isException(Throwable cause, Class<T> c) {
-        return !(!c.isInstance(cause) && cause.getCause() != null)
-                || isException(cause.getCause(), c);
+        if (c.isInstance(cause)) {
+            return true;
+        }
+        if (cause.getCause() != null) {
+            return isException(cause.getCause(), c);
+        }
+        return false;
     }
 
     public static <T extends Throwable> Throwable getCause(Throwable cause, Class<T> c) {
-        if (!c.isInstance(cause) && cause.getCause() != null) {
+        if (c.isInstance(cause)) {
+            return cause;
+        }
+        if (cause.getCause() != null) {
             return getCause(cause.getCause(), c);
         }
-        return c.isInstance(cause) ? cause : null;
+        return null;
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
