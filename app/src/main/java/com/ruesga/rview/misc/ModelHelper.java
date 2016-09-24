@@ -84,8 +84,6 @@ public class ModelHelper {
             sb.append(account.name);
         } else if (!TextUtils.isEmpty(account.username)) {
             sb.append(account.username);
-        } else {
-            sb.append(account.username);
         }
         if (!TextUtils.isEmpty(account.email)) {
             if (sb.length() == 0) {
