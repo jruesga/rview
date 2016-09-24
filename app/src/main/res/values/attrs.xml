@@ -32,4 +32,7 @@
     <declare-styleable name="AddedVsDeletedGraphView">
         <attr name="rightAligned" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="DelayedAutocompleteTextView">
+        <attr name="delay" format="integer"/>
+    </declare-styleable>
 </resources>

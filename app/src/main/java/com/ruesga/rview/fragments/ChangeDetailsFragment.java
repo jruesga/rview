@@ -143,7 +143,7 @@ public class ChangeDetailsFragment extends Fragment {
         }
 
         public void onAddReviewerPressed(View v) {
-
+            mFragment.performShowAddReviewerDialog(v);
         }
 
         public void onRelatedChangesPressed(View v) {
@@ -311,7 +311,6 @@ public class ChangeDetailsFragment extends Fragment {
         private final AccountInfo mBuildBotSystemAccount;
         private final EventHandlers mEventHandlers;
         private ChangeMessageInfo[] mMessages;
-        private ConfigInfo mConfig;
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers) {
             final Resources res = fragment.getResources();
@@ -324,7 +323,6 @@ public class ChangeDetailsFragment extends Fragment {
 
         void update(DataResponse response) {
             mMessages = response.mChange.messages;
-            mConfig = response.mProjectConfig;
             notifyDataSetChanged();
         }
 
@@ -846,5 +844,11 @@ public class ChangeDetailsFragment extends Fragment {
         Uri uri = api.getChangeUri(String.valueOf(mLegacyChangeId));
 
         AndroidHelper.shareTextPlain(getContext(), uri.toString(), getString(R.string.action_share));
+    }
+
+    private void performShowAddReviewerDialog(View v) {
+        AddReviewerDialogFragment fragment =
+                AddReviewerDialogFragment.newInstance(mLegacyChangeId, v);
+        fragment.show(getChildFragmentManager(), AddReviewerDialogFragment.TAG);
     }
 }

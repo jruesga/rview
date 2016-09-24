@@ -40,6 +40,10 @@ import java.util.Locale;
 
 public class AndroidHelper {
 
+    public static boolean isLollipopOrGreater() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
     @TargetApi(Build.VERSION_CODES.N)
     @SuppressWarnings("deprecation")
     public static Locale getCurrentLocale(Context context) {

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" />
+        <variable name="model" type="com.ruesga.rview.fragments.AddReviewerDialogFragment.Model" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            app:errorEnabled="false">
+            <com.ruesga.rview.widget.DelayedAutocompleteTextView
+                android:id="@+id/reviewer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:completionThreshold="3"
+                app:delay="300"
+                android:inputType="textNoSuggestions"
+                android:hint="@string/add_reviewer_label">
+                <requestFocus />
+            </com.ruesga.rview.widget.DelayedAutocompleteTextView>
+        </android.support.design.widget.TextInputLayout>
+
+        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:indeterminate="true"
+            app:spb_sections_count="4"
+            app:spb_color="?attr/colorAccent"
+            app:spb_speed="1.5"
+            app:spb_stroke_width="4dp"
+            app:spb_stroke_separator_length="8dp"
+            app:spb_reversed="false"
+            app:spb_mirror_mode="false"
+            app:spb_progressiveStart_activated="false"
+            app:spb_progressiveStart_speed="1.5"
+            app:spb_progressiveStop_speed="3.4"
+            android:visibility="@{model.mIsLoading ? View.VISIBLE : View.GONE}" />
+    </FrameLayout>
+</layout>

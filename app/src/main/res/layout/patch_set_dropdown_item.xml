@@ -34,7 +34,8 @@
             android:padding="8dp"
             android:minHeight="?attr/listPreferredItemHeightSmall"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
 
             <com.ruesga.rview.widget.StyleableTextView
                 android:layout_width="wrap_content"
@@ -58,7 +59,7 @@
                 android:textSize="12sp" />
 
             <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingStart="3dp"

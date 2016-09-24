@@ -26,6 +26,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_let_start">Let\'s start</string>
     <string name="action_share">Share</string>
+    <string name="action_add">Add</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -192,6 +193,9 @@
     <string name="same_topic">Same topic</string>
     <string name="submitted_together">Submitted together</string>
     <string name="cherry_picks">Cherry picks</string>
+
+    <!-- Add reviewer dialog -->
+    <string name="add_reviewer_label">Reviewer</string>
 
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>
