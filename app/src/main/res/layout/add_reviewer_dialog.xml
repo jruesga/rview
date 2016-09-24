@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:maxLines="1"
                 android:completionThreshold="2"
                 app:delay="300"
