@@ -26,6 +26,7 @@
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="isLocked" type="java.lang.Boolean" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
+        <variable name="isCurrentRevision" type="java.lang.Boolean" />
 
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
@@ -54,14 +55,14 @@
                 android:id="@+id/review_labels"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{(model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(isCurrentRevision != null &amp;&amp; isCurrentRevision &amp;&amp; (model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED))) ? View.GONE : View.VISIBLE}"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:visibility="@{(model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(isCurrentRevision != null &amp;&amp; isCurrentRevision &amp;&amp; (model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED))) ? View.GONE : View.VISIBLE}"
                 android:background="?android:attr/listDivider"/>
 
             <LinearLayout

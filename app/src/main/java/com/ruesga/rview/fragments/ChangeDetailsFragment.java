@@ -797,6 +797,8 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.reviewInfo.setHasData(true);
         mBinding.reviewInfo.setModel(response.mChange);
         mBinding.reviewInfo.setHandlers(mEventHandlers);
+        mBinding.reviewInfo.setIsCurrentRevision(
+                mCurrentRevision.equals(response.mChange.currentRevision));
         mBinding.reviewInfo.reviewLabels
                 .from(response.mChange);
     }
