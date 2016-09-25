@@ -23,6 +23,7 @@
     <color name="approved">#2e7d32</color>
     <color name="rejected">#c62828</color>
     <color name="noscore">#757575</color>
+    <color name="unscored">#cecece</color>
     <color name="primaryBackgroundColor">#e0e0e0</color>
     <color name="selectedItem">#e3e8f7</color>
 

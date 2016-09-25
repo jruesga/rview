@@ -159,6 +159,8 @@
     <string name="change_details_related_changes">Related changes</string>
     <string name="change_details_download_patchset">Download</string>
     <string name="change_details_view_patchset">View</string>
+    <string name="change_details_review">Review</string>
+    <string name="change_details_review_hint">Comment on this change</string>
 
     <!-- Dashboard -->
     <string name="dashboard_outgoing">Outgoing</string>

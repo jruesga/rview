@@ -21,6 +21,7 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
 
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="isLocked" type="java.lang.Boolean" />
@@ -29,7 +30,6 @@
         <variable name="isTwoPane" type="java.lang.Boolean" />
         <variable name="isCurrentRevision" type="java.lang.Boolean" />
 
-        <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="submitType" type="com.ruesga.rview.gerrit.model.SubmitType" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />

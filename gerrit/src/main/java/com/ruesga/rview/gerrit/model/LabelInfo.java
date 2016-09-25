@@ -23,7 +23,9 @@ import java.util.Map;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#label-info"
  */
 public class LabelInfo {
+    // Common fields
     @SerializedName("optional") public boolean optional;
+    @SerializedName("default_value") public int defaultValue;
 
     // LABELS
     @SerializedName("approved") public AccountInfo approved;
@@ -32,7 +34,6 @@ public class LabelInfo {
     @SerializedName("disliked") public AccountInfo disliked;
     @SerializedName("blocking") public boolean blocking;
     @SerializedName("value") public int value;
-    @SerializedName("default_value") public int defaultValue;
 
     // DETAILED_LABELS
     @SerializedName("all") public ApprovalInfo[] all;

@@ -31,7 +31,8 @@
             android:layout_height="match_parent">
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:scrollbars="vertical">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -40,14 +41,14 @@
                     <include
                         android:id="@+id/patch_set_info"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         layout="@layout/patch_set_info" />
                     <include
                         android:id="@+id/change_info"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
                         layout="@layout/change_info" />
@@ -67,6 +68,12 @@
                         android:layout_marginBottom="4dp"
                         app:model="@{model.msgListModel}"
                         layout="@layout/list_with_header" />
+                    <include
+                        android:id="@+id/review_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        layout="@layout/review_info" />
                 </LinearLayout>
             </android.support.v4.widget.NestedScrollView>
             <TextView

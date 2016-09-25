@@ -180,6 +180,10 @@ public class ChangeDetailsFragment extends Fragment {
             mFragment.performViewPatchSet();
         }
 
+        public void onReviewPressed(View v) {
+            mFragment.performReview();
+        }
+
         public void onWebLinkPressed(View v) {
             String url = (String) v.getTag();
             if (url != null) {
@@ -403,6 +407,7 @@ public class ChangeDetailsFragment extends Fragment {
                         sortRevisions(change);
                         updatePatchSetInfo(result);
                         updateChangeInfo(result);
+                        updateReviewInfo(result);
 
                         Map<String, FileInfo> files = change.revisions.get(mCurrentRevision).files;
                         mModel.filesListModel.visible = files != null && !files.isEmpty();
@@ -696,47 +701,6 @@ public class ChangeDetailsFragment extends Fragment {
         startLoadersWithValidContext();
     }
 
-    private void updatePatchSetInfo(DataResponse response) {
-        mBinding.patchSetInfo.setChangeId(response.mChange.changeId);
-        mBinding.patchSetInfo.setRevision(mCurrentRevision);
-        RevisionInfo revision = response.mChange.revisions.get(mCurrentRevision);
-        mBinding.patchSetInfo.setChange(response.mChange);
-        mBinding.patchSetInfo.setConfig(response.mProjectConfig);
-        mBinding.patchSetInfo.setModel(revision);
-        final int maxRevision = computeMaxRevisionNumber(response.mChange.revisions.values());
-        final String patchSetText = getContext().getString(R.string.change_details_header_patchsets,
-                revision.number, maxRevision);
-        mBinding.patchSetInfo.setPatchset(patchSetText);
-        mBinding.patchSetInfo.setHandlers(mEventHandlers);
-        mBinding.patchSetInfo.parentCommits.with(mEventHandlers).from(revision.commit);
-        mBinding.patchSetInfo.setHasData(true);
-    }
-
-    private int computeMaxRevisionNumber(Collection<RevisionInfo> revisions) {
-        int max = 0;
-        for (RevisionInfo revision : revisions) {
-            max = Math.max(revision.number, max);
-        }
-        return max;
-    }
-
-    private void updateChangeInfo(DataResponse response) {
-        mBinding.changeInfo.owner.with(mPicasso).from(response.mChange.owner);
-        mBinding.changeInfo.reviewers.with(mPicasso)
-                .listenOn(mOnAccountChipClickedListener)
-                .listenOn(mOnAccountChipRemovedListener)
-                .withRemovableReviewers(true)
-                .from(response.mChange);
-        mBinding.changeInfo.labels.with(mPicasso).from(response.mChange);
-        mBinding.changeInfo.setModel(response.mChange);
-        mBinding.changeInfo.setSubmitType(response.mSubmitType);
-        mBinding.changeInfo.setHandlers(mEventHandlers);
-        mBinding.changeInfo.setHasData(true);
-        mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
-        mBinding.changeInfo.setIsCurrentRevision(
-                mCurrentRevision.equals(response.mChange.currentRevision));
-    }
-
     private void startLoadersWithValidContext() {
         if (getActivity() == null) {
             return;
@@ -794,6 +758,55 @@ public class ChangeDetailsFragment extends Fragment {
     public final void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
+    }
+
+    private void updatePatchSetInfo(DataResponse response) {
+        mBinding.patchSetInfo.setChangeId(response.mChange.changeId);
+        mBinding.patchSetInfo.setRevision(mCurrentRevision);
+        RevisionInfo revision = response.mChange.revisions.get(mCurrentRevision);
+        mBinding.patchSetInfo.setChange(response.mChange);
+        mBinding.patchSetInfo.setConfig(response.mProjectConfig);
+        mBinding.patchSetInfo.setModel(revision);
+        final int maxRevision = computeMaxRevisionNumber(response.mChange.revisions.values());
+        final String patchSetText = getContext().getString(R.string.change_details_header_patchsets,
+                revision.number, maxRevision);
+        mBinding.patchSetInfo.setPatchset(patchSetText);
+        mBinding.patchSetInfo.setHandlers(mEventHandlers);
+        mBinding.patchSetInfo.parentCommits.with(mEventHandlers).from(revision.commit);
+        mBinding.patchSetInfo.setHasData(true);
+    }
+
+    private void updateChangeInfo(DataResponse response) {
+        mBinding.changeInfo.owner.with(mPicasso).from(response.mChange.owner);
+        mBinding.changeInfo.reviewers.with(mPicasso)
+                .listenOn(mOnAccountChipClickedListener)
+                .listenOn(mOnAccountChipRemovedListener)
+                .withRemovableReviewers(true)
+                .from(response.mChange);
+        mBinding.changeInfo.labels.with(mPicasso).from(response.mChange);
+        mBinding.changeInfo.setModel(response.mChange);
+        mBinding.changeInfo.setSubmitType(response.mSubmitType);
+        mBinding.changeInfo.setHandlers(mEventHandlers);
+        mBinding.changeInfo.setHasData(true);
+        mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
+        mBinding.changeInfo.setIsCurrentRevision(
+                mCurrentRevision.equals(response.mChange.currentRevision));
+    }
+
+    private void updateReviewInfo(DataResponse response) {
+        mBinding.reviewInfo.setHasData(true);
+        mBinding.reviewInfo.setModel(response.mChange);
+        mBinding.reviewInfo.setHandlers(mEventHandlers);
+        mBinding.reviewInfo.reviewLabels
+                .from(response.mChange);
+    }
+
+    private int computeMaxRevisionNumber(Collection<RevisionInfo> revisions) {
+        int max = 0;
+        for (RevisionInfo revision : revisions) {
+            max = Math.max(revision.number, max);
+        }
+        return max;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -1029,6 +1042,7 @@ public class ChangeDetailsFragment extends Fragment {
     private void updateLocked() {
         mBinding.patchSetInfo.setIsLocked(mModel.isLocked);
         mBinding.changeInfo.setIsLocked(mModel.isLocked);
+        mBinding.reviewInfo.setIsLocked(mModel.isLocked);
         mBinding.executePendingBindings();
     }
 
@@ -1036,6 +1050,7 @@ public class ChangeDetailsFragment extends Fragment {
     private void updateAuthenticatedAndOwnerStatus() {
         mBinding.patchSetInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.changeInfo.setIsAuthenticated(mModel.isAuthenticated);
+        mBinding.reviewInfo.setIsAuthenticated(mModel.isAuthenticated);
 
         Account account = Preferences.getAccount(getContext());
         mBinding.changeInfo.setIsOwner(mModel.isAuthenticated && mResponse != null
@@ -1100,5 +1115,8 @@ public class ChangeDetailsFragment extends Fragment {
                 title, mResponse.mChange.topic, true, v);
         fragment.setOnEditChanged(this::performChangeTopic);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
+    }
+
+    private void performReview() {
     }
 }
