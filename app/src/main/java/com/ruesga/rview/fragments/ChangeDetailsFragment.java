@@ -103,8 +103,6 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.MESSAGES);
         add(ChangeOptions.REVIEWED);
         add(ChangeOptions.CHECK);
-        add(ChangeOptions.PUSH_CERTIFICATES);
-        add(ChangeOptions.COMMIT_FOOTERS);
         add(ChangeOptions.WEB_LINKS);
     }};
     private static final List<ChangeOptions> MESSAGES_OPTIONS = new ArrayList<ChangeOptions>() {{
