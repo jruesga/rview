@@ -28,7 +28,7 @@ import java.util.Map;
 public class ReviewInput {
     @Nullable @SerializedName("message") public String message;
     @Nullable @SerializedName("tag") public String tag;
-    @Nullable @SerializedName("labels") public Map<String, Map<String, Integer>> labels;
+    @Nullable @SerializedName("labels") public Map<String, Integer> labels;
     @Nullable @SerializedName("comments") public Map<String, List<CommentInput>> comments;
     @Nullable @SerializedName("strict_labels") public Boolean strictLabels;
     @Nullable @SerializedName("drafts") public DraftActionType drafts;

@@ -23,6 +23,6 @@ import java.util.Map;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#review-info"
  */
 public class ReviewInfo {
-    @SerializedName("labels") public Map<String, Map<String, Integer>> labels;
+    @SerializedName("labels") public Map<String, Integer> labels;
 }
 

@@ -87,6 +87,10 @@ public class ScoresView extends LinearLayout {
         return this;
     }
 
+    public int getValue() {
+        return mValue;
+    }
+
     public ScoresView update() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         int count = mAllValues.size();

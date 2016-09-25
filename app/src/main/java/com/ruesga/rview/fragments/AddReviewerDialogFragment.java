@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,7 +25,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import com.ruesga.rview.R;
@@ -34,6 +32,7 @@ import com.ruesga.rview.adapters.ReviewersAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.AddReviewerDialogBinding;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
+import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.preferences.Constants;
 
 public class AddReviewerDialogFragment extends RevealFragmentDialog {
@@ -116,7 +115,7 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
             mModel.reviewer = reviewer.account != null
                     ? String.valueOf(reviewer.account.accountId) : reviewer.group.id;
             mBinding.setModel(mModel);
-            hideSoftKeyboard();
+            AndroidHelper.hideSoftKeyboard(getContext(), getDialog().getWindow());
         });
         ReviewersAdapter adapter = new ReviewersAdapter(getContext(), mLegacyChangeId);
         mBinding.reviewer.setAdapter(adapter);
@@ -146,19 +145,6 @@ public class AddReviewerDialogFragment extends RevealFragmentDialog {
             if (button != null) {
                 button.setEnabled(query.length() >= mBinding.reviewer.getThreshold());
             }
-        }
-    }
-
-    private void hideSoftKeyboard() {
-        if (getDialog() == null || getDialog().getWindow() == null) {
-            return;
-        }
-
-        View view = getDialog().getWindow().getCurrentFocus();
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(
-                    Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }

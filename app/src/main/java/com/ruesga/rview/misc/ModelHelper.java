@@ -18,11 +18,18 @@ package com.ruesga.rview.misc;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.google.gson.annotations.SerializedName;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
+import com.ruesga.rview.gerrit.model.ApprovalInfo;
+import com.ruesga.rview.gerrit.model.AvatarInfo;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ReviewInfo;
+import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -30,6 +37,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class ModelHelper {
@@ -95,6 +104,121 @@ public class ModelHelper {
         return sb.toString().trim();
     }
 
+    public static AccountInfo[] removeAccount(AccountInfo account, AccountInfo[] accounts) {
+        if (accounts == null) {
+            return null;
+        }
+        List<AccountInfo> newAccounts = new ArrayList<>();
+        for (AccountInfo a : accounts) {
+            if (a.accountId != account.accountId) {
+                newAccounts.add(a);
+            }
+        }
+        return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
+    }
+
+    public static ApprovalInfo[] removeApproval(AccountInfo account, ApprovalInfo[] approvals) {
+        if (approvals == null) {
+            return null;
+        }
+        List<ApprovalInfo> newApprovals = new ArrayList<>();
+        for (ApprovalInfo a : approvals) {
+            if (a.owner != null && a.owner.accountId != account.accountId) {
+                newApprovals.add(a);
+            }
+        }
+        return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
+    }
+
+    public static AccountInfo[] addReviewers(ReviewerInfo[] reviewers, AccountInfo[] accounts) {
+        List<AccountInfo> newAccounts = new ArrayList<>();
+        if (accounts != null) {
+            Collections.addAll(newAccounts, accounts);
+        }
+        for (ReviewerInfo reviewer : reviewers) {
+            boolean exists = false;
+            for (AccountInfo a : newAccounts) {
+                if (a.accountId == reviewer.accountId) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                newAccounts.add(reviewer);
+            }
+        }
+        return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
+    }
+
+    public static ApprovalInfo[] updateApprovals(
+            ReviewerInfo[] reviewers, String label, ApprovalInfo[] approvals) {
+        List<ApprovalInfo> newApprovals = new ArrayList<>();
+        if (approvals != null) {
+            Collections.addAll(newApprovals, approvals);
+        }
+        for (ReviewerInfo reviewer : reviewers) {
+            boolean exists = false;
+            for (ApprovalInfo a : newApprovals) {
+                if (a.owner.accountId == reviewer.accountId) {
+                    if (reviewer.approvals == null) {
+                        a.value = reviewer.approvals.get(label);
+                    } else {
+                        a.value = null;
+                    }
+                    a.date = new Date();
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                ApprovalInfo approvalInfo = new ApprovalInfo();
+                approvalInfo.owner = reviewer;
+                newApprovals.add(approvalInfo);
+            }
+        }
+        return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static void updateRemovableReviewers(
+            Context context, ChangeInfo change, AddReviewerResultInfo result) {
+        List<AccountInfo> newRemovableAccounts = new ArrayList<>();
+        Collections.addAll(newRemovableAccounts, change.removableReviewers);
+
+        Account account = Preferences.getAccount(context);
+        for (ReviewerInfo reviewer : result.reviewers) {
+            boolean removable = false;
+
+            // Owner of the change
+            if (change.owner.accountId == account.mAccount.accountId) {
+                removable = true;
+            }
+
+            // Reviewer is me
+            if (reviewer.accountId == account.mAccount.accountId) {
+                removable = true;
+            }
+
+            if (removable) {
+                newRemovableAccounts.add(reviewer);
+            }
+        }
+
+        change.removableReviewers = newRemovableAccounts.toArray(
+                new AccountInfo[newRemovableAccounts.size()]);
+    }
+
+    public static ReviewerInfo createReviewer(AccountInfo account, ReviewInfo review) {
+        ReviewerInfo reviewer = new ReviewerInfo();
+        reviewer.accountId = account.accountId;
+        reviewer.name = account.name;
+        reviewer.username = account.username;
+        reviewer.email = account.email;
+        reviewer.secondaryEmails = account.secondaryEmails;
+        reviewer.avatars = account.avatars;
+        reviewer.approvals = review.labels;
+        return reviewer;
+    }
 
 
     @SuppressWarnings("TryWithIdenticalCatches")

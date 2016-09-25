@@ -147,7 +147,8 @@ public class Formatter {
             return;
         }
 
-        String preparedQuote = StringHelper.prepareForQuote(StringHelper.removeLineBreaks(msg));
+        String preparedQuote = StringHelper.obtainMessageFromQuote(
+                StringHelper.removeLineBreaks(msg));
         if (!preparedQuote.contains(StringHelper.NON_PRINTABLE_CHAR)) {
             // there is not quoted messages here, just a simple message
             view.setText(preparedQuote);

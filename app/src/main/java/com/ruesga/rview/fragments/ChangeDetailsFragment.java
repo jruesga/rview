@@ -53,7 +53,11 @@ import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
+import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.gerrit.model.NotifyType;
+import com.ruesga.rview.gerrit.model.ReviewInfo;
+import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
@@ -63,6 +67,7 @@ import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
@@ -106,6 +111,7 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.WEB_LINKS);
     }};
     private static final List<ChangeOptions> MESSAGES_OPTIONS = new ArrayList<ChangeOptions>() {{
+        add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.MESSAGES);
     }};
 
@@ -446,6 +452,46 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<ReviewInfo> mReviewObserver = new RxLoaderObserver<ReviewInfo>() {
+        @Override
+        @SuppressWarnings("ConstantConditions")
+        public void onNext(ReviewInfo review) {
+            // Update internal objects
+            ReviewerInfo reviever = ModelHelper.createReviewer(
+                    Preferences.getAccount(getContext()).mAccount, review) ;
+            if (mResponse.mChange.reviewers != null) {
+                // Update reviewers
+                AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
+                mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
+                        ModelHelper.addReviewers(new ReviewerInfo[]{reviever}, reviewers));
+            }
+            if (mResponse.mChange.labels != null) {
+                // Update labels
+                for (String label : mResponse.mChange.labels.keySet()) {
+                    ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
+                    mResponse.mChange.labels.get(label).all =
+                            ModelHelper.updateApprovals(
+                                    new ReviewerInfo[]{reviever}, label, approvals);
+                }
+            }
+
+            // Refresh messages and actions
+            updateChangeInfo(mResponse);
+            updateReviewInfo(mResponse);
+            performMessagesRefresh();
+            // TODO refresh actions
+
+            // Clean the message box
+            mBinding.reviewInfo.reviewComment.setText("");
+            AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
     private final RxLoaderObserver<String> mChangeTopicObserver = new RxLoaderObserver<String>() {
         @Override
         public void onNext(String newTopic) {
@@ -485,16 +531,18 @@ public class ChangeDetailsFragment extends Fragment {
             if (mResponse.mChange.reviewers != null) {
                 for (ReviewerStatus status : mResponse.mChange.reviewers.keySet()) {
                     AccountInfo[] reviewers = mResponse.mChange.reviewers.get(status);
-                    mResponse.mChange.reviewers.put(status, removeAccount(account, reviewers));
+                    mResponse.mChange.reviewers.put(status,
+                            ModelHelper.removeAccount(account, reviewers));
                 }
             }
             if (mResponse.mChange.labels != null) {
                 for (String label : mResponse.mChange.labels.keySet()) {
                     ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
-                    mResponse.mChange.labels.get(label).all = removeApproval(account, approvals);
+                    mResponse.mChange.labels.get(label).all =
+                            ModelHelper.removeApproval(account, approvals);
                 }
             }
-            mResponse.mChange.removableReviewers = removeAccount(
+            mResponse.mChange.removableReviewers = ModelHelper.removeAccount(
                     account, mResponse.mChange.removableReviewers);
 
             updateChangeInfo(mResponse);
@@ -503,32 +551,6 @@ public class ChangeDetailsFragment extends Fragment {
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error);
-        }
-
-        private AccountInfo[] removeAccount(AccountInfo account, AccountInfo[] accounts) {
-            if (accounts == null) {
-                return null;
-            }
-            List<AccountInfo> newAccounts = new ArrayList<>();
-            for (AccountInfo a : accounts) {
-                if (a.accountId != account.accountId) {
-                    newAccounts.add(a);
-                }
-            }
-            return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
-        }
-
-        private ApprovalInfo[] removeApproval(AccountInfo account, ApprovalInfo[] approvals) {
-            if (approvals == null) {
-                return null;
-            }
-            List<ApprovalInfo> newApprovals = new ArrayList<>();
-            for (ApprovalInfo a : approvals) {
-                if (a.owner != null && a.owner.accountId != account.accountId) {
-                    newApprovals.add(a);
-                }
-            }
-            return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
         }
     };
 
@@ -547,17 +569,17 @@ public class ChangeDetailsFragment extends Fragment {
                 // Update reviewers
                 AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
                 mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
-                        addReviewers(result.reviewers, reviewers));
+                        ModelHelper.addReviewers(result.reviewers, reviewers));
             }
             if (mResponse.mChange.labels != null) {
                 // Update labels
                 for (String label : mResponse.mChange.labels.keySet()) {
                     ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
                     mResponse.mChange.labels.get(label).all =
-                            addApprovals(result.reviewers, approvals);
+                            ModelHelper.updateApprovals(result.reviewers, label, approvals);
                 }
             }
-            updateRemovableReviewers(result);
+            ModelHelper.updateRemovableReviewers(getContext(), mResponse.mChange, result);
 
             updateChangeInfo(mResponse);
         }
@@ -565,77 +587,6 @@ public class ChangeDetailsFragment extends Fragment {
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error);
-        }
-
-        private AccountInfo[] addReviewers(ReviewerInfo[] reviewers, AccountInfo[] accounts) {
-            List<AccountInfo> newAccounts = new ArrayList<>();
-            if (accounts != null) {
-                Collections.addAll(newAccounts, accounts);
-            }
-            for (ReviewerInfo reviewer : reviewers) {
-                boolean exists = false;
-                for (AccountInfo a : newAccounts) {
-                    if (a.accountId == reviewer.accountId) {
-                        exists = true;
-                        break;
-                    }
-                }
-                if (!exists) {
-                    newAccounts.add(reviewer);
-                }
-            }
-            return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
-        }
-
-        private ApprovalInfo[] addApprovals(ReviewerInfo[] reviewers, ApprovalInfo[] approvals) {
-            List<ApprovalInfo> newApprovals = new ArrayList<>();
-            if (approvals != null) {
-                Collections.addAll(newApprovals, approvals);
-            }
-            for (ReviewerInfo reviewer : reviewers) {
-                boolean exists = false;
-                for (ApprovalInfo a : newApprovals) {
-                    if (a.owner.accountId == reviewer.accountId) {
-                        exists = true;
-                        break;
-                    }
-                }
-                if (!exists) {
-                    ApprovalInfo approvalInfo = new ApprovalInfo();
-                    approvalInfo.owner = reviewer;
-                    newApprovals.add(approvalInfo);
-                    newApprovals.add(approvalInfo);
-                }
-            }
-            return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
-        }
-
-        @SuppressWarnings("ConstantConditions")
-        private void updateRemovableReviewers(AddReviewerResultInfo result) {
-            List<AccountInfo> newRemovableAccounts = new ArrayList<>();
-            Collections.addAll(newRemovableAccounts, mResponse.mChange.removableReviewers);
-
-            Account account = Preferences.getAccount(getContext());
-            for (ReviewerInfo reviewer : result.reviewers) {
-                boolean removable = false;
-
-                // Owner of the change
-                if (mResponse.mChange.owner.accountId == account.mAccount.accountId) {
-                    removable = true;
-                }
-
-                // Reviewer is me
-                if (reviewer.accountId == account.mAccount.accountId) {
-                    removable = true;
-                }
-
-                if (removable) {
-                    newRemovableAccounts.add(reviewer);
-                }
-            }
-
-            mResponse.mChange.removableReviewers = newRemovableAccounts.toArray(
-                    new AccountInfo[newRemovableAccounts.size()]);
         }
     };
 
@@ -658,6 +609,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     private RxLoader1<String, DataResponse> mChangeLoader;
     private RxLoader1<Boolean, Boolean> mStarredLoader;
+    private RxLoader1<ReviewInput, ReviewInfo> mReviewLoader;
     private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
@@ -740,6 +692,7 @@ public class ChangeDetailsFragment extends Fragment {
             mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver)
                     .start(String.valueOf(mLegacyChangeId));
             mStarredLoader = loaderManager.create("starred", this::changeStarred, mStarredObserver);
+            mReviewLoader = loaderManager.create("review", this::reviewChange, mReviewObserver);
             mChangeTopicLoader = loaderManager.create(
                     "change_topic", this::changeTopic, mChangeTopicObserver);
             mAddReviewerLoader = loaderManager.create(
@@ -852,6 +805,19 @@ public class ChangeDetailsFragment extends Fragment {
                     call.toBlocking().first();
                     return starred;
                 })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<ReviewInfo> reviewChange(final ReviewInput input) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() ->
+                    api.setChangeRevisionReview(
+                        String.valueOf(mLegacyChangeId), mCurrentRevision, input)
+                        .toBlocking().first()
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -1038,6 +1004,27 @@ public class ChangeDetailsFragment extends Fragment {
         }
     }
 
+    private void performReview() {
+        if (!mModel.isLocked) {
+            String message = StringHelper.obtainQuoteFromMessage(
+                    mBinding.reviewInfo.reviewComment.getText().toString());
+            Map<String, Integer> review = mBinding.reviewInfo.reviewLabels.getReview(false);
+
+            ReviewInput input = new ReviewInput();
+            input.drafts = DraftActionType.PUBLISH_ALL_REVISIONS;
+            input.strictLabels = true;
+            if (!review.isEmpty()) {
+                input.labels = review;
+            }
+            if (!TextUtils.isEmpty(message)) {
+                input.message = message;
+            }
+            input.notify = NotifyType.ALL;
+
+            mReviewLoader.restart(input);
+        }
+    }
+
     private void updateLocked() {
         mBinding.patchSetInfo.setIsLocked(mModel.isLocked);
         mBinding.changeInfo.setIsLocked(mModel.isLocked);
@@ -1114,8 +1101,5 @@ public class ChangeDetailsFragment extends Fragment {
                 title, mResponse.mChange.topic, true, v);
         fragment.setOnEditChanged(this::performChangeTopic);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
-    }
-
-    private void performReview() {
     }
 }

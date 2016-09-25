@@ -33,7 +33,9 @@ import com.ruesga.rview.preferences.Preferences;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -97,6 +99,20 @@ public class ReviewLabelsView extends LinearLayout {
     public ReviewLabelsView listenTo(OnReviewChanged cb) {
         mCallback = cb;
         return this;
+    }
+
+    public Map<String, Integer> getReview(boolean onlyReviewed) {
+        int children = mScoresLayout.getChildCount();
+        Map<String, Integer> review = new LinkedHashMap<>(children);
+        for (int i = 0; i < children; i++) {
+            ScoresView view = mScoresViews.get(i);
+            String label = mLabels.get(i);
+            int score = view.getValue();
+            if (!onlyReviewed || score != 0) {
+                review.put(label, score);
+            }
+        }
+        return review;
     }
 
     private void updateLabels() {

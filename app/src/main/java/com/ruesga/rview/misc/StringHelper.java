@@ -60,7 +60,7 @@ public class StringHelper {
         return sb.toString().trim();
     }
 
-    public static String prepareForQuote(String message) {
+    public static String obtainMessageFromQuote(String message) {
         String msg = QUOTE1.matcher(message).replaceAll(NON_PRINTABLE_CHAR);
         msg = QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
         do {
@@ -78,6 +78,11 @@ public class StringHelper {
             }
         } while (true);
         return msg;
+    }
+
+    public static String obtainQuoteFromMessage(String quote) {
+        // TODO Convert to quote
+        return quote;
     }
 
     public static int countOccurrences(String find, String in) {
