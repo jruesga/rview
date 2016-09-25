@@ -101,7 +101,6 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.ALL_COMMITS);
         add(ChangeOptions.ALL_FILES);
         add(ChangeOptions.MESSAGES);
-        add(ChangeOptions.CHANGE_ACTIONS);
         add(ChangeOptions.REVIEWED);
         add(ChangeOptions.CHECK);
         add(ChangeOptions.PUSH_CERTIFICATES);
