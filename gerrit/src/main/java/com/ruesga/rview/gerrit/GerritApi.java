@@ -843,8 +843,6 @@ public interface GerritApi {
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("account-id") String accountId);
 
-    // TODO Where are the Add and Update vote actions?
-
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-vote"
      */
@@ -886,7 +884,7 @@ public interface GerritApi {
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("changes/{change-id}/revisions/{revision-id}/review")
-    Observable<ReviewInfo> setChangeRevisionRelatedChanges(
+    Observable<ReviewInfo> setChangeRevisionReview(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
             @NonNull @Body ReviewInput input);

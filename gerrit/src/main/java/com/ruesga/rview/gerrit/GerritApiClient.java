@@ -183,9 +183,9 @@ public class GerritApiClient implements GerritApi {
     // ===============================
 
     private String toUnauthenticatedEndpoint(String endPoint) {
-        return mEndPoint.endsWith("/a/")
-                ? mEndPoint.substring(0, mEndPoint.length() - 2)
-                : mEndPoint;
+        return endPoint.endsWith("/a/")
+                ? endPoint.substring(0, endPoint.length() - 2)
+                : endPoint;
     }
 
     @Override
@@ -792,10 +792,10 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<ReviewInfo> setChangeRevisionRelatedChanges(@NonNull String changeId,
+    public Observable<ReviewInfo> setChangeRevisionReview(@NonNull String changeId,
             @NonNull String revisionId, @NonNull ReviewInput input) {
         return withVersionRequestCheck(
-                mService.setChangeRevisionRelatedChanges(changeId, revisionId, input));
+                mService.setChangeRevisionReview(changeId, revisionId, input));
     }
 
     @Override
