@@ -15,6 +15,8 @@
  */
 package com.ruesga.rview.misc;
 
+import android.text.TextUtils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +28,12 @@ public class StringHelper {
             = Pattern.compile(".*[^(\\w,;)]", Pattern.MULTILINE);
     private static final Pattern A_NON_WORD_CHARACTER_AT_START
             = Pattern.compile("[^\\w].*", Pattern.MULTILINE);
+
+    private static final String QUOTE_START_TAG = "[QUOTE]";
+    private static final String QUOTE_END_TAG = "[/QUOTE]";
+
+    private static final Pattern QUOTE_REGEXP
+            = Pattern.compile("^\\[QUOTE\\](.+?)\\[/QUOTE\\]$", Pattern.MULTILINE | Pattern.DOTALL);
 
 
     private static final Pattern QUOTE1 = Pattern.compile("^> ", Pattern.MULTILINE);
@@ -80,9 +88,48 @@ public class StringHelper {
         return msg;
     }
 
-    public static String obtainQuoteFromMessage(String quote) {
-        // TODO Convert to quote
-        return quote;
+    public static String obtainQuoteFromMessage(String msg) {
+        Matcher matcher = QUOTE_REGEXP.matcher(msg);
+        if (matcher.find()) {
+            StringBuilder sb = new StringBuilder();
+            int last = 0;
+            do {
+                int start = matcher.start(1) - QUOTE_START_TAG.length();
+                int end = matcher.end(1) + QUOTE_END_TAG.length();
+                if (last < start) {
+                    sb.append(msg.substring(last, start));
+                }
+
+                String quote = (" > " + matcher.group(1))
+                        .replaceAll("\n", "\n > ")
+                        .replaceAll(NON_PRINTABLE_CHAR, " > ");
+                while (true) {
+                    String m = quote;
+                    quote = quote.replaceAll(">  >", "> >");
+                    if (quote.equals(m)) {
+                        break;
+                    }
+                }
+                sb.append(quote);
+                last = end;
+            } while (matcher.find());
+            if (last < msg.length()) {
+                sb.append(msg.substring(last));
+            }
+            return sb.toString();
+        }
+        return msg;
+    }
+
+    public static String quoteMessage(String prev, String msg) {
+        msg = QUOTE_START_TAG + StringHelper.obtainMessageFromQuote(
+                StringHelper.removeLineBreaks(msg))  + QUOTE_END_TAG + "\n";
+        if (!TextUtils.isEmpty(prev) && !prev.endsWith("\n")) {
+            msg = prev + "\n" + msg;
+        } else {
+            msg = prev + msg;
+        }
+        return msg;
     }
 
     public static int countOccurrences(String find, String in) {

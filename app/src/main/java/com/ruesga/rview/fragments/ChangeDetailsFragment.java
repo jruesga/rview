@@ -187,6 +187,10 @@ public class ChangeDetailsFragment extends Fragment {
             mFragment.performReview();
         }
 
+        public void onReplyCommentPressed(View v) {
+            mFragment.performReplyComment((int) v.getTag());
+        }
+
         public void onWebLinkPressed(View v) {
             String url = (String) v.getTag();
             if (url != null) {
@@ -360,6 +364,10 @@ public class ChangeDetailsFragment extends Fragment {
             return mMessages != null ? mMessages.length : 0;
         }
 
+        String getMessage(int position) {
+            return mMessages[position].message;
+        }
+
         @Override
         public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -377,6 +385,7 @@ public class ChangeDetailsFragment extends Fragment {
             PicassoHelper.bindAvatar(context, PicassoHelper.getPicassoClient(context),
                     message.author, holder.mBinding.avatar,
                     PicassoHelper.getDefaultAvatar(context, R.color.primaryDark));
+            holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);
             holder.mBinding.setHandlers(mEventHandlers);
         }
@@ -482,7 +491,7 @@ public class ChangeDetailsFragment extends Fragment {
             // TODO refresh actions
 
             // Clean the message box
-            mBinding.reviewInfo.reviewComment.setText("");
+            mBinding.reviewInfo.reviewComment.setText(null);
             AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
         }
 
@@ -749,8 +758,7 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.reviewInfo.setHandlers(mEventHandlers);
         mBinding.reviewInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
-        mBinding.reviewInfo.reviewLabels
-                .from(response.mChange);
+        mBinding.reviewInfo.reviewLabels.from(response.mChange);
     }
 
     private int computeMaxRevisionNumber(Collection<RevisionInfo> revisions) {
@@ -1101,5 +1109,13 @@ public class ChangeDetailsFragment extends Fragment {
                 title, mResponse.mChange.topic, true, v);
         fragment.setOnEditChanged(this::performChangeTopic);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
+    }
+
+    private void performReplyComment(int position) {
+        String currentMessage = mBinding.reviewInfo.reviewComment.getText().toString();
+        String replyMessage = mMessageAdapter.getMessage(position);
+        String msg = StringHelper.quoteMessage(currentMessage, replyMessage);
+        mBinding.reviewInfo.reviewComment.setText(msg);
+        mBinding.reviewInfo.reviewComment.setSelection(msg.length());
     }
 }

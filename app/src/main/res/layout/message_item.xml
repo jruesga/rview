@@ -21,6 +21,7 @@
 
     <data>
         <import type="android.view.View" />
+        <variable name="index" type="java.lang.Integer" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeMessageInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
@@ -51,7 +52,7 @@
             android:textColor="?android:attr/textColorPrimary" />
 
         <com.ruesga.rview.widget.StyleableTextView
-            android:id="@+id/tv_timestamp"
+            android:id="@+id/timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -66,13 +67,31 @@
             app:prettyDateTime="@{model.date}"
             android:textAppearance="@style/TextAppearance.VerySmall" />
 
+        <ImageView
+            android:id="@+id/reply"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="3dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/timestamp"
+            app:srcCompat="@drawable/ic_reply"
+            android:tint="?attr/colorAccent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onReplyCommentPressed}"
+            android:tag="@{index}"
+            tools:ignore="ContentDescription"/>
+
         <com.ruesga.rview.widget.RegExLinkifyTextView
+            android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_below="@id/author"
             android:layout_toRightOf="@id/avatar"
             android:layout_toEndOf="@id/avatar"
+            android:layout_toLeftOf="@id/reply"
+            android:layout_toStartOf="@id/reply"
             android:layout_alignWithParentIfMissing="true"
             app:userMessage="@{model.message}"
             app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
