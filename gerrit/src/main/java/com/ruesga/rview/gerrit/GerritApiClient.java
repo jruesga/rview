@@ -586,7 +586,7 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<ChangeInfo> rebaseChange(
-            @NonNull String changeId, @NonNull RebaseInput input) {
+            @NonNull String changeId, @Nullable RebaseInput input) {
         return withVersionRequestCheck(mService.rebaseChange(changeId, input));
     }
 

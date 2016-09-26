@@ -600,7 +600,7 @@ public interface GerritApi {
     @POST("changes/{change-id}/rebase")
     Observable<ChangeInfo> rebaseChange(
             @NonNull @Path("change-id") String changeId,
-            @NonNull @Body RebaseInput input);
+            @Nullable @Body RebaseInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#move-change"
