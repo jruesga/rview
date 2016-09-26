@@ -29,6 +29,7 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.gerrit.model.ReviewInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
+import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -186,7 +187,7 @@ public class ModelHelper {
             boolean exists = false;
             for (ApprovalInfo a : newApprovals) {
                 if (a.owner.accountId == reviewer.accountId) {
-                    if (reviewer.approvals == null) {
+                    if (reviewer.approvals != null) {
                         a.value = reviewer.approvals.get(label);
                     } else {
                         a.value = null;
@@ -244,6 +245,36 @@ public class ModelHelper {
         reviewer.avatars = account.avatars;
         reviewer.approvals = review.labels;
         return reviewer;
+    }
+
+    public static boolean isReviewer(AccountInfo account, ChangeInfo change) {
+        if (change.reviewers != null) {
+            for (ReviewerStatus status : change.reviewers.keySet()) {
+                AccountInfo[] accounts = change.reviewers.get(status);
+                if (accounts != null) {
+                    for (AccountInfo a : accounts) {
+                        if (a.accountId == account.accountId) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (change.labels != null) {
+            for (String label : change.labels.keySet()) {
+                LabelInfo labelInfo = change.labels.get(label);
+                if (labelInfo != null && labelInfo.all != null) {
+                    for (ApprovalInfo approval : labelInfo.all) {
+                        if (approval.owner.accountId == account.accountId) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public static String checkNeedsLabel(Map<String, LabelInfo> labels) {

@@ -28,6 +28,7 @@
         <variable name="isLocked" type="java.lang.Boolean" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="isOwner" type="java.lang.Boolean" />
+        <variable name="isReviewer" type="java.lang.Boolean" />
         <variable name="isTwoPane" type="java.lang.Boolean" />
         <variable name="isCurrentRevision" type="java.lang.Boolean" />
 
@@ -189,6 +190,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:visibility="@{(model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                         android:padding="5dp">
                         <com.ruesga.rview.widget.StyleableTextView
                             android:layout_width="wrap_content"
@@ -208,7 +210,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp"
-                            android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; !isOwner ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; !isOwner &amp;&amp; (isReviewer == null || !isReviewer) ? View.VISIBLE : View.GONE}"
                             android:onClick="@{handlers::onAddMeAsReviewerPressed}"
                             android:background="?attr/selectableItemBackground"
                             android:text="@string/change_details_add_me_as_reviewer"

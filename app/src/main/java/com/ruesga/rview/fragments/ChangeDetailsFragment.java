@@ -16,7 +16,6 @@
 package com.ruesga.rview.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -35,7 +34,6 @@ import android.view.ViewGroup;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
-import com.ruesga.rview.RelatedChangesActivity;
 import com.ruesga.rview.adapters.PatchSetsAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
@@ -478,11 +476,9 @@ public class ChangeDetailsFragment extends Fragment {
 
     private final RxLoaderObserver<ReviewInfo> mReviewObserver = new RxLoaderObserver<ReviewInfo>() {
         @Override
-        @SuppressWarnings("ConstantConditions")
         public void onNext(ReviewInfo review) {
             // Update internal objects
-            ReviewerInfo reviever = ModelHelper.createReviewer(
-                    Preferences.getAccount(getContext()).mAccount, review) ;
+            ReviewerInfo reviever = ModelHelper.createReviewer(mAccount.mAccount, review) ;
             if (mResponse.mChange.reviewers != null) {
                 // Update reviewers
                 AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
@@ -592,18 +588,6 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
-    private final RxLoaderObserver<Boolean> mActionObserver = new RxLoaderObserver<Boolean>() {
-        @Override
-        public void onNext(Boolean value) {
-            forceRefresh();
-        }
-
-        @Override
-        public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
-        }
-    };
-
     private final RxLoaderObserver<AddReviewerResultInfo> mAddReviewerObserver
             = new RxLoaderObserver<AddReviewerResultInfo>() {
         @Override
@@ -640,6 +624,19 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<Boolean> mActionObserver = new RxLoaderObserver<Boolean>() {
+        @Override
+        public void onNext(Boolean value) {
+            forceRefresh();
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
+
     private final OnAccountChipClickedListener mOnAccountChipClickedListener
             = this::performAccountClicked;
     private final OnAccountChipRemovedListener mOnAccountChipRemovedListener
@@ -667,6 +664,8 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader<Map<String, ActionInfo>> mActionsRefreshLoader;
     private RxLoader2<String, String[], Boolean> mActionLoader;
     private int mLegacyChangeId;
+
+    private Account mAccount;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
         ChangeDetailsFragment fragment = new ChangeDetailsFragment();
@@ -709,9 +708,9 @@ public class ChangeDetailsFragment extends Fragment {
 
         if (mFileAdapter == null) {
             // Set authenticated mode
-            Account account = Preferences.getAccount(getContext());
-            if (account != null) {
-                mModel.isAuthenticated = account.hasAuthenticatedAccessMode();
+            mAccount = Preferences.getAccount(getContext());
+            if (mAccount != null) {
+                mModel.isAuthenticated = mAccount.hasAuthenticatedAccessMode();
             }
             updateAuthenticatedAndOwnerStatus();
 
@@ -798,6 +797,8 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.changeInfo.setActions(response.mActions);
         mBinding.changeInfo.setHandlers(mEventHandlers);
         mBinding.changeInfo.setHasData(true);
+        mBinding.changeInfo.setIsReviewer(ModelHelper.isReviewer(
+                mAccount.mAccount, mResponse.mChange));
         mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
         mBinding.changeInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
@@ -1147,15 +1148,13 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.executePendingBindings();
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void updateAuthenticatedAndOwnerStatus() {
         mBinding.patchSetInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.changeInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.reviewInfo.setIsAuthenticated(mModel.isAuthenticated);
 
-        Account account = Preferences.getAccount(getContext());
         mBinding.changeInfo.setIsOwner(mModel.isAuthenticated && mResponse != null
-                && mResponse.mChange.owner.accountId == account.mAccount.accountId);
+                && mResponse.mChange.owner.accountId == mAccount.mAccount.accountId);
         mBinding.executePendingBindings();
     }
 
@@ -1178,7 +1177,7 @@ public class ChangeDetailsFragment extends Fragment {
     @SuppressWarnings("ConstantConditions")
     private void performDownloadPatchSet() {
         DownloadFormat downloadFormat = Preferences.getAccountDownloadFormat(
-                getContext(), Preferences.getAccount(getContext()));
+                getContext(), mAccount);
 
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
