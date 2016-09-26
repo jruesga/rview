@@ -16,19 +16,48 @@
 package com.ruesga.rview;
 
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
+import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.preferences.Constants;
+
+import java.util.List;
+
+import me.tatarka.rxloader.RxLoaderManager;
+import me.tatarka.rxloader.RxLoaderManagerCompat;
+import me.tatarka.rxloader.RxLoaderObserver;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class ChangeDetailsActivity extends BaseActivity {
 
     private static final String FRAGMENT_TAG = "details";
+
+    private final RxLoaderObserver<ChangeInfo> mChangeObserver = new RxLoaderObserver<ChangeInfo>() {
+                @Override
+                public void onNext(ChangeInfo change) {
+                    performShowChange(null, change.legacyChangeId, change.changeId);
+                }
+
+                @Override
+                public void onError(Throwable error) {
+                    notifyInvalidArgsAndFinish();
+                }
+            };
 
     private ContentBinding mBinding;
 
@@ -51,15 +80,72 @@ public class ChangeDetailsActivity extends BaseActivity {
             finish();
             return;
         }
-        int legacyChangeId = getIntent().getIntExtra(Constants.EXTRA_LEGACY_CHANGE_ID, -1);
-        if (legacyChangeId == -1) {
-            finish();
-            return;
-        }
-        String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
 
         // Setup the title
         setupToolbar();
+
+        if (getIntent().getData() != null) {
+            Uri data = getIntent().getData();
+            String scheme = data.getScheme();
+            if (!scheme.equals(getPackageName())
+                    && !scheme.equals("http") && !scheme.equals("https")) {
+                notifyInvalidArgsAndFinish();
+                return;
+            }
+
+            // Gather change id
+            String host = data.getHost();
+            String query = StringHelper.getSafeLastPathSegment(data);
+            if (TextUtils.isEmpty(query)) {
+                notifyInvalidArgsAndFinish();
+                return;
+            }
+
+            ChangeQuery filter;
+            switch (host) {
+                case "change":
+                    filter = new ChangeQuery().change(query);
+                    performGatherChangeId(filter);
+                    break;
+
+                case "commit":
+                    filter = new ChangeQuery().commit(query);
+                    performGatherChangeId(filter);
+                    break;
+
+                default:
+                    try {
+                        int legacyChangeId = Integer.valueOf(query);
+                        filter = new ChangeQuery().change(String.valueOf(legacyChangeId));
+                        performGatherChangeId(filter);
+                        return;
+                    } catch (NumberFormatException ex) {
+                        // Ignore. Not a valid change-id
+                    }
+
+                    Toast.makeText(this, R.string.exception_cannot_handle_link,
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                    break;
+            }
+        } else {
+            // Open the change directly
+            int legacyChangeId = getIntent().getIntExtra(Constants.EXTRA_LEGACY_CHANGE_ID, -1);
+            if (legacyChangeId == -1) {
+                finish();
+                return;
+            }
+            String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
+            performShowChange(savedInstanceState, legacyChangeId, changeId);
+        }
+    }
+
+    private void performGatherChangeId(ChangeQuery filter) {
+        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+        loaderManager.create("fetch", this::fetchChangeId, mChangeObserver).start(filter);
+    }
+
+    private void performShowChange(Bundle savedInstanceState, int legacyChangeId, String changeId) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
             getSupportActionBar().setSubtitle(changeId);
@@ -73,6 +159,21 @@ public class ChangeDetailsActivity extends BaseActivity {
             fragment = ChangeDetailsFragment.newInstance(legacyChangeId);
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
+
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<ChangeInfo> fetchChangeId(ChangeQuery query) {
+        final GerritApi api = ModelHelper.getGerritApi(this);
+        return Observable.fromCallable(() -> {
+                    List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).toBlocking().first();
+                    if (changes != null && !changes.isEmpty()) {
+                        return changes.get(0);
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
@@ -96,4 +197,10 @@ public class ChangeDetailsActivity extends BaseActivity {
         return mBinding;
     }
 
+    private void notifyInvalidArgsAndFinish() {
+        Toast.makeText(this, getString(
+                R.string.exception_cannot_handle_link, getIntent().getData().toString()),
+                Toast.LENGTH_SHORT).show();
+        finish();
+    }
 }

@@ -149,4 +149,16 @@ public class StringHelper {
         }
         return uri;
     }
+
+    public static String getSafeLastPathSegment(Uri uri) {
+        if (uri.getLastPathSegment() != null) {
+            return uri.getLastPathSegment();
+        }
+
+        String u = uri.toString();
+        if (u.endsWith("/")) {
+            u = u.substring(0, u.length() - 1);
+        }
+        return u.substring(u.lastIndexOf("/") + 1);
+    }
 }

@@ -45,15 +45,38 @@
         <activity
             android:name=".ChangeDetailsActivity"
             android:parentActivityName=".MainActivity">
-            <!-- FIXME Remove -->
+            <!-- FIXME Remove
+            android:exported="false"
+             -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
         </activity>
+        <activity-alias
+            android:name=".ExternalChangeDetailsActivity"
+            android:targetActivity=".ChangeDetailsActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.ruesga.rview" android:host="change" android:pathPattern="/I.*" />
+                <data android:scheme="com.ruesga.rview" android:host="commit" android:pathPattern="/.*" />
+                <data android:scheme="http" android:host="*" android:pathPattern="/#/c/.*" />
+                <data android:scheme="https" android:host="*" android:pathPattern="/#/c/.*" />
+                <data android:scheme="http" android:host=".*review.*" android:pathPattern="/.*" />
+                <data android:scheme="https" android:host=".*review.*" android:pathPattern="/.*" />
+                <data android:scheme="http" android:host=".*gerrit.*" android:pathPattern="/.*" />
+                <data android:scheme="https" android:host=".*gerrit.*" android:pathPattern="/.*" />
+                <data android:scheme="http" android:host="*" android:pathPattern="/gerrit/.*" />
+                <data android:scheme="https" android:host="*" android:pathPattern="/gerrit/.*" />
+            </intent-filter>
+        </activity-alias>
 
         <activity
             android:name=".ChangeListByFilterActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:exported="false" />
 
         <activity
             android:name=".RelatedChangesActivity"
