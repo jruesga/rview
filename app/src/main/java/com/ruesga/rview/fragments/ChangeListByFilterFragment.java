@@ -56,7 +56,7 @@ public class ChangeListByFilterFragment extends ChangeListFragment {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
-                Observable.just(getCurrentData()),
+                Observable.just(getCurrentData(start == 0)),
                 api.getChanges(query, count, start, OPTIONS),
                 Observable.just(count),
                 this::combineChanges
@@ -79,10 +79,8 @@ public class ChangeListByFilterFragment extends ChangeListFragment {
         final int itemsToFetch = Preferences.getAccountFetchedItems(
                 getContext(), Preferences.getAccount(getContext()));
         final int count = itemsToFetch + FETCHED_MORE_CHANGES_THRESHOLD;
-        final int start = getCurrentData().size() - FETCHED_MORE_CHANGES_THRESHOLD;
+        final int start = getCurrentData(false).size() - FETCHED_MORE_CHANGES_THRESHOLD;
         getChangesLoader().restart(count, start);
     }
-
-
 
 }

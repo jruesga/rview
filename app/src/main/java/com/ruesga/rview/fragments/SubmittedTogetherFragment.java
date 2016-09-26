@@ -54,7 +54,7 @@ public class SubmittedTogetherFragment extends ChangeListFragment {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
-                Observable.just(getCurrentData()),
+                Observable.just(getCurrentData(start == 0)),
                 Observable.fromCallable(() -> {
                     ServerVersion version = api.getServerVersion().toBlocking().first();
                     if (version.getVersion() >= 2.12) {

@@ -57,7 +57,7 @@ public class RevisionRelatedChangesFragment extends ChangeListFragment {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
-                Observable.just(getCurrentData()),
+                Observable.just(getCurrentData(start == 0)),
                 Observable.fromCallable(() -> fetchChanges(api,
                         api.getChangeRevisionRelatedChanges(
                                 legacyChangeId, revisionId).toBlocking().first().changes)),

@@ -244,7 +244,10 @@ public abstract class ChangeListFragment extends SelectableFragment {
         return mChangesLoader;
     }
 
-    List<ChangeInfo> getCurrentData() {
+    List<ChangeInfo> getCurrentData(boolean forceRefresh) {
+        if (forceRefresh) {
+            return Collections.unmodifiableList(new ArrayList<>());
+        }
         return Collections.unmodifiableList(mAdapter.mData);
     }
 
