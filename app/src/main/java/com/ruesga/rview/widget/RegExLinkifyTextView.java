@@ -85,18 +85,27 @@ public class RegExLinkifyTextView extends TextView {
                 for (final RegExLink regEx : mRegEx) {
                     final Matcher matcher = regEx.mPattern.matcher(text);
                     while (matcher.find()) {
-                        final String url = matcher.group();
+                        String group = matcher.group();
+                        int start = matcher.start();
+                        int end = matcher.end();
+                        if (group.endsWith("/.")) {
+                            // Try to deal with phrases "." catches by the regexp (this shouldn't
+                            // be the case for the 99% of the urls)
+                            group = group.substring(0, group.length() - 1);
+                            end--;
+                        }
+                        final String url = group;
                         span.setSpan(new ClickableSpan() {
                             @Override
                             public void onClick(View v) {
                                 // Click on span doesn't provide sound feedback it the text view doesn't
                                 // handle a click event. Just perform a click effect.
-                                String link = regEx.mLink.replace("$1", url);
                                 v.playSoundEffect(SoundEffectConstants.CLICK);
+                                String link = regEx.mLink.replace("$1", url);
                                 AndroidHelper.openUriInCustomTabs((Activity) getContext(),
                                         AndroidHelper.buildUriAndEnsureScheme(link));
                             }
-                        }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
                 }
             }
