@@ -125,12 +125,15 @@
 
     <!-- Changes -->
     <string name="change_merge_conflict">Merge Conflict</string>
-    <string name="change_score_blocking">\u2717</string>
-    <string name="change_score_rejected">-2</string>
-    <string name="change_score_disliked">-1</string>
-    <string name="change_score_recommended">+1</string>
-    <string name="change_score_approved">\u2713</string>
-    <string name="change_score_no_score">\u0020</string>
+    <string name="change_score_blocking" translatable="false">\u2717</string>
+    <string name="change_score_rejected" translatable="false">-2</string>
+    <string name="change_score_disliked" translatable="false">-1</string>
+    <string name="change_score_recommended" translatable="false">+1</string>
+    <string name="change_score_approved" translatable="false">\u2713</string>
+    <string name="change_score_no_score" translatable="false">\u0020</string>
+
+    <!-- Filters -->
+    <string name="filter_unnamed">Unnamed</string>
 
     <!-- Change Details -->
     <string name="change_details_title">Change #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>

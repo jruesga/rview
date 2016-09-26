@@ -95,6 +95,24 @@ public class ModelHelper {
         return urls;
     }
 
+    public static String getAccountDisplayName(AccountInfo account) {
+        if (!TextUtils.isEmpty(account.name)) {
+            return account.name;
+        }
+        if (!TextUtils.isEmpty(account.username)) {
+            return account.username;
+        }
+        if (!TextUtils.isEmpty(account.email)) {
+            return account.email;
+        }
+        return String.valueOf(account.accountId);
+    }
+
+    public static String getSafeAccountOwner(AccountInfo account) {
+        return TextUtils.isEmpty(account.username)
+                ? String.valueOf(account.accountId) : account.username;
+    }
+
     public static String formatAccountWithEmail(AccountInfo account) {
         StringBuilder sb = new StringBuilder();
         if (!TextUtils.isEmpty(account.name)) {

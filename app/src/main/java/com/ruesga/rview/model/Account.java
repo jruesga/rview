@@ -23,6 +23,7 @@ import android.util.Base64;
 
 import com.google.gson.annotations.SerializedName;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 
 public class Account implements Parcelable, Comparable<Account> {
@@ -44,16 +45,7 @@ public class Account implements Parcelable, Comparable<Account> {
     }
 
     public String getAccountDisplayName() {
-        if (!TextUtils.isEmpty(mAccount.name)) {
-            return mAccount.name;
-        }
-        if (!TextUtils.isEmpty(mAccount.username)) {
-            return mAccount.username;
-        }
-        if (!TextUtils.isEmpty(mAccount.email)) {
-            return mAccount.email;
-        }
-        return String.valueOf(mAccount.accountId);
+        return ModelHelper.getAccountDisplayName(mAccount);
     }
 
     public String getRepositoryDisplayName() {

@@ -44,7 +44,7 @@ import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.NoConnectivityException;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
-import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.wizard.WizardActivity;
@@ -408,12 +408,12 @@ public class AccountPageFragment extends WizardPageFragment {
 
     private void openHttpPasswordUrl() {
         final String url = mModel.repoUrl + GerritApi.HTTP_PASSWORD_URI;
-        AndroidHelper.openUriInCustomTabs(getActivity(), url);
+        ActivityHelper.openUriInCustomTabs(getActivity(), url);
     }
 
     private void openSignInUrl() {
         final String url = mModel.repoUrl + GerritApi.LOGIN_URI;
-        AndroidHelper.openUriInCustomTabs(getActivity(), url);
+        ActivityHelper.openUriInCustomTabs(getActivity(), url);
     }
 
     private void openHelp() {

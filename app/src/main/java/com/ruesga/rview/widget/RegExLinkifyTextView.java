@@ -26,7 +26,9 @@ import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.TextView;
 
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.StringHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,8 +104,8 @@ public class RegExLinkifyTextView extends TextView {
                                 // handle a click event. Just perform a click effect.
                                 v.playSoundEffect(SoundEffectConstants.CLICK);
                                 String link = regEx.mLink.replace("$1", url);
-                                AndroidHelper.openUriInCustomTabs((Activity) getContext(),
-                                        AndroidHelper.buildUriAndEnsureScheme(link));
+                                ActivityHelper.openUriInCustomTabs((Activity) getContext(),
+                                        StringHelper.buildUriAndEnsureScheme(link));
                             }
                         }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }

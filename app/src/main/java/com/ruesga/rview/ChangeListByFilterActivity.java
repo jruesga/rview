@@ -21,13 +21,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ContentBinding;
-import com.ruesga.rview.fragments.RelatedChangesFragment;
+import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.preferences.Constants;
 
-public class RelatedChangesActivity extends ChangeListBaseActivity {
+public class ChangeListByFilterActivity extends ChangeListBaseActivity {
 
     private int mSelectedChangeId = INVALID_ITEM;
 
@@ -46,33 +47,21 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
             finish();
             return;
         }
-        int legacyChangeId = getIntent().getIntExtra(Constants.EXTRA_LEGACY_CHANGE_ID, -1);
-        if (legacyChangeId == -1) {
+        String filter = getIntent().getStringExtra(Constants.EXTRA_FILTER);
+        if (TextUtils.isEmpty(filter)) {
             finish();
             return;
         }
-        String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
-        if (changeId == null) {
-            finish();
-            return;
+        String title = getIntent().getStringExtra(Constants.EXTRA_TITLE);
+        if (TextUtils.isEmpty(title)) {
+            title = getString(R.string.filter_unnamed);
         }
-        String projectId = getIntent().getStringExtra(Constants.EXTRA_PROJECT_ID);
-        if (projectId == null) {
-            finish();
-            return;
-        }
-        String revisionId = getIntent().getStringExtra(Constants.EXTRA_REVISION_ID);
-        if (revisionId == null) {
-            finish();
-            return;
-        }
-        String topic = getIntent().getStringExtra(Constants.EXTRA_TOPIC);
 
         // Setup the title
         setupToolbar();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
-            getSupportActionBar().setSubtitle(changeId);
+            getSupportActionBar().setTitle(title);
+            getSupportActionBar().setSubtitle(filter);
         }
 
         if (savedInstanceState != null) {
@@ -90,18 +79,16 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
                 }
                 tx.commit();
             } else {
-                openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId, topic);
+                openChangeListByFilterFragment(filter);
             }
         } else {
-            openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId, topic);
+            openChangeListByFilterFragment(filter);
         }
     }
 
-    private void openRelatedChangesFragment(int legacyChangeId, String changeId,
-            String projectId, String revisionId, String topic) {
+    private void openChangeListByFilterFragment(String filter) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = RelatedChangesFragment.newInstance(
-                legacyChangeId, changeId, projectId, revisionId, topic);
+        Fragment fragment = ChangeListByFilterFragment.newInstance(filter);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG_LIST);
         tx.commit();
     }

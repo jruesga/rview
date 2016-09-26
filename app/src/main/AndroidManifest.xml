@@ -52,6 +52,10 @@
         </activity>
 
         <activity
+            android:name=".ChangeListByFilterActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".RelatedChangesActivity"
             android:parentActivityName=".ChangeDetailsActivity"
             android:exported="false">

@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.net.Uri;
 import android.text.TextUtils;
 
 import java.util.regex.Matcher;
@@ -138,5 +139,14 @@ public class StringHelper {
         Matcher matcher = pattern.matcher(in);
         while (matcher.find()) count++;
         return count;
+    }
+
+    public static Uri buildUriAndEnsureScheme(String src) {
+        Uri uri = Uri.parse(src);
+        if (uri.getScheme() == null) {
+            // Assume we are talking about an http url
+            uri = Uri.parse("http://" + src);
+        }
+        return uri;
     }
 }

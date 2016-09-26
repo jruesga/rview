@@ -45,6 +45,7 @@ import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
 import com.ruesga.rview.exceptions.OperationFailedException;
 import com.ruesga.rview.fragments.EditDialogFragment.OnEditChanged;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.AbandonInput;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ActionInfo;
@@ -71,6 +72,7 @@ import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.TopicInput;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
@@ -206,7 +208,7 @@ public class ChangeDetailsFragment extends Fragment {
         public void onWebLinkPressed(View v) {
             String url = (String) v.getTag();
             if (url != null) {
-                AndroidHelper.openUriInCustomTabs(mFragment.getActivity(), url);
+                ActivityHelper.openUriInCustomTabs(mFragment.getActivity(), url);
             }
         }
 
@@ -781,7 +783,10 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void updateChangeInfo(DataResponse response) {
-        mBinding.changeInfo.owner.with(mPicasso).from(response.mChange.owner);
+        mBinding.changeInfo.owner
+                .with(mPicasso)
+                .listenOn(mOnAccountChipClickedListener)
+                .from(response.mChange.owner);
         mBinding.changeInfo.reviewers.with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnAccountChipRemovedListener)
@@ -1085,7 +1090,9 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performAccountClicked(AccountInfo account) {
-        // TODO Open change list with account filter
+        ChangeQuery filter = new ChangeQuery().owner(ModelHelper.getSafeAccountOwner(account));
+        String title = ModelHelper.getAccountDisplayName(account);
+        ActivityHelper.openChangeListByFilter(getContext(), title, filter);
     }
 
     private void performAddReviewer(String reviewer) {
@@ -1170,7 +1177,7 @@ public class ChangeDetailsFragment extends Fragment {
         Uri uri = api.getRevisionUri(
                 String.valueOf(mLegacyChangeId), String.valueOf(revision.number));
 
-        AndroidHelper.openUriInCustomTabs(getActivity(), uri);
+        ActivityHelper.openUriInCustomTabs(getActivity(), uri);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -1183,7 +1190,7 @@ public class ChangeDetailsFragment extends Fragment {
         Uri uri = api.getDownloadRevisionUri(
                 String.valueOf(mLegacyChangeId), mCurrentRevision, downloadFormat);
 
-        AndroidHelper.downloadUri(getContext(), uri, downloadFormat.mMimeType);
+        ActivityHelper.downloadUri(getContext(), uri, downloadFormat.mMimeType);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -1192,7 +1199,8 @@ public class ChangeDetailsFragment extends Fragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         Uri uri = api.getChangeUri(String.valueOf(mLegacyChangeId));
 
-        AndroidHelper.shareTextPlain(getContext(), uri.toString(), getString(R.string.action_share));
+        ActivityHelper.shareTextPlain(
+                getContext(), uri.toString(), getString(R.string.action_share));
     }
 
     private void performShowAddReviewerDialog(View v) {
