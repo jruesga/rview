@@ -38,6 +38,7 @@ public class ChangeInfo {
     @SerializedName("reviewed") public boolean reviewed;
     @SerializedName("submit_type") public SubmitType submitType;
     @SerializedName("mergeable") public boolean mergeable;
+    @SerializedName("submittable") public boolean submittable;
     @SerializedName("insertions") public int insertions;
     @SerializedName("deletions") public int deletions;
     @SerializedName("_number") public int legacyChangeId;

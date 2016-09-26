@@ -42,10 +42,10 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp"
-                android:maxLines="1"
                 android:inputType="textNoSuggestions"
                 android:selectAllOnFocus="true"
-                android:text="@={model.value}">
+                android:text="@={model.value}"
+                android:hint="@{model.hint}">
                 <requestFocus />
             </android.support.design.widget.TextInputEditText>
         </android.support.design.widget.TextInputLayout>

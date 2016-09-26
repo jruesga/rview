@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,11 +37,14 @@ public class EditDialogFragment extends RevealFragmentDialog {
 
     private static final String EXTRA_TITLE = "title";
     private static final String EXTRA_VALUE = "value";
+    private static final String EXTRA_HINT = "hint";
+    private static final String EXTRA_ACTION = "action";
     private static final String EXTRA_ALLOW_EMPTY = "allow_empty";
 
     @ProguardIgnored
     public static class Model {
         public String value;
+        public String hint;
         boolean allowEmpty;
     }
 
@@ -64,12 +68,14 @@ public class EditDialogFragment extends RevealFragmentDialog {
     };
 
 
-    public static EditDialogFragment newInstance(
-            String title, String value, boolean allowEmpty, View anchor) {
+    public static EditDialogFragment newInstance(String title, String value,
+                String action, String hint, boolean allowEmpty, View anchor) {
         EditDialogFragment fragment = new EditDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_TITLE, title);
         arguments.putString(EXTRA_VALUE, value);
+        arguments.putString(EXTRA_ACTION, action);
+        arguments.putString(EXTRA_HINT, hint);
         arguments.putBoolean(EXTRA_ALLOW_EMPTY, allowEmpty);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
         fragment.setArguments(arguments);
@@ -92,21 +98,23 @@ public class EditDialogFragment extends RevealFragmentDialog {
     @Override
     public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
         String title = getArguments().getString(EXTRA_TITLE);
+        String action = getArguments().getString(EXTRA_ACTION);
+        if (TextUtils.isEmpty(action)) {
+            action = getString(R.string.action_change);
+        }
         builder.setTitle(title)
                 .setView(onCreateView(LayoutInflater.from(getContext()), null, savedInstanceState))
                 .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.action_change, (dialog, which) -> performEditChanged());
+                .setPositiveButton(action, (dialog, which) -> performEditChanged());
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mModel.value = getArguments().getString(EXTRA_VALUE);
-        if (mModel.value == null) {
-            mModel.value = "";
-        }
+        mModel.hint = getArguments().getString(EXTRA_HINT);
         mModel.allowEmpty = getArguments().getBoolean(EXTRA_ALLOW_EMPTY, false);
-        mOriginalValue = mModel.value;
+        mOriginalValue = mModel.value == null ? "" : mModel.value;
     }
 
     @Override
@@ -119,7 +127,7 @@ public class EditDialogFragment extends RevealFragmentDialog {
 
     @Override
     public void onDialogReveled() {
-        enabledOrDisableButtons(mModel.value);
+        enabledOrDisableButtons(mModel.value == null ? "" : mModel.value);
         mBinding.edit.clearFocus();
         mBinding.edit.requestFocus();
         mBinding.edit.selectAll();
@@ -140,8 +148,9 @@ public class EditDialogFragment extends RevealFragmentDialog {
             final AlertDialog dialog = ((AlertDialog) getDialog());
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             if (button != null) {
-                button.setEnabled(!value.equals(mOriginalValue) &&
-                        (!value.isEmpty() || (value.isEmpty() && mModel.allowEmpty)));
+                button.setEnabled(
+                        (!value.equals(mOriginalValue) || (value.isEmpty() && mModel.allowEmpty))
+                        && (!value.isEmpty() || (value.isEmpty() && mModel.allowEmpty)));
             }
         }
     }

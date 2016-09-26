@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.LabelItemBinding;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.misc.ModelHelper;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class LabelsView extends LinearLayout {
 
     public LabelsView from(ChangeInfo change) {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        List<String> labels = sortLabels(change);
+        List<String> labels = ModelHelper.sortLabels(change.labels);
 
         int count = labels.size();
         int children = getChildCount();
@@ -79,14 +80,5 @@ public class LabelsView extends LinearLayout {
         }
 
         return this;
-    }
-
-    private List<String> sortLabels(ChangeInfo change) {
-        List<String> labels = new ArrayList<>();
-        if (change.labels != null) {
-            labels.addAll(change.labels.keySet());
-        }
-        Collections.sort(labels);
-        return labels;
     }
 }

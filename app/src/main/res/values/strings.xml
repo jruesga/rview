@@ -162,6 +162,15 @@
     <string name="change_details_review">Review</string>
     <string name="change_details_review_hint">Comment on this change</string>
 
+    <!-- Actions -->
+    <string name="change_action_cherrypick">Cherry-Pick</string>
+    <string name="change_action_rebase">Rebase</string>
+    <string name="change_action_abandon">Abandon</string>
+    <string name="change_action_restore">Restore</string>
+    <string name="change_action_revert">Revert</string>
+    <string name="change_action_publish_draft">Publish</string>
+    <string name="change_action_submit">Submit</string>
+
     <!-- Dashboard -->
     <string name="dashboard_outgoing">Outgoing</string>
     <string name="dashboard_incoming">Incoming</string>
@@ -190,11 +199,14 @@
 
     <!-- Change statuses -->
     <string name="change_statuses_not_current">Not current</string>
+    <string name="change_statuses_ready_to_submit">Ready to submit</string>
+    <string name="change_statuses_not_mergeable">Not mergeable</string>
+    <string name="change_statuses_needs_label">Needs <xliff:g id="label" example="Code-Review">%1$s</xliff:g></string>
 
     <!-- Related changes -->
     <string name="related_changes_title">Related </string>
     <string name="related_changes">Related changes</string>
-    <string name="conflicts_with">Conflits with</string>
+    <string name="conflicts_with">Conflicts with</string>
     <string name="same_topic">Same topic</string>
     <string name="submitted_together">Submitted together</string>
     <string name="cherry_picks">Cherry picks</string>
@@ -202,8 +214,13 @@
     <!-- Add reviewer dialog -->
     <string name="add_reviewer_label">Reviewer</string>
 
+    <!-- Actions dialog -->
+    <string name="actions_message_hint">Commit message</string>
+    <string name="actions_base_hint">Subject, change number, or leave empty</string>
+
     <!-- Change topic dialog -->
     <string name="change_topic_title">Change topic</string>
+    <string name="change_topic_hint">Topic name</string>
 
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>

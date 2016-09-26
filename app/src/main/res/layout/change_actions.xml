@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
+        <import type="com.ruesga.rview.misc.ModelHelper" />
+
+        <variable name="isOwner" type="java.lang.Boolean" />
+        <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
+        <variable name="actions" type="java.util.Map&lt;String, com.ruesga.rview.gerrit.model.ActionInfo&gt;" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
+    </data>
+
+    <org.apmem.tools.layouts.FlowLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:orientation="horizontal"
+        app:bindEmptyActions="@{actions}"
+        android:background="@android:color/transparent"
+        android:gravity="end">
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/cherrypick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_cherrypick"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            android:visibility='@{actions[ModelHelper.ACTION_CHERRY_PICK] != null ? View.VISIBLE : View.GONE}'
+            android:textStyle="bold"
+            app:allCaps="true"
+            android:textSize="12sp"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/rebase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_rebase"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
+            android:visibility='@{actions[ModelHelper.ACTION_REBASE] != null ? View.VISIBLE : View.GONE}'
+            app:allCaps="true"
+            android:textSize="12sp"
+            tools:ignore="RtlSymmetry"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/abandon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_abandon"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
+            android:visibility="@{actions[ModelHelper.ACTION_ABANDON] != null || (isOwner != null &amp;&amp; isOwner &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT))) ? View.VISIBLE : View.GONE}"
+            app:allCaps="true"
+            android:textSize="12sp"
+            tools:ignore="RtlSymmetry"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/restore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_restore"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
+            android:visibility="@{actions[ModelHelper.ACTION_RESTORE] != null || (isOwner != null &amp;&amp; isOwner &amp;&amp; model.status.equals(ChangeStatus.ABANDONED)) ? View.VISIBLE : View.GONE}"
+            app:allCaps="true"
+            android:textSize="12sp"
+            tools:ignore="RtlSymmetry"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/revert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_revert"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
+            android:visibility="@{actions[ModelHelper.ACTION_REVERT] != null || (isOwner != null &amp;&amp; isOwner &amp;&amp; model.status.equals(ChangeStatus.MERGED)) ? View.VISIBLE : View.GONE}"
+            app:allCaps="true"
+            android:textSize="12sp"
+            tools:ignore="RtlSymmetry"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/publish_draft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_publish_draft"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
+            android:visibility="@{actions[ModelHelper.ACTION_PUBLISH_DRAFT] != null || (isOwner != null &amp;&amp; isOwner &amp;&amp; model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
+            app:allCaps="true"
+            android:textSize="12sp"
+            tools:ignore="RtlSymmetry"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_submit"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorPrimaryDark"
+            android:textStyle="bold"
+            android:visibility='@{actions[ModelHelper.ACTION_SUBMIT] != null ? View.VISIBLE : View.GONE}'
+            app:allCaps="true"
+            android:textSize="12sp"
+            tools:ignore="RtlSymmetry"/>
+    </org.apmem.tools.layouts.FlowLayout>
+</layout>

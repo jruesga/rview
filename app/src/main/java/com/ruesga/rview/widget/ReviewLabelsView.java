@@ -27,6 +27,7 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ReviewLabelItemBinding;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -90,7 +91,7 @@ public class ReviewLabelsView extends LinearLayout {
 
     public ReviewLabelsView from(ChangeInfo change) {
         mLabels.clear();
-        mLabels.addAll(sortLabels(change));
+        mLabels.addAll(ModelHelper.sortPermittedLabels(change.permittedLabels));
         updateLabels();
         updateScores(change);
         return this;
@@ -168,15 +169,6 @@ public class ReviewLabelsView extends LinearLayout {
             ScoresView view = mScoresViews.get(i);
             view.setVisibility(View.GONE);
         }
-    }
-
-    private List<String> sortLabels(ChangeInfo change) {
-        List<String> labels = new ArrayList<>();
-        if (change.permittedLabels != null) {
-            labels.addAll(change.permittedLabels.keySet());
-        }
-        Collections.sort(labels);
-        return labels;
     }
 
     private List<Integer> computeAllScores(ChangeInfo change) {

@@ -18,7 +18,6 @@ package com.ruesga.rview.misc;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.google.gson.annotations.SerializedName;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
 import com.ruesga.rview.gerrit.GerritApi;
@@ -26,8 +25,8 @@ import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
-import com.ruesga.rview.gerrit.model.AvatarInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.gerrit.model.ReviewInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.model.Account;
@@ -40,8 +39,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class ModelHelper {
+
+    public static final String ACTION_CHERRY_PICK = "cherrypick";
+    public static final String ACTION_REBASE = "rebase";
+    public static final String ACTION_ABANDON = "abandon";
+    public static final String ACTION_RESTORE = "restore";
+    public static final String ACTION_REVERT = "revert";
+    public static final String ACTION_PUBLISH_DRAFT = "publish";
+    public static final String ACTION_SUBMIT = "submit";
 
     public static GerritApi getGerritApi(Context applicationContext) {
         Account account = Preferences.getAccount(applicationContext);
@@ -220,6 +228,58 @@ public class ModelHelper {
         return reviewer;
     }
 
+    public static String checkNeedsLabel(Map<String, LabelInfo> labels) {
+        for (String label : sortLabels(labels)) {
+            LabelInfo labelInfo = labels.get(label);
+
+            if (labelInfo.optional) {
+                continue;
+            }
+
+            int approvalValue = getApprovalValue(labelInfo);
+            boolean hasApproval = false;
+            if (labelInfo.all != null) {
+                for (ApprovalInfo approval : labelInfo.all) {
+                    if (approval.value == approvalValue) {
+                        hasApproval = true;
+                        break;
+                    }
+                }
+            }
+            if (!hasApproval) {
+                return label;
+            }
+        }
+
+        // Has all needed labels approved
+        return null;
+    }
+
+    private static int getApprovalValue(LabelInfo labelInfo) {
+        int max = 0;
+        for (Integer value : labelInfo.values.keySet()) {
+            max = Math.max(max, value);
+        }
+        return max;
+    }
+
+    public static List<String> sortLabels(Map<String, LabelInfo> changeLabels) {
+        List<String> labels = new ArrayList<>();
+        if (changeLabels != null) {
+            labels.addAll(changeLabels.keySet());
+        }
+        Collections.sort(labels);
+        return labels;
+    }
+
+    public static List<String> sortPermittedLabels(Map<String, Integer[]> permittedLabels) {
+        List<String> labels = new ArrayList<>();
+        if (permittedLabels != null) {
+            labels.addAll(permittedLabels.keySet());
+        }
+        Collections.sort(labels);
+        return labels;
+    }
 
     @SuppressWarnings("TryWithIdenticalCatches")
     private static String computeGravatarHash(String email) {

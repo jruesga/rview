@@ -43,8 +43,11 @@ import com.ruesga.rview.databinding.FileInfoItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
 import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
 import com.ruesga.rview.exceptions.OperationFailedException;
+import com.ruesga.rview.fragments.EditDialogFragment.OnEditChanged;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.model.AbandonInput;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -56,12 +59,16 @@ import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.NotifyType;
+import com.ruesga.rview.gerrit.model.RebaseInput;
+import com.ruesga.rview.gerrit.model.RestoreInput;
+import com.ruesga.rview.gerrit.model.RevertInput;
 import com.ruesga.rview.gerrit.model.ReviewInfo;
 import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
+import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.misc.AndroidHelper;
@@ -86,6 +93,7 @@ import java.util.Map;
 
 import me.tatarka.rxloader.RxLoader;
 import me.tatarka.rxloader.RxLoader1;
+import me.tatarka.rxloader.RxLoader2;
 import me.tatarka.rxloader.RxLoaderManager;
 import me.tatarka.rxloader.RxLoaderManagerCompat;
 import me.tatarka.rxloader.RxLoaderObserver;
@@ -189,6 +197,10 @@ public class ChangeDetailsFragment extends Fragment {
 
         public void onReplyCommentPressed(View v) {
             mFragment.performReplyComment((int) v.getTag());
+        }
+
+        public void onActionPressed(View v) {
+            mFragment.performAction(v);
         }
 
         public void onWebLinkPressed(View v) {
@@ -394,6 +406,7 @@ public class ChangeDetailsFragment extends Fragment {
     public static class DataResponse {
         ChangeInfo mChange;
         SubmitType mSubmitType;
+        Map<String, ActionInfo> mActions;
         Map<String, Integer> mInlineComments;
         ConfigInfo mProjectConfig;
     }
@@ -488,7 +501,7 @@ public class ChangeDetailsFragment extends Fragment {
             updateChangeInfo(mResponse);
             updateReviewInfo(mResponse);
             performMessagesRefresh();
-            // TODO refresh actions
+            performActionsRefresh();
 
             // Clean the message box
             mBinding.reviewInfo.reviewComment.setText(null);
@@ -532,6 +545,20 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<Map<String, ActionInfo>> mActionsRefreshObserver
+            = new RxLoaderObserver<Map<String, ActionInfo>>() {
+        @Override
+        public void onNext(Map<String, ActionInfo> actions) {
+            mResponse.mChange.actions = actions;
+            updateChangeInfo(mResponse);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
     private final RxLoaderObserver<AccountInfo> mRemoveReviewerObserver
             = new RxLoaderObserver<AccountInfo>() {
         @Override
@@ -555,6 +582,18 @@ public class ChangeDetailsFragment extends Fragment {
                     account, mResponse.mChange.removableReviewers);
 
             updateChangeInfo(mResponse);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
+    private final RxLoaderObserver<Boolean> mActionObserver = new RxLoaderObserver<Boolean>() {
+        @Override
+        public void onNext(Boolean value) {
+            forceRefresh();
         }
 
         @Override
@@ -623,6 +662,8 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
     private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
+    private RxLoader<Map<String, ActionInfo>> mActionsRefreshLoader;
+    private RxLoader2<String, String[], Boolean> mActionLoader;
     private int mLegacyChangeId;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
@@ -710,6 +751,10 @@ public class ChangeDetailsFragment extends Fragment {
                     "remove_reviewer", this::removeReviewer, mRemoveReviewerObserver);
             mMessagesRefreshLoader = loaderManager.create(
                     "messages_refresh", fetchMessages(), mMessagesRefreshObserver);
+            mActionsRefreshLoader = loaderManager.create(
+                    "actions_refresh", fetchActions(), mActionsRefreshObserver);
+            mActionLoader = loaderManager.create(
+                    "action", this::doAction, mActionObserver);
         }
     }
 
@@ -745,6 +790,7 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.changeInfo.labels.with(mPicasso).from(response.mChange);
         mBinding.changeInfo.setModel(response.mChange);
         mBinding.changeInfo.setSubmitType(response.mSubmitType);
+        mBinding.changeInfo.setActions(response.mActions);
         mBinding.changeInfo.setHandlers(mEventHandlers);
         mBinding.changeInfo.setHasData(true);
         mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
@@ -790,6 +836,7 @@ public class ChangeDetailsFragment extends Fragment {
                         return dataResponse;
                     }),
                     api.getChangeRevisionSubmitType(changeId, revision),
+                    api.getChangeRevisionActions(changeId, revision),
                     api.getChangeRevisionComments(changeId, revision),
                     this::combineResponse
                 )
@@ -894,6 +941,51 @@ public class ChangeDetailsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Map<String, ActionInfo>> fetchActions() {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() ->
+                api.getChangeRevisionActions(String.valueOf(mLegacyChangeId),
+                        mCurrentRevision).toBlocking().first())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Boolean> doAction(final String action, final String[] params) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                    switch (action) {
+                        case ModelHelper.ACTION_CHERRY_PICK:
+                            performCherryPickChange(api, params[0], params[1]);
+                            break;
+                        case ModelHelper.ACTION_REBASE:
+                            performRebaseChange(api, params[0]);
+                            break;
+                        case ModelHelper.ACTION_ABANDON:
+                            performAbandonChange(api, params[0]);
+                            break;
+                        case ModelHelper.ACTION_RESTORE:
+                            performRestoreChange(api, params[0]);
+                            break;
+                        case ModelHelper.ACTION_REVERT:
+                            performRevertChange(api, params[0]);
+                            break;
+                        case ModelHelper.ACTION_PUBLISH_DRAFT:
+                            performPublishDraft(api);
+                            break;
+                        case ModelHelper.ACTION_SUBMIT:
+                            performSubmitChange(api);
+                            break;
+                    }
+                    return true;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     private void setupSwipeToRefresh() {
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
@@ -917,6 +1009,7 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private DataResponse combineResponse(DataResponse response, SubmitType submitType,
+                Map<String, ActionInfo> actions,
                 Map<String, List<CommentInfo>> revisionComments) {
         // Map inline comments
         Map<String, Integer> inlineComments = new HashMap<>();
@@ -926,6 +1019,7 @@ public class ChangeDetailsFragment extends Fragment {
             }
         }
 
+        response.mActions = actions;
         response.mSubmitType = submitType;
         response.mInlineComments = inlineComments;
         return response;
@@ -1009,6 +1103,12 @@ public class ChangeDetailsFragment extends Fragment {
     private void performMessagesRefresh() {
         if (!mModel.isLocked) {
             mMessagesRefreshLoader.restart();
+        }
+    }
+
+    private void performActionsRefresh() {
+        if (!mModel.isLocked) {
+            mActionsRefreshLoader.restart();
         }
     }
 
@@ -1104,10 +1204,20 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performShowChangeTopicDialog(View v) {
         String title = getString(R.string.change_topic_title);
+        String action = getString(R.string.action_change);
+        String hint = getString(R.string.change_topic_hint);
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, mResponse.mChange.topic, true, v);
+                title, mResponse.mChange.topic, action, hint, true, v);
         fragment.setOnEditChanged(this::performChangeTopic);
+        fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
+    }
+
+    private void performShowRequestMessageDialog(
+            View v, String title, String action, String hint, OnEditChanged cb) {
+        EditDialogFragment fragment = EditDialogFragment.newInstance(
+                title, null, action, hint, true, v);
+        fragment.setOnEditChanged(cb);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
@@ -1117,5 +1227,99 @@ public class ChangeDetailsFragment extends Fragment {
         String msg = StringHelper.quoteMessage(currentMessage, replyMessage);
         mBinding.reviewInfo.reviewComment.setText(msg);
         mBinding.reviewInfo.reviewComment.setSelection(msg.length());
+    }
+
+    private void performAction(View v) {
+        if (!mModel.isLocked) {
+            String action;
+            String hint;
+            switch (v.getId()) {
+                case R.id.cherrypick:
+                    // TODO Need a custom dialog
+                    break;
+                case R.id.rebase:
+                    action = getString(R.string.change_action_rebase);
+                    hint = getString(R.string.actions_base_hint);
+                    performShowRequestMessageDialog(v, action, action, hint,
+                            newValue -> mActionLoader.restart(
+                                    ModelHelper.ACTION_REBASE, new String[]{newValue}));
+                    break;
+                case R.id.abandon:
+                    action = getString(R.string.change_action_abandon);
+                    hint = getString(R.string.actions_message_hint);
+                    performShowRequestMessageDialog(v, action, action, hint,
+                            newValue -> mActionLoader.restart(
+                                    ModelHelper.ACTION_ABANDON, new String[]{newValue}));
+                    break;
+                case R.id.restore:
+                    action = getString(R.string.change_action_restore);
+                    hint = getString(R.string.actions_message_hint);
+                    performShowRequestMessageDialog(v, action, action, hint,
+                            newValue -> mActionLoader.restart(
+                                    ModelHelper.ACTION_RESTORE, new String[]{newValue}));
+                    break;
+                case R.id.revert:
+                    action = getString(R.string.change_action_revert);
+                    hint = getString(R.string.actions_message_hint);
+                    performShowRequestMessageDialog(v, action, action, hint,
+                            newValue -> mActionLoader.restart(
+                                    ModelHelper.ACTION_REVERT, new String[]{newValue}));
+                    break;
+                case R.id.publish_draft:
+                    mActionLoader.restart(ModelHelper.ACTION_PUBLISH_DRAFT, null);
+                case R.id.submit:
+                    mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
+                    break;
+            }
+        }
+    }
+
+    private void performSubmitChange(GerritApi api) {
+        SubmitInput input = new SubmitInput();
+        input.notify = NotifyType.ALL;
+        api.submitChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+    }
+
+    private void performRebaseChange(GerritApi api, String base) {
+        RebaseInput input = new RebaseInput();
+        if (!TextUtils.isEmpty(base)) {
+            input.base = base;
+        }
+        api.rebaseChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+    }
+
+    private void performAbandonChange(GerritApi api, String msg) {
+        AbandonInput input = new AbandonInput();
+        input.notify = NotifyType.ALL;
+        if (!TextUtils.isEmpty(msg)) {
+            input.message = msg;
+        }
+        api.abandonChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+    }
+
+    private void performRestoreChange(GerritApi api, String msg) {
+        RestoreInput input = new RestoreInput();
+        if (!TextUtils.isEmpty(msg)) {
+            input.message = msg;
+        }
+        api.restoreChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+    }
+
+    private void performRevertChange(GerritApi api, String msg) {
+        RevertInput input = new RevertInput();
+        input.notify = NotifyType.ALL;
+        if (!TextUtils.isEmpty(msg)) {
+            input.message = msg;
+        }
+        api.revertChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+    }
+
+    private void performPublishDraft(GerritApi api) {
+        api.publishChangeDraftRevision(String.valueOf(mLegacyChangeId), mCurrentRevision)
+                .toBlocking().first();
+    }
+
+    private void performCherryPickChange(GerritApi api, String branch, String msg) {
+        // TODO
     }
 }

@@ -293,8 +293,19 @@ public class Formatter {
         if (!currentRevision) {
             view.setText(R.string.change_statuses_not_current);
         } else if (change.status.equals(ChangeStatus.NEW)) {
-            // TODO Convert labels to status (Needs Code-Review, Ready to Submit, ...)
-            view.setText(R.string.menu_open);
+            if (change.submittable) {
+                view.setText(R.string.change_statuses_ready_to_submit);
+            } else if (!change.mergeable) {
+                view.setText(R.string.change_statuses_not_mergeable);
+            } else {
+                String neededLabel = ModelHelper.checkNeedsLabel(change.labels);
+                if (neededLabel != null) {
+                    view.setText(view.getContext().getString(
+                            R.string.change_statuses_needs_label, neededLabel));
+                } else {
+                    view.setText(R.string.menu_open);
+                }
+            }
         } else if (change.status.equals(ChangeStatus.MERGED)) {
             view.setText(R.string.menu_merged);
         } else if (change.status.equals(ChangeStatus.ABANDONED)) {

@@ -23,6 +23,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
+import com.ruesga.rview.gerrit.model.ActionInfo;
+
+import java.util.Map;
 
 @ProguardIgnored
 @SuppressWarnings("unused")
@@ -58,5 +61,10 @@ public class BindingAdapters {
     @BindingAdapter("bindSelected")
     public static void bindSelected(View v, boolean selected) {
         v.setSelected(selected);
+    }
+
+    @BindingAdapter("bindEmptyActions")
+    public static void bindEmptyActions(View v, Map<String, ActionInfo> actions) {
+        v.setVisibility(actions == null || actions.isEmpty() ? View.GONE : View.VISIBLE);
     }
 }
