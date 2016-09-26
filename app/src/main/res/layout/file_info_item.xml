@@ -34,7 +34,7 @@
         android:paddingEnd="16dp"
         android:gravity="center_vertical"
         android:background="?attr/selectableItemBackground"
-        android:onClick="@{handlers::onFileItemClick}"
+        android:onClick="@{handlers::onFileItemPressed}"
         android:tag="@{model.file}"
         android:visibility="@{model.file == null ? View.GONE : View.VISIBLE}"
         android:orientation="vertical">

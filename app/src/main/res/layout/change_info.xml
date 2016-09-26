@@ -235,13 +235,16 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="12sp" />
                 <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/project"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     android:text="@{model.project}"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?android:attr/textColorSecondary"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onApplyFilterPressed}"
+                    android:background="?attr/selectableItemBackground"
                     android:textSize="12sp" />
             </LinearLayout>
             <LinearLayout
@@ -258,13 +261,16 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="12sp" />
                 <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/branch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     android:text="@{model.branch}"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?android:attr/textColorSecondary"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onApplyFilterPressed}"
+                    android:background="?attr/selectableItemBackground"
                     android:textSize="12sp" />
             </LinearLayout>
             <LinearLayout
@@ -281,6 +287,7 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="12sp" />
                 <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/topic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
@@ -290,7 +297,9 @@
                     android:text="@{model.topic}"
                     android:visibility="@{model.topic == null || model.topic.isEmpty() ? View.GONE : View.VISIBLE}"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?android:attr/textColorSecondary"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onApplyFilterPressed}"
+                    android:background="?attr/selectableItemBackground"
                     android:textSize="12sp" />
                 <ImageView
                     android:layout_width="16dp"

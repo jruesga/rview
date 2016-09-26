@@ -31,6 +31,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
@@ -210,8 +211,12 @@ public class ChangeDetailsFragment extends Fragment {
             }
         }
 
-        public void onFileItemClick(View v) {
-            mFragment.onFileItemClick((String) v.getTag());
+        public void onFileItemPressed(View v) {
+            mFragment.performOpenFileDiff((String) v.getTag());
+        }
+
+        public void onApplyFilterPressed(View v) {
+            mFragment.performApplyFilter(v);
         }
     }
 
@@ -1031,7 +1036,7 @@ public class ChangeDetailsFragment extends Fragment {
         return response;
     }
 
-    private void onFileItemClick(String file) {
+    private void performOpenFileDiff(String file) {
         /* FIXME Restore when activity is build
         Intent i = new Intent(getContext(), DiffViewerActivity.class);
         i.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
@@ -1229,6 +1234,26 @@ public class ChangeDetailsFragment extends Fragment {
         String msg = StringHelper.quoteMessage(currentMessage, replyMessage);
         mBinding.reviewInfo.reviewComment.setText(msg);
         mBinding.reviewInfo.reviewComment.setSelection(msg.length());
+    }
+
+    private void performApplyFilter(View v) {
+        String title = null;
+        ChangeQuery filter = null;
+        switch (v.getId()) {
+            case R.id.project:
+                title = getString(R.string.change_details_project);
+                filter = new ChangeQuery().project(((TextView) v).getText().toString());
+                break;
+            case R.id.branch:
+                title = getString(R.string.change_details_branch);
+                filter = new ChangeQuery().branch(((TextView) v).getText().toString());
+                break;
+            case R.id.topic:
+                title = getString(R.string.change_details_topic);
+                filter = new ChangeQuery().topic(((TextView) v).getText().toString());
+                break;
+        }
+        ActivityHelper.openChangeListByFilter(getContext(), title, filter);
     }
 
     private void performAction(View v) {
