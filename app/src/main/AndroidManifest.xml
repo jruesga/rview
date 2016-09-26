@@ -60,16 +60,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="com.ruesga.rview" android:host="change" android:pathPattern="/I.*" />
-                <data android:scheme="com.ruesga.rview" android:host="commit" android:pathPattern="/.*" />
-                <data android:scheme="http" android:host="*" android:pathPattern="/#/c/.*" />
-                <data android:scheme="https" android:host="*" android:pathPattern="/#/c/.*" />
-                <data android:scheme="http" android:host=".*review.*" android:pathPattern="/.*" />
-                <data android:scheme="https" android:host=".*review.*" android:pathPattern="/.*" />
-                <data android:scheme="http" android:host=".*gerrit.*" android:pathPattern="/.*" />
-                <data android:scheme="https" android:host=".*gerrit.*" android:pathPattern="/.*" />
-                <data android:scheme="http" android:host="*" android:pathPattern="/gerrit/.*" />
-                <data android:scheme="https" android:host="*" android:pathPattern="/gerrit/.*" />
+                <data android:scheme="com.ruesga.rview" android:host="change" />
+                <data android:scheme="com.ruesga.rview" android:host="commit" />
             </intent-filter>
         </activity-alias>
 
