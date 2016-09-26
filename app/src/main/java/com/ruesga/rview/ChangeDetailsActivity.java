@@ -32,7 +32,9 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.StringHelper;
+import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.preferences.Preferences;
 
 import java.util.List;
 
@@ -85,6 +87,13 @@ public class ChangeDetailsActivity extends BaseActivity {
         setupToolbar();
 
         if (getIntent().getData() != null) {
+            Account account = Preferences.getAccount(this);
+            if (account == null) {
+                // Not ready to handle it
+                notifyInvalidArgsAndFinish();
+                return;
+            }
+
             Uri data = getIntent().getData();
             String scheme = data.getScheme();
             if (!scheme.equals(getPackageName())
