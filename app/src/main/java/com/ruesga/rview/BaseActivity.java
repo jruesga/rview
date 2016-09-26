@@ -25,11 +25,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.PaginableFragment.PageFragmentAdapter;
 import com.ruesga.rview.fragments.SelectableFragment;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
 
@@ -154,6 +156,16 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         super.onSaveInstanceState(outState);
         outState.putParcelable(getClass().getSimpleName()
                 + "_base_activity_model", mModel);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                return ActivityHelper.performFinishActivity(this, false);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void showError(@StringRes int message) {

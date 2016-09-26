@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,7 +23,7 @@ import android.support.v4.app.FragmentTransaction;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.fragments.ChangeListFragment;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
-import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.misc.ActivityHelper;
 
 public abstract class ChangeListBaseActivity extends BaseActivity implements OnChangeItemListener {
 
@@ -45,10 +44,7 @@ public abstract class ChangeListBaseActivity extends BaseActivity implements OnC
     public void onChangeItemPressed(ChangeInfo change) {
         if (!mIsTwoPane) {
             // Open activity
-            Intent intent = new Intent(this, ChangeDetailsActivity.class);
-            intent.putExtra(Constants.EXTRA_CHANGE_ID, change.changeId);
-            intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
-            startActivity(intent);
+            ActivityHelper.openChangeDetails(this, change);
         } else {
             // Open the filter fragment
             loadChangeDetailsFragment(change.legacyChangeId);

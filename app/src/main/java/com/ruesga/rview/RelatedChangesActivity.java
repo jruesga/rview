@@ -21,7 +21,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.RelatedChangesFragment;
@@ -135,16 +134,5 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
     @Override
     public ContentBinding getContentBinding() {
         return mBinding;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }

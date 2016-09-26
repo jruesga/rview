@@ -1160,13 +1160,8 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performOpenRelatedChanges() {
-        Intent i = new Intent(getContext(), RelatedChangesActivity.class);
-        i.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
-        i.putExtra(Constants.EXTRA_CHANGE_ID, mResponse.mChange.changeId);
-        i.putExtra(Constants.EXTRA_PROJECT_ID, mResponse.mChange.project);
-        i.putExtra(Constants.EXTRA_REVISION_ID, mCurrentRevision);
-        i.putExtra(Constants.EXTRA_TOPIC, mResponse.mChange.topic);
-        startActivity(i);
+        ActivityHelper.openRelatedChangesActivity(
+                getContext(), mResponse.mChange, mCurrentRevision);
     }
 
     @SuppressWarnings("ConstantConditions")

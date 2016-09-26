@@ -30,6 +30,8 @@ public class Constants {
     public static final String EXTRA_FILTER = "filter";
     public static final String EXTRA_TITLE = "title";
 
+    public static final String EXTRA_HAS_PARENT = "has_parent";
+
     public static final String DEFAULT_AUTHENTICATED_HOME = "menu_dashboard";
     public static final String DEFAULT_ANONYMOUS_HOME = "menu_open";
     public static final String DEFAULT_FETCHED_ITEMS = "25";

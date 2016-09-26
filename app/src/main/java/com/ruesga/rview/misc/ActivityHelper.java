@@ -24,12 +24,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.ChangeListByFilterActivity;
 import com.ruesga.rview.R;
+import com.ruesga.rview.RelatedChangesActivity;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -98,10 +103,47 @@ public class ActivityHelper {
         downloadManager.enqueue(request);
     }
 
+    public static boolean performFinishActivity(Activity activity, boolean forceNavigateUp) {
+        boolean hasParent = activity.getIntent().getBooleanExtra(Constants.EXTRA_HAS_PARENT, false);
+        if (forceNavigateUp || !hasParent) {
+            Intent upIntent = NavUtils.getParentActivityIntent(activity);
+            if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
+                TaskStackBuilder.create(activity)
+                        .addNextIntentWithParentStack(upIntent)
+                        .startActivities();
+            } else {
+                NavUtils.navigateUpTo(activity, upIntent);
+            }
+            return true;
+        }
+        activity.finish();
+        return true;
+    }
+
+    public static void openChangeDetails(Context context, ChangeInfo change) {
+        Intent intent = new Intent(context, ChangeDetailsActivity.class);
+        intent.putExtra(Constants.EXTRA_CHANGE_ID, change.changeId);
+        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
+        context.startActivity(intent);
+    }
+
     public static void openChangeListByFilter(Context context, String title, ChangeQuery filter) {
         Intent intent = new Intent(context, ChangeListByFilterActivity.class);
         intent.putExtra(Constants.EXTRA_TITLE, title);
         intent.putExtra(Constants.EXTRA_FILTER, filter.toString());
+        context.startActivity(intent);
+    }
+
+    public static void openRelatedChangesActivity(
+            Context context, ChangeInfo change, String revisionId) {
+        Intent intent = new Intent(context, RelatedChangesActivity.class);
+        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
+        intent.putExtra(Constants.EXTRA_CHANGE_ID, change.changeId);
+        intent.putExtra(Constants.EXTRA_PROJECT_ID, change.project);
+        intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
+        intent.putExtra(Constants.EXTRA_TOPIC, change.topic);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         context.startActivity(intent);
     }
 }
