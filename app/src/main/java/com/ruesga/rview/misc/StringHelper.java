@@ -46,6 +46,9 @@ public class StringHelper {
     private static final Pattern REPLACED_QUOTE5 = Pattern.compile(
             "(\\w)(\n" + NON_PRINTABLE_CHAR +")(\\w)", Pattern.MULTILINE);
 
+    public static final Pattern GERRIT_CHANGE = Pattern.compile("I[0-9a-f]{8,40}");
+    public static final Pattern GERRIT_COMMIT = Pattern.compile("[0-9a-f]{7,40}");
+
     public static String removeLineBreaks(String message) {
         String[] lines = message.split("\\r?\\n");
         StringBuilder sb = new StringBuilder();

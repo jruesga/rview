@@ -104,11 +104,19 @@ public class ChangeDetailsActivity extends BaseActivity {
             ChangeQuery filter;
             switch (host) {
                 case "change":
+                    if (!StringHelper.GERRIT_CHANGE.matcher(query).matches()) {
+                        notifyInvalidArgsAndFinish();
+                        return;
+                    }
                     filter = new ChangeQuery().change(query);
                     performGatherChangeId(filter);
                     break;
 
                 case "commit":
+                    if (!StringHelper.GERRIT_COMMIT.matcher(query).matches()) {
+                        notifyInvalidArgsAndFinish();
+                        return;
+                    }
                     filter = new ChangeQuery().commit(query);
                     performGatherChangeId(filter);
                     break;
