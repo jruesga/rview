@@ -31,7 +31,7 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.EditDialogBinding;
 
-public class EditDialogFragment extends RevealFragmentDialog {
+public class EditDialogFragment extends RevealDialogFragment {
 
     public static final String TAG = "EditDialogFragment";
 

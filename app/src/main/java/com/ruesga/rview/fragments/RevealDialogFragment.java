@@ -32,13 +32,13 @@ import android.view.animation.AccelerateInterpolator;
 import com.ruesga.rview.misc.AndroidHelper;
 
 // https://github.com/codepath/android_guides/wiki/Circular-Reveal-Animation
-public abstract class RevealFragmentDialog extends DialogFragment {
+public abstract class RevealDialogFragment extends DialogFragment {
 
     public static final String EXTRA_ANCHOR = "anchor";
 
     private Rect mAnchorRect;
 
-    public RevealFragmentDialog() {
+    public RevealDialogFragment() {
     }
 
     public abstract void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState);

@@ -35,7 +35,7 @@ import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.preferences.Constants;
 
-public class AddReviewerDialogFragment extends RevealFragmentDialog {
+public class AddReviewerDialogFragment extends RevealDialogFragment {
 
     public static final String TAG = "AddReviewerDialogFragment";
 
