@@ -44,7 +44,7 @@ public abstract class ChangeListBaseActivity extends BaseActivity implements OnC
     public void onChangeItemPressed(ChangeInfo change) {
         if (!mIsTwoPane) {
             // Open activity
-            ActivityHelper.openChangeDetails(this, change);
+            ActivityHelper.openChangeDetails(this, change, true);
         } else {
             // Open the filter fragment
             loadChangeDetailsFragment(change.legacyChangeId);

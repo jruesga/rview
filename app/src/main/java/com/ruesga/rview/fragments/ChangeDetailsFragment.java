@@ -24,6 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
@@ -638,9 +639,15 @@ public class ChangeDetailsFragment extends Fragment {
     private final RxLoaderObserver<Object> mActionObserver = new RxLoaderObserver<Object>() {
         @Override
         public void onNext(Object value) {
+            if (value == null) {
+                // The change was deleted. Redirect to parent
+                ActivityHelper.performFinishActivity(getActivity(), true);
+                return;
+            }
+
             if (value instanceof ChangeInfo) {
                 // Move to the new change
-                ActivityHelper.openChangeDetails(getContext(), (ChangeInfo) value);
+                ActivityHelper.openChangeDetails(getContext(), (ChangeInfo) value, false);
                 return;
             }
 
@@ -1009,6 +1016,9 @@ public class ChangeDetailsFragment extends Fragment {
                         case ModelHelper.ACTION_PUBLISH_DRAFT:
                             performPublishDraft(api);
                             break;
+                        case ModelHelper.ACTION_DELETE_CHANGE:
+                            performDeleteChange(api);
+                            return null;
                         case ModelHelper.ACTION_FOLLOW_UP:
                             return performFollowUp(api, params[0]);
                         case ModelHelper.ACTION_SUBMIT:
@@ -1332,6 +1342,17 @@ public class ChangeDetailsFragment extends Fragment {
                     mActionLoader.restart(ModelHelper.ACTION_PUBLISH_DRAFT, null);
                     break;
 
+                case R.id.delete_change:
+                    AlertDialog dialog = new AlertDialog.Builder(getContext())
+                            .setTitle(R.string.delete_draft_change_title)
+                            .setMessage(R.string.delete_draft_change_confirm)
+                            .setPositiveButton(android.R.string.ok, (dialog1, which) ->
+                                    mActionLoader.restart(ModelHelper.ACTION_DELETE_CHANGE, null))
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .create();
+                    dialog.show();
+                    break;
+
                 case R.id.follow_up:
                     action = getString(R.string.change_action_follow_up);
                     hint = getString(R.string.actions_message_hint);
@@ -1393,6 +1414,10 @@ public class ChangeDetailsFragment extends Fragment {
                 .toBlocking().first();
     }
 
+    private void performDeleteChange(GerritApi api) {
+        api.deleteDraftChange(String.valueOf(mLegacyChangeId)).toBlocking().first();
+    }
+
     private ChangeInfo performFollowUp(GerritApi api, String subject) {
         ChangeInput change = new ChangeInput();
         change.baseChange = mResponse.mChange.id;
@@ -1402,7 +1427,7 @@ public class ChangeDetailsFragment extends Fragment {
         if (!TextUtils.isEmpty(mResponse.mChange.topic)) {
             change.topic = mResponse.mChange.topic;
         }
-        change.subject = TextUtils.isEmpty(subject) ? "" : subject;
+        change.subject = subject;
         return api.createChange(change).toBlocking().first();
     }
 

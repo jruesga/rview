@@ -120,11 +120,11 @@ public class ActivityHelper {
         return true;
     }
 
-    public static void openChangeDetails(Context context, ChangeInfo change) {
+    public static void openChangeDetails(Context context, ChangeInfo change, boolean withParent) {
         Intent intent = new Intent(context, ChangeDetailsActivity.class);
         intent.putExtra(Constants.EXTRA_CHANGE_ID, change.changeId);
         intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
-        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, withParent);
         context.startActivity(intent);
     }
 
