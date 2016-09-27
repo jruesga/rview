@@ -50,6 +50,7 @@ public class ModelHelper {
     public static final String ACTION_RESTORE = "restore";
     public static final String ACTION_REVERT = "revert";
     public static final String ACTION_PUBLISH_DRAFT = "publish";
+    public static final String ACTION_FOLLOW_UP = "followup";
     public static final String ACTION_SUBMIT = "submit";
 
     public static GerritApi getGerritApi(Context applicationContext) {

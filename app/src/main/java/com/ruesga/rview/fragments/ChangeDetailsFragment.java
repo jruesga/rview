@@ -51,6 +51,7 @@ import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.CommentInfo;
@@ -58,6 +59,7 @@ import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.gerrit.model.InitialChangeStatus;
 import com.ruesga.rview.gerrit.model.NotifyType;
 import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RestoreInput;
@@ -116,12 +118,16 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.ALL_FILES);
         add(ChangeOptions.MESSAGES);
         add(ChangeOptions.REVIEWED);
+        add(ChangeOptions.CHANGE_ACTIONS);
         add(ChangeOptions.CHECK);
         add(ChangeOptions.WEB_LINKS);
     }};
     private static final List<ChangeOptions> MESSAGES_OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.MESSAGES);
+    }};
+    private static final List<ChangeOptions> ACTIONS_OPTIONS = new ArrayList<ChangeOptions>() {{
+        add(ChangeOptions.CHANGE_ACTIONS);
     }};
 
     @ProguardIgnored
@@ -629,9 +635,16 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
-    private final RxLoaderObserver<Boolean> mActionObserver = new RxLoaderObserver<Boolean>() {
+    private final RxLoaderObserver<Object> mActionObserver = new RxLoaderObserver<Object>() {
         @Override
-        public void onNext(Boolean value) {
+        public void onNext(Object value) {
+            if (value instanceof ChangeInfo) {
+                // Move to the new change
+                ActivityHelper.openChangeDetails(getContext(), (ChangeInfo) value);
+                return;
+            }
+
+            // Refresh the change
             forceRefresh();
         }
 
@@ -667,7 +680,7 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader1<String, String> mChangeTopicLoader;
     private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
     private RxLoader<Map<String, ActionInfo>> mActionsRefreshLoader;
-    private RxLoader2<String, String[], Boolean> mActionLoader;
+    private RxLoader2<String, String[], Object> mActionLoader;
     private int mLegacyChangeId;
 
     private Account mAccount;
@@ -956,15 +969,26 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<Map<String, ActionInfo>> fetchActions() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() ->
-                api.getChangeRevisionActions(String.valueOf(mLegacyChangeId),
-                        mCurrentRevision).toBlocking().first())
+        return Observable.fromCallable(() -> {
+            final ChangeInfo change = api.getChange(
+                    String.valueOf(mLegacyChangeId), ACTIONS_OPTIONS)
+                    .toBlocking().first();
+            Map<String, ActionInfo> actions =
+                    api.getChangeRevisionActions(String.valueOf(mLegacyChangeId),
+                        mCurrentRevision).toBlocking().first();
+            if (actions == null) {
+                actions = change.actions;
+            } else {
+                actions.putAll(change.actions);
+            }
+            return actions;
+        })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Boolean> doAction(final String action, final String[] params) {
+    private Observable<Object> doAction(final String action, final String[] params) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.fromCallable(() -> {
@@ -973,8 +997,7 @@ public class ChangeDetailsFragment extends Fragment {
                             performCherryPickChange(api, params[0], params[1]);
                             break;
                         case ModelHelper.ACTION_REBASE:
-                            performRebaseChange(api, params[0]);
-                            break;
+                            return performRebaseChange(api, params[0]);
                         case ModelHelper.ACTION_ABANDON:
                             performAbandonChange(api, params[0]);
                             break;
@@ -982,16 +1005,17 @@ public class ChangeDetailsFragment extends Fragment {
                             performRestoreChange(api, params[0]);
                             break;
                         case ModelHelper.ACTION_REVERT:
-                            performRevertChange(api, params[0]);
-                            break;
+                            return performRevertChange(api, params[0]);
                         case ModelHelper.ACTION_PUBLISH_DRAFT:
                             performPublishDraft(api);
                             break;
+                        case ModelHelper.ACTION_FOLLOW_UP:
+                            return performFollowUp(api, params[0]);
                         case ModelHelper.ACTION_SUBMIT:
                             performSubmitChange(api);
                             break;
                     }
-                    return true;
+                    return Boolean.TRUE;
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -1030,7 +1054,14 @@ public class ChangeDetailsFragment extends Fragment {
             }
         }
 
+        // Join the actions
         response.mActions = actions;
+        if (response.mActions == null) {
+            response.mActions = response.mChange.actions;
+        } else {
+            response.mActions.putAll(response.mChange.actions);
+        }
+
         response.mSubmitType = submitType;
         response.mInlineComments = inlineComments;
         return response;
@@ -1221,9 +1252,9 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performShowRequestMessageDialog(
-            View v, String title, String action, String hint, OnEditChanged cb) {
+            View v, String title, String action, String hint, boolean canBeEmpty, OnEditChanged cb) {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, null, action, hint, true, v);
+                title, null, action, hint, canBeEmpty, v);
         fragment.setOnEditChanged(cb);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
@@ -1264,36 +1295,51 @@ public class ChangeDetailsFragment extends Fragment {
                 case R.id.cherrypick:
                     // TODO Need a custom dialog
                     break;
+
                 case R.id.rebase:
                     action = getString(R.string.change_action_rebase);
                     hint = getString(R.string.actions_base_hint);
-                    performShowRequestMessageDialog(v, action, action, hint,
+                    performShowRequestMessageDialog(v, action, action, hint, true,
                             newValue -> mActionLoader.restart(
                                     ModelHelper.ACTION_REBASE, new String[]{newValue}));
                     break;
+
                 case R.id.abandon:
                     action = getString(R.string.change_action_abandon);
                     hint = getString(R.string.actions_message_hint);
-                    performShowRequestMessageDialog(v, action, action, hint,
+                    performShowRequestMessageDialog(v, action, action, hint, true,
                             newValue -> mActionLoader.restart(
                                     ModelHelper.ACTION_ABANDON, new String[]{newValue}));
                     break;
+
                 case R.id.restore:
                     action = getString(R.string.change_action_restore);
                     hint = getString(R.string.actions_message_hint);
-                    performShowRequestMessageDialog(v, action, action, hint,
+                    performShowRequestMessageDialog(v, action, action, hint, true,
                             newValue -> mActionLoader.restart(
                                     ModelHelper.ACTION_RESTORE, new String[]{newValue}));
                     break;
+
                 case R.id.revert:
                     action = getString(R.string.change_action_revert);
                     hint = getString(R.string.actions_message_hint);
-                    performShowRequestMessageDialog(v, action, action, hint,
+                    performShowRequestMessageDialog(v, action, action, hint, true,
                             newValue -> mActionLoader.restart(
                                     ModelHelper.ACTION_REVERT, new String[]{newValue}));
                     break;
+
                 case R.id.publish_draft:
                     mActionLoader.restart(ModelHelper.ACTION_PUBLISH_DRAFT, null);
+                    break;
+
+                case R.id.follow_up:
+                    action = getString(R.string.change_action_follow_up);
+                    hint = getString(R.string.actions_message_hint);
+                    performShowRequestMessageDialog(v, action, action, hint, false,
+                            newValue -> mActionLoader.restart(
+                                    ModelHelper.ACTION_FOLLOW_UP, new String[]{newValue}));
+                    break;
+
                 case R.id.submit:
                     mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
                     break;
@@ -1307,13 +1353,13 @@ public class ChangeDetailsFragment extends Fragment {
         api.submitChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
     }
 
-    private void performRebaseChange(GerritApi api, String base) {
+    private ChangeInfo performRebaseChange(GerritApi api, String base) {
         RebaseInput input = null;
         if (!TextUtils.isEmpty(base)) {
             input = new RebaseInput();
             input.base = base;
         }
-        api.rebaseChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+        return api.rebaseChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
     }
 
     private void performAbandonChange(GerritApi api, String msg) {
@@ -1333,18 +1379,31 @@ public class ChangeDetailsFragment extends Fragment {
         api.restoreChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
     }
 
-    private void performRevertChange(GerritApi api, String msg) {
+    private ChangeInfo performRevertChange(GerritApi api, String msg) {
         RevertInput input = new RevertInput();
         input.notify = NotifyType.ALL;
         if (!TextUtils.isEmpty(msg)) {
             input.message = msg;
         }
-        api.revertChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+        return api.revertChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
     }
 
     private void performPublishDraft(GerritApi api) {
         api.publishChangeDraftRevision(String.valueOf(mLegacyChangeId), mCurrentRevision)
                 .toBlocking().first();
+    }
+
+    private ChangeInfo performFollowUp(GerritApi api, String subject) {
+        ChangeInput change = new ChangeInput();
+        change.baseChange = mResponse.mChange.id;
+        change.branch = mResponse.mChange.branch;
+        change.project = mResponse.mChange.project;
+        change.status = InitialChangeStatus.DRAFT;
+        if (!TextUtils.isEmpty(mResponse.mChange.topic)) {
+            change.topic = mResponse.mChange.topic;
+        }
+        change.subject = TextUtils.isEmpty(subject) ? "" : subject;
+        return api.createChange(change).toBlocking().first();
     }
 
     private void performCherryPickChange(GerritApi api, String branch, String msg) {

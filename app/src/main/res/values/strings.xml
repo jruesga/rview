@@ -173,6 +173,7 @@
     <string name="change_action_restore">Restore</string>
     <string name="change_action_revert">Revert</string>
     <string name="change_action_publish_draft">Publish</string>
+    <string name="change_action_follow_up">Follow up</string>
     <string name="change_action_submit">Submit</string>
 
     <!-- Dashboard -->

@@ -89,7 +89,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorAccent"
             android:textStyle="bold"
-            android:visibility="@{actions[ModelHelper.ACTION_ABANDON] != null || (isOwner != null &amp;&amp; isOwner &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT))) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{actions[ModelHelper.ACTION_ABANDON] != null || (isOwner != null &amp;&amp; isOwner &amp;&amp; model.status.equals(ChangeStatus.NEW)) ? View.VISIBLE : View.GONE}"
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
@@ -147,6 +147,25 @@
             android:textColor="?attr/colorAccent"
             android:textStyle="bold"
             android:visibility="@{actions[ModelHelper.ACTION_PUBLISH_DRAFT] != null || (isOwner != null &amp;&amp; isOwner &amp;&amp; model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
+            app:allCaps="true"
+            android:textSize="12sp"
+            tools:ignore="RtlSymmetry"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/follow_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_follow_up"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            android:textStyle="bold"
+            android:visibility="@{actions[ModelHelper.ACTION_FOLLOW_UP] != null ? View.VISIBLE : View.GONE}"
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
