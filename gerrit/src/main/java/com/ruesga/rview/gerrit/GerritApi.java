@@ -1044,7 +1044,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-files"
      */
     @GET("changes/{change-id}/revisions/{revision-id}/files/")
-    Observable<Map<String, List<FileInfo>>> getChangeRevisionFiles(
+    Observable<Map<String, FileInfo>> getChangeRevisionFiles(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId);
 

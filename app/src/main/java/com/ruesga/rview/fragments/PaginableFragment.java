@@ -70,7 +70,7 @@ public abstract class PaginableFragment extends Fragment {
             return getPages()[position];
         }
 
-        public Fragment getCacheFragment(int position) {
+        public Fragment getCachedFragment(int position) {
             WeakReference<Fragment> ref = mFragments.get(position);
             return ref != null ? ref.get() : null;
         }

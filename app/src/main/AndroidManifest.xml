@@ -54,8 +54,7 @@
         </activity>
         <activity-alias
             android:name=".ExternalChangeDetailsActivity"
-            android:targetActivity=".ChangeDetailsActivity"
-            android:exported="true">
+            android:targetActivity=".ChangeDetailsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -66,6 +65,11 @@
         </activity-alias>
 
         <activity
+            android:name=".DiffViewerActivity"
+            android:parentActivityName=".ChangeDetailsActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ChangeListByFilterActivity"
             android:parentActivityName=".MainActivity"
             android:exported="false" />
@@ -73,20 +77,19 @@
         <activity
             android:name=".RelatedChangesActivity"
             android:parentActivityName=".ChangeDetailsActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
 
         <activity
             android:name=".AccountSettingsActivity"
             android:theme="@style/AppTheme.Settings"
-            android:parentActivityName=".MainActivity">
-        </activity>
+            android:parentActivityName=".MainActivity"
+            android:exported="false" />
 
         <activity
             android:name=".wizards.SetupAccountActivity"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.NoStatusBarColor">
-        </activity>
+            android:theme="@style/AppTheme.NoStatusBarColor"
+            android:exported="false" />
 
     </application>
 

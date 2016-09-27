@@ -912,7 +912,7 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Map<String, List<FileInfo>>> getChangeRevisionFiles(
+    public Observable<Map<String, FileInfo>> getChangeRevisionFiles(
             @NonNull String changeId, @NonNull String revisionId) {
         return withVersionRequestCheck(mService.getChangeRevisionFiles(changeId, revisionId));
     }

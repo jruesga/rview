@@ -46,7 +46,7 @@
             android:layout_marginBottom="4dp"
             android:layout_marginRight="4dp"
             android:layout_marginEnd="4dp"
-            android:src="@{model.file == null ? null : model.info.status.equals(FileStatus.A) ? @drawable/ic_add_circle_outline : model.info.status.equals(FileStatus.D) ? @drawable/ic_remove_circle_outline : @drawable/ic_modify_circle_outline}"
+            android:src="@{model.file == null ? null : (model.info != null &amp;&amp; model.info.status.equals(FileStatus.A)) ? @drawable/ic_add_circle_outline : (model.info != null &amp;&amp; model.info.status.equals(FileStatus.D)) ? @drawable/ic_remove_circle_outline : @drawable/ic_modify_circle_outline}"
             tools:ignore="ContentDescription" />
 
         <com.ruesga.rview.widget.AddedVsDeletedGraphView

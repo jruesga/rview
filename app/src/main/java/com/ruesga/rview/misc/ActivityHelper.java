@@ -31,12 +31,15 @@ import android.widget.Toast;
 
 import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.ChangeListByFilterActivity;
+import com.ruesga.rview.DiffViewerActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.RelatedChangesActivity;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+
+import java.util.ArrayList;
 
 public class ActivityHelper {
 
@@ -128,7 +131,8 @@ public class ActivityHelper {
         context.startActivity(intent);
     }
 
-    public static void openChangeListByFilter(Context context, String title, ChangeQuery filter) {
+    public static void openChangeListByFilterActivity(
+            Context context, String title, ChangeQuery filter) {
         Intent intent = new Intent(context, ChangeListByFilterActivity.class);
         intent.putExtra(Constants.EXTRA_TITLE, title);
         intent.putExtra(Constants.EXTRA_FILTER, filter.toString());
@@ -143,6 +147,17 @@ public class ActivityHelper {
         intent.putExtra(Constants.EXTRA_PROJECT_ID, change.project);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_TOPIC, change.topic);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
+        context.startActivity(intent);
+    }
+
+    public static void openDiffViewerActivity(Context context,
+            int legacyChangeId, String revisionId, String fileId, ArrayList<String> revisions) {
+        Intent intent = new Intent(context, DiffViewerActivity.class);
+        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
+        intent.putExtra(Constants.EXTRA_FILE_ID, fileId);
+        intent.putExtra(Constants.EXTRA_REVISIONS, revisions);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         context.startActivity(intent);
     }

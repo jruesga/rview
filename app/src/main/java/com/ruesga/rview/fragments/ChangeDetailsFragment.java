@@ -109,8 +109,6 @@ public class ChangeDetailsFragment extends Fragment {
 
     private static final String TAG = "ChangeDetailsFragment";
 
-    private static final int INVALID_CHANGE_ID = -1;
-
     private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.DETAILED_LABELS);
@@ -280,6 +278,12 @@ public class ChangeDetailsFragment extends Fragment {
                 notifyDataSetChanged();
                 return;
             }
+
+            // Always add the commit message which is not part of the revision files
+            FileItemModel commitMessage = new FileItemModel();
+            commitMessage.file = Constants.COMMIT_MESSAGE;
+            commitMessage.hasGraph = false;
+            mFiles.add(commitMessage);
 
             int added = 0;
             int deleted = 0;
@@ -704,7 +708,7 @@ public class ChangeDetailsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLegacyChangeId = getArguments().getInt(
-                Constants.EXTRA_LEGACY_CHANGE_ID, INVALID_CHANGE_ID);
+                Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mPicasso = PicassoHelper.getPicassoClient(getContext());
     }
 
@@ -1078,12 +1082,9 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performOpenFileDiff(String file) {
-        /* FIXME Restore when activity is build
-        Intent i = new Intent(getContext(), DiffViewerActivity.class);
-        i.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
-        i.putExtra(Constants.EXTRA_REVISION_ID, mCurrentRevision);
-        i.putExtra(Constants.EXTRA_FILE_ID, file);
-        startActivity(i);*/
+        ArrayList<String> revisions = new ArrayList<>(mResponse.mChange.revisions.keySet());
+        ActivityHelper.openDiffViewerActivity(
+                getContext(), mLegacyChangeId, mCurrentRevision, file, revisions);
     }
 
     private void sortRevisions(ChangeInfo change) {
@@ -1139,7 +1140,7 @@ public class ChangeDetailsFragment extends Fragment {
     private void performAccountClicked(AccountInfo account) {
         ChangeQuery filter = new ChangeQuery().owner(ModelHelper.getSafeAccountOwner(account));
         String title = ModelHelper.getAccountDisplayName(account);
-        ActivityHelper.openChangeListByFilter(getContext(), title, filter);
+        ActivityHelper.openChangeListByFilterActivity(getContext(), title, filter);
     }
 
     private void performAddReviewer(String reviewer) {
@@ -1294,7 +1295,7 @@ public class ChangeDetailsFragment extends Fragment {
                 filter = new ChangeQuery().topic(((TextView) v).getText().toString());
                 break;
         }
-        ActivityHelper.openChangeListByFilter(getContext(), title, filter);
+        ActivityHelper.openChangeListByFilterActivity(getContext(), title, filter);
     }
 
     private void performAction(View v) {

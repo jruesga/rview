@@ -268,16 +268,19 @@ public class Formatter {
         }
 
         String status = "";
-        if (item.info.status.equals(FileStatus.R)) {
-            status = "[" + view.getContext().getString(R.string.file_status_renamed) + "] ";
-        } else if (item.info.status.equals(FileStatus.C)) {
-            status = "[" + view.getContext().getString(R.string.file_status_copied) + "] ";
-        } else if (item.info.status.equals(FileStatus.W)) {
-            status = "[" + view.getContext().getString(R.string.file_status_rewritten) + "] ";
-        }
-        String txt = status;
-        if (!TextUtils.isEmpty(item.info.oldPath)) {
-            txt += item.info.oldPath + " \u2192 ";
+        String txt = "";
+        if (item.info != null) {
+            if (item.info.status.equals(FileStatus.R)) {
+                status = "[" + view.getContext().getString(R.string.file_status_renamed) + "] ";
+            } else if (item.info.status.equals(FileStatus.C)) {
+                status = "[" + view.getContext().getString(R.string.file_status_copied) + "] ";
+            } else if (item.info.status.equals(FileStatus.W)) {
+                status = "[" + view.getContext().getString(R.string.file_status_rewritten) + "] ";
+            }
+            txt = status;
+            if (!TextUtils.isEmpty(item.info.oldPath)) {
+                txt += item.info.oldPath + " \u2192 ";
+            }
         }
         txt += item.file;
         view.setText(txt);

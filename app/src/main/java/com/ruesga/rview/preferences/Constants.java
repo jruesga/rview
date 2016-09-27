@@ -21,6 +21,8 @@ public class Constants {
      */
     public static final double MINIMAL_SUPPORTED_VERSION = 2.11d;
 
+    public static final int INVALID_CHANGE_ID = -1;
+
     public static final String EXTRA_CHANGE_ID = "changeId";
     public static final String EXTRA_LEGACY_CHANGE_ID = "legacyChangeId";
     public static final String EXTRA_PROJECT_ID = "projectId";
@@ -29,6 +31,8 @@ public class Constants {
     public static final String EXTRA_TOPIC = "topic";
     public static final String EXTRA_FILTER = "filter";
     public static final String EXTRA_TITLE = "title";
+    public static final String EXTRA_BASE = "base";
+    public static final String EXTRA_REVISIONS = "revisions";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
 
@@ -40,6 +44,8 @@ public class Constants {
     public static final String ACCOUNT_DISPLAY_FORMAT_NAME = "name";
     public static final String ACCOUNT_DISPLAY_FORMAT_EMAIL = "email";
     public static final String ACCOUNT_DISPLAY_FORMAT_USERNAME = "username";
+
+    public static final String COMMIT_MESSAGE = "/COMMIT_MSG";
 
     // --- Preference keys
     public static final String PREF_IS_FIRST_RUN = "first_run";

@@ -124,7 +124,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 PageFragmentAdapter adapter = (PageFragmentAdapter) mViewPager.getAdapter();
-                Fragment fragment = adapter.getCacheFragment(tab.getPosition());
+                Fragment fragment = adapter.getCachedFragment(tab.getPosition());
                 if (fragment != null && fragment instanceof SelectableFragment) {
                     ((SelectableFragment) fragment).onFragmentSelected();
                 }
