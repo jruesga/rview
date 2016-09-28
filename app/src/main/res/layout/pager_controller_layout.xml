@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <variable name="model" type="com.ruesga.rview.widget.PagerControllerLayout.Model" />
+        <variable name="handlers" type="com.ruesga.rview.widget.PagerControllerLayout.EventHandler" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".45"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:onClick="@{handlers::onPrevPressed}"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="@{model.prev != null ? View.VISIBLE : View.INVISIBLE}"
+            tools:ignore="RtlSymmetry">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_chevron_left"
+                android:tint="?android:attr/textColorPrimaryInverse"
+                tools:ignore="ContentDescription" />
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?android:attr/textColorPrimaryInverse"
+                android:textSize="11sp"
+                android:gravity="start"
+                android:ellipsize="end"
+                android:text="@{model.prev}"
+                android:maxLines="1"
+                tools:ignore="NestedWeights,SmallSp" />
+        </LinearLayout>
+
+        <android.support.v4.widget.Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".1"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight=".45"
+            android:paddingRight="8dp"
+            android:paddingEnd="8dp"
+            android:onClick="@{handlers::onNextPressed}"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="@{model.next != null ? View.VISIBLE : View.INVISIBLE}"
+            tools:ignore="RtlSymmetry">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="?android:attr/textColorPrimaryInverse"
+                android:text="@{model.next}"
+                android:textSize="11sp"
+                android:gravity="end"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:ignore="NestedWeights,SmallSp"/>
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_chevron_right"
+                android:tint="?android:attr/textColorPrimaryInverse"
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

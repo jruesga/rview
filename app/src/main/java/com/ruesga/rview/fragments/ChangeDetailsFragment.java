@@ -60,6 +60,7 @@ import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
 import com.ruesga.rview.gerrit.model.NotifyType;
 import com.ruesga.rview.gerrit.model.RebaseInput;
@@ -271,7 +272,8 @@ public class ChangeDetailsFragment extends Fragment {
             mEventHandlers = handlers;
         }
 
-        void update(Map<String, FileInfo> files, Map<String, Integer> inlineComments) {
+        void update(Map<String, FileInfo> files, Map<String, Integer> inlineComments,
+                    boolean initial) {
             mFiles.clear();
             mTotals = null;
             if (files == null) {
@@ -282,6 +284,8 @@ public class ChangeDetailsFragment extends Fragment {
             // Always add the commit message which is not part of the revision files
             FileItemModel commitMessage = new FileItemModel();
             commitMessage.file = Constants.COMMIT_MESSAGE;
+            commitMessage.info = new FileInfo();
+            commitMessage.info.status =  initial ? FileStatus.A : FileStatus.M;
             commitMessage.hasGraph = false;
             mFiles.add(commitMessage);
 
@@ -450,9 +454,11 @@ public class ChangeDetailsFragment extends Fragment {
                         updateChangeInfo(result);
                         updateReviewInfo(result);
 
+                        boolean initial = change.revisions.get(mCurrentRevision).number == 1;
+
                         Map<String, FileInfo> files = change.revisions.get(mCurrentRevision).files;
                         mModel.filesListModel.visible = files != null && !files.isEmpty();
-                        mFileAdapter.update(files, result.mInlineComments);
+                        mFileAdapter.update(files, result.mInlineComments, initial);
                         mModel.msgListModel.visible =
                                 change.messages != null && change.messages.length > 0;
                         mMessageAdapter.update(change.messages);
@@ -1082,9 +1088,8 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performOpenFileDiff(String file) {
-        ArrayList<String> revisions = new ArrayList<>(mResponse.mChange.revisions.keySet());
         ActivityHelper.openDiffViewerActivity(
-                getContext(), mLegacyChangeId, mCurrentRevision, file, revisions);
+                getContext(), mLegacyChangeId, mResponse.mChange.changeId, mCurrentRevision, file);
     }
 
     private void sortRevisions(ChangeInfo change) {

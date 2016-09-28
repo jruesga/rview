@@ -39,16 +39,10 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
-import java.util.ArrayList;
-
 public class ActivityHelper {
 
     public static void openUriInCustomTabs(Activity activity, String uri) {
         openUriInCustomTabs(activity, Uri.parse(uri));
-    }
-
-    public static void openUri(Context ctx, String uri) {
-        openUri(ctx, Uri.parse(uri));
     }
 
     public static void openUriInCustomTabs(Activity activity, Uri uri) {
@@ -152,12 +146,12 @@ public class ActivityHelper {
     }
 
     public static void openDiffViewerActivity(Context context,
-            int legacyChangeId, String revisionId, String fileId, ArrayList<String> revisions) {
+            int legacyChangeId, String changeId, String revisionId, String fileId) {
         Intent intent = new Intent(context, DiffViewerActivity.class);
         intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_FILE_ID, fileId);
-        intent.putExtra(Constants.EXTRA_REVISIONS, revisions);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         context.startActivity(intent);
     }

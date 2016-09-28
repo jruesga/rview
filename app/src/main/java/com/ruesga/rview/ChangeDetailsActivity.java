@@ -176,7 +176,6 @@ public class ChangeDetailsActivity extends BaseActivity {
             fragment = ChangeDetailsFragment.newInstance(legacyChangeId);
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
-
     }
 
     @SuppressWarnings("ConstantConditions")

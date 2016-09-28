@@ -27,8 +27,6 @@ import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.DiffViewerFragment;
 import com.ruesga.rview.preferences.Constants;
 
-import java.util.ArrayList;
-
 public class DiffViewerActivity extends BaseActivity {
 
     private static final String FRAGMENT_TAG = "diff";
@@ -51,6 +49,11 @@ public class DiffViewerActivity extends BaseActivity {
             finish();
             return;
         }
+        String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
+        if (TextUtils.isEmpty(changeId)) {
+            finish();
+            return;
+        }
         String revisionId = getIntent().getStringExtra(Constants.EXTRA_REVISION_ID);
         if (TextUtils.isEmpty(revisionId)) {
             finish();
@@ -58,11 +61,6 @@ public class DiffViewerActivity extends BaseActivity {
         }
         String fileId = getIntent().getStringExtra(Constants.EXTRA_FILE_ID);
         if (TextUtils.isEmpty(fileId)) {
-            finish();
-            return;
-        }
-        ArrayList<String> revisions = getIntent().getStringArrayListExtra(Constants.EXTRA_REVISIONS);
-        if (revisions == null || revisions.isEmpty()) {
             finish();
             return;
         }
@@ -83,18 +81,16 @@ public class DiffViewerActivity extends BaseActivity {
                 tx.replace(R.id.content, fragment, FRAGMENT_TAG);
                 tx.commit();
             } else {
-                createDiffViewFragment(legacyChangeId, revisionId, fileId, revisions);
+                createDiffViewFragment(legacyChangeId, revisionId, fileId);
             }
         } else {
-            createDiffViewFragment(legacyChangeId, revisionId, fileId, revisions);
+            createDiffViewFragment(legacyChangeId, revisionId, fileId);
         }
     }
 
-    private void createDiffViewFragment(int legacyChangeId, String revisionId,
-            String fileId, ArrayList<String> revisions) {
+    private void createDiffViewFragment(int legacyChangeId, String revisionId, String fileId) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = DiffViewerFragment.newInstance(
-                legacyChangeId, revisionId, fileId, revisions);
+        Fragment fragment = DiffViewerFragment.newInstance(legacyChangeId, revisionId, fileId);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG);
         tx.commit();
     }

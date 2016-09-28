@@ -65,7 +65,7 @@ public class DiffView extends FrameLayout {
     private static class DiffSourceViewHolder extends RecyclerView.ViewHolder {
         private DiffSourceItemBinding mBinding;
 
-        public DiffSourceViewHolder(DiffSourceItemBinding binding) {
+        DiffSourceViewHolder(DiffSourceItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             mBinding.executePendingBindings();
@@ -75,7 +75,7 @@ public class DiffView extends FrameLayout {
     private static class DiffSkipViewHolder extends RecyclerView.ViewHolder {
         private DiffSkipItemBinding mBinding;
 
-        public DiffSkipViewHolder(DiffSkipItemBinding binding) {
+        DiffSkipViewHolder(DiffSkipItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             mBinding.executePendingBindings();
@@ -85,7 +85,7 @@ public class DiffView extends FrameLayout {
     private static class DiffCommentViewHolder extends RecyclerView.ViewHolder {
         private DiffCommentItemBinding mBinding;
 
-        public DiffCommentViewHolder(DiffCommentItemBinding binding) {
+        DiffCommentViewHolder(DiffCommentItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             mBinding.executePendingBindings();
@@ -101,8 +101,8 @@ public class DiffView extends FrameLayout {
         public String lineNumberB;
         public int colorA;
         public int colorB;
-        public CharSequence lineA;
-        public CharSequence lineB;
+        CharSequence lineA;
+        CharSequence lineB;
     }
 
     @ProguardIgnored
@@ -139,12 +139,12 @@ public class DiffView extends FrameLayout {
         private final DiffViewMeasurement mDiffViewMeasurement = new DiffViewMeasurement();
         private final int mMode;
 
-        public DiffAdapter(int mode) {
+        DiffAdapter(int mode) {
             mLayoutInflater = LayoutInflater.from(getContext());
             mMode = mode;
         }
 
-        public void update(List<AbstractModel> diffs) {
+        void update(List<AbstractModel> diffs) {
             mModel.clear();
             mModel.addAll(diffs);
             mDiffViewMeasurement.clear();
@@ -225,12 +225,13 @@ public class DiffView extends FrameLayout {
         }
 
         private void computeViewChildMeasuresIfNeeded() {
+            long start = System.currentTimeMillis();
             boolean wrap = isWrapMode();
             if (!mModel.isEmpty()) {
-                int pixel = (int) getResources().getDisplayMetrics().density;
+                int dp = (int) getResources().getDisplayMetrics().density;
                 TextPaint paint = new TextPaint();
-                paint.setTextSize(12 * pixel);
-                int padding = 3 * pixel;
+                paint.setTextSize(12 * dp);
+                int padding = 3 * dp;
 
                 for (AbstractModel model : mModel) {
                     if (model instanceof DiffInfoModel) {
@@ -276,14 +277,21 @@ public class DiffView extends FrameLayout {
                     }
                 }
 
+                // User same size for A y B number and apply a minimum
+                mDiffViewMeasurement.lineNumAWidth = mDiffViewMeasurement.lineNumBWidth =
+                        Math.max(mDiffViewMeasurement.lineNumAWidth,
+                                mDiffViewMeasurement.lineNumBWidth);
+                mDiffViewMeasurement.lineNumAWidth = mDiffViewMeasurement.lineNumBWidth =
+                        Math.max(mDiffViewMeasurement.lineNumAWidth, 20 * dp);
+
                 // Adjust padding
                 mDiffViewMeasurement.lineNumAWidth += (padding * 2);
                 mDiffViewMeasurement.lineNumBWidth += (padding * 2);
-                int diffIndicatorWidth = 16 * pixel;
+                int diffIndicatorWidth = 16 * dp;
                 mDiffViewMeasurement.width =
                         mDiffViewMeasurement.lineNumAWidth + mDiffViewMeasurement.lineNumBWidth +
                         mDiffViewMeasurement.lineAWidth + mDiffViewMeasurement.lineBWidth +
-                        diffIndicatorWidth + (pixel * 2);
+                        diffIndicatorWidth + (dp * 2);
 
                 if (mDiffViewMeasurement.width < getWidth()) {
                     mDiffViewMeasurement.width = getWidth();
@@ -291,10 +299,12 @@ public class DiffView extends FrameLayout {
                         mDiffViewMeasurement.lineAWidth = getWidth() -
                                 mDiffViewMeasurement.lineNumAWidth -
                                 mDiffViewMeasurement.lineNumBWidth -
-                                diffIndicatorWidth - (pixel * 2);
+                                diffIndicatorWidth - (dp * 2);
                     }
                 }
             }
+            long end = System.currentTimeMillis();
+            System.out.println("jrc: computeViewChildMeasuresIfNeeded -> " + (end - start));
         }
     }
 
@@ -303,7 +313,7 @@ public class DiffView extends FrameLayout {
         private final DiffContentInfo[] mDiffs;
         private final Pair<List<CommentInfo>, List<CommentInfo>> mComments;
 
-        public AsyncDiffProcessor(int mode, DiffContentInfo[] diffs,
+        AsyncDiffProcessor(int mode, DiffContentInfo[] diffs,
                 Pair<List<CommentInfo>, List<CommentInfo>> comments) {
             mMode = mode;
             mDiffs = diffs;
@@ -312,16 +322,23 @@ public class DiffView extends FrameLayout {
 
         @Override
         protected List<AbstractModel> doInBackground(Void... params) {
-            return processComments(processDiffs());
+            long start = System.currentTimeMillis();
+            List<AbstractModel> model = processComments(processDiffs());
+            long end = System.currentTimeMillis();
+            System.out.println("jrc: doInBackground -> " + (end - start));
+            return model;
         }
 
         @Override
         protected void onPostExecute(List<AbstractModel> model) {
+            long start = System.currentTimeMillis();
             mDiffAdapter = new DiffAdapter(mDiffMode);
             mLayoutManager = mTmpLayoutManager;
             mRecyclerView.setLayoutManager(mLayoutManager);
             mRecyclerView.setAdapter(mDiffAdapter);
             mDiffAdapter.update(model);
+            long end = System.currentTimeMillis();
+            System.out.println("jrc: onPostExecute -> " + (end - start));
         }
 
         private List<AbstractModel> processDiffs() {
@@ -332,6 +349,7 @@ public class DiffView extends FrameLayout {
         }
 
         private List<AbstractModel> processSideBySideDiffs() {
+            long start = System.currentTimeMillis();
             if (mDiffs == null) {
                 return new ArrayList<>();
             }
@@ -461,10 +479,13 @@ public class DiffView extends FrameLayout {
                 j++;
             }
 
+            long end = System.currentTimeMillis();
+            System.out.println("jrc: processSideBySideDiffs -> " + (end - start));
             return model;
         }
 
         private List<AbstractModel> processUnifiedDiffs() {
+            long start = System.currentTimeMillis();
             if (mDiffs == null) {
                 return new ArrayList<>();
             }
@@ -590,10 +611,13 @@ public class DiffView extends FrameLayout {
                 j++;
             }
 
+            long end = System.currentTimeMillis();
+            System.out.println("jrc: processUnifiedDiffs -> " + (end - start));
             return model;
         }
 
         private List<AbstractModel> processComments(List<AbstractModel> model) {
+            long start = System.currentTimeMillis();
             if (mComments != null) {
                 // Comments on A
                 if (mComments.second != null) {
@@ -605,11 +629,17 @@ public class DiffView extends FrameLayout {
                     addCommentsToModel(model, mComments.second, false);
                 }
             }
+
+            long end = System.currentTimeMillis();
+            System.out.println("jrc: processComments -> " + (end - start));
             return model;
         }
 
         private void addCommentsToModel(List<AbstractModel> model,
                 List<CommentInfo> comments, boolean isA) {
+            if (comments == null) {
+                return;
+            }
             int count = comments.size();
             for (int i = 0; i < count; i++) {
                 CommentInfo comment = comments.get(i);

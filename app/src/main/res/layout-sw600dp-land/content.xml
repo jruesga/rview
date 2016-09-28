@@ -43,19 +43,30 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/tabs"
-                    android:layout_width="wrap_content"
+                <FrameLayout
+                    android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
+                    android:layout_gravity="bottom"
                     android:layout_marginLeft="32dp"
                     android:layout_marginStart="32dp"
-                    android:layout_gravity="bottom"
                     android:background="?attr/colorPrimaryDark"
-                    android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
-                    app:tabTextColor="?android:attr/textColorSecondary"
-                    app:tabSelectedTextColor="@android:color/white"
-                    app:tabIndicatorColor="@android:color/white"
-                    app:tabIndicatorHeight="3dp"/>
+                    android:visibility="@{(model.hasTabs || model.hasPages) ? View.VISIBLE : View.GONE}">
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/tabs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
+                        app:tabTextColor="?android:attr/textColorSecondary"
+                        app:tabSelectedTextColor="@android:color/white"
+                        app:tabIndicatorColor="@android:color/white"
+                        app:tabIndicatorHeight="3dp"/>
+                    <com.ruesga.rview.widget.PagerControllerLayout
+                        android:id="@+id/pagerController"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="bottom"
+                        android:visibility="@{model.hasPages ? View.VISIBLE : View.GONE}" />
+                </FrameLayout>
 
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>

@@ -32,7 +32,6 @@ public class Constants {
     public static final String EXTRA_FILTER = "filter";
     public static final String EXTRA_TITLE = "title";
     public static final String EXTRA_BASE = "base";
-    public static final String EXTRA_REVISIONS = "revisions";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
 

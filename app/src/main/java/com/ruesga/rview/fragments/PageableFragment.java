@@ -30,15 +30,19 @@ import android.view.ViewGroup;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ViewPagerBinding;
+import com.ruesga.rview.widget.SwipeableViewPager;
 
 import java.lang.ref.WeakReference;
 
-public abstract class PaginableFragment extends Fragment {
+public abstract class PageableFragment extends Fragment {
+
+    public static final int MODE_TABS = 0;
+    public static final int MODE_NAVIGATION = 1;
 
     public class PageFragmentAdapter extends FragmentPagerAdapter {
         private final SparseArray<WeakReference<Fragment>> mFragments = new SparseArray<>();
 
-        public PageFragmentAdapter(FragmentManager fm) {
+        PageFragmentAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -67,7 +71,7 @@ public abstract class PaginableFragment extends Fragment {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return getPages()[position];
+            return getPage(position);
         }
 
         public Fragment getCachedFragment(int position) {
@@ -78,9 +82,13 @@ public abstract class PaginableFragment extends Fragment {
 
     private ViewPagerBinding mBinding;
 
+    private PageFragmentAdapter mAdapter;
+
     public abstract String[] getPages();
 
     public abstract Fragment getFragment(int position);
+
+    public abstract int getMode();
 
     public int getOffscreenPageLimit() {
         return 3;
@@ -90,10 +98,15 @@ public abstract class PaginableFragment extends Fragment {
         return true;
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+    public SwipeableViewPager getViewPager() {
+        return mBinding.viewPager;
+    }
+
+    public CharSequence getPage(int position) {
+        return getPages()[position];
+    }
+
+    public View createDefaultView(LayoutInflater inflater, @Nullable ViewGroup container) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.view_pager, container, false);
         return mBinding.getRoot();
     }
@@ -101,17 +114,34 @@ public abstract class PaginableFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mBinding.viewPager.setSwipeable(isSwipeable());
-        mBinding.viewPager.setOffscreenPageLimit(getOffscreenPageLimit());
-        mBinding.viewPager.setAdapter(new PageFragmentAdapter(getChildFragmentManager()));
-        boolean fixedMode = getResources().getConfiguration().orientation
-                != Configuration.ORIENTATION_PORTRAIT || getPages().length <= 3;
-        ((BaseActivity) getActivity()).configureTabs(mBinding.viewPager, fixedMode);
+        mAdapter = new PageFragmentAdapter(getChildFragmentManager());
+        SwipeableViewPager viewPager = getViewPager();
+        viewPager.setSwipeable(isSwipeable());
+        viewPager.setOffscreenPageLimit(getOffscreenPageLimit());
+        viewPager.setAdapter(mAdapter);
+        if (getMode() == MODE_TABS) {
+            boolean fixedMode = getResources().getConfiguration().orientation
+                    != Configuration.ORIENTATION_PORTRAIT || getPages().length <= 3;
+            ((BaseActivity) getActivity()).configureTabs(viewPager, fixedMode);
+        } else {
+            ((BaseActivity) getActivity()).configurePages(viewPager);
+        }
     }
 
     @Override
-    public final void onDestroyView() {
+    public void onDestroyView() {
         super.onDestroyView();
-        mBinding.unbind();
+        if (mBinding != null) {
+            mBinding.unbind();
+        }
     }
+
+    public void invalidateAdapter() {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void navigateToItem(int page, boolean smooth) {
+        getViewPager().setCurrentItem(page, smooth);
+    }
+
 }

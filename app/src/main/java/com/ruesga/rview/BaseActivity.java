@@ -29,7 +29,7 @@ import android.view.MenuItem;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
-import com.ruesga.rview.fragments.PaginableFragment.PageFragmentAdapter;
+import com.ruesga.rview.fragments.PageableFragment.PageFragmentAdapter;
 import com.ruesga.rview.fragments.SelectableFragment;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
@@ -44,6 +44,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     public static class Model implements Parcelable {
         public boolean isInProgress = false;
         public boolean hasTabs = false;
+        public boolean hasPages = false;
         public boolean useTowPane = true;
 
         public Model() {
@@ -52,6 +53,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         protected Model(Parcel in) {
             isInProgress = in.readByte() != 0;
             hasTabs = in.readByte() != 0;
+            hasPages = in.readByte() != 0;
             useTowPane = in.readByte() != 0;
         }
 
@@ -59,6 +61,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeByte((byte) (isInProgress ? 1 : 0));
             dest.writeByte((byte) (hasTabs ? 1 : 0));
+            dest.writeByte((byte) (hasPages ? 1 : 0));
             dest.writeByte((byte) (useTowPane ? 1 : 0));
         }
 
@@ -109,17 +112,19 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     protected void invalidateTabs() {
+        mModel.hasPages = false;
         mModel.hasTabs = false;
         getContentBinding().tabs.setupWithViewPager(null);
         getContentBinding().setModel(mModel);
     }
 
-    public void configureTabs(ViewPager pager, boolean fixedMode) {
-        mViewPager = pager;
+    public void configureTabs(ViewPager viewPager, boolean fixedMode) {
+        mViewPager = viewPager;
+        mModel.hasPages = false;
         mModel.hasTabs = true;
         getContentBinding().tabs.setTabMode(
                 fixedMode ? TabLayout.MODE_FIXED : TabLayout.MODE_SCROLLABLE);
-        getContentBinding().tabs.setupWithViewPager(pager);
+        getContentBinding().tabs.setupWithViewPager(viewPager);
         getContentBinding().tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -138,7 +143,23 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
-        pager.getAdapter().notifyDataSetChanged();
+        viewPager.getAdapter().notifyDataSetChanged();
+        getContentBinding().setModel(mModel);
+    }
+
+    protected void invalidatePages() {
+        mModel.hasPages = false;
+        mModel.hasTabs = false;
+        getContentBinding().pagerController.setupWithViewPager(null);
+        getContentBinding().setModel(mModel);
+    }
+
+    public void configurePages(ViewPager viewPager) {
+        mViewPager = viewPager;
+        mModel.hasPages = true;
+        mModel.hasTabs = false;
+        getContentBinding().pagerController.setupWithViewPager(viewPager);
+        viewPager.getAdapter().notifyDataSetChanged();
         getContentBinding().setModel(mModel);
     }
 

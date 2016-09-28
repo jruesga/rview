@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
@@ -32,11 +33,14 @@ import com.ruesga.rview.databinding.FileDiffViewerFragmentBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.CommentInfo;
+import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.widget.DiffView;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import me.tatarka.rxloader.RxLoader;
@@ -97,13 +101,20 @@ public class FileDiffViewerFragment extends Fragment {
     private List<CommentInfo> mCommentsB;
 
     public static FileDiffViewerFragment newInstance(
-            int legacyChangeId, String revisionId, String fileId, int base) {
+            int legacyChangeId, String revisionId, String fileId, int base,
+            List<CommentInfo> commentsA, List<CommentInfo> commentsB) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
         arguments.putString(Constants.EXTRA_FILE_ID, fileId);
         arguments.putInt(Constants.EXTRA_BASE, base);
+        if (commentsA != null) {
+            arguments.putString("comments_a", SerializationManager.getInstance().toJson(commentsA));
+        }
+        if (commentsB != null) {
+            arguments.putString("comments_b", SerializationManager.getInstance().toJson(commentsB));
+        }
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -115,6 +126,17 @@ public class FileDiffViewerFragment extends Fragment {
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mRevisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
         mFileId = getArguments().getString(Constants.EXTRA_FILE_ID);
+
+        String commentsA = getArguments().getString("comments_a");
+        String commentsB = getArguments().getString("comments_b");
+        Type type = new TypeToken<List<CommentInfo>>(){}.getType();
+        if (commentsA != null) {
+            mCommentsA = SerializationManager.getInstance().fromJson(commentsA, type);
+        }
+        if (commentsB != null) {
+            mCommentsB = SerializationManager.getInstance().fromJson(commentsB, type);
+        }
+
         int base = getArguments().getInt(Constants.EXTRA_BASE, 0);
         mBase = base == 0 ? null : base;
     }

@@ -20,11 +20,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,10 +32,9 @@ import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.widget.SwipeableViewPager;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,55 +47,9 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class DiffViewerFragment extends Fragment {
+public class DiffViewerFragment extends PageableFragment {
 
     private static final String TAG = "DiffViewerFragment";
-
-    public class FileDiffFragmentAdapter extends FragmentPagerAdapter {
-        private final SparseArray<WeakReference<FileDiffViewerFragment>> mFragments
-                = new SparseArray<>();
-
-        private DiffResponse mResponse;
-
-        public FileDiffFragmentAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            FileDiffViewerFragment fragment =
-                    (FileDiffViewerFragment) super.instantiateItem(container, position);
-            mFragments.put(position, new WeakReference<>(fragment));
-            return fragment;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            super.destroyItem(container, position, object);
-            mFragments.remove(position);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            final String fileId = getFileAtPosition(position);
-            return FileDiffViewerFragment.newInstance(mLegacyChangeId, mRevisionId, fileId, 0);
-        }
-
-        @Override
-        public int getCount() {
-            if (mResponse == null)  {
-                return 0;
-            }
-            return mResponse.mFiles.size();
-        }
-
-        private String getFileAtPosition(int position) {
-            if (mResponse == null) {
-                return null;
-            }
-            return (String) mResponse.mFiles.keySet().toArray()[position];
-        }
-    }
 
     private static class DiffResponse {
         private Map<String, FileInfo> mFiles = new LinkedHashMap<>();
@@ -112,9 +60,10 @@ public class DiffViewerFragment extends Fragment {
     private final RxLoaderObserver<DiffResponse> mObserver = new RxLoaderObserver<DiffResponse>() {
         @Override
         public void onNext(DiffResponse response) {
-            mAdapter.mResponse = response;
-            mAdapter.notifyDataSetChanged();
-            mBinding.viewPager.setCurrentItem(getFilePosition(response), false);
+            mResponse = response;
+            mFiles = response.mFiles.keySet().toArray(new String[response.mFiles.size()]);
+            invalidateAdapter();
+            navigateToItem(getFilePosition(response), false);
             showProgress(false);
         }
 
@@ -128,28 +77,37 @@ public class DiffViewerFragment extends Fragment {
         public void onStarted() {
             showProgress(true);
         }
+
+        private int getFilePosition(DiffResponse response) {
+            int i = 0;
+            for (String fileId : response.mFiles.keySet()) {
+                if (fileId.equals(mFileId)) {
+                    return i;
+                }
+                i++;
+            }
+            return 0;
+        }
     };
 
     private DiffViewerFragmentBinding mBinding;
-    private FileDiffFragmentAdapter mAdapter;
+
+    private DiffResponse mResponse;
+    private String[] mFiles = new String[0];
 
     private int mLegacyChangeId;
     private String mRevisionId;
     private String mFileId;
-    private ArrayList<String> mRevisions;
-    private int mBaseA = 0;
-    private int mBaseB = 1;
+    private int mBase;
 
     private RxLoader<DiffResponse> mLoader;
-    
-    public static DiffViewerFragment newInstance(
-            int legacyChangeId, String revisionId, String fileId, ArrayList<String> revisions) {
+
+    public static DiffViewerFragment newInstance(int changeId, String revisionId, String fileId) {
         DiffViewerFragment fragment = new DiffViewerFragment();
         Bundle arguments = new Bundle();
-        arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, changeId);
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
         arguments.putString(Constants.EXTRA_FILE_ID, fileId);
-        arguments.putStringArrayList(Constants.EXTRA_REVISIONS, revisions);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -157,11 +115,12 @@ public class DiffViewerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLegacyChangeId = getArguments().getInt(
-                Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
-        mRevisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
-        mFileId = getArguments().getString(Constants.EXTRA_FILE_ID);
-        mRevisions = getArguments().getStringArrayList(Constants.EXTRA_REVISIONS);
+
+        Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
+        mLegacyChangeId = state.getInt(Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
+        mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
+        mFileId = state.getString(Constants.EXTRA_FILE_ID);
+        mBase = state.getInt(Constants.EXTRA_BASE, 0);
     }
 
     @Nullable
@@ -180,53 +139,46 @@ public class DiffViewerFragment extends Fragment {
         startLoadersWithValidContext();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mBinding != null) {
+            mBinding.unbind();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
+        outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
+        outState.putString(Constants.EXTRA_FILE_ID, mFileId);
+        outState.putInt("baseA", mBase);
+    }
+
     private void startLoadersWithValidContext() {
         if (getActivity() == null) {
             return;
         }
 
         if (mLoader == null) {
-            mAdapter = new FileDiffFragmentAdapter(getChildFragmentManager());
-            mBinding.viewPager.setSwipeable(true);
-            mBinding.viewPager.setOffscreenPageLimit(3);
-            mBinding.viewPager.setAdapter(mAdapter);
-            mBinding.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-                @Override
-                public void onPageScrolled(int position, float offset, int offsetPixels) {
-                }
-
-                @Override
-                public void onPageScrollStateChanged(int state) {
-                }
-
-                @Override
-                public void onPageSelected(int position) {
-                    updateStatusBar(mAdapter.getFileAtPosition(position));
-                }
-            });
-
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-            mLoader = loaderManager.create("diff-" + mLegacyChangeId, fetchFilesAndComments(),
+            mLoader = loaderManager.create("diff-" + mLegacyChangeId, fetchData(),
                     mObserver).start();
         }
     }
 
-    @Override
-    public final void onDestroyView() {
-        super.onDestroyView();
-        mBinding.unbind();
-    }
-
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<DiffResponse> fetchFilesAndComments() {
+    private Observable<DiffResponse> fetchData() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
                     api.getChangeRevisionFiles(String.valueOf(mLegacyChangeId), mRevisionId),
                     Observable.fromCallable(() -> {
-                        if (mBaseA != 0) {
+                        if (mBase != 0) {
                             return api.getChangeRevisionComments(
                                     String.valueOf(mLegacyChangeId),
                                     mRevisionId).toBlocking().first();
@@ -251,10 +203,65 @@ public class DiffViewerFragment extends Fragment {
         if (commentsA != null) {
             response.mCommentsA.putAll(commentsA);
         }
-        if (commentsA != null) {
+        if (commentsB != null) {
             response.mCommentsB.putAll(commentsB);
         }
         return response;
+    }
+
+    @Override
+    public String[] getPages() {
+        return mFiles;
+    }
+
+    @Override
+    public Fragment getFragment(int position) {
+        final String fileId = mFiles[position];
+        final int base = mResponse == null ? 0 : mBase;
+        return FileDiffViewerFragment.newInstance(mLegacyChangeId, mRevisionId, fileId,
+                base, getCommentsA(fileId), getCommentsB(fileId));
+    }
+
+    @Override
+    public boolean isSwipeable() {
+        return false;
+    }
+
+    @Override
+    public SwipeableViewPager getViewPager() {
+        return mBinding.viewPager;
+    }
+
+    @Override
+    public int getMode() {
+        return MODE_NAVIGATION;
+    }
+
+    @Override
+    public int getOffscreenPageLimit() {
+        return 3;
+    }
+
+    @Override
+    public CharSequence getPage(int position) {
+        if (mFiles == null) {
+            return null;
+        }
+        return new File(mFiles[position]).getName();
+    }
+
+    private List<CommentInfo> getCommentsA(String fileId) {
+        if (mResponse == null) {
+            return null;
+        }
+        return mResponse.mCommentsA.get(fileId);
+    }
+
+    private List<CommentInfo> getCommentsB(String fileId) {
+        if (mResponse == null) {
+            return null;
+        }
+        return mResponse.mCommentsB.get(fileId);
     }
 
     private void showProgress(boolean show) {
@@ -263,26 +270,6 @@ public class DiffViewerFragment extends Fragment {
             activity.onRefreshStart();
         } else {
             activity.onRefreshEnd(null);
-        }
-    }
-
-    private int getFilePosition(DiffResponse response) {
-        int i = 0;
-        for (String fileId : response.mFiles.keySet()) {
-            if (fileId.equals(mFileId)) {
-                return i;
-            }
-            i++;
-        }
-        return 0;
-    }
-
-    private void updateStatusBar(String fileId) {
-        AppCompatActivity activity = ((AppCompatActivity)getActivity());
-        if (activity.getSupportActionBar() != null) {
-            activity.getSupportActionBar().setTitle(new File(fileId).getName());
-            activity.getSupportActionBar().setSubtitle(
-                    getString(R.string.change_details_title, mLegacyChangeId));
         }
     }
 }

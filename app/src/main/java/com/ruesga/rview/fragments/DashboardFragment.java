@@ -18,16 +18,26 @@ package com.ruesga.rview.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
 
-public class DashboardFragment extends PaginableFragment {
+public class DashboardFragment extends PageableFragment {
 
     private String[] mDashboardTabs;
     private String[] mDashboardFilters;
 
     public static DashboardFragment newInstance() {
         return new DashboardFragment();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        return createDefaultView(inflater, container);
     }
 
     @Override
@@ -52,6 +62,11 @@ public class DashboardFragment extends PaginableFragment {
     public boolean isSwipeable() {
         final boolean isTwoPane = getResources().getBoolean(R.bool.config_is_two_pane);
         return !isTwoPane;
+    }
+
+    @Override
+    public int getMode() {
+        return MODE_TABS;
     }
 
     @Override

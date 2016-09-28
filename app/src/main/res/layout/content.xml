@@ -45,17 +45,28 @@
                 app:layout_collapseMode="pin"
                 app:toolbarScrollFlags="@{model.hasTabs}" />
 
-            <android.support.design.widget.TabLayout
-                android:id="@+id/tabs"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_gravity="bottom"
                 android:background="?attr/colorPrimaryDark"
-                android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
-                app:tabTextColor="?android:attr/textColorSecondaryInverse"
-                app:tabSelectedTextColor="@android:color/white"
-                app:tabIndicatorColor="@android:color/white"
-                app:tabIndicatorHeight="3dp"/>
+                android:visibility="@{(model.hasTabs || model.hasPages) ? View.VISIBLE : View.GONE}"
+                app:layout_collapseMode="pin">
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
+                    app:tabTextColor="?android:attr/textColorSecondaryInverse"
+                    app:tabSelectedTextColor="@android:color/white"
+                    app:tabIndicatorColor="@android:color/white"
+                    app:tabIndicatorHeight="3dp"/>
+                <com.ruesga.rview.widget.PagerControllerLayout
+                    android:id="@+id/pagerController"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="@{model.hasPages ? View.VISIBLE : View.GONE}" />
+            </FrameLayout>
 
         </android.support.design.widget.AppBarLayout>
 
