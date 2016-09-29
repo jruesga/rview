@@ -30,14 +30,10 @@ import android.view.ViewGroup;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ViewPagerBinding;
-import com.ruesga.rview.widget.SwipeableViewPager;
 
 import java.lang.ref.WeakReference;
 
 public abstract class PageableFragment extends Fragment {
-
-    public static final int MODE_TABS = 0;
-    public static final int MODE_NAVIGATION = 1;
 
     public class PageFragmentAdapter extends FragmentPagerAdapter {
         private final SparseArray<WeakReference<Fragment>> mFragments = new SparseArray<>();
@@ -88,8 +84,6 @@ public abstract class PageableFragment extends Fragment {
 
     public abstract Fragment getFragment(int position);
 
-    public abstract int getMode();
-
     public int getOffscreenPageLimit() {
         return 3;
     }
@@ -98,15 +92,14 @@ public abstract class PageableFragment extends Fragment {
         return true;
     }
 
-    public SwipeableViewPager getViewPager() {
-        return mBinding.viewPager;
-    }
-
     public CharSequence getPage(int position) {
         return getPages()[position];
     }
 
-    public View createDefaultView(LayoutInflater inflater, @Nullable ViewGroup container) {
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.view_pager, container, false);
         return mBinding.getRoot();
     }
@@ -115,17 +108,12 @@ public abstract class PageableFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mAdapter = new PageFragmentAdapter(getChildFragmentManager());
-        SwipeableViewPager viewPager = getViewPager();
-        viewPager.setSwipeable(isSwipeable());
-        viewPager.setOffscreenPageLimit(getOffscreenPageLimit());
-        viewPager.setAdapter(mAdapter);
-        if (getMode() == MODE_TABS) {
-            boolean fixedMode = getResources().getConfiguration().orientation
-                    != Configuration.ORIENTATION_PORTRAIT || getPages().length <= 3;
-            ((BaseActivity) getActivity()).configureTabs(viewPager, fixedMode);
-        } else {
-            ((BaseActivity) getActivity()).configurePages(viewPager);
-        }
+        mBinding.viewPager.setSwipeable(isSwipeable());
+        mBinding.viewPager.setOffscreenPageLimit(getOffscreenPageLimit());
+        mBinding.viewPager.setAdapter(mAdapter);
+        boolean fixedMode = getResources().getConfiguration().orientation
+                != Configuration.ORIENTATION_PORTRAIT || getPages().length <= 3;
+        ((BaseActivity) getActivity()).configureTabs(mBinding.viewPager, fixedMode);
     }
 
     @Override
@@ -141,7 +129,7 @@ public abstract class PageableFragment extends Fragment {
     }
 
     public void navigateToItem(int page, boolean smooth) {
-        getViewPager().setCurrentItem(page, smooth);
+        mBinding.viewPager.setCurrentItem(page, smooth);
     }
 
 }

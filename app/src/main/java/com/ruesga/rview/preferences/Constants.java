@@ -28,10 +28,12 @@ public class Constants {
     public static final String EXTRA_PROJECT_ID = "projectId";
     public static final String EXTRA_REVISION_ID = "revisionId";
     public static final String EXTRA_FILE_ID = "fileId";
+    public static final String EXTRA_FILE = "fileId";
     public static final String EXTRA_TOPIC = "topic";
     public static final String EXTRA_FILTER = "filter";
     public static final String EXTRA_TITLE = "title";
     public static final String EXTRA_BASE = "base";
+    public static final String EXTRA_DATA = "data";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
 

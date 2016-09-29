@@ -33,13 +33,6 @@ public class DashboardFragment extends PageableFragment {
         return new DashboardFragment();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        return createDefaultView(inflater, container);
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         mDashboardTabs = getResources().getStringArray(R.array.dashboard_titles);
@@ -62,11 +55,6 @@ public class DashboardFragment extends PageableFragment {
     public boolean isSwipeable() {
         final boolean isTwoPane = getResources().getBoolean(R.bool.config_is_two_pane);
         return !isTwoPane;
-    }
-
-    @Override
-    public int getMode() {
-        return MODE_TABS;
     }
 
     @Override

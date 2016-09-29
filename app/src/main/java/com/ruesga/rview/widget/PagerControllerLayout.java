@@ -16,11 +16,11 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.databinding.DataBindingUtil;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.IdRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +31,28 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.PagerControllerLayoutBinding;
 
 public class PagerControllerLayout extends FrameLayout {
+
+    private static final String FRAGMENT_TAG = "pager_fragment";
+
+    public static final int INVALID_PAGE = -1;
+
+    public static abstract class PagerControllerAdapter<T> {
+        public abstract FragmentManager getFragmentManager();
+
+        public abstract CharSequence getPageTitle(int position);
+
+        public abstract T getItem(int position);
+
+        public abstract int getCount();
+
+        public abstract Fragment getFragment(int position);
+
+        public abstract @IdRes int getTarget();
+    }
+
+    public interface OnPageSelectionListener {
+        void onPageSelected(int position);
+    }
 
     @ProguardIgnored
     public static class Model {
@@ -56,37 +78,10 @@ public class PagerControllerLayout extends FrameLayout {
         }
     }
 
-    private ViewPager.OnPageChangeListener mPageListener = new ViewPager.OnPageChangeListener() {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            mBinding.getRoot().setAlpha(1 - positionOffset);
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            pageSelected(position);
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int state) {
-        }
-    };
-
-    private DataSetObserver mDataObserver = new DataSetObserver() {
-        @Override
-        public void onChanged() {
-            pageSelected(0);
-        }
-
-        @Override
-        public void onInvalidated() {
-            pageSelected(0);
-        }
-    };
-
     private PagerControllerLayoutBinding mBinding;
-    private boolean mRegistered;
-    private ViewPager mViewPager;
+    private OnPageSelectionListener mOnPageSelectionListener;
+    private PagerControllerAdapter mAdapter;
+    private int mCurrentItem = INVALID_PAGE;
 
     private final Model mModel = new Model();
 
@@ -106,55 +101,66 @@ public class PagerControllerLayout extends FrameLayout {
         addView(mBinding.getRoot());
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (mRegistered) {
-            mViewPager.removeOnPageChangeListener(mPageListener);
-            mViewPager.getAdapter().unregisterDataSetObserver(mDataObserver);
-        }
+    public PagerControllerLayout listenOn(OnPageSelectionListener cb) {
+        mOnPageSelectionListener = cb;
+        return this;
     }
 
-    public void setupWithViewPager(ViewPager viewPager) {
-        if (mRegistered) {
-            viewPager.removeOnPageChangeListener(mPageListener);
-            viewPager.getAdapter().unregisterDataSetObserver(mDataObserver);
+    public PagerControllerLayout with(PagerControllerAdapter adapter) {
+        mAdapter = adapter;
+        if (mAdapter == null) {
+            currentPage(INVALID_PAGE);
         }
-        if(viewPager != null) {
-            viewPager.addOnPageChangeListener(mPageListener);
-            viewPager.getAdapter().registerDataSetObserver(mDataObserver);
-            mRegistered = true;
-        }
-        mViewPager = viewPager;
+        return this;
     }
 
-    private void pageSelected(int position) {
-        String title;
-        if (mViewPager.getAdapter().getCount() > 0) {
-            mModel.prev = position == 0 ? null : mViewPager.getAdapter().getPageTitle(position - 1);
-            title = mViewPager.getAdapter().getPageTitle(position).toString();
-            mModel.next = position >= mViewPager.getAdapter().getCount() - 1 ? null
-                    : mViewPager.getAdapter().getPageTitle(position + 1);
+    public void currentPage(int position) {
+        if (mCurrentItem == position) {
+            return;
+        }
+
+        if (mAdapter != null && mAdapter.getCount() > 0) {
+            mModel.prev = position == 0 ? null : mAdapter.getPageTitle(position - 1);
+            mModel.next = position >= mAdapter.getCount() - 1 ? null
+                    : mAdapter.getPageTitle(position + 1);
             mBinding.setModel(mModel);
-            mViewPager.setCurrentItem(position);
+            pageSelected(position);
         } else {
             mModel.prev = null;
-            title = null;
             mModel.next = null;
             mBinding.setModel(mModel);
         }
+    }
 
-        ActionBar actionBar = ((AppCompatActivity) getContext()).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setSubtitle(title);
+    private void pageSelected(int position) {
+        if (mOnPageSelectionListener != null) {
+            mOnPageSelectionListener.onPageSelected(position);
         }
+
+        FragmentTransaction tx = mAdapter.getFragmentManager().beginTransaction();
+        Fragment oldFragment = mAdapter.getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+        if (oldFragment != null) {
+            tx.remove(oldFragment);
+        }
+        if (mCurrentItem != INVALID_PAGE) {
+            if (position < mCurrentItem) {
+                tx.setCustomAnimations(android.R.anim.slide_out_right, android.R.anim.slide_in_left);
+            } else {
+                tx.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            }
+        }
+        if (position != INVALID_PAGE) {
+            tx.replace(mAdapter.getTarget(), mAdapter.getFragment(position), FRAGMENT_TAG);
+        }
+        tx.commit();
+        mCurrentItem = position;
     }
 
     private void performMovePrev() {
-        mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1, true);
+        currentPage(mCurrentItem - 1);
     }
 
     private void performMoveNext() {
-        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
+        currentPage(mCurrentItem + 1);
     }
 }

@@ -145,13 +145,12 @@ public class ActivityHelper {
         context.startActivity(intent);
     }
 
-    public static void openDiffViewerActivity(Context context,
-            int legacyChangeId, String changeId, String revisionId, String fileId) {
+    public static void openDiffViewerActivity(
+            Context context, ChangeInfo change, String revisionId, String file) {
         Intent intent = new Intent(context, DiffViewerActivity.class);
-        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
-        intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
-        intent.putExtra(Constants.EXTRA_FILE_ID, fileId);
+        intent.putExtra(Constants.EXTRA_FILE, file);
+        intent.putExtra(Constants.EXTRA_DATA, SerializationManager.getInstance().toJson(change));
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         context.startActivity(intent);
     }

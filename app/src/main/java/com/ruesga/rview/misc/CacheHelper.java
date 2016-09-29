@@ -32,6 +32,8 @@ public class CacheHelper {
     public static final long MAX_AGE_CACHE = 60 * 60 * 24 * 5L;
     public static final long MAX_DISK_CACHE = 5 * 1024 * 1024L;
 
+    private static final String DIFF_CACHE_FOLDER = "diff";
+
     public static File getAccountCacheDir(Context context) {
         return getAccountCacheDir(context, Preferences.getAccount(context));
     }
@@ -62,6 +64,56 @@ public class CacheHelper {
                 // Ignore
             }
         }
+    }
+
+    public static File getAccountDiffCacheDir(Context context) {
+        return getAccountDiffCacheDir(context, Preferences.getAccount(context));
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static File getAccountDiffCacheDir(Context context, Account account) {
+        createAccountCacheDir(context, account);
+        File cacheDir = new File(getAccountCacheDir(context, account), DIFF_CACHE_FOLDER);
+        if (!cacheDir.exists()) {
+            cacheDir.mkdir();
+        }
+        return cacheDir;
+    }
+
+    public static void removeAccountDiffCacheDir(Context context) {
+        removeAccountDiffCacheDir(context, Preferences.getAccount(context));
+    }
+
+    public static void removeAccountDiffCacheDir(Context context, Account account) {
+        final File cacheDir = getAccountDiffCacheDir(context, account);
+        if (cacheDir.exists()) {
+            try {
+                FileUtils.deleteDirectory(cacheDir);
+            } catch (IOException ex) {
+                // Ignore
+            }
+        }
+    }
+
+    public static byte[] readAccountDiffCacheDir(Context context, String name) throws IOException {
+        return readAccountDiffCacheDir(context, Preferences.getAccount(context), name);
+    }
+
+    public static byte[] readAccountDiffCacheDir(Context context, Account account, String name)
+            throws IOException {
+        return FileUtils.readFileToByteArray(
+                new File(getAccountDiffCacheDir(context, account), name));
+    }
+
+    public static void writeAccountDiffCacheDir(Context context, String name, byte[] data)
+            throws IOException {
+        writeAccountDiffCacheDir(context, Preferences.getAccount(context), name, data);
+    }
+
+    public static void writeAccountDiffCacheDir(
+            Context context, Account account, String name, byte[] data) throws IOException {
+        FileUtils.writeByteArrayToFile(
+                new File(getAccountDiffCacheDir(context, account), name), data);
     }
 
     public static Response.Builder addCacheControl(Response.Builder builder) {

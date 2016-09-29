@@ -22,12 +22,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.DiffViewerFragment;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
+import java.io.IOException;
+
 public class DiffViewerActivity extends BaseActivity {
+
+    private static final String TAG = "DiffViewerActivity";
 
     private static final String FRAGMENT_TAG = "diff";
 
@@ -44,23 +52,32 @@ public class DiffViewerActivity extends BaseActivity {
             finish();
             return;
         }
-        int legacyChangeId = getIntent().getIntExtra(Constants.EXTRA_LEGACY_CHANGE_ID, -1);
-        if (legacyChangeId == -1) {
-            finish();
-            return;
-        }
-        String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
-        if (TextUtils.isEmpty(changeId)) {
+
+        String file = getIntent().getStringExtra(Constants.EXTRA_FILE);
+        if (TextUtils.isEmpty(file)) {
             finish();
             return;
         }
         String revisionId = getIntent().getStringExtra(Constants.EXTRA_REVISION_ID);
-        if (TextUtils.isEmpty(revisionId)) {
+        if (TextUtils.isEmpty(file)) {
             finish();
             return;
         }
-        String fileId = getIntent().getStringExtra(Constants.EXTRA_FILE_ID);
-        if (TextUtils.isEmpty(fileId)) {
+        String data = getIntent().getStringExtra(Constants.EXTRA_DATA);
+        if (TextUtils.isEmpty(data)) {
+            finish();
+            return;
+        }
+
+        // Deserialize the change and cache the information
+        ChangeInfo change;
+        try {
+            change = SerializationManager.getInstance().fromJson(data, ChangeInfo.class);
+            CacheHelper.removeAccountDiffCacheDir(this);
+            CacheHelper.writeAccountDiffCacheDir(this,
+                    DiffViewerFragment.EXTRA_CHANGE_JSON, data.getBytes());
+        } catch (IOException ex) {
+            Log.e(TAG, "Failed to load change cached data", ex);
             finish();
             return;
         }
@@ -68,7 +85,8 @@ public class DiffViewerActivity extends BaseActivity {
         // Setup the title
         setupToolbar();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
+            getSupportActionBar().setTitle(
+                    getString(R.string.change_details_title, change.legacyChangeId));
         }
 
         setUseTwoPanel(false);
@@ -81,16 +99,16 @@ public class DiffViewerActivity extends BaseActivity {
                 tx.replace(R.id.content, fragment, FRAGMENT_TAG);
                 tx.commit();
             } else {
-                createDiffViewFragment(legacyChangeId, revisionId, fileId);
+                createDiffViewFragment(revisionId, file);
             }
         } else {
-            createDiffViewFragment(legacyChangeId, revisionId, fileId);
+            createDiffViewFragment(revisionId, file);
         }
     }
 
-    private void createDiffViewFragment(int legacyChangeId, String revisionId, String fileId) {
+    private void createDiffViewFragment(String revisionId, String file) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = DiffViewerFragment.newInstance(legacyChangeId, revisionId, fileId);
+        Fragment fragment = DiffViewerFragment.newInstance(revisionId, file);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG);
         tx.commit();
     }

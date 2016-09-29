@@ -1089,7 +1089,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performOpenFileDiff(String file) {
         ActivityHelper.openDiffViewerActivity(
-                getContext(), mLegacyChangeId, mResponse.mChange.changeId, mCurrentRevision, file);
+                getContext(), mResponse.mChange, mCurrentRevision, file);
     }
 
     private void sortRevisions(ChangeInfo change) {

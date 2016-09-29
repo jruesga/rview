@@ -19,8 +19,15 @@
 
     <data />
 
-    <com.ruesga.rview.widget.SwipeableViewPager
-        android:id="@+id/view_pager"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <!-- Revisions View -->
+
+        <FrameLayout
+            android:id="@+id/diff_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 </layout>

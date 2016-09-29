@@ -34,6 +34,9 @@ import com.ruesga.rview.fragments.SelectableFragment;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
+import com.ruesga.rview.widget.PagerControllerLayout;
+import com.ruesga.rview.widget.PagerControllerLayout.OnPageSelectionListener;
+import com.ruesga.rview.widget.PagerControllerLayout.PagerControllerAdapter;
 
 public abstract class BaseActivity extends AppCompatActivity implements OnRefreshListener {
 
@@ -150,16 +153,27 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     protected void invalidatePages() {
         mModel.hasPages = false;
         mModel.hasTabs = false;
-        getContentBinding().pagerController.setupWithViewPager(null);
+        getContentBinding().pagerController.listenOn(null).with(null);
         getContentBinding().setModel(mModel);
     }
 
-    public void configurePages(ViewPager viewPager) {
-        mViewPager = viewPager;
+    public void configurePages(PagerControllerAdapter adapter, OnPageSelectionListener cb) {
+        mViewPager = null;
         mModel.hasPages = true;
         mModel.hasTabs = false;
-        getContentBinding().pagerController.setupWithViewPager(viewPager);
-        viewPager.getAdapter().notifyDataSetChanged();
+        getContentBinding().pagerController
+                .listenOn(position -> {
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setSubtitle(
+                                position == PagerControllerLayout.INVALID_PAGE
+                                        ? null : adapter.getPageTitle(position));
+
+                        if (cb != null) {
+                            cb.onPageSelected(position);
+                        }
+                    }
+                })
+                .with(adapter);
         getContentBinding().setModel(mModel);
     }
 

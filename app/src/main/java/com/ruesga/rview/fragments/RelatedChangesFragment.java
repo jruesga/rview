@@ -51,13 +51,6 @@ public class RelatedChangesFragment extends PageableFragment {
         return fragment;
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        return createDefaultView(inflater, container);
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         mDashboardTabs = getResources().getStringArray(R.array.related_changes_labels);
@@ -83,11 +76,6 @@ public class RelatedChangesFragment extends PageableFragment {
     @Override
     public String[] getPages() {
         return mDashboardTabs;
-    }
-
-    @Override
-    public int getMode() {
-        return MODE_TABS;
     }
 
     @Override

@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
@@ -33,7 +34,6 @@ import com.ruesga.rview.databinding.FileDiffViewerFragmentBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.CommentInfo;
-import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
@@ -73,41 +73,50 @@ public class FileDiffViewerFragment extends Fragment {
     private final RxLoaderObserver<FileDiffResponse> mObserver = new RxLoaderObserver<FileDiffResponse>() {
         @Override
         public void onNext(FileDiffResponse response) {
-            mBinding.diff
-                    .from(response.diff.content)
-                    .with(response.comments)
-                    .mode(DiffView.UNIFIED_MODE)
-                    .wrap(false)
-                    .update();
+            mHandler.postDelayed(() ->
+                    mBinding.diff
+                        .from(response.diff.content)
+                        .with(response.comments)
+                        .mode(DiffView.UNIFIED_MODE)
+                        .wrap(true)
+                        .update(),
+                    250L);
+            showProgress(false);
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error);
+            showProgress(false);
+        }
+
+        @Override
+        public void onStarted() {
+            showProgress(true);
         }
     };
 
     private FileDiffViewerFragmentBinding mBinding;
-
     private EventHandlers mEventHandlers;
+    private Handler mHandler;
 
     private RxLoader<FileDiffResponse> mLoader;
 
     private int mLegacyChangeId;
     private String mRevisionId;
-    private String mFileId;
+    private String mFile;
     private Integer mBase;
     private List<CommentInfo> mCommentsA;
     private List<CommentInfo> mCommentsB;
 
     public static FileDiffViewerFragment newInstance(
-            int legacyChangeId, String revisionId, String fileId, int base,
+            int legacyChangeId, String revisionId, String file, int base,
             List<CommentInfo> commentsA, List<CommentInfo> commentsB) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
-        arguments.putString(Constants.EXTRA_FILE_ID, fileId);
+        arguments.putString(Constants.EXTRA_FILE, file);
         arguments.putInt(Constants.EXTRA_BASE, base);
         if (commentsA != null) {
             arguments.putString("comments_a", SerializationManager.getInstance().toJson(commentsA));
@@ -122,10 +131,12 @@ public class FileDiffViewerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler();
+
         mLegacyChangeId = getArguments().getInt(
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mRevisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
-        mFileId = getArguments().getString(Constants.EXTRA_FILE_ID);
+        mFile = getArguments().getString(Constants.EXTRA_FILE);
 
         String commentsA = getArguments().getString("comments_a");
         String commentsB = getArguments().getString("comments_b");
@@ -176,7 +187,7 @@ public class FileDiffViewerFragment extends Fragment {
                 api.getChangeRevisionFileDiff(
                         String.valueOf(mLegacyChangeId),
                         mRevisionId,
-                        mFileId,
+                        mFile,
                         mBase,
                         Option.INSTANCE,
                         null),
@@ -194,5 +205,14 @@ public class FileDiffViewerFragment extends Fragment {
         response.diff = diff;
         response.comments = new Pair<>(commentsA, commentsB);
         return response;
+    }
+
+    private void showProgress(boolean show) {
+        BaseActivity activity = (BaseActivity) getActivity();
+        if (show) {
+            activity.onRefreshStart();
+        } else {
+            activity.onRefreshEnd(null);
+        }
     }
 }
