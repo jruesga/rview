@@ -117,9 +117,10 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
             mBinding.setModel(mModel);
             AndroidHelper.hideSoftKeyboard(getContext(), getDialog().getWindow());
         });
-        ReviewersAdapter adapter = new ReviewersAdapter(getContext(), mLegacyChangeId);
-        mBinding.reviewer.setAdapter(adapter);
         mBinding.setModel(mModel);
+        ReviewersAdapter adapter = new ReviewersAdapter(
+                mBinding.getRoot().getContext(), mLegacyChangeId);
+        mBinding.reviewer.setAdapter(adapter);
         return mBinding.getRoot();
     }
 

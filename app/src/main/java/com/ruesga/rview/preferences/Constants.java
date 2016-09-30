@@ -30,6 +30,7 @@ public class Constants {
     public static final String EXTRA_FILE_ID = "fileId";
     public static final String EXTRA_FILE = "fileId";
     public static final String EXTRA_TOPIC = "topic";
+    public static final String EXTRA_BRANCH = "branch";
     public static final String EXTRA_FILTER = "filter";
     public static final String EXTRA_TITLE = "title";
     public static final String EXTRA_BASE = "base";

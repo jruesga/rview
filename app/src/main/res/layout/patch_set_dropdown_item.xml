@@ -50,7 +50,7 @@
             <com.ruesga.rview.widget.StyleableTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="@dimen/revision_min_width"
+                android:minWidth="@dimen/dropdown_min_width"
                 android:paddingStart="3dp"
                 android:paddingEnd="3dp"
                 app:revisionCommit="@{model}"

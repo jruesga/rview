@@ -44,6 +44,7 @@ import com.ruesga.rview.databinding.MessageItemBinding;
 import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
 import com.ruesga.rview.exceptions.OperationFailedException;
 import com.ruesga.rview.fragments.EditDialogFragment.OnEditChanged;
+import com.ruesga.rview.fragments.FilterableDialogFragment.OnFilterSelectedListener;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.AbandonInput;
@@ -1267,6 +1268,13 @@ public class ChangeDetailsFragment extends Fragment {
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
+    private void performShowChooseBaseDialog(View v, OnFilterSelectedListener cb) {
+        BaseChooserDialogFragment fragment = BaseChooserDialogFragment.newInstance(
+                mLegacyChangeId, mResponse.mChange.project, mResponse.mChange.branch, v);
+        fragment.setOnFilterSelectedListener(cb);
+        fragment.show(getChildFragmentManager(), BaseChooserDialogFragment.TAG);
+    }
+
     private void performShowRequestMessageDialog(
             View v, String title, String action, String hint, boolean canBeEmpty, OnEditChanged cb) {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
@@ -1313,11 +1321,8 @@ public class ChangeDetailsFragment extends Fragment {
                     break;
 
                 case R.id.rebase:
-                    action = getString(R.string.change_action_rebase);
-                    hint = getString(R.string.actions_base_hint);
-                    performShowRequestMessageDialog(v, action, action, hint, true,
-                            newValue -> mActionLoader.restart(
-                                    ModelHelper.ACTION_REBASE, new String[]{newValue}));
+                    performShowChooseBaseDialog(v, newBase -> mActionLoader.restart(
+                            ModelHelper.ACTION_REBASE, new String[]{newBase}));
                     break;
 
                 case R.id.abandon:
