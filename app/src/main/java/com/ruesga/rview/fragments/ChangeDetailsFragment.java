@@ -56,6 +56,7 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.CherryPickInput;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
@@ -1012,8 +1013,7 @@ public class ChangeDetailsFragment extends Fragment {
         return Observable.fromCallable(() -> {
                     switch (action) {
                         case ModelHelper.ACTION_CHERRY_PICK:
-                            performCherryPickChange(api, params[0], params[1]);
-                            break;
+                            return performCherryPickChange(api, params[0], params[1]);
                         case ModelHelper.ACTION_REBASE:
                             return performRebaseChange(api, params[0]);
                         case ModelHelper.ACTION_ABANDON:
@@ -1454,7 +1454,11 @@ public class ChangeDetailsFragment extends Fragment {
         return api.createChange(change).toBlocking().first();
     }
 
-    private void performCherryPickChange(GerritApi api, String branch, String msg) {
-        // TODO
+    private ChangeInfo performCherryPickChange(GerritApi api, String branch, String msg) {
+        String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
+        CherryPickInput input = new CherryPickInput();
+        input.destination = branch;
+        input.message = msg;
+        return api.cherryPickChangeRevision(changeId, mCurrentRevision, input).toBlocking().first();
     }
 }
