@@ -962,10 +962,10 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<ChangeInfo> cherryPickChangeRevisionFile(@NonNull String changeId,
-            @NonNull String revisionId, @NonNull String fileId, @NonNull CherryPickInput input) {
+    public Observable<ChangeInfo> cherryPickChangeRevision(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull CherryPickInput input) {
         return withVersionRequestCheck(
-                mService.cherryPickChangeRevisionFile(changeId, revisionId, fileId, input));
+                mService.cherryPickChangeRevision(changeId, revisionId, input));
     }
 
 
