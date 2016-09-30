@@ -21,6 +21,7 @@ import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
+import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
@@ -31,7 +32,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.ruesga.rview.preferences.Constants.*;
+import static com.ruesga.rview.preferences.Constants.DEFAULT_ANONYMOUS_HOME;
+import static com.ruesga.rview.preferences.Constants.DEFAULT_AUTHENTICATED_HOME;
+import static com.ruesga.rview.preferences.Constants.DEFAULT_DISPLAY_FORMAT;
+import static com.ruesga.rview.preferences.Constants.DEFAULT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DOWNLOAD_FORMAT;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_WRAP_MODE;
+import static com.ruesga.rview.preferences.Constants.PREF_IS_FIRST_RUN;
 
 public class Preferences {
 
@@ -185,5 +200,19 @@ public class Preferences {
         return DownloadFormat.valueOf(
                 getAccountPreferences(context, account).getString(
                         PREF_ACCOUNT_DOWNLOAD_FORMAT, DownloadFormat.TBZ2.toString()));
+    }
+
+    public static String getAccountDiffMode(Context context, Account account) {
+        String def = context.getResources().getBoolean(R.bool.config_is_table)
+                ? Constants.DIFF_MODE_SIDE_BY_SIDE : Constants.DIFF_MODE_UNIFIED;
+        if (account == null) {
+            return def;
+        }
+        return getAccountPreferences(context, account).getString(PREF_ACCOUNT_DIFF_MODE, def);
+    }
+
+    public static boolean getAccountWrapMode(Context context, Account account) {
+        return account == null ||
+                getAccountPreferences(context, account).getBoolean(PREF_ACCOUNT_WRAP_MODE, true);
     }
 }

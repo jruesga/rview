@@ -37,7 +37,9 @@ import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DiffView;
 
 import java.lang.reflect.Type;
@@ -70,15 +72,16 @@ public class FileDiffViewerFragment extends Fragment {
         Pair<List<CommentInfo>, List<CommentInfo>> comments;
     }
 
-    private final RxLoaderObserver<FileDiffResponse> mObserver = new RxLoaderObserver<FileDiffResponse>() {
+    private final RxLoaderObserver<FileDiffResponse> mObserver
+            = new RxLoaderObserver<FileDiffResponse>() {
         @Override
         public void onNext(FileDiffResponse response) {
             mHandler.postDelayed(() ->
                     mBinding.diff
                         .from(response.diff.content)
                         .with(response.comments)
-                        .mode(DiffView.UNIFIED_MODE)
-                        .wrap(true)
+                        .mode(mDiffMode)
+                        .wrap(mWrap)
                         .update(),
                     250L);
             showProgress(false);
@@ -108,6 +111,9 @@ public class FileDiffViewerFragment extends Fragment {
     private Integer mBase;
     private List<CommentInfo> mCommentsA;
     private List<CommentInfo> mCommentsB;
+
+    private int mDiffMode;
+    private boolean mWrap;
 
     public static FileDiffViewerFragment newInstance(
             int legacyChangeId, String revisionId, String file, int base,
@@ -158,13 +164,30 @@ public class FileDiffViewerFragment extends Fragment {
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.file_diff_viewer_fragment, container, false);
-        setupLoader();
+        setupLoaderWithValidContext();
         return mBinding.getRoot();
     }
 
-    private void setupLoader() {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setupLoaderWithValidContext();
+    }
+
+    private void setupLoaderWithValidContext() {
+        if (getActivity() == null) {
+            return;
+        }
+
         if (mLoader == null) {
             mEventHandlers = new EventHandlers(this);
+
+            // Get diff user preferences
+            Account account = Preferences.getAccount(getContext());
+            String  diffMode = Preferences.getAccountDiffMode(getContext(), account);
+            mDiffMode = diffMode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
+                    ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
+            mWrap = Preferences.getAccountWrapMode(getContext(), account);
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);

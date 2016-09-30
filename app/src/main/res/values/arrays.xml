@@ -81,6 +81,15 @@
         <item>username</item>
     </string-array>
 
+    <string-array name="account_diff_mode_labels" translatable="false">
+        <item>@string/account_settings_diff_mode_unified</item>
+        <item>@string/account_settings_diff_mode_side_by_side</item>
+    </string-array>
+    <string-array name="account_diff_mode_values" translatable="false">
+        <item>unified</item>
+        <item>sidebyside</item>
+    </string-array>
+
     <string-array name="related_changes_labels" translatable="false">
         <item>@string/related_changes</item>
         <item>@string/conflicts_with</item>
