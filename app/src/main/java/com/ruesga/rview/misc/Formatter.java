@@ -282,7 +282,7 @@ public class Formatter {
                 txt += item.info.oldPath + " \u2192 ";
             }
         }
-        txt += item.file;
+        txt += item.file.startsWith("/") ? item.file.substring(1) : item.file;
         view.setText(txt);
     }
 
