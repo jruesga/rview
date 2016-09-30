@@ -1275,6 +1275,14 @@ public class ChangeDetailsFragment extends Fragment {
         fragment.show(getChildFragmentManager(), BaseChooserDialogFragment.TAG);
     }
 
+    private void performShowCherryPickDialog(View v, OnFilterSelectedListener cb) {
+        String message = mResponse.mChange.revisions.get(mCurrentRevision).commit.message;
+        CherryPickChooserDialogFragment fragment = CherryPickChooserDialogFragment.newInstance(
+                mResponse.mChange.project, mResponse.mChange.branch, message, v);
+        fragment.setOnFilterSelectedListener(cb);
+        fragment.show(getChildFragmentManager(), BaseChooserDialogFragment.TAG);
+    }
+
     private void performShowRequestMessageDialog(
             View v, String title, String action, String hint, boolean canBeEmpty, OnEditChanged cb) {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
@@ -1317,12 +1325,16 @@ public class ChangeDetailsFragment extends Fragment {
             String hint;
             switch (v.getId()) {
                 case R.id.cherrypick:
-                    // TODO Need a custom dialog
+                      performShowCherryPickDialog(v, o -> {
+                          String[] result = (String[]) o;
+                          mActionLoader.restart(ModelHelper.ACTION_CHERRY_PICK,
+                                  new String[]{result[0], result[1]});
+                      });
                     break;
 
                 case R.id.rebase:
-                    performShowChooseBaseDialog(v, newBase -> mActionLoader.restart(
-                            ModelHelper.ACTION_REBASE, new String[]{newBase}));
+                    performShowChooseBaseDialog(v, o -> mActionLoader.restart(
+                            ModelHelper.ACTION_REBASE, new String[]{(String) o}));
                     break;
 
                 case R.id.abandon:

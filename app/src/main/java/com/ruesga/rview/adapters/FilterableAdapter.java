@@ -79,6 +79,10 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
         return v;
     }
 
+    public int getMaxResults() {
+        return MAX_RESULTS;
+    }
+
     @Override
     public Filter getFilter() {
         return mFilter;
@@ -107,7 +111,7 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
                         if (v.toString().contains(constraint)) {
                             mTemp.add(v);
                         }
-                        if (mTemp.size() >= MAX_RESULTS) {
+                        if (getMaxResults() > 0 &&  mTemp.size() >= getMaxResults()) {
                             break;
                         }
                     }

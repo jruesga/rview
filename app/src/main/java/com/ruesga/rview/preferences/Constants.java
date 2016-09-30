@@ -31,6 +31,7 @@ public class Constants {
     public static final String EXTRA_FILE = "fileId";
     public static final String EXTRA_TOPIC = "topic";
     public static final String EXTRA_BRANCH = "branch";
+    public static final String EXTRA_MESSAGE = "message";
     public static final String EXTRA_FILTER = "filter";
     public static final String EXTRA_TITLE = "title";
     public static final String EXTRA_BASE = "base";
@@ -48,6 +49,8 @@ public class Constants {
     public static final String ACCOUNT_DISPLAY_FORMAT_USERNAME = "username";
 
     public static final String COMMIT_MESSAGE = "/COMMIT_MSG";
+
+    public static final String REF_HEADS = "refs/heads/";
 
     // --- Preference keys
     public static final String PREF_IS_FIRST_RUN = "first_run";

@@ -29,7 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.ruesga.rview.adapters.BaseAdapter;
+import com.ruesga.rview.adapters.FilterableAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.widget.DelayedAutocompleteTextView;
@@ -39,7 +39,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
     public static final String TAG = "FilterableDialogFragment";
 
     public interface OnFilterSelectedListener {
-        void onFilterSelected(String newBase);
+        void onFilterSelected(Object o);
     }
 
     @ProguardIgnored
@@ -58,7 +58,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         mCallback = cb;
     }
 
-    public abstract BaseAdapter getAdapter();
+    public abstract FilterableAdapter getAdapter();
 
     public abstract @NonNull DelayedAutocompleteTextView getFilterView();
 
@@ -70,6 +70,10 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
 
     public abstract ViewDataBinding inflateView(LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
+
+    public boolean isValidated() {
+        return true;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,8 +137,8 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
     }
 
     private void performNotifyFilterSelected() {
-        String result = transformResult(mUserSelection);
-        if (!isAllowEmpty() && TextUtils.isEmpty(result)) {
+        Object result = transformResult(mUserSelection);
+        if (!isAllowEmpty() && result == null) {
             mIsUserSelection = false;
             enabledOrDisableButtons();
         } else {
@@ -142,7 +146,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         }
     }
 
-    public String transformResult(String result) {
+    public Object transformResult(String result) {
         return result;
     }
 
@@ -151,8 +155,8 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
             final AlertDialog dialog = ((AlertDialog) getDialog());
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             if (button != null) {
-                button.setEnabled((isAllowEmpty() && TextUtils.isEmpty(mUserSelection))
-                        || mIsUserSelection);
+                button.setEnabled(((isAllowEmpty() && TextUtils.isEmpty(mUserSelection))
+                        || mIsUserSelection) && isValidated());
             }
         }
     }

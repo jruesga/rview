@@ -226,6 +226,7 @@
 
     <!-- Actions dialog -->
     <string name="actions_message_hint">Commit message</string>
+    <string name="actions_branch_hint">Branch</string>
     <string name="actions_base_hint">Subject, change number, or leave empty</string>
 
     <!-- Change topic dialog -->

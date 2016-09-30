@@ -20,83 +20,109 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.adapters.BaseAdapter;
-import com.ruesga.rview.databinding.BaseChooserDialogBinding;
+import com.ruesga.rview.adapters.CherryPickAdapter;
+import com.ruesga.rview.adapters.FilterableAdapter;
+import com.ruesga.rview.databinding.CherryPickChooserDialogBinding;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.widget.DelayedAutocompleteTextView;
 
-public class BaseChooserDialogFragment extends FilterableDialogFragment {
+public class CherryPickChooserDialogFragment extends FilterableDialogFragment {
 
-    public static final String TAG = "BaseChooserDialogFragment";
+    public static final String TAG = "CherryPickChooserDialogFragment";
 
-    public static BaseChooserDialogFragment newInstance(
-            int legacyChangeId, String projectId, String branch, View anchor) {
-        BaseChooserDialogFragment fragment = new BaseChooserDialogFragment();
+    public static CherryPickChooserDialogFragment newInstance(
+            String projectId, String branch, String message, View anchor) {
+        CherryPickChooserDialogFragment fragment = new CherryPickChooserDialogFragment();
         Bundle arguments = new Bundle();
-        arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putString(Constants.EXTRA_PROJECT_ID, projectId);
         arguments.putString(Constants.EXTRA_BRANCH, branch);
+        arguments.putString(Constants.EXTRA_MESSAGE, message);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
         fragment.setArguments(arguments);
         return fragment;
     }
 
-    private BaseChooserDialogBinding mBinding;
-    private BaseAdapter mAdapter;
+    private CherryPickChooserDialogBinding mBinding;
+    private CherryPickAdapter mAdapter;
 
-    private int mLegacyChangeId;
     private String mProjectId;
     private String mBranch;
+    private String mMessage;
 
-    public BaseChooserDialogFragment() {
+    private boolean mIsValidated;
+
+    public CherryPickChooserDialogFragment() {
     }
 
     @Override
-    public BaseAdapter getAdapter() {
+    public FilterableAdapter getAdapter() {
         return mAdapter;
     }
 
     @NonNull
     @Override
     public DelayedAutocompleteTextView getFilterView() {
-        return mBinding.base;
+        return mBinding.branch;
     }
 
     @Override
     public int getDialogTitle() {
-        return R.string.change_action_rebase;
+        return R.string.change_action_cherrypick;
     }
 
     @Override
     public int getDialogActionLabel() {
-        return R.string.change_action_rebase;
+        return R.string.change_action_cherrypick;
     }
 
     @Override
     public boolean isAllowEmpty() {
-        return true;
+        return false;
+    }
+
+    @Override
+    public boolean isValidated() {
+        return mIsValidated;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLegacyChangeId = getArguments().getInt(Constants.EXTRA_PROJECT_ID);
         mProjectId = getArguments().getString(Constants.EXTRA_PROJECT_ID);
         mBranch = getArguments().getString(Constants.EXTRA_BRANCH);
+        mMessage = getArguments().getString(Constants.EXTRA_MESSAGE);
     }
 
     @Override
     public ViewDataBinding inflateView(LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.base_chooser_dialog, container, true);
-        mAdapter = new BaseAdapter(mBinding.getRoot().getContext(),
-                mLegacyChangeId, mProjectId, mBranch);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.cherry_pick_chooser_dialog, container, true);
+        mBinding.message.setText(mMessage);
+        mIsValidated = !mMessage.isEmpty();
+        mBinding.message.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mIsValidated = !s.toString().isEmpty();
+
+            }
+        });
+        mAdapter = new CherryPickAdapter(mBinding.getRoot().getContext(), mProjectId, mBranch);
         return mBinding;
     }
 
@@ -111,12 +137,12 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment {
         if (TextUtils.isEmpty(result)) {
             return null;
         }
-
-        try {
-            return String.valueOf(Integer.valueOf(result.substring(0, result.indexOf(":"))));
-        } catch (Exception ex) {
+        String msg = mBinding.message.getText().toString();
+        if (TextUtils.isEmpty(msg)) {
             return null;
         }
+
+        return new String[]{result, msg};
     }
 
 }
