@@ -236,6 +236,7 @@ public class ChangeDetailsFragment extends Fragment {
         public int totalDeleted;
         public boolean hasGraph = true;
         public int inlineComments;
+        public int draftComments;
     }
 
     public static class FileInfoViewHolder extends RecyclerView.ViewHolder {
@@ -274,7 +275,8 @@ public class ChangeDetailsFragment extends Fragment {
             mEventHandlers = handlers;
         }
 
-        void update(Map<String, FileInfo> files, Map<String, Integer> inlineComments) {
+        void update(Map<String, FileInfo> files, Map<String,
+                Integer> inlineComments, Map<String, Integer> draftComments) {
             mFiles.clear();
             mTotals = null;
             if (files == null) {
@@ -313,10 +315,12 @@ public class ChangeDetailsFragment extends Fragment {
                 model.totalDeleted = deleted;
                 model.inlineComments =
                         inlineComments.containsKey(key) ? inlineComments.get(key) : 0;
+                model.draftComments =
+                        draftComments.containsKey(key) ? draftComments.get(key) : 0;
                 model.hasGraph =
                         (model.info.linesInserted != null && model.info.linesInserted > 0) ||
                                 (model.info.linesDeleted != null && model.info.linesDeleted > 0) ||
-                                model.inlineComments > 0;
+                                model.inlineComments > 0 || model.draftComments > 0;
                 mFiles.add(model);
             }
 
@@ -429,6 +433,7 @@ public class ChangeDetailsFragment extends Fragment {
         SubmitType mSubmitType;
         Map<String, ActionInfo> mActions;
         Map<String, Integer> mInlineComments;
+        Map<String, Integer> mDraftComments;
         ConfigInfo mProjectConfig;
     }
 
@@ -457,7 +462,7 @@ public class ChangeDetailsFragment extends Fragment {
 
                         Map<String, FileInfo> files = change.revisions.get(mCurrentRevision).files;
                         mModel.filesListModel.visible = files != null && !files.isEmpty();
-                        mFileAdapter.update(files, result.mInlineComments);
+                        mFileAdapter.update(files, result.mInlineComments, result.mDraftComments);
                         mModel.msgListModel.visible =
                                 change.messages != null && change.messages.length > 0;
                         mMessageAdapter.update(change.messages);
@@ -878,6 +883,7 @@ public class ChangeDetailsFragment extends Fragment {
                     api.getChangeRevisionSubmitType(changeId, revision),
                     api.getChangeRevisionActions(changeId, revision),
                     api.getChangeRevisionComments(changeId, revision),
+                    api.getChangeRevisionDrafts(changeId, revision),
                     this::combineResponse
                 )
                 .subscribeOn(Schedulers.io())
@@ -1062,13 +1068,19 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private DataResponse combineResponse(DataResponse response, SubmitType submitType,
-                Map<String, ActionInfo> actions,
-                Map<String, List<CommentInfo>> revisionComments) {
-        // Map inline comments
+                Map<String, ActionInfo> actions, Map<String, List<CommentInfo>> revisionComments,
+                Map<String, List<CommentInfo>> revisonDraftComments) {
+        // Map inline and draft comments
         Map<String, Integer> inlineComments = new HashMap<>();
         if (revisionComments != null) {
             for (String file : revisionComments.keySet()) {
                 inlineComments.put(file, revisionComments.get(file).size());
+            }
+        }
+        Map<String, Integer> draftComments = new HashMap<>();
+        if (revisonDraftComments != null) {
+            for (String file : revisonDraftComments.keySet()) {
+                draftComments.put(file, revisonDraftComments.get(file).size());
             }
         }
 
@@ -1082,6 +1094,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         response.mSubmitType = submitType;
         response.mInlineComments = inlineComments;
+        response.mDraftComments = draftComments;
         return response;
     }
 

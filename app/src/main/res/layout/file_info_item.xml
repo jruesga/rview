@@ -26,7 +26,7 @@
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/listPreferredItemHeightSmall"
@@ -39,63 +39,90 @@
         android:visibility="@{model.file == null ? View.GONE : View.VISIBLE}"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/action"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginRight="4dp"
-            android:layout_marginEnd="4dp"
-            android:src="@{model.file == null ? null : (model.info != null &amp;&amp; model.info.status.equals(FileStatus.A)) ? @drawable/ic_add_circle_outline : (model.info != null &amp;&amp; model.info.status.equals(FileStatus.D)) ? @drawable/ic_remove_circle_outline : @drawable/ic_modify_circle_outline}"
-            tools:ignore="ContentDescription" />
-
-        <com.ruesga.rview.widget.AddedVsDeletedGraphView
-            android:id="@+id/added_vs_deleted"
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            app:rightAligned="true"
-            android:visibility="@{model.hasGraph ? View.VISIBLE : View.GONE}" />
-
-        <com.ruesga.rview.widget.StyleableTextView
-            android:id="@+id/file"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:fileStatus="@{model}"
-            android:layout_toRightOf="@id/action"
-            android:layout_toEndOf="@id/action"
-            android:layout_toLeftOf="@id/added_vs_deleted"
-            android:layout_toStartOf="@id/added_vs_deleted"
-            android:textAppearance="@style/TextAppearance.VerySmall"
-            android:textColor="?android:attr/textColorPrimary" />
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/action"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_centerVertical="true"
+                android:src="@{model.file == null ? null : (model.info != null &amp;&amp; model.info.status.equals(FileStatus.A)) ? @drawable/ic_add_circle_outline : (model.info != null &amp;&amp; model.info.status.equals(FileStatus.D)) ? @drawable/ic_remove_circle_outline : @drawable/ic_modify_circle_outline}"
+                tools:ignore="ContentDescription" />
+
+            <com.ruesga.rview.widget.AddedVsDeletedGraphView
+                android:id="@+id/added_vs_deleted"
+                android:layout_width="64dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_centerVertical="true"
+                app:rightAligned="true"
+                android:visibility="@{model.hasGraph ? View.VISIBLE : View.GONE}" />
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:id="@+id/file"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:fileStatus="@{model}"
+                android:layout_toRightOf="@id/action"
+                android:layout_toEndOf="@id/action"
+                android:layout_toLeftOf="@id/added_vs_deleted"
+                android:layout_toStartOf="@id/added_vs_deleted"
+                android:layout_centerVertical="true"
+                android:textAppearance="@style/TextAppearance.VerySmall"
+                android:textColor="?android:attr/textColorPrimary" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/file"
-            android:layout_toRightOf="@id/action"
-            android:layout_toEndOf="@id/action"
-            android:visibility="@{model.inlineComments &gt; 0 ? View.VISIBLE : View.GONE}"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:visibility="@{(model.inlineComments &gt; 0 || model.draftComments &gt; 0) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal">
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 app:srcCompat="@drawable/ic_comment"
                 android:tint="?attr/colorPrimaryDark"
+                android:visibility="@{model.inlineComments &gt; 0 ? View.VISIBLE : View.GONE}"
+                tools:ignore="ContentDescription" />
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:visibility="@{model.inlineComments &gt; 0 ? View.VISIBLE : View.GONE}"
+                android:text="@{String.valueOf(model.inlineComments)}"
+                android:textAppearance="@style/TextAppearance.VerySmall"
+                android:textColor="?android:attr/textColorSecondary" />
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                app:srcCompat="@drawable/ic_draft"
+                android:tint="?attr/colorAccent"
+                android:visibility="@{model.draftComments &gt; 0 ? View.VISIBLE : View.GONE}"
                 tools:ignore="ContentDescription" />
             <com.ruesga.rview.widget.StyleableTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="4dp"
                 android:layout_marginStart="4dp"
-                android:text="@{String.valueOf(model.inlineComments)}"
+                android:visibility="@{model.draftComments &gt; 0 ? View.VISIBLE : View.GONE}"
+                android:text="@{String.valueOf(model.draftComments)}"
                 android:textAppearance="@style/TextAppearance.VerySmall"
                 android:textColor="?android:attr/textColorSecondary" />
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </layout>
