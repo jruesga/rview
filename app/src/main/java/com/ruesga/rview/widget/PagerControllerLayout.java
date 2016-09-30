@@ -138,16 +138,10 @@ public class PagerControllerLayout extends FrameLayout {
         }
 
         FragmentTransaction tx = mAdapter.getFragmentManager().beginTransaction();
+        tx.setCustomAnimations(android.R.anim.fade_out, android.R.anim.fade_in);
         Fragment oldFragment = mAdapter.getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         if (oldFragment != null) {
             tx.remove(oldFragment);
-        }
-        if (mCurrentItem != INVALID_PAGE) {
-            if (position < mCurrentItem) {
-                tx.setCustomAnimations(android.R.anim.slide_out_right, android.R.anim.slide_in_left);
-            } else {
-                tx.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            }
         }
         if (position != INVALID_PAGE) {
             tx.replace(mAdapter.getTarget(), mAdapter.getFragment(position), FRAGMENT_TAG);

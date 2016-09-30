@@ -57,7 +57,7 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
         }
 
         // Setup the title
-        setupToolbar();
+        setupActivity();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
             getSupportActionBar().setSubtitle(filter);

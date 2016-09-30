@@ -68,7 +68,7 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
         String topic = getIntent().getStringExtra(Constants.EXTRA_TOPIC);
 
         // Setup the title
-        setupToolbar();
+        setupActivity();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
             getSupportActionBar().setSubtitle(changeId);

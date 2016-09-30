@@ -76,14 +76,8 @@ public class FileDiffViewerFragment extends Fragment {
             = new RxLoaderObserver<FileDiffResponse>() {
         @Override
         public void onNext(FileDiffResponse response) {
-            mHandler.postDelayed(() ->
-                    mBinding.diff
-                        .from(response.diff.content)
-                        .with(response.comments)
-                        .mode(mDiffMode)
-                        .wrap(mWrap)
-                        .update(),
-                    250L);
+            mResponse = response;
+            update();
             showProgress(false);
         }
 
@@ -99,6 +93,7 @@ public class FileDiffViewerFragment extends Fragment {
         }
     };
 
+    private FileDiffResponse mResponse;
     private FileDiffViewerFragmentBinding mBinding;
     private EventHandlers mEventHandlers;
     private Handler mHandler;
@@ -132,6 +127,29 @@ public class FileDiffViewerFragment extends Fragment {
         }
         fragment.setArguments(arguments);
         return fragment;
+    }
+
+    public FileDiffViewerFragment mode(int mode) {
+        mDiffMode = mode;
+        return this;
+    }
+
+    public FileDiffViewerFragment wrap(boolean wrap) {
+        mWrap = wrap;
+        return this;
+    }
+
+    public void update() {
+        if (mResponse != null) {
+            mHandler.postDelayed(() ->
+                mBinding.diff
+                    .from(mResponse.diff.content)
+                    .with(mResponse.comments)
+                    .mode(mDiffMode)
+                    .wrap(mWrap)
+                    .update(),
+            250L);
+        }
     }
 
     @Override
@@ -181,13 +199,6 @@ public class FileDiffViewerFragment extends Fragment {
 
         if (mLoader == null) {
             mEventHandlers = new EventHandlers(this);
-
-            // Get diff user preferences
-            Account account = Preferences.getAccount(getContext());
-            String  diffMode = Preferences.getAccountDiffMode(getContext(), account);
-            mDiffMode = diffMode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
-                    ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
-            mWrap = Preferences.getAccountWrapMode(getContext(), account);
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);

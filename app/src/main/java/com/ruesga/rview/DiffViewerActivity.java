@@ -83,7 +83,7 @@ public class DiffViewerActivity extends BaseActivity {
         }
 
         // Setup the title
-        setupToolbar();
+        setupActivity();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(
                     getString(R.string.change_details_title, change.legacyChangeId));

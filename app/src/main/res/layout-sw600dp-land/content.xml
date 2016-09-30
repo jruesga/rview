@@ -24,106 +24,132 @@
         <variable name="model" type="com.ruesga.rview.BaseActivity.Model" />
     </data>
 
-    <android.support.design.widget.CoordinatorLayout
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-        <android.support.design.widget.AppBarLayout
+        <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="4dp"
-            tools:ignore="UnusedAttribute">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:minHeight="?attr/actionBarSize"
-                android:background="?attr/colorPrimaryDark"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:layout_gravity="bottom"
-                    android:layout_marginLeft="32dp"
-                    android:layout_marginStart="32dp"
-                    android:background="?attr/colorPrimaryDark"
-                    android:visibility="@{(model.hasTabs || model.hasPages) ? View.VISIBLE : View.GONE}">
-                    <android.support.design.widget.TabLayout
-                        android:id="@+id/tabs"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
-                        app:tabTextColor="?android:attr/textColorSecondary"
-                        app:tabSelectedTextColor="@android:color/white"
-                        app:tabIndicatorColor="@android:color/white"
-                        app:tabIndicatorHeight="3dp"/>
-                    <com.ruesga.rview.widget.PagerControllerLayout
-                        android:id="@+id/pagerController"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="bottom"
-                        android:visibility="@{model.hasPages ? View.VISIBLE : View.GONE}" />
-                </FrameLayout>
-
-            </android.support.v7.widget.Toolbar>
-        </android.support.design.widget.AppBarLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+            <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:layout_marginTop="-5dp"
-                app:spb_sections_count="4"
-                app:spb_color="?attr/colorAccent"
-                app:spb_speed="1.5"
-                app:spb_stroke_width="4dp"
-                app:spb_stroke_separator_length="8dp"
-                app:spb_reversed="false"
-                app:spb_mirror_mode="false"
-                app:spb_progressiveStart_activated="false"
-                app:spb_progressiveStart_speed="1.5"
-                app:spb_progressiveStop_speed="3.4"
-                android:visibility="@{model.isInProgress ? View.VISIBLE : View.INVISIBLE}" />
+                android:elevation="4dp"
+                tools:ignore="UnusedAttribute">
 
-            <LinearLayout
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:minHeight="?attr/actionBarSize"
+                    android:background="?attr/colorPrimaryDark"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        android:layout_gravity="bottom"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginStart="32dp"
+                        android:background="?attr/colorPrimaryDark"
+                        android:visibility="@{(model.hasTabs || model.hasPages) ? View.VISIBLE : View.GONE}">
+                        <android.support.design.widget.TabLayout
+                            android:id="@+id/tabs"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
+                            app:tabTextColor="?android:attr/textColorSecondary"
+                            app:tabSelectedTextColor="@android:color/white"
+                            app:tabIndicatorColor="@android:color/white"
+                            app:tabIndicatorHeight="3dp"/>
+                        <com.ruesga.rview.widget.PagerControllerLayout
+                            android:id="@+id/pagerController"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="bottom"
+                            android:visibility="@{model.hasPages ? View.VISIBLE : View.GONE}" />
+                    </FrameLayout>
+
+                </android.support.v7.widget.Toolbar>
+            </android.support.design.widget.AppBarLayout>
+
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
-                <FrameLayout
-                    android:id="@+id/content"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    app:bindLayoutWeight="@{model.useTowPane ? 0.35f : 1f}"
-                    tools:ignore="Suspicious0dp"/>
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:paddingLeft="3dp"
-                    android:paddingStart="3dp"
-                    android:background="@drawable/bg_shadow_end"
-                    android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
-                    tools:ignore="RtlSymmetry"/>
+                <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:layout_marginTop="-5dp"
+                    app:spb_sections_count="4"
+                    app:spb_color="?attr/colorAccent"
+                    app:spb_speed="1.5"
+                    app:spb_stroke_width="4dp"
+                    app:spb_stroke_separator_length="8dp"
+                    app:spb_reversed="false"
+                    app:spb_mirror_mode="false"
+                    app:spb_progressiveStart_activated="false"
+                    app:spb_progressiveStart_speed="1.5"
+                    app:spb_progressiveStop_speed="3.4"
+                    android:visibility="@{model.isInProgress ? View.VISIBLE : View.INVISIBLE}" />
 
-                <FrameLayout
-                    android:id="@+id/details"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:bindLayoutWeight="@{model.useTowPane ? 0.65f : 0f}"
-                    android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
-                    tools:ignore="Suspicious0dp"/>
-            </LinearLayout>
-        </FrameLayout>
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+                    <FrameLayout
+                        android:id="@+id/content"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        app:bindLayoutWeight="@{model.useTowPane ? 0.35f : 1f}"
+                        tools:ignore="Suspicious0dp"/>
 
-    </android.support.design.widget.CoordinatorLayout>
+                    <View
+                        android:layout_width="5dp"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="3dp"
+                        android:paddingStart="3dp"
+                        android:background="@drawable/bg_shadow_end"
+                        android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
+                        tools:ignore="RtlSymmetry"/>
+
+                    <FrameLayout
+                        android:id="@+id/details"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        app:bindLayoutWeight="@{model.useTowPane ? 0.65f : 0f}"
+                        android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
+                        tools:ignore="Suspicious0dp"/>
+                </LinearLayout>
+            </FrameLayout>
+
+        </android.support.design.widget.CoordinatorLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/drawer_navigation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:theme="@style/AppTheme.DrawerMenu"
+            app:menu="@menu/drawer">
+        </android.support.design.widget.NavigationView>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/drawer_options_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            app:theme="@style/AppTheme.DrawerMenu"
+            app:headerLayout="@layout/options_header">
+        </android.support.design.widget.NavigationView>
+
+    </android.support.v4.widget.DrawerLayout>
 
 </layout>

@@ -84,7 +84,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
 
         // Setup the title
-        setupToolbar();
+        setupActivity();
 
         if (getIntent().getData() != null) {
             Account account = Preferences.getAccount(this);

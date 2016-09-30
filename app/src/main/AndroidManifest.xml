@@ -44,6 +44,7 @@
 
         <activity
             android:name=".ChangeDetailsActivity"
+            android:theme="@style/AppTheme.NoStatusBarColor"
             android:parentActivityName=".MainActivity">
             <!-- FIXME Remove
             android:exported="false"
@@ -54,6 +55,7 @@
         </activity>
         <activity-alias
             android:name=".ExternalChangeDetailsActivity"
+            android:theme="@style/AppTheme.NoStatusBarColor"
             android:targetActivity=".ChangeDetailsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -66,16 +68,19 @@
 
         <activity
             android:name=".DiffViewerActivity"
+            android:theme="@style/AppTheme.NoStatusBarColor"
             android:parentActivityName=".ChangeDetailsActivity"
             android:exported="false" />
 
         <activity
             android:name=".ChangeListByFilterActivity"
+            android:theme="@style/AppTheme.NoStatusBarColor"
             android:parentActivityName=".MainActivity"
             android:exported="false" />
 
         <activity
             android:name=".RelatedChangesActivity"
+            android:theme="@style/AppTheme.NoStatusBarColor"
             android:parentActivityName=".ChangeDetailsActivity"
             android:exported="false" />
 

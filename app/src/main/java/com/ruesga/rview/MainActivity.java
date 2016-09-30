@@ -38,7 +38,6 @@ import android.view.SubMenu;
 import android.view.View;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
-import com.ruesga.rview.databinding.ActivityMainBinding;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
@@ -148,7 +147,7 @@ public class MainActivity extends ChangeListBaseActivity {
         return false;
     };
 
-    private ActivityMainBinding mBinding;
+    private ContentBinding mBinding;
     private NavigationHeaderBinding mHeaderDrawerBinding;
 
     private Model mModel;
@@ -170,18 +169,16 @@ public class MainActivity extends ChangeListBaseActivity {
 
         super.onCreate(savedInstanceState);
 
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.content);
         if (mModel == null) {
             mModel = new Model();
         }
 
-        setupToolbar();
+        setupActivity();
         loadAccounts();
         launchAddAccountIfNeeded();
         setupNavigationDrawer();
 
-        mBinding.setModel(mModel);
-        mBinding.setHandlers(mEventHandlers);
         mHeaderDrawerBinding.setModel(mModel);
         mHeaderDrawerBinding.setHandlers(mEventHandlers);
 
@@ -296,7 +293,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
     @Override
     public ContentBinding getContentBinding() {
-        return mBinding.pageContentLayout;
+        return mBinding;
     }
 
     @Override
@@ -528,8 +525,8 @@ public class MainActivity extends ChangeListBaseActivity {
         mAccount = null;
 
         // Show message
-        Snackbar.make(mBinding.pageContentLayout.getRoot(),
-                R.string.account_deletion_confirm_message, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mBinding.getRoot(), R.string.account_deletion_confirm_message,
+                Snackbar.LENGTH_SHORT).show();
 
         performAccountSwitch();
 

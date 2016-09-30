@@ -18,14 +18,19 @@ package com.ruesga.rview;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.MenuRes;
 import android.support.annotation.StringRes;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
@@ -95,7 +100,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
 
     public abstract ContentBinding getContentBinding();
 
-    protected void setupToolbar() {
+    protected void setupActivity() {
         setSupportActionBar(getContentBinding().toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -105,7 +110,43 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
                         this, getDrawerLayout(), getContentBinding().toolbar, 0, 0);
                 getDrawerLayout().addDrawerListener(drawerToggle);
                 drawerToggle.syncState();
+            } else {
+                getContentBinding().drawerLayout.setDrawerLockMode(
+                        DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                        getContentBinding().drawerNavigationView);
             }
+
+            // Options is open/closed programatically
+            getContentBinding().drawerLayout.setDrawerLockMode(
+                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                    getContentBinding().drawerOptionsView);
+
+            // Listen for options close
+            getContentBinding().drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+
+                }
+
+                @Override
+                public void onDrawerOpened(View drawerView) {
+
+                }
+
+                @Override
+                public void onDrawerClosed(View drawerView) {
+                    if (getContentBinding().drawerOptionsView == drawerView) {
+                        getContentBinding().drawerLayout.setDrawerLockMode(
+                                DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                                getContentBinding().drawerOptionsView);
+                    }
+                }
+
+                @Override
+                public void onDrawerStateChanged(int newState) {
+
+                }
+            });
         }
     }
 
@@ -177,6 +218,13 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         getContentBinding().setModel(mModel);
     }
 
+    public void configureOptionsMenu(@MenuRes int menu, OnNavigationItemSelectedListener cb) {
+        if (menu != 0) {
+            getContentBinding().drawerOptionsView.inflateMenu(menu);
+            getContentBinding().drawerOptionsView.setNavigationItemSelectedListener(cb);
+        }
+    }
+
     @Override
     protected void onRestoreInstanceState(Bundle savedState) {
         if (savedState != null) {
@@ -228,5 +276,23 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     @Override
     public <T> void onRefreshEnd(T result) {
         changeInProgressStatus(false);
+    }
+
+    public void openOptionsDrawer() {
+        getContentBinding().drawerLayout.setDrawerLockMode(
+                DrawerLayout.LOCK_MODE_UNLOCKED,
+                getContentBinding().drawerOptionsView);
+        getContentBinding().drawerLayout.openDrawer(getContentBinding().drawerOptionsView);
+    }
+
+    public void closeOptionsDrawer() {
+        getContentBinding().drawerLayout.closeDrawer(getContentBinding().drawerOptionsView);
+        getContentBinding().drawerLayout.setDrawerLockMode(
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                getContentBinding().drawerOptionsView);
+    }
+
+    public Menu getOptionsMenu() {
+        return getContentBinding().drawerOptionsView.getMenu();
     }
 }
