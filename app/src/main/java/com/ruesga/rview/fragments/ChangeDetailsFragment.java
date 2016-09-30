@@ -274,8 +274,7 @@ public class ChangeDetailsFragment extends Fragment {
             mEventHandlers = handlers;
         }
 
-        void update(Map<String, FileInfo> files, Map<String, Integer> inlineComments,
-                    boolean initial) {
+        void update(Map<String, FileInfo> files, Map<String, Integer> inlineComments) {
             mFiles.clear();
             mTotals = null;
             if (files == null) {
@@ -287,7 +286,7 @@ public class ChangeDetailsFragment extends Fragment {
             FileItemModel commitMessage = new FileItemModel();
             commitMessage.file = Constants.COMMIT_MESSAGE;
             commitMessage.info = new FileInfo();
-            commitMessage.info.status =  initial ? FileStatus.A : FileStatus.M;
+            commitMessage.info.status =  FileStatus.A;
             commitMessage.hasGraph = false;
             mFiles.add(commitMessage);
 
@@ -456,11 +455,9 @@ public class ChangeDetailsFragment extends Fragment {
                         updateChangeInfo(result);
                         updateReviewInfo(result);
 
-                        boolean initial = change.revisions.get(mCurrentRevision).number == 1;
-
                         Map<String, FileInfo> files = change.revisions.get(mCurrentRevision).files;
                         mModel.filesListModel.visible = files != null && !files.isEmpty();
-                        mFileAdapter.update(files, result.mInlineComments, initial);
+                        mFileAdapter.update(files, result.mInlineComments);
                         mModel.msgListModel.visible =
                                 change.messages != null && change.messages.length > 0;
                         mMessageAdapter.update(change.messages);
