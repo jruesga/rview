@@ -41,7 +41,9 @@ import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.preferences.Preferences;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -112,6 +114,8 @@ public class FileDiffViewerFragment extends Fragment {
     private String mFileHash;
     private String mBase;
     private String mRevision;
+
+    private Account mAccount;
 
     private int mMode;
     private boolean mWrap;
@@ -184,6 +188,8 @@ public class FileDiffViewerFragment extends Fragment {
         if (mLoader == null) {
             mEventHandlers = new EventHandlers(this);
 
+            mAccount = Preferences.getAccount(getContext());
+
             try {
                 // Deserialize the change
                 mChange = SerializationManager.getInstance().fromJson(
@@ -248,7 +254,8 @@ public class FileDiffViewerFragment extends Fragment {
                         mRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON),
                 withCached(
                         Observable.fromCallable(() -> {
-                            if (mBase != null) {
+                            // Do no fetch drafts if the account is not authenticated
+                            if (mBase != null && mAccount.hasAuthenticatedAccessMode()) {
                                 return api.getChangeRevisionDrafts(
                                         String.valueOf(mChange.legacyChangeId), baseRevision)
                                         .toBlocking().first();

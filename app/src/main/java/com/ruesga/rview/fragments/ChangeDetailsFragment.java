@@ -98,6 +98,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import me.tatarka.rxloader.RxLoader;
 import me.tatarka.rxloader.RxLoader1;
@@ -887,7 +888,14 @@ public class ChangeDetailsFragment extends Fragment {
                     api.getChangeRevisionSubmitType(changeId, revision),
                     api.getChangeRevisionActions(changeId, revision),
                     api.getChangeRevisionComments(changeId, revision),
-                    api.getChangeRevisionDrafts(changeId, revision),
+                    Observable.fromCallable(() -> {
+                        // Do no fetch drafts if the account is not authenticated
+                        if (mAccount.hasAuthenticatedAccessMode()) {
+                            return api.getChangeRevisionDrafts(changeId, revision)
+                                    .toBlocking().first();
+                        }
+                        return new HashMap<>();
+                    }),
                     this::combineResponse
                 )
                 .subscribeOn(Schedulers.io())
