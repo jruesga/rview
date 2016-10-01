@@ -21,6 +21,7 @@
 
     <data>
         <import type="android.view.View" />
+        <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="index" type="java.lang.Integer" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeMessageInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
@@ -79,6 +80,7 @@
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:onClick="@{handlers::onReplyCommentPressed}"
+            android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
             android:tag="@{index}"
             tools:ignore="ContentDescription"/>
 

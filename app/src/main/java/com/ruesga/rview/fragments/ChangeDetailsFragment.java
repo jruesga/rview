@@ -98,7 +98,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import me.tatarka.rxloader.RxLoader;
 import me.tatarka.rxloader.RxLoader1;
@@ -383,10 +382,13 @@ public class ChangeDetailsFragment extends Fragment {
         private final AccountInfo mBuildBotSystemAccount;
         private final EventHandlers mEventHandlers;
         private ChangeMessageInfo[] mMessages;
+        private boolean mIsAuthenticated;
 
-        MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers) {
+        MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers,
+                boolean isAuthenticated) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
+            mIsAuthenticated = isAuthenticated;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -424,6 +426,7 @@ public class ChangeDetailsFragment extends Fragment {
             PicassoHelper.bindAvatar(context, PicassoHelper.getPicassoClient(context),
                     message.author, holder.mBinding.avatar,
                     PicassoHelper.getDefaultAvatar(context, R.color.primaryDark));
+            holder.mBinding.setIsAuthenticated(mIsAuthenticated);
             holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);
             holder.mBinding.setHandlers(mEventHandlers);
@@ -767,7 +770,7 @@ public class ChangeDetailsFragment extends Fragment {
             mBinding.fileInfo.list.setNestedScrollingEnabled(false);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
-            mMessageAdapter = new MessageAdapter(this, mEventHandlers);
+            mMessageAdapter = new MessageAdapter(this, mEventHandlers, mModel.isAuthenticated);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(
