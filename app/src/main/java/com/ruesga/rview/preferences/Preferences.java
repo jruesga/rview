@@ -211,8 +211,28 @@ public class Preferences {
         return getAccountPreferences(context, account).getString(PREF_ACCOUNT_DIFF_MODE, def);
     }
 
+    public static void setAccountDiffMode(Context context, Account account, String mode) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putString(PREF_ACCOUNT_DIFF_MODE, mode);
+        editor.apply();
+    }
+
     public static boolean getAccountWrapMode(Context context, Account account) {
         return account == null ||
                 getAccountPreferences(context, account).getBoolean(PREF_ACCOUNT_WRAP_MODE, true);
+    }
+
+    public static void setAccountWrapMode(Context context, Account account, boolean wrap) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putBoolean(PREF_ACCOUNT_WRAP_MODE, wrap);
+        editor.apply();
     }
 }

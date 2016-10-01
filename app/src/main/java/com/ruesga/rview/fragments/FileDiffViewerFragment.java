@@ -113,29 +113,21 @@ public class FileDiffViewerFragment extends Fragment {
     private String mBase;
     private String mRevision;
 
-    private int mDiffMode;
+    private int mMode;
     private boolean mWrap;
 
-    public static FileDiffViewerFragment newInstance(
-            String revisionId, String file, int base, int revision) {
+    public static FileDiffViewerFragment newInstance(String revisionId, String file,
+            int base, int revision, int mode, boolean wrap) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
         arguments.putString(Constants.EXTRA_FILE, file);
         arguments.putInt(Constants.EXTRA_BASE, base);
         arguments.putInt(Constants.EXTRA_REVISION, revision);
+        arguments.putInt("mode", mode);
+        arguments.putBoolean("wrap", wrap);
         fragment.setArguments(arguments);
         return fragment;
-    }
-
-    public FileDiffViewerFragment mode(int mode) {
-        mDiffMode = mode;
-        return this;
-    }
-
-    public FileDiffViewerFragment wrap(boolean wrap) {
-        mWrap = wrap;
-        return this;
     }
 
     public void update() {
@@ -145,7 +137,7 @@ public class FileDiffViewerFragment extends Fragment {
                     .from(mResponse.diff.content)
                     .withComments(mResponse.comments)
                     .withDrafts(mResponse.draftComments)
-                    .mode(mDiffMode)
+                    .mode(mMode)
                     .wrap(mWrap)
                     .update(),
             250L);
@@ -164,6 +156,8 @@ public class FileDiffViewerFragment extends Fragment {
         int base = getArguments().getInt(Constants.EXTRA_BASE);
         mBase = base == 0 ? null : String.valueOf(base);
         mRevision = String.valueOf(getArguments().getInt(Constants.EXTRA_REVISION));
+        mMode = getArguments().getInt("mode");
+        mWrap = getArguments().getBoolean("wrap");
     }
 
     @Nullable

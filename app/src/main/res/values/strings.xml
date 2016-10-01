@@ -187,7 +187,7 @@
     <!-- Account Settings -->
     <string name="account_settings_title">Settings</string>
     <string name="account_settings_subtitle" translatable="false"><xliff:g id="repo" example="CyanogenMod">%1$s</xliff:g> - <xliff:g id="username" example="John Doe">%2$s</xliff:g></string>
-    <string name="account_settings_display_category">Display options</string>
+    <string name="account_settings_display_category">Display</string>
     <string name="account_settings_home_page">Home page</string>
     <string name="account_settings_fetched_items">Number of fetched items</string>
     <string name="account_settings_fetched_items_format"><xliff:g id="items" example="25">%1$s</xliff:g> items</string>
@@ -196,12 +196,7 @@
     <string name="account_settings_display_format_email">Email</string>
     <string name="account_settings_display_format_username">Username</string>
     <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>
-    <string name="account_settings_diff_category">Diff options</string>
-    <string name="account_settings_diff_mode_title">Diff mode</string>
-    <string name="account_settings_diff_mode_unified">Unified</string>
-    <string name="account_settings_diff_mode_side_by_side">Side by side</string>
-    <string name="account_settings_diff_wrap_title">Wrap lines</string>
-    <string name="account_settings_external_category">External viewer options</string>
+    <string name="account_settings_external_category">External viewers</string>
     <string name="account_settings_use_custom_tabs">Use custom tabs</string>
     <string name="account_settings_download_format">Download format</string>
 

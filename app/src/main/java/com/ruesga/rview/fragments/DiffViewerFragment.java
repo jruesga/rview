@@ -95,10 +95,10 @@ public class DiffViewerFragment extends Fragment {
             }
             int revision = mChange.revisions.get(mRevisionId).number;
 
-            mFragment = new WeakReference<>(
-                    FileDiffViewerFragment.newInstance(mRevisionId, mFile, base, revision));
-            mFragment.get().wrap(mWrap).mode(mDiffMode);
-            return mFragment.get();
+            final FileDiffViewerFragment fragment = FileDiffViewerFragment.newInstance(
+                    mRevisionId, mFile, base, revision, mMode, mWrap);
+            mFragment = new WeakReference<>(fragment);
+            return fragment;
         }
 
         @Override
@@ -114,24 +114,29 @@ public class DiffViewerFragment extends Fragment {
             if (mFragment != null && mFragment.get() != null) {
                 switch (item.getItemId()) {
                     case R.id.diff_mode_unified:
-                        mFragment.get().mode(DiffView.UNIFIED_MODE).update();
-                        mDiffMode = DiffView.UNIFIED_MODE;
+                        mMode = DiffView.UNIFIED_MODE;
+                        Preferences.setAccountDiffMode(
+                                getContext(), mAccount, Constants.DIFF_MODE_UNIFIED);
                         break;
                     case R.id.diff_mode_side_by_side:
-                        mFragment.get().mode(DiffView.SIDE_BY_SIDE_MODE).update();
-                        mDiffMode = DiffView.SIDE_BY_SIDE_MODE;
+                        mMode = DiffView.SIDE_BY_SIDE_MODE;
+                        Preferences.setAccountDiffMode(
+                                getContext(), mAccount, Constants.DIFF_MODE_SIDE_BY_SIDE);
                         break;
                     case R.id.wrap_mode_on:
-                        mFragment.get().wrap(true).update();
                         mWrap = true;
+                        Preferences.setAccountWrapMode(getContext(), mAccount, mWrap);
                         break;
                     case R.id.wrap_mode_off:
-                        mFragment.get().wrap(false).update();
                         mWrap = false;
+                        Preferences.setAccountWrapMode(getContext(), mAccount, mWrap);
                         break;
                 }
             }
+
+            // Close the drawer and force a refresh of the UI
             ((BaseActivity) getActivity()).closeOptionsDrawer();
+            forceRefresh();
             return true;
         }
     };
@@ -171,10 +176,12 @@ public class DiffViewerFragment extends Fragment {
 
     private final List<String> mAllRevisions = new ArrayList<>();
 
-    private int mDiffMode;
+    private int mMode;
     private boolean mWrap;
 
     private int mCurrentFile;
+
+    private Account mAccount;
 
     public static DiffViewerFragment newInstance(String revisionId, String file) {
         DiffViewerFragment fragment = new DiffViewerFragment();
@@ -220,16 +227,11 @@ public class DiffViewerFragment extends Fragment {
             loadRevisions();
 
             // Get diff user preferences
-            if (state != null) {
-                mDiffMode = state.getInt(Constants.PREF_ACCOUNT_WRAP_MODE, DiffView.UNIFIED_MODE);
-                mWrap = state.getBoolean(Constants.PREF_ACCOUNT_WRAP_MODE, true);
-            } else {
-                Account account = Preferences.getAccount(getContext());
-                String diffMode = Preferences.getAccountDiffMode(getContext(), account);
-                mDiffMode = diffMode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
-                        ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
-                mWrap = Preferences.getAccountWrapMode(getContext(), account);
-            }
+            mAccount = Preferences.getAccount(getContext());
+            String diffMode = Preferences.getAccountDiffMode(getContext(), mAccount);
+            mMode = diffMode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
+                    ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
+            mWrap = Preferences.getAccountWrapMode(getContext(), mAccount);
 
             // Configure the pages adapter
             BaseActivity activity = ((BaseActivity) getActivity());
@@ -283,8 +285,6 @@ public class DiffViewerFragment extends Fragment {
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         outState.putString(Constants.EXTRA_FILE, mFile);
         outState.putString(Constants.EXTRA_BASE, mBase);
-        outState.putInt("diff_mode", mDiffMode);
-        outState.putBoolean("wrap_mode", mWrap);
     }
 
     private void loadFiles() {
@@ -325,8 +325,8 @@ public class DiffViewerFragment extends Fragment {
         BaseActivity activity =  ((BaseActivity) getActivity());
         Menu menu = activity.getOptionsMenu().getMenu();
         menu.findItem(R.id.diff_mode_side_by_side).setChecked(
-                mDiffMode == DiffView.SIDE_BY_SIDE_MODE);
-        menu.findItem(R.id.diff_mode_unified).setChecked(mDiffMode == DiffView.UNIFIED_MODE);
+                mMode == DiffView.SIDE_BY_SIDE_MODE);
+        menu.findItem(R.id.diff_mode_unified).setChecked(mMode == DiffView.UNIFIED_MODE);
         menu.findItem(R.id.wrap_mode_on).setChecked(mWrap);
         menu.findItem(R.id.wrap_mode_off).setChecked(!mWrap);
 
@@ -378,11 +378,15 @@ public class DiffViewerFragment extends Fragment {
             ((BaseActivity) getActivity()).closeOptionsDrawer();
 
             // Refresh the view
-            updateModel();
-            mAdapter.notifyDataSetChanged();
+            forceRefresh();
         });
         popupWindow.setModal(true);
         popupWindow.show();
+    }
+
+    private void forceRefresh() {
+        updateModel();
+        mAdapter.notifyDataSetChanged();
     }
 
 }

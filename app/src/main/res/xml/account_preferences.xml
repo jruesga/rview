@@ -45,23 +45,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/account_settings_diff_category">
-
-        <ListPreference
-            android:key="account_diff_mode"
-            android:title="@string/account_settings_diff_mode_title"
-            android:summary="%s"
-            android:entries="@array/account_diff_mode_labels"
-            android:entryValues="@array/account_diff_mode_values"
-            android:defaultValue="unified" />
-
-        <SwitchPreference
-            android:key="account_wrap_mode"
-            android:title="@string/account_settings_diff_wrap_title"
-            android:defaultValue="true" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:title="@string/account_settings_external_category">
 
         <SwitchPreference
