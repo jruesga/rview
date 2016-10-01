@@ -265,8 +265,15 @@ public class FileDiffViewerFragment extends Fragment {
                         type,
                         baseRevision + "_" + CacheHelper.CACHE_DRAFT_JSON),
                 withCached(
-                        api.getChangeRevisionDrafts(
-                                String.valueOf(mChange.legacyChangeId), mRevisionId),
+                        Observable.fromCallable(() -> {
+                            // Do no fetch drafts if the account is not authenticated
+                            if (mAccount.hasAuthenticatedAccessMode()) {
+                                return api.getChangeRevisionDrafts(
+                                        String.valueOf(mChange.legacyChangeId), mRevisionId)
+                                        .toBlocking().first();
+                            }
+                            return new HashMap<>();
+                        }),
                         type,
                         mRevision + "_" + CacheHelper.CACHE_DRAFT_JSON),
                 this::combine
