@@ -30,6 +30,7 @@
         android:background="?attr/colorPrimaryDark"
         android:elevation="4dp"
         android:paddingTop="36dp"
+        android:paddingBottom="13dp"
         tools:ignore="UnusedAttribute">
 
         <LinearLayout
@@ -38,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="horizontal"
-            android:onClick="@{handlers::onSwitcherPressed}"
+            android:onClick="@{handlers.onSwitcherPressed}"
             android:background="?attr/selectableItemBackground"
             android:padding="8dp">
 
@@ -87,7 +88,7 @@
                 android:src="@{model.isAccountExpanded ? @drawable/ic_arrow_drop_up : @drawable/ic_arrow_drop_down}"
                 android:tint="@android:color/white"
                 android:layout_gravity="center_vertical"
-                android:onClick="@{handlers::onSwitcherPressed}"
+                android:onClick="@{handlers.onSwitcherPressed}"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@null"/>
         </LinearLayout>
