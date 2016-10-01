@@ -100,6 +100,14 @@ public class CacheHelper {
         }
     }
 
+    public static boolean hasAccountDiffCacheDir(Context context, String name) {
+        return hasAccountDiffCacheDir(context, Preferences.getAccount(context), name);
+    }
+
+    public static boolean hasAccountDiffCacheDir(Context context, Account account, String name) {
+        return new File(getAccountDiffCacheDir(context, account), name).exists();
+    }
+
     public static byte[] readAccountDiffCacheDir(Context context, String name) throws IOException {
         return readAccountDiffCacheDir(context, Preferences.getAccount(context), name);
     }

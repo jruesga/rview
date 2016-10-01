@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
@@ -37,12 +38,16 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import me.tatarka.rxloader.RxLoader;
 import me.tatarka.rxloader.RxLoaderManager;
@@ -104,17 +109,21 @@ public class FileDiffViewerFragment extends Fragment {
 
     private String mRevisionId;
     private String mFile;
-    private Integer mBase;
+    private String mFileHash;
+    private String mBase;
+    private String mRevision;
 
     private int mDiffMode;
     private boolean mWrap;
 
-    public static FileDiffViewerFragment newInstance(String revisionId, int base, String file) {
+    public static FileDiffViewerFragment newInstance(
+            String revisionId, String file, int base, int revision) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
         arguments.putString(Constants.EXTRA_FILE, file);
         arguments.putInt(Constants.EXTRA_BASE, base);
+        arguments.putInt(Constants.EXTRA_REVISION, revision);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -134,7 +143,8 @@ public class FileDiffViewerFragment extends Fragment {
             mHandler.postDelayed(() ->
                 mBinding.diff
                     .from(mResponse.diff.content)
-                    .with(mResponse.comments)
+                    .withComments(mResponse.comments)
+                    .withDrafts(mResponse.draftComments)
                     .mode(mDiffMode)
                     .wrap(mWrap)
                     .update(),
@@ -143,14 +153,17 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
 
         mRevisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
         mFile = getArguments().getString(Constants.EXTRA_FILE);
+        mFileHash = FowlerNollVo.fnv1a_64(mFile.getBytes()).toString();
         int base = getArguments().getInt(Constants.EXTRA_BASE);
-        mBase = base == 0 ? null : base;
+        mBase = base == 0 ? null : String.valueOf(base);
+        mRevision = String.valueOf(getArguments().getInt(Constants.EXTRA_REVISION));
     }
 
     @Nullable
@@ -203,29 +216,96 @@ public class FileDiffViewerFragment extends Fragment {
 
     @SuppressWarnings("ConstantConditions")
     private Observable<FileDiffResponse> fetchDiffs() {
+        // Generate ids
+        final String baseRevision = mBase == null ? "0" : mBase;
+        final String diffCacheId = baseRevision + "_" + mRevision + "_" + mFileHash + "_";
+        final Integer base = mBase == null ? null : Integer.valueOf(mBase);
+        final Type type = new TypeToken<Map<String, List<CommentInfo>>>(){}.getType();
+
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
-                api.getChangeRevisionFileDiff(
-                        String.valueOf(mChange.legacyChangeId),
-                        mRevisionId,
-                        mFile,
-                        mBase,
-                        Option.INSTANCE,
-                        null),
-                Observable.just(null),
-                Observable.just(null),
+                withCached(
+                        api.getChangeRevisionFileDiff(
+                                String.valueOf(mChange.legacyChangeId),
+                                mRevisionId,
+                                mFile,
+                                base,
+                                Option.INSTANCE,
+                                null),
+                        DiffInfo.class,
+                        diffCacheId + CacheHelper.CACHE_DIFF_JSON
+                ),
+                withCached(
+                        Observable.fromCallable(() -> {
+                            if (mBase != null) {
+                                return api.getChangeRevisionComments(
+                                        String.valueOf(mChange.legacyChangeId), baseRevision)
+                                        .toBlocking().first();
+                            }
+                            return new HashMap<>();
+                        }),
+                        type,
+                        baseRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON),
+                withCached(
+                        api.getChangeRevisionComments(
+                                String.valueOf(mChange.legacyChangeId), mRevisionId),
+                        type,
+                        mRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON),
+                withCached(
+                        Observable.fromCallable(() -> {
+                            if (mBase != null) {
+                                return api.getChangeRevisionDrafts(
+                                        String.valueOf(mChange.legacyChangeId), baseRevision)
+                                        .toBlocking().first();
+                            }
+                            return new HashMap<>();
+                        }),
+                        type,
+                        baseRevision + "_" + CacheHelper.CACHE_DRAFT_JSON),
+                withCached(
+                        api.getChangeRevisionDrafts(
+                                String.valueOf(mChange.legacyChangeId), mRevisionId),
+                        type,
+                        mRevision + "_" + CacheHelper.CACHE_DRAFT_JSON),
                 this::combine
             )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private FileDiffResponse combine(DiffInfo diff,
-                                     List<CommentInfo> commentsA, List<CommentInfo> commentsB) {
+    private FileDiffResponse combine(DiffInfo diff, Map<String, List<CommentInfo>> commentsA,
+            Map<String, List<CommentInfo>> commentsB, Map<String, List<CommentInfo>> draftsA,
+            Map<String, List<CommentInfo>> draftsB) {
         FileDiffResponse response = new FileDiffResponse();
         response.diff = diff;
-        response.comments = new Pair<>(commentsA, commentsB);
+        response.comments = new Pair<>(commentsA.get(mFile), commentsB.get(mFile));
+        response.draftComments = new Pair<>(draftsA.get(mFile), draftsB.get(mFile));
+
+        // Cache the fetched data
+        try {
+            final String baseRevision = mBase == null ? "0" : mBase;
+            final String diffCacheId = baseRevision + "_" + mRevision + "_" + mFileHash + "_";
+
+            CacheHelper.writeAccountDiffCacheDir(getContext(),
+                    diffCacheId + CacheHelper.CACHE_DIFF_JSON,
+                    SerializationManager.getInstance().toJson(diff).getBytes());
+            CacheHelper.writeAccountDiffCacheDir(getContext(),
+                    baseRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON,
+                    SerializationManager.getInstance().toJson(commentsA).getBytes());
+            CacheHelper.writeAccountDiffCacheDir(getContext(),
+                    mRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON,
+                    SerializationManager.getInstance().toJson(commentsB).getBytes());
+            CacheHelper.writeAccountDiffCacheDir(getContext(),
+                    baseRevision + "_" + CacheHelper.CACHE_DRAFT_JSON,
+                    SerializationManager.getInstance().toJson(draftsA).getBytes());
+            CacheHelper.writeAccountDiffCacheDir(getContext(),
+                    mRevision + "_" + CacheHelper.CACHE_DRAFT_JSON,
+                    SerializationManager.getInstance().toJson(draftsB).getBytes());
+        } catch (IOException ex) {
+            Log.e(TAG, "Failed to load diff cached data", ex);
+        }
+
         return response;
     }
 
@@ -236,5 +316,20 @@ public class FileDiffViewerFragment extends Fragment {
         } else {
             activity.onRefreshEnd(null);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Observable<T> withCached(Observable<T> call, Type type, String name) {
+        try {
+            if (CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
+                T o = SerializationManager.getInstance().fromJson(
+                        new String(CacheHelper.readAccountDiffCacheDir(
+                                getContext(), name)), type);
+                return Observable.just((o));
+            }
+        } catch (IOException ex) {
+            Log.e(TAG, "Failed to load diff cached data: " + name, ex);
+        }
+        return call;
     }
 }

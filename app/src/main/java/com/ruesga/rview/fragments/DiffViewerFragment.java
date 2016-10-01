@@ -93,9 +93,10 @@ public class DiffViewerFragment extends Fragment {
             } catch (Exception ex) {
                 // Ignore
             }
+            int revision = mChange.revisions.get(mRevisionId).number;
 
             mFragment = new WeakReference<>(
-                    FileDiffViewerFragment.newInstance(mRevisionId, base, mFile));
+                    FileDiffViewerFragment.newInstance(mRevisionId, mFile, base, revision));
             mFragment.get().wrap(mWrap).mode(mDiffMode);
             return mFragment.get();
         }

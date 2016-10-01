@@ -27,6 +27,7 @@ public class Constants {
     public static final String EXTRA_LEGACY_CHANGE_ID = "legacyChangeId";
     public static final String EXTRA_PROJECT_ID = "projectId";
     public static final String EXTRA_REVISION_ID = "revisionId";
+    public static final String EXTRA_REVISION = "revision";
     public static final String EXTRA_FILE_ID = "fileId";
     public static final String EXTRA_FILE = "fileId";
     public static final String EXTRA_TOPIC = "topic";

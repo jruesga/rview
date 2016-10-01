@@ -109,6 +109,7 @@ public class DiffView extends FrameLayout {
     public static class CommentModel extends AbstractModel {
         public CommentInfo commentA;
         public CommentInfo commentB;
+        public boolean isDraft;
     }
 
     @ProguardIgnored
@@ -225,7 +226,6 @@ public class DiffView extends FrameLayout {
         }
 
         private void computeViewChildMeasuresIfNeeded() {
-            long start = System.currentTimeMillis();
             boolean wrap = isWrapMode();
             if (!mModel.isEmpty()) {
                 int dp = (int) getResources().getDisplayMetrics().density;
@@ -304,7 +304,6 @@ public class DiffView extends FrameLayout {
                 }
             }
             long end = System.currentTimeMillis();
-            System.out.println("jrc: computeViewChildMeasuresIfNeeded -> " + (end - start));
         }
     }
 
@@ -314,31 +313,26 @@ public class DiffView extends FrameLayout {
         private final Pair<List<CommentInfo>, List<CommentInfo>> mComments;
 
         AsyncDiffProcessor(int mode, DiffContentInfo[] diffs,
-                Pair<List<CommentInfo>, List<CommentInfo>> comments) {
+                Pair<List<CommentInfo>, List<CommentInfo>> comments,
+                Pair<List<CommentInfo>, List<CommentInfo>> drafts) {
             mMode = mode;
             mDiffs = diffs;
             mComments = comments;
+            mDrafts = drafts;
         }
 
         @Override
         protected List<AbstractModel> doInBackground(Void... params) {
-            long start = System.currentTimeMillis();
-            List<AbstractModel> model = processComments(processDiffs());
-            long end = System.currentTimeMillis();
-            System.out.println("jrc: doInBackground -> " + (end - start));
-            return model;
+            return processDrafts(processComments(processDiffs()));
         }
 
         @Override
         protected void onPostExecute(List<AbstractModel> model) {
-            long start = System.currentTimeMillis();
             mDiffAdapter = new DiffAdapter(mDiffMode);
             mLayoutManager = mTmpLayoutManager;
             mRecyclerView.setLayoutManager(mLayoutManager);
             mRecyclerView.setAdapter(mDiffAdapter);
             mDiffAdapter.update(model);
-            long end = System.currentTimeMillis();
-            System.out.println("jrc: onPostExecute -> " + (end - start));
         }
 
         private List<AbstractModel> processDiffs() {
@@ -349,7 +343,6 @@ public class DiffView extends FrameLayout {
         }
 
         private List<AbstractModel> processSideBySideDiffs() {
-            long start = System.currentTimeMillis();
             if (mDiffs == null) {
                 return new ArrayList<>();
             }
@@ -478,14 +471,10 @@ public class DiffView extends FrameLayout {
                 }
                 j++;
             }
-
-            long end = System.currentTimeMillis();
-            System.out.println("jrc: processSideBySideDiffs -> " + (end - start));
             return model;
         }
 
         private List<AbstractModel> processUnifiedDiffs() {
-            long start = System.currentTimeMillis();
             if (mDiffs == null) {
                 return new ArrayList<>();
             }
@@ -610,33 +599,41 @@ public class DiffView extends FrameLayout {
                 }
                 j++;
             }
-
-            long end = System.currentTimeMillis();
-            System.out.println("jrc: processUnifiedDiffs -> " + (end - start));
             return model;
         }
 
         private List<AbstractModel> processComments(List<AbstractModel> model) {
-            long start = System.currentTimeMillis();
             if (mComments != null) {
                 // Comments on A
                 if (mComments.second != null) {
-                    addCommentsToModel(model, mComments.first, true);
+                    addCommentsToModel(model, mComments.first, true, false);
                 }
 
                 // Comments on B
                 if (mComments.second != null) {
-                    addCommentsToModel(model, mComments.second, false);
+                    addCommentsToModel(model, mComments.second, false, false);
                 }
             }
+            return model;
+        }
 
-            long end = System.currentTimeMillis();
-            System.out.println("jrc: processComments -> " + (end - start));
+        private List<AbstractModel> processDrafts(List<AbstractModel> model) {
+            if (mDrafts != null) {
+                // Comments on A
+                if (mDrafts.second != null) {
+                    addCommentsToModel(model, mDrafts.first, true, true);
+                }
+
+                // Comments on B
+                if (mDrafts.second != null) {
+                    addCommentsToModel(model, mDrafts.second, false, true);
+                }
+            }
             return model;
         }
 
         private void addCommentsToModel(List<AbstractModel> model,
-                List<CommentInfo> comments, boolean isA) {
+                List<CommentInfo> comments, boolean isA, boolean isDraft) {
             if (comments == null) {
                 return;
             }
@@ -647,6 +644,7 @@ public class DiffView extends FrameLayout {
                 if (pos != -1) {
                     if (mMode == UNIFIED_MODE) {
                         CommentModel commentModel = new CommentModel();
+                        commentModel.isDraft = isDraft;
                         commentModel.commentA = comment;
                         int nextPos = findNextPositionWithoutComment(model, pos);
                         if (nextPos != -1) {
@@ -658,6 +656,7 @@ public class DiffView extends FrameLayout {
                         int reusablePos = findReusableCommentView(model, pos, isA);
                         if (reusablePos != -1) {
                             CommentModel commentModel = (CommentModel) model.get(reusablePos);
+                            commentModel.isDraft = isDraft;
                             if (isA) {
                                 commentModel.commentA = comment;
                             } else {
@@ -665,6 +664,7 @@ public class DiffView extends FrameLayout {
                             }
                         } else {
                             CommentModel commentModel = new CommentModel();
+                            commentModel.isDraft = isDraft;
                             if (isA) {
                                 commentModel.commentA = comment;
                             } else {
@@ -738,6 +738,7 @@ public class DiffView extends FrameLayout {
     private int mDiffMode = UNIFIED_MODE;
     private DiffContentInfo[] mAllDiffs;
     private Pair<List<CommentInfo>, List<CommentInfo>> mComments;
+    private Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
 
     private AsyncDiffProcessor mTask;
 
@@ -807,8 +808,13 @@ public class DiffView extends FrameLayout {
         return this;
     }
 
-    public DiffView with(Pair<List<CommentInfo>, List<CommentInfo>> comments) {
+    public DiffView withComments(Pair<List<CommentInfo>, List<CommentInfo>> comments) {
         mComments = comments;
+        return this;
+    }
+
+    public DiffView withDrafts(Pair<List<CommentInfo>, List<CommentInfo>> drafts) {
+        mDrafts = mDrafts;
         return this;
     }
 
@@ -829,7 +835,7 @@ public class DiffView extends FrameLayout {
             mTask.cancel(true);
         }
 
-        mTask = new AsyncDiffProcessor(mDiffMode, mAllDiffs, mComments);
+        mTask = new AsyncDiffProcessor(mDiffMode, mAllDiffs, mComments, mDrafts);
         mTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
