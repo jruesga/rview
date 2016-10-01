@@ -241,6 +241,9 @@
     <string name="change_topic_hint">Topic name</string>
 
     <!-- Diff options -->
+    <string name="options_base">Base</string>
+    <string name="options_base_left">Left</string>
+    <string name="options_base_right">Right</string>
     <string name="options_diff_mode">Diff mode</string>
     <string name="options_diff_mode_unified">Unified</string>
     <string name="options_diff_mode_side_by_side">Side by side</string>

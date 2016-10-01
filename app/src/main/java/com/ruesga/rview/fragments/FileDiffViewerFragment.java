@@ -22,27 +22,26 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.FileDiffViewerFragmentBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.Option;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
+import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
-import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
-import com.ruesga.rview.preferences.Preferences;
-import com.ruesga.rview.widget.DiffView;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.List;
 
 import me.tatarka.rxloader.RxLoader;
@@ -70,6 +69,7 @@ public class FileDiffViewerFragment extends Fragment {
     public static class FileDiffResponse {
         DiffInfo diff;
         Pair<List<CommentInfo>, List<CommentInfo>> comments;
+        Pair<List<CommentInfo>, List<CommentInfo>> draftComments;
     }
 
     private final RxLoaderObserver<FileDiffResponse> mObserver
@@ -100,31 +100,21 @@ public class FileDiffViewerFragment extends Fragment {
 
     private RxLoader<FileDiffResponse> mLoader;
 
-    private int mLegacyChangeId;
+    private ChangeInfo mChange;
+
     private String mRevisionId;
     private String mFile;
     private Integer mBase;
-    private List<CommentInfo> mCommentsA;
-    private List<CommentInfo> mCommentsB;
 
     private int mDiffMode;
     private boolean mWrap;
 
-    public static FileDiffViewerFragment newInstance(
-            int legacyChangeId, String revisionId, String file, int base,
-            List<CommentInfo> commentsA, List<CommentInfo> commentsB) {
+    public static FileDiffViewerFragment newInstance(String revisionId, int base, String file) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
-        arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
         arguments.putString(Constants.EXTRA_FILE, file);
         arguments.putInt(Constants.EXTRA_BASE, base);
-        if (commentsA != null) {
-            arguments.putString("comments_a", SerializationManager.getInstance().toJson(commentsA));
-        }
-        if (commentsB != null) {
-            arguments.putString("comments_b", SerializationManager.getInstance().toJson(commentsB));
-        }
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -157,22 +147,9 @@ public class FileDiffViewerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mHandler = new Handler();
 
-        mLegacyChangeId = getArguments().getInt(
-                Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mRevisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
         mFile = getArguments().getString(Constants.EXTRA_FILE);
-
-        String commentsA = getArguments().getString("comments_a");
-        String commentsB = getArguments().getString("comments_b");
-        Type type = new TypeToken<List<CommentInfo>>(){}.getType();
-        if (commentsA != null) {
-            mCommentsA = SerializationManager.getInstance().fromJson(commentsA, type);
-        }
-        if (commentsB != null) {
-            mCommentsB = SerializationManager.getInstance().fromJson(commentsB, type);
-        }
-
-        int base = getArguments().getInt(Constants.EXTRA_BASE, 0);
+        int base = getArguments().getInt(Constants.EXTRA_BASE);
         mBase = base == 0 ? null : base;
     }
 
@@ -200,6 +177,17 @@ public class FileDiffViewerFragment extends Fragment {
         if (mLoader == null) {
             mEventHandlers = new EventHandlers(this);
 
+            try {
+                // Deserialize the change
+                mChange = SerializationManager.getInstance().fromJson(
+                        new String(CacheHelper.readAccountDiffCacheDir(
+                                getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
+
+            } catch (IOException ex) {
+                Log.e(TAG, "Failed to load change cached data", ex);
+                getActivity().finish();
+            }
+
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mLoader = loaderManager.create(
@@ -219,14 +207,14 @@ public class FileDiffViewerFragment extends Fragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
                 api.getChangeRevisionFileDiff(
-                        String.valueOf(mLegacyChangeId),
+                        String.valueOf(mChange.legacyChangeId),
                         mRevisionId,
                         mFile,
                         mBase,
                         Option.INSTANCE,
                         null),
-                Observable.just(mCommentsA),
-                Observable.just(mCommentsB),
+                Observable.just(null),
+                Observable.just(null),
                 this::combine
             )
             .subscribeOn(Schedulers.io())

@@ -22,7 +22,7 @@
     <data>
         <import type="android.view.View" />
         <variable name="model" type="com.ruesga.rview.widget.PagerControllerLayout.Model" />
-        <variable name="handlers" type="com.ruesga.rview.widget.PagerControllerLayout.EventHandler" />
+        <variable name="handlers" type="com.ruesga.rview.widget.PagerControllerLayout.EventHandlers" />
     </data>
 
     <LinearLayout

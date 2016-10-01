@@ -184,10 +184,12 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
         int end = findLastVisibleItemPosition();
         for (int i = start; i <= end; i++) {
             View v = findViewByPosition(i);
-            if (getOrientation() == LinearLayoutManager.VERTICAL) {
-                v.setLeft(mOffset);
-            } else {
-                v.setTop(mOffset);
+            if (v != null) {
+                if (getOrientation() == LinearLayoutManager.VERTICAL) {
+                    v.setLeft(mOffset);
+                } else {
+                    v.setTop(mOffset);
+                }
             }
         }
     }

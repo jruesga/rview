@@ -79,6 +79,7 @@ import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.StringHelper;
@@ -467,6 +468,9 @@ public class ChangeDetailsFragment extends Fragment {
                                 change.messages != null && change.messages.length > 0;
                         mMessageAdapter.update(change.messages);
                     }
+
+                    // Invalidate the diff cache. we have new data
+                    CacheHelper.removeAccountDiffCacheDir(getContext());
 
                     mBinding.setModel(mModel);
                     showProgress(false, change);

@@ -155,7 +155,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         getContentBinding().setModel(mModel);
     }
 
-    protected void invalidateTabs() {
+    public void invalidateTabs() {
         mModel.hasPages = false;
         mModel.hasTabs = false;
         getContentBinding().tabs.setupWithViewPager(null);
@@ -191,7 +191,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         getContentBinding().setModel(mModel);
     }
 
-    protected void invalidatePages() {
+    public void invalidatePages() {
         mModel.hasPages = false;
         mModel.hasTabs = false;
         getContentBinding().pagerController.listenOn(null).with(null);
@@ -292,7 +292,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
                 getContentBinding().drawerOptionsView);
     }
 
-    public Menu getOptionsMenu() {
-        return getContentBinding().drawerOptionsView.getMenu();
+    public NavigationView getOptionsMenu() {
+        return getContentBinding().drawerOptionsView;
     }
 }

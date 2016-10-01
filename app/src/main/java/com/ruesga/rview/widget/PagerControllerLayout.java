@@ -16,6 +16,7 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,8 @@ public class PagerControllerLayout extends FrameLayout {
     public static final int INVALID_PAGE = -1;
 
     public static abstract class PagerControllerAdapter<T> {
+        private DataSetObserver mObserver;
+
         public abstract FragmentManager getFragmentManager();
 
         public abstract CharSequence getPageTitle(int position);
@@ -48,6 +51,14 @@ public class PagerControllerLayout extends FrameLayout {
         public abstract Fragment getFragment(int position);
 
         public abstract @IdRes int getTarget();
+
+        public void notifyDataSetChanged() {
+            mObserver.onChanged();
+        }
+
+        private void registerObserver(DataSetObserver observer) {
+            mObserver = observer;
+        }
     }
 
     public interface OnPageSelectionListener {
@@ -62,10 +73,10 @@ public class PagerControllerLayout extends FrameLayout {
 
     @ProguardIgnored
     @SuppressWarnings("UnusedParameters")
-    public static class EventHandler {
+    public static class EventHandlers {
         private PagerControllerLayout mView;
 
-        EventHandler(PagerControllerLayout view) {
+        EventHandlers(PagerControllerLayout view) {
             mView =  view;
         }
 
@@ -77,6 +88,14 @@ public class PagerControllerLayout extends FrameLayout {
             mView.performMoveNext();
         }
     }
+
+
+    private DataSetObserver mObserver = new DataSetObserver() {
+        @Override
+        public void onChanged() {
+            pageSelected(mCurrentItem);
+        }
+    };
 
     private PagerControllerLayoutBinding mBinding;
     private OnPageSelectionListener mOnPageSelectionListener;
@@ -97,7 +116,7 @@ public class PagerControllerLayout extends FrameLayout {
         super(context, attrs, defStyleAttr);
         mBinding = DataBindingUtil.inflate(
                 LayoutInflater.from(context), R.layout.pager_controller_layout, this, false);
-        mBinding.setHandlers(new EventHandler(this));
+        mBinding.setHandlers(new EventHandlers(this));
         addView(mBinding.getRoot());
     }
 
@@ -110,6 +129,8 @@ public class PagerControllerLayout extends FrameLayout {
         mAdapter = adapter;
         if (mAdapter == null) {
             currentPage(INVALID_PAGE);
+        } else {
+            mAdapter.registerObserver(mObserver);
         }
         return this;
     }
@@ -138,7 +159,6 @@ public class PagerControllerLayout extends FrameLayout {
         }
 
         FragmentTransaction tx = mAdapter.getFragmentManager().beginTransaction();
-        tx.setCustomAnimations(android.R.anim.fade_out, android.R.anim.fade_in);
         Fragment oldFragment = mAdapter.getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         if (oldFragment != null) {
             tx.remove(oldFragment);

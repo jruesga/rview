@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,6 +33,9 @@ import android.view.ViewGroup;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
+import com.ruesga.rview.adapters.SimpleDropDownAdapter;
+import com.ruesga.rview.annotations.ProguardIgnored;
+import com.ruesga.rview.databinding.DiffBaseChooserViewBinding;
 import com.ruesga.rview.databinding.DiffViewerFragmentBinding;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.CacheHelper;
@@ -46,13 +50,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DiffViewerFragment extends Fragment {
 
     private static final String TAG = "DiffViewerFragment";
-
-    public static final String EXTRA_CHANGE_JSON = "change.json";
 
     private PagerControllerAdapter<String> mAdapter = new PagerControllerAdapter<String>() {
 
@@ -84,10 +87,15 @@ public class DiffViewerFragment extends Fragment {
 
         @Override
         public Fragment getFragment(int position) {
-            // FIXME
+            int base = 0;
+            try {
+                base = Integer.valueOf(mBase);
+            } catch (Exception ex) {
+                // Ignore
+            }
+
             mFragment = new WeakReference<>(
-                    FileDiffViewerFragment.newInstance(
-                            mChange.legacyChangeId, mRevisionId, mFile, mBase, null, null));
+                    FileDiffViewerFragment.newInstance(mRevisionId, base, mFile));
             mFragment.get().wrap(mWrap).mode(mDiffMode);
             return mFragment.get();
         }
@@ -127,14 +135,40 @@ public class DiffViewerFragment extends Fragment {
         }
     };
 
+    @ProguardIgnored
+    public static class Model {
+        public String baseLeft;
+        public String baseRight;
+    }
+
+    @ProguardIgnored
+    @SuppressWarnings("unused")
+    public static class EventHandlers {
+        private final DiffViewerFragment mFragment;
+
+        public EventHandlers(DiffViewerFragment fragment) {
+            mFragment = fragment;
+        }
+
+        public void onBaseChooserPressed(View v) {
+            mFragment.performShowBaseChooser(v);
+        }
+    }
+
     private DiffViewerFragmentBinding mBinding;
+    private DiffBaseChooserViewBinding mBaseChooserBinding;
+    private Model mModel = new Model();
+    private EventHandlers mEventHandlers;
+
     private WeakReference<FileDiffViewerFragment> mFragment;
 
     private ChangeInfo mChange;
     private final List<String> mFiles = new ArrayList<>();
     private String mRevisionId;
     private String mFile;
-    private int mBase;
+    private String mBase;
+
+    private final List<String> mAllRevisions = new ArrayList<>();
 
     private int mDiffMode;
     private boolean mWrap;
@@ -153,11 +187,12 @@ public class DiffViewerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mEventHandlers = new EventHandlers(this);
 
         Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
         mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
         mFile = state.getString(Constants.EXTRA_FILE_ID);
-        mBase = state.getInt(Constants.EXTRA_BASE, 0);
+        mBase = state.getString(Constants.EXTRA_BASE);
 
         setHasOptionsMenu(true);
     }
@@ -179,8 +214,9 @@ public class DiffViewerFragment extends Fragment {
             // Deserialize the change
             mChange = SerializationManager.getInstance().fromJson(
                     new String(CacheHelper.readAccountDiffCacheDir(
-                            getContext(), EXTRA_CHANGE_JSON)), ChangeInfo.class);
+                            getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
             loadFiles();
+            loadRevisions();
 
             // Get diff user preferences
             if (state != null) {
@@ -201,7 +237,14 @@ public class DiffViewerFragment extends Fragment {
                 mCurrentFile = position;
             });
             activity.getContentBinding().pagerController.currentPage(mCurrentFile);
+
+            // Configure the options menu
             activity.configureOptionsMenu(R.menu.diff_options, mOptionsItemListener);
+            mBaseChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
+                    R.layout.diff_base_chooser_view, activity.getOptionsMenu(), false);
+            updateModel();
+            mBaseChooserBinding.setHandlers(mEventHandlers);
+            activity.getOptionsMenu().addHeaderView(mBaseChooserBinding.getRoot());
 
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);
@@ -238,7 +281,7 @@ public class DiffViewerFragment extends Fragment {
 
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         outState.putString(Constants.EXTRA_FILE, mFile);
-        outState.putInt(Constants.EXTRA_BASE, mBase);
+        outState.putString(Constants.EXTRA_BASE, mBase);
         outState.putInt("diff_mode", mDiffMode);
         outState.putBoolean("wrap_mode", mWrap);
     }
@@ -258,10 +301,28 @@ public class DiffViewerFragment extends Fragment {
         }
     }
 
+    private void loadRevisions() {
+        mAllRevisions.clear();
+        for (String revision : mChange.revisions.keySet()) {
+            mAllRevisions.add(String.valueOf(mChange.revisions.get(revision).number));
+        }
+        Collections.sort(mAllRevisions, (o1, o2) -> {
+            int a = Integer.valueOf(o1);
+            int b = Integer.valueOf(o2);
+            if (a < b) {
+                return -1;
+            }
+            if (a > b) {
+                return 1;
+            }
+            return 0;
+        });
+    }
+
     private void openOptionsMenu() {
         // Update options
         BaseActivity activity =  ((BaseActivity) getActivity());
-        Menu menu = activity.getOptionsMenu();
+        Menu menu = activity.getOptionsMenu().getMenu();
         menu.findItem(R.id.diff_mode_side_by_side).setChecked(
                 mDiffMode == DiffView.SIDE_BY_SIDE_MODE);
         menu.findItem(R.id.diff_mode_unified).setChecked(mDiffMode == DiffView.UNIFIED_MODE);
@@ -270,6 +331,57 @@ public class DiffViewerFragment extends Fragment {
 
         // Open drawer
         activity.openOptionsDrawer();
+    }
+
+    private void updateModel() {
+        mModel.baseLeft = mBase == null ? getString(R.string.options_base) : mBase;
+        mModel.baseRight = String.valueOf(mChange.revisions.get(mRevisionId).number);
+        mBaseChooserBinding.setModel(mModel);
+    }
+
+    private void performShowBaseChooser(View v) {
+        final List<String> revisions = new ArrayList<>(mAllRevisions);
+        String value;
+        if (v.getId() == R.id.baseLeft) {
+            value = mBase == null ? getString(R.string.options_base) : mBase;
+            revisions.add(0, value);
+        } else {
+            value = String.valueOf(mChange.revisions.get(mRevisionId).number);
+        }
+
+        final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
+        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
+                getContext(), revisions, value);
+        popupWindow.setAnchorView(v);
+        popupWindow.setAdapter(adapter);
+        popupWindow.setContentWidth(adapter.measureContentWidth());
+        popupWindow.setOnItemClickListener((parent, view, position, id) -> {
+            popupWindow.dismiss();
+            if (v.getId() == R.id.baseLeft) {
+                try {
+                    mBase = String.valueOf(Integer.parseInt(revisions.get(position)));
+                } catch (NumberFormatException ex) {
+                    // 0 based
+                    mBase = null;
+                }
+            } else {
+                int rev = Integer.parseInt(revisions.get(position));
+                for (String revision : mChange.revisions.keySet()) {
+                    if (mChange.revisions.get(revision).number == rev) {
+                        mRevisionId = revision;
+                    }
+                }
+            }
+
+            // Close the drawer
+            ((BaseActivity) getActivity()).closeOptionsDrawer();
+
+            // Refresh the view
+            updateModel();
+            mAdapter.notifyDataSetChanged();
+        });
+        popupWindow.setModal(true);
+        popupWindow.show();
     }
 
 }
