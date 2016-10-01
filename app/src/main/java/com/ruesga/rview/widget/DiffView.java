@@ -814,7 +814,7 @@ public class DiffView extends FrameLayout {
     }
 
     public DiffView withDrafts(Pair<List<CommentInfo>, List<CommentInfo>> drafts) {
-        mDrafts = mDrafts;
+        mDrafts = drafts;
         return this;
     }
 

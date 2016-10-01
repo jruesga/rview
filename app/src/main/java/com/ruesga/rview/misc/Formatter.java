@@ -18,7 +18,9 @@ package com.ruesga.rview.misc;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -111,6 +113,24 @@ public class Formatter {
             accountDisplayName = accountInfo.username;
         }
         view.setText(accountDisplayName);
+    }
+
+    @BindingAdapter({"draftAccountDisplayName", "isDraft"})
+    public static void toDrafAccountDisplayName(
+            TextView view, AccountInfo accountInfo, boolean isDraft) {
+
+        if (isDraft) {
+            Context ctx = view.getContext();
+            view.setText(ctx.getString(R.string.menu_draft).toUpperCase(
+                    AndroidHelper.getCurrentLocale(ctx)));
+            Drawable dw = ContextCompat.getDrawable(ctx, R.drawable.bg_tag);
+            DrawableCompat.setTint(dw,ContextCompat.getColor(ctx, R.color.unscored));
+            view.setBackground(dw);
+            return;
+        }
+
+        view.setBackground(null);
+        toAccountDisplayName(view, accountInfo);
     }
 
     @BindingAdapter("highlightUnreviewed")

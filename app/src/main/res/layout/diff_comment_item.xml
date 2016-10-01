@@ -122,7 +122,8 @@
                             android:ellipsize="none"
                             android:textIsSelectable="true"
                             android:textStyle="bold"
-                            app:accountDisplayName="@{model.commentA.author}"
+                            app:draftAccountDisplayName="@{model.commentA.author}"
+                            app:isDraft="@{model.isDraft}"
                             android:gravity="center_vertical"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
@@ -225,7 +226,8 @@
                             android:ellipsize="none"
                             android:textIsSelectable="true"
                             android:textStyle="bold"
-                            app:accountDisplayName="@{model.commentB.author}"
+                            app:draftAccountDisplayName="@{model.commentB.author}"
+                            app:isDraft="@{model.isDraft}"
                             android:gravity="center_vertical"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
