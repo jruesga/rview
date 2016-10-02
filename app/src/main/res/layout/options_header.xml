@@ -29,6 +29,7 @@
         tools:ignore="UnusedAttribute">
 
         <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/options_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingBottom="8dp"

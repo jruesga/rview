@@ -242,6 +242,7 @@ public class DiffViewerFragment extends Fragment {
             activity.getContentBinding().pagerController.currentPage(mCurrentFile);
 
             // Configure the diff_options menu
+            activity.configureOptionsTitle(getString(R.string.menu_diff_options));
             activity.configureOptionsMenu(R.menu.diff_options_menu, mOptionsItemListener);
             mBaseChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
                     R.layout.diff_base_chooser_view, activity.getOptionsMenu(), false);

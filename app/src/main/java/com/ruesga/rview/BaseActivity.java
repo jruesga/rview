@@ -31,6 +31,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
@@ -223,6 +224,12 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
             getContentBinding().drawerOptionsView.inflateMenu(menu);
             getContentBinding().drawerOptionsView.setNavigationItemSelectedListener(cb);
         }
+    }
+
+    public void configureOptionsTitle(String title) {
+        TextView tv = (TextView) getContentBinding().drawerOptionsView
+                .getHeaderView(0).findViewById(R.id.options_title);
+        tv.setText(title);
     }
 
     @Override
