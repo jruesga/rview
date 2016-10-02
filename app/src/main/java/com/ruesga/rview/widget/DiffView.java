@@ -400,10 +400,14 @@ public class DiffView extends FrameLayout {
 
         @Override
         protected void onPostExecute(List<AbstractModel> model) {
-            mDiffAdapter = new DiffAdapter(mDiffMode);
-            mLayoutManager = mTmpLayoutManager;
-            mRecyclerView.setLayoutManager(mLayoutManager);
-            mRecyclerView.setAdapter(mDiffAdapter);
+            if (!mLayoutManager.equals(mTmpLayoutManager)) {
+                mDiffAdapter = new DiffAdapter(mDiffMode);
+                if (mTmpLayoutManager != null) {
+                    mLayoutManager = mTmpLayoutManager;
+                }
+                mRecyclerView.setLayoutManager(mLayoutManager);
+                mRecyclerView.setAdapter(mDiffAdapter);
+            }
             mDiffAdapter.update(model);
         }
 
@@ -842,12 +846,6 @@ public class DiffView extends FrameLayout {
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        update();
-    }
-
-    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
@@ -916,9 +914,13 @@ public class DiffView extends FrameLayout {
     }
 
     public DiffView wrap(boolean wrap) {
-        mTmpLayoutManager = wrap
-                ? new LinearLayoutManager(getContext())
-                : new UnwrappedLinearLayoutManager(getContext());
+        if (isWrapMode() != wrap) {
+            mTmpLayoutManager = wrap
+                    ? new LinearLayoutManager(getContext())
+                    : new UnwrappedLinearLayoutManager(getContext());
+        } else {
+            mTmpLayoutManager = mLayoutManager;
+        }
         return this;
     }
 
