@@ -60,7 +60,6 @@ public class AccountChipView extends FrameLayout {
     private Picasso mPicasso;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
     private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
-    private EventHandlers mHandlers;
 
     public AccountChipView(Context context) {
         this(context, null);
@@ -74,10 +73,10 @@ public class AccountChipView extends FrameLayout {
         super(context, attrs, defStyleAttr);
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        mHandlers = new EventHandlers(this);
+        EventHandlers handlers = new EventHandlers(this);
         mBinding = DataBindingUtil.inflate(layoutInflater, R.layout.account_chip, this, false);
         mBinding.setRemovable(false);
-        mBinding.setHandlers(mHandlers);
+        mBinding.setHandlers(handlers);
         addView(mBinding.getRoot());
     }
 

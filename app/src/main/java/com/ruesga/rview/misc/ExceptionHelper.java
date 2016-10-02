@@ -31,10 +31,7 @@ public class ExceptionHelper {
         if (c.isInstance(cause)) {
             return true;
         }
-        if (cause.getCause() != null) {
-            return isException(cause.getCause(), c);
-        }
-        return false;
+        return cause.getCause() != null && isException(cause.getCause(), c);
     }
 
     public static <T extends Throwable> Throwable getCause(Throwable cause, Class<T> c) {

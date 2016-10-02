@@ -67,12 +67,6 @@
     <string name="committer_format"><xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e, <xliff:g id="commit_date" example="2 days ago">%3$s</xliff:g></string>
     <string name="added_vs_deleted"><xliff:g id="added" example="243 added">%1$s</xliff:g>, <xliff:g id="deleted" example="243 deleted">%2$s</xliff:g></string>
 
-    <!-- Pagination -->
-    <string name="pagination_fetching_more">Fetching more</string>
-
-    <!-- Validators -->
-    <string name="validator_account_exists">Account exists</string>
-
     <!-- Accounts -->
     <string name="account_build_bot_system_name" translatable="false">Gerrit Code Review</string>
     <string name="account_anonymous_coward">Anonymous Coward</string>
@@ -213,7 +207,6 @@
     <string name="change_statuses_needs_label">Needs <xliff:g id="label" example="Code-Review">%1$s</xliff:g></string>
 
     <!-- Related changes -->
-    <string name="related_changes_title">Related </string>
     <string name="related_changes">Related changes</string>
     <string name="conflicts_with">Conflicts with</string>
     <string name="same_topic">Same topic</string>

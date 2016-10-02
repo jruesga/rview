@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ruesga.rview.misc.ActivityHelper;
-import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.StringHelper;
 
 import java.util.ArrayList;

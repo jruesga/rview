@@ -126,7 +126,7 @@
                         android:layout_height="match_parent"
                         app:bindLayoutWeight="@{model.useTowPane ? 0.65f : 0f}"
                         android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
-                        tools:ignore="Suspicious0dp"/>
+                        tools:ignore="InconsistentLayout"/>
                 </LinearLayout>
             </FrameLayout>
 
