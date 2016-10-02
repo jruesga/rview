@@ -241,8 +241,8 @@ public class DiffViewerFragment extends Fragment {
             });
             activity.getContentBinding().pagerController.currentPage(mCurrentFile);
 
-            // Configure the options menu
-            activity.configureOptionsMenu(R.menu.diff_options, mOptionsItemListener);
+            // Configure the diff_options menu
+            activity.configureOptionsMenu(R.menu.diff_options_menu, mOptionsItemListener);
             mBaseChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
                     R.layout.diff_base_chooser_view, activity.getOptionsMenu(), false);
             updateModel();
@@ -265,13 +265,13 @@ public class DiffViewerFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.more, menu);
+        inflater.inflate(R.menu.diff_options, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_more:
+            case R.id.menu_diff_options:
                 openOptionsMenu();
                 break;
         }
@@ -321,7 +321,7 @@ public class DiffViewerFragment extends Fragment {
     }
 
     private void openOptionsMenu() {
-        // Update options
+        // Update diff_options
         BaseActivity activity =  ((BaseActivity) getActivity());
         Menu menu = activity.getOptionsMenu().getMenu();
         menu.findItem(R.id.diff_mode_side_by_side).setChecked(

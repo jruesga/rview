@@ -46,8 +46,8 @@
     <string name="menu_other_accounts_category">Other accounts</string>
     <string name="menu_add_account">Add account</string>
     <string name="menu_help">Help</string>
-    <string name="menu_more">More</string>
     <string name="menu_options">Options</string>
+    <string name="menu_diff_options">Diff options</string>
 
     <!-- Exceptions -->
     <string name="exception_browser_not_found">No browser detected. Can\'t launch <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>

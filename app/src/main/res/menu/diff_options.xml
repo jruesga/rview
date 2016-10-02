@@ -14,40 +14,11 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group
-        android:checkableBehavior="none">
-        <item android:title="@string/options_diff_mode">
-            <menu>
-                <item
-                    android:id="@+id/diff_mode_unified"
-                    android:title="@string/options_diff_mode_unified"
-                    android:icon="@drawable/ic_diff_unified"
-                    android:checkable="true"/>
-                <item
-                    android:id="@+id/diff_mode_side_by_side"
-                    android:title="@string/options_diff_mode_side_by_side"
-                    android:icon="@drawable/ic_diff_side_by_side"
-                    android:checkable="true"/>
-            </menu>
-        </item>
-    </group>
-    <group
-        android:checkableBehavior="none">
-        <item android:title="@string/options_wrap_mode">
-            <menu>
-                <item
-                    android:id="@+id/wrap_mode_on"
-                    android:title="@string/options_wrap_mode_on"
-                    android:icon="@drawable/ic_wrap_text"
-                    android:checkable="true"/>
-                <item
-                    android:id="@+id/wrap_mode_off"
-                    android:title="@string/options_wrap_mode_off"
-                    android:icon="@drawable/ic_unwrap_text"
-                    android:checkable="true"/>
-            </menu>
-        </item>
-    </group>
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_diff_options"
+        android:icon="@drawable/ic_visibility"
+        android:title="@string/menu_diff_options"
+        app:showAsAction="always"/>
 </menu>
