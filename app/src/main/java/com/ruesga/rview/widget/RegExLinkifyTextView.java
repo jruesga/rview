@@ -57,7 +57,7 @@ public class RegExLinkifyTextView extends TextView {
             "(I[0-9a-f]{8,40})",
             "com.ruesga.rview://change/$1");
     public static final RegExLink GERRIT_COMMIT_REGEX = new RegExLink(
-            "(^|\\s|[:.,!?\\(\\[\\{])([0-9a-f]{7,40})\\b",
+            "(^|\\S|[:.,!?\\(\\[\\{])([0-9a-f]{7,40})\\b",
             "com.ruesga.rview://commit/$1");
 
     private final List<RegExLink> mRegEx = new ArrayList<>();
