@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,13 +31,14 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.FileDiffViewerFragmentBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
+import com.ruesga.rview.gerrit.model.CommentInput;
 import com.ruesga.rview.gerrit.model.DiffInfo;
+import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
@@ -44,6 +46,7 @@ import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.widget.DiffView;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -52,6 +55,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.tatarka.rxloader.RxLoader;
+import me.tatarka.rxloader.RxLoader2;
 import me.tatarka.rxloader.RxLoaderManager;
 import me.tatarka.rxloader.RxLoaderManagerCompat;
 import me.tatarka.rxloader.RxLoaderObserver;
@@ -62,16 +66,6 @@ import rx.schedulers.Schedulers;
 public class FileDiffViewerFragment extends Fragment {
 
     private static final String TAG = "FileDiffViewerFragment";
-
-    @ProguardIgnored
-    @SuppressWarnings({"UnusedParameters", "unused"})
-    public static class EventHandlers {
-        private final FileDiffViewerFragment mFragment;
-
-        public EventHandlers(FileDiffViewerFragment fragment) {
-            mFragment = fragment;
-        }
-    }
 
     public static class FileDiffResponse {
         DiffInfo diff;
@@ -100,12 +94,66 @@ public class FileDiffViewerFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<Object> mActionObserver = new RxLoaderObserver<Object>() {
+        @Override
+        public void onNext(Object value) {
+            // Force refresh
+            mForceRefresh = true;
+            mLoader.restart();
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
+    private DiffView.OnCommentListener mCommentListener = new DiffView.OnCommentListener() {
+        @Override
+        public void onNewDraft(View v, boolean left, int line) {
+            final String baseRevision = mBase == null ? "0" : mBase;
+            String rev = left ? baseRevision : mRevision;
+            performDraftMessageDialog(v, null,
+                    newValue -> mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
+                            new String[]{rev, null, String.valueOf(line), newValue}));
+        }
+
+        @Override
+        public void onReply(View v, String revisionId, String commentId, int line) {
+            performDraftMessageDialog(v, null,
+                    newValue -> mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
+                        new String[]{revisionId, commentId, String.valueOf(line), newValue}));
+        }
+
+        @Override
+        public void onDone(View v, String revisionId, String commentId, int line) {
+            String msg = getString(R.string.draft_reply_done);
+            mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
+                    new String[]{revisionId, commentId, String.valueOf(line), msg});
+        }
+
+        @Override
+        public void onEditDraft(View v, String revisionId, String draftId,
+                String inReplyTo, int line, String msg) {
+            performDraftMessageDialog(v, msg,
+                    newValue -> mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
+                            new String[]{revisionId, draftId,
+                                    inReplyTo, String.valueOf(line), newValue}));
+        }
+
+        @Override
+        public void onDeleteDraft(View v, String revisionId, String draftId) {
+            mActionLoader.restart(ModelHelper.ACTION_DELETE_DRAFT,
+                    new String[]{revisionId, draftId});
+        }
+    };
+
     private FileDiffResponse mResponse;
     private FileDiffViewerFragmentBinding mBinding;
-    private EventHandlers mEventHandlers;
     private Handler mHandler;
 
     private RxLoader<FileDiffResponse> mLoader;
+    private RxLoader2<String, String[], Object> mActionLoader;
 
     private ChangeInfo mChange;
 
@@ -116,6 +164,8 @@ public class FileDiffViewerFragment extends Fragment {
     private String mRevision;
 
     private Account mAccount;
+
+    private boolean mForceRefresh;
 
     private int mMode;
     private boolean mWrap;
@@ -143,6 +193,9 @@ public class FileDiffViewerFragment extends Fragment {
                     .withDrafts(mResponse.draftComments)
                     .mode(mMode)
                     .wrap(mWrap)
+                    .listenOn(mCommentListener)
+                    .canEdit(mAccount.hasAuthenticatedAccessMode())
+                    .highlightTabs(false)
                     .update(),
             250L);
         }
@@ -186,8 +239,6 @@ public class FileDiffViewerFragment extends Fragment {
         }
 
         if (mLoader == null) {
-            mEventHandlers = new EventHandlers(this);
-
             mAccount = Preferences.getAccount(getContext());
 
             try {
@@ -205,6 +256,8 @@ public class FileDiffViewerFragment extends Fragment {
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mLoader = loaderManager.create(
                     "file-diff-" + hashCode(), fetchDiffs(), mObserver).start();
+            mActionLoader = loaderManager.create(
+                    "file-diff-action" + hashCode(), this::doAction, mActionObserver);
         }
     }
 
@@ -285,10 +338,17 @@ public class FileDiffViewerFragment extends Fragment {
     private FileDiffResponse combine(DiffInfo diff, Map<String, List<CommentInfo>> commentsA,
             Map<String, List<CommentInfo>> commentsB, Map<String, List<CommentInfo>> draftsA,
             Map<String, List<CommentInfo>> draftsB) {
+        int base = mBase == null ? 0 : Integer.parseInt(mBase);
+        int revision = Integer.parseInt(mRevision);
+
         FileDiffResponse response = new FileDiffResponse();
         response.diff = diff;
-        response.comments = new Pair<>(commentsA.get(mFile), commentsB.get(mFile));
-        response.draftComments = new Pair<>(draftsA.get(mFile), draftsB.get(mFile));
+        response.comments = new Pair<>(
+                setRevision(commentsA, base, base),
+                setRevision(commentsB, revision, base));
+        response.draftComments = new Pair<>(
+                setRevision(draftsA, base, base),
+                setRevision(draftsB, revision, base));
 
         // Cache the fetched data
         try {
@@ -314,7 +374,94 @@ public class FileDiffViewerFragment extends Fragment {
             Log.e(TAG, "Failed to load diff cached data", ex);
         }
 
+        mForceRefresh = false;
         return response;
+    }
+
+    private List<CommentInfo> setRevision(Map<String, List<CommentInfo>> comments,
+            int base, int parentBase) {
+        if (comments != null && comments.get(mFile) != null) {
+            for (CommentInfo comment : comments.get(mFile)) {
+                comment.patchSet = comment.side != null && comment.side.equals(SideType.PARENT)
+                        ? parentBase : base;
+            }
+            return comments.get(mFile);
+        }
+        return null;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Object> doAction(final String action, final String[] params) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                    switch (action) {
+                        case ModelHelper.ACTION_CREATE_DRAFT:
+                            return performCreateDraft(api,
+                                    params[0], params[1], Integer.parseInt(params[2]), params[3]);
+                        case ModelHelper.ACTION_UPDATE_DRAFT:
+                            return performUpdateDraft(api, params[0], params[1], params[2],
+                                    Integer.parseInt(params[3]), params[4]);
+                        case ModelHelper.ACTION_DELETE_DRAFT:
+                            performDeleteDraft(api, params[0], params[1]);
+                            break;
+                    }
+                    return Boolean.TRUE;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void performDraftMessageDialog(
+            View v, String comment, EditDialogFragment.OnEditChanged cb) {
+        EditDialogFragment fragment = EditDialogFragment.newInstance(
+                getString(R.string.draft_title), comment,
+                    getString(R.string.action_save), getString(R.string.draft_hint), false, v);
+        fragment.setOnEditChanged(cb);
+        fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
+    }
+
+    private CommentInfo performCreateDraft(GerritApi api, String revision,
+            String commentId, int line, String msg) {
+        int base = Integer.parseInt(revision);
+        SideType side = base == 0 ? SideType.PARENT : SideType.REVISION;
+        String rev = base == 0 ? mRevisionId : revision;
+
+        CommentInput input = new CommentInput();
+        if (!TextUtils.isEmpty(commentId)) {
+            input.inReplyTo = commentId;
+        }
+        input.message = msg;
+        input.line = line;
+        input.path = mFile;
+        input.side = side;
+        return api.createChangeRevisionDraft(
+                String.valueOf(mChange.legacyChangeId), rev, input).toBlocking().first();
+    }
+
+    private CommentInfo performUpdateDraft(GerritApi api, String revision,
+            String draftId, String inReplyTo, int line, String msg) {
+        int base = Integer.parseInt(revision);
+        SideType side = base == 0 ? SideType.PARENT : SideType.REVISION;
+        String rev = base == 0 ? mRevisionId : revision;
+
+        CommentInput input = new CommentInput();
+        input.id = draftId;
+        input.inReplyTo = inReplyTo;
+        input.message = msg;
+        input.line = line;
+        input.path = mFile;
+        input.side = side;
+        return api.updateChangeRevisionDraft(
+                String.valueOf(mChange.legacyChangeId), rev, draftId, input).toBlocking().first();
+    }
+
+    private void performDeleteDraft(GerritApi api, String revision, String draftId) {
+        int base = Integer.parseInt(revision);
+        String rev = base == 0 ? mRevisionId : revision;
+        api.deleteChangeRevisionDraft(
+                String.valueOf(mChange.legacyChangeId), rev, draftId)
+                    .toBlocking().first();
     }
 
     private void showProgress(boolean show) {
@@ -329,7 +476,7 @@ public class FileDiffViewerFragment extends Fragment {
     @SuppressWarnings("unchecked")
     private <T> Observable<T> withCached(Observable<T> call, Type type, String name) {
         try {
-            if (CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
+            if (!mForceRefresh && CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
                 T o = SerializationManager.getInstance().fromJson(
                         new String(CacheHelper.readAccountDiffCacheDir(
                                 getContext(), name)), type);

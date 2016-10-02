@@ -49,22 +49,26 @@ public class DiffViewerActivity extends BaseActivity {
 
         // Check we have valid arguments
         if (getIntent() == null) {
+            setResult(RESULT_CANCELED);
             finish();
             return;
         }
 
         String file = getIntent().getStringExtra(Constants.EXTRA_FILE);
         if (TextUtils.isEmpty(file)) {
+            setResult(RESULT_CANCELED);
             finish();
             return;
         }
         String revisionId = getIntent().getStringExtra(Constants.EXTRA_REVISION_ID);
         if (TextUtils.isEmpty(file)) {
+            setResult(RESULT_CANCELED);
             finish();
             return;
         }
         String data = getIntent().getStringExtra(Constants.EXTRA_DATA);
         if (TextUtils.isEmpty(data)) {
+            setResult(RESULT_CANCELED);
             finish();
             return;
         }
@@ -77,6 +81,7 @@ public class DiffViewerActivity extends BaseActivity {
                     CacheHelper.CACHE_CHANGE_JSON, data.getBytes());
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);
+            setResult(RESULT_CANCELED);
             finish();
             return;
         }
@@ -103,6 +108,9 @@ public class DiffViewerActivity extends BaseActivity {
         } else {
             createDiffViewFragment(revisionId, file);
         }
+
+        // All configured ok
+        setResult(RESULT_OK);
     }
 
     private void createDiffViewFragment(String revisionId, String file) {

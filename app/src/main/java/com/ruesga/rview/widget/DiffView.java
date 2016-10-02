@@ -31,6 +31,7 @@ import android.text.TextPaint;
 import android.text.style.BackgroundColorSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -61,6 +62,67 @@ public class DiffView extends FrameLayout {
     private static final int SOURCE_VIEW_TYPE = 0;
     private static final int SKIP_VIEW_TYPE = 1;
     private static final int COMMENT_VIEW_TYPE = 2;
+
+    @ProguardIgnored
+    @SuppressWarnings({"UnusedParameters", "unused"})
+    public static class EventHandlers {
+        private final DiffView mView;
+
+        public EventHandlers(DiffView view) {
+            mView = view;
+        }
+
+        public void onNewDraftPressed(View v) {
+            if (mView.mCanEdit && mView.mOnCommentListener != null) {
+                String[] s = ((String) v.getTag()).split("/");
+                mView.mOnCommentListener.onNewDraft(
+                        v, Boolean.parseBoolean(s[0]), Integer.valueOf(s[1]));
+            }
+        }
+
+        public void onReplyPressed(View v) {
+            if (mView.mOnCommentListener != null) {
+                String[] s = ((String) v.getTag()).split("/");
+                mView.mOnCommentListener.onReply(v, s[0], s[1], Integer.valueOf(s[2]));
+            }
+        }
+
+        public void onDonePressed(View v) {
+            if (mView.mOnCommentListener != null) {
+                String[] s = ((String) v.getTag()).split("/");
+                mView.mOnCommentListener.onDone(v, s[0], s[1], Integer.valueOf(s[2]));
+            }
+        }
+
+        public void onEditPressed(View v) {
+            if (mView.mOnCommentListener != null) {
+                String[] s = ((String) v.getTag()).split("/");
+                String msg = (String) v.getTag(R.id.tag_key);
+                mView.mOnCommentListener.onEditDraft(
+                        v, s[0], s[1], s[2], Integer.valueOf(s[3]), msg);
+            }
+        }
+
+        public void onDeletePressed(View v) {
+            if (mView.mOnCommentListener != null) {
+                String[] s = ((String) v.getTag()).split("/");
+                mView.mOnCommentListener.onDeleteDraft(v, s[0], s[1]);
+            }
+        }
+    }
+
+    public interface OnCommentListener {
+        void onNewDraft(View v, boolean left, int line);
+
+        void onReply(View v, String revisionId, String commentId, int line);
+
+        void onDone(View v, String revisionId, String commentId, int line);
+
+        void onEditDraft(View v, String revisionId, String draftId,
+                String inReplyTo, int line, String msg);
+
+        void onDeleteDraft(View v, String revisionId, String draftId);
+    }
 
     private static class DiffSourceViewHolder extends RecyclerView.ViewHolder {
         private DiffSourceItemBinding mBinding;
@@ -189,6 +251,9 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setMode(mMode);
                 holder.mBinding.setModel(diff);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
+                if (mCanEdit) {
+                    holder.mBinding.setHandlers(mEventHandlers);
+                }
 
             } else if (vh instanceof DiffSkipViewHolder) {
                 DiffSkipViewHolder holder = ((DiffSkipViewHolder) vh);
@@ -201,10 +266,18 @@ public class DiffView extends FrameLayout {
             } else if (vh instanceof DiffCommentViewHolder) {
                 DiffCommentViewHolder holder = ((DiffCommentViewHolder) vh);
                 CommentModel comment = (CommentModel) model;
+                holder.mBinding.setCanEdit(mCanEdit);
                 holder.mBinding.setWrap(isWrapMode());
                 holder.mBinding.setMode(mMode);
                 holder.mBinding.setModel(comment);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
+                holder.mBinding.setHandlers(mEventHandlers);
+                if (comment.commentA != null) {
+                    holder.mBinding.actionsA.edit.setTag(R.id.tag_key, comment.commentA.message);
+                }
+                if (comment.commentB != null) {
+                    holder.mBinding.actionsB.edit.setTag(R.id.tag_key, comment.commentB.message);
+                }
             }
         }
 
@@ -303,7 +376,6 @@ public class DiffView extends FrameLayout {
                     }
                 }
             }
-            long end = System.currentTimeMillis();
         }
     }
 
@@ -735,10 +807,15 @@ public class DiffView extends FrameLayout {
     private LayoutManager mLayoutManager;
     private LayoutManager mTmpLayoutManager;
 
+    private boolean mHighlightTabs;
+    private boolean mCanEdit;
     private int mDiffMode = UNIFIED_MODE;
     private DiffContentInfo[] mAllDiffs;
     private Pair<List<CommentInfo>, List<CommentInfo>> mComments;
     private Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
+    private OnCommentListener mOnCommentListener;
+
+    private EventHandlers mEventHandlers;
 
     private AsyncDiffProcessor mTask;
 
@@ -752,6 +829,7 @@ public class DiffView extends FrameLayout {
 
     public DiffView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mEventHandlers = new EventHandlers(this);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                 MATCH_PARENT, MATCH_PARENT);
         mRecyclerView = new RecyclerView(context);
@@ -782,8 +860,12 @@ public class DiffView extends FrameLayout {
     @Override
     protected Parcelable onSaveInstanceState() {
         SavedState savedState = new SavedState(super.onSaveInstanceState());
+        savedState.mHighlightTabs = mHighlightTabs;
+        savedState.mCanEdit = mCanEdit;
         savedState.mDiffMode = mDiffMode;
         savedState.mAllDiffs = SerializationManager.getInstance().toJson(mAllDiffs);
+        savedState.mComments = SerializationManager.getInstance().toJson(mComments);
+        savedState.mDrafts = SerializationManager.getInstance().toJson(mDrafts);
         return savedState;
     }
 
@@ -798,9 +880,14 @@ public class DiffView extends FrameLayout {
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
 
+        mHighlightTabs = savedState.mHighlightTabs;
+        mCanEdit = savedState.mCanEdit;
         mDiffMode = savedState.mDiffMode;
         Type type = new TypeToken<DiffContentInfo[]>(){}.getType();
         mAllDiffs = SerializationManager.getInstance().fromJson(savedState.mAllDiffs, type);
+        type = new TypeToken<Pair<List<CommentInfo>, List<CommentInfo>>>(){}.getType();
+        mComments = SerializationManager.getInstance().fromJson(savedState.mComments, type);
+        mDrafts = SerializationManager.getInstance().fromJson(savedState.mDrafts, type);
     }
 
     public DiffView from(DiffContentInfo[] allDiffs) {
@@ -818,6 +905,16 @@ public class DiffView extends FrameLayout {
         return this;
     }
 
+    public DiffView canEdit(boolean canEdit) {
+        mCanEdit = canEdit;
+        return this;
+    }
+
+    public DiffView highlightTabs(boolean highlightTabs) {
+        mHighlightTabs = highlightTabs;
+        return this;
+    }
+
     public DiffView wrap(boolean wrap) {
         mTmpLayoutManager = wrap
                 ? new LinearLayoutManager(getContext())
@@ -827,6 +924,11 @@ public class DiffView extends FrameLayout {
 
     public DiffView mode(int mode) {
         mDiffMode = mode;
+        return this;
+    }
+
+    public DiffView listenOn(OnCommentListener cb) {
+        mOnCommentListener = cb;
         return this;
     }
 
@@ -845,8 +947,12 @@ public class DiffView extends FrameLayout {
 
 
     static class SavedState extends BaseSavedState {
+        boolean mHighlightTabs;
+        boolean mCanEdit;
         int mDiffMode;
         String mAllDiffs;
+        String mComments;
+        String mDrafts;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -854,15 +960,23 @@ public class DiffView extends FrameLayout {
 
         private SavedState(Parcel in) {
             super(in);
-            this.mDiffMode = in.readInt();
-            this.mAllDiffs = in.readString();
+            mHighlightTabs = in.readInt() == 1;
+            mCanEdit = in.readInt() == 1;
+            mDiffMode = in.readInt();
+            mAllDiffs = in.readString();
+            mComments = in.readString();
+            mDrafts = in.readString();
         }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeInt(this.mDiffMode);
-            out.writeString(this.mAllDiffs);
+            out.writeInt(mHighlightTabs ? 1 : 0);
+            out.writeInt(mCanEdit ? 1 : 0);
+            out.writeInt(mDiffMode);
+            out.writeString(mAllDiffs);
+            out.writeString(mComments);
+            out.writeString(mDrafts);
         }
 
         //required field that makes Parcelables from a Parcel

@@ -15,7 +15,9 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -132,6 +134,8 @@ public class ChangeDetailsFragment extends Fragment {
     private static final List<ChangeOptions> ACTIONS_OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.CHANGE_ACTIONS);
     }};
+
+    private static final int DIFF_REQUEST_CODE = 99;
 
     @ProguardIgnored
     public static class ListModel {
@@ -577,6 +581,23 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<Map<String, Integer>> mDraftsRefreshObserver
+            = new RxLoaderObserver<Map<String, Integer>>() {
+        @Override
+        public void onNext(Map<String, Integer> drafts) {
+            mResponse.mDraftComments = drafts;
+
+            Map<String, FileInfo> files = mResponse.mChange.revisions.get(mCurrentRevision).files;
+            mModel.filesListModel.visible = files != null && !files.isEmpty();
+            mFileAdapter.update(files, mResponse.mInlineComments, mResponse.mDraftComments);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
     private final RxLoaderObserver<Map<String, ActionInfo>> mActionsRefreshObserver
             = new RxLoaderObserver<Map<String, ActionInfo>>() {
         @Override
@@ -708,6 +729,7 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
     private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
+    private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
     private RxLoader<Map<String, ActionInfo>> mActionsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
     private int mLegacyChangeId;
@@ -746,6 +768,14 @@ public class ChangeDetailsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         startLoadersWithValidContext();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DIFF_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // Refresh comments
+            performDraftsRefresh();
+        }
     }
 
     private void startLoadersWithValidContext() {
@@ -803,6 +833,8 @@ public class ChangeDetailsFragment extends Fragment {
                     "actions_refresh", fetchActions(), mActionsRefreshObserver);
             mActionLoader = loaderManager.create(
                     "action", this::doAction, mActionObserver);
+            mDraftsRefreshLoader = loaderManager.create(
+                    "drafts_refresh", fetchDrafts(), mDraftsRefreshObserver);
         }
     }
 
@@ -1003,6 +1035,31 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
+    private Observable<Map<String, Integer>> fetchDrafts() {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                    // Do no fetch drafts if the account is not authenticated
+                    if (mAccount.hasAuthenticatedAccessMode()) {
+                        Map<String, List<CommentInfo>> drafts =
+                                api.getChangeRevisionDrafts(
+                                    String.valueOf(mLegacyChangeId), mCurrentRevision)
+                                        .toBlocking().first();
+                        Map<String, Integer> draftComments = new HashMap<>();
+                        if (drafts != null) {
+                            for (String file : drafts.keySet()) {
+                                draftComments.put(file, drafts.get(file).size());
+                            }
+                        }
+                        return draftComments;
+                    }
+                    return new HashMap<String, Integer>();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private Observable<Map<String, ActionInfo>> fetchActions() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -1084,7 +1141,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     private DataResponse combineResponse(DataResponse response, SubmitType submitType,
                 Map<String, ActionInfo> actions, Map<String, List<CommentInfo>> revisionComments,
-                Map<String, List<CommentInfo>> revisonDraftComments) {
+                Map<String, List<CommentInfo>> revisionDraftComments) {
         // Map inline and draft comments
         Map<String, Integer> inlineComments = new HashMap<>();
         if (revisionComments != null) {
@@ -1093,9 +1150,9 @@ public class ChangeDetailsFragment extends Fragment {
             }
         }
         Map<String, Integer> draftComments = new HashMap<>();
-        if (revisonDraftComments != null) {
-            for (String file : revisonDraftComments.keySet()) {
-                draftComments.put(file, revisonDraftComments.get(file).size());
+        if (revisionDraftComments != null) {
+            for (String file : revisionDraftComments.keySet()) {
+                draftComments.put(file, revisionDraftComments.get(file).size());
             }
         }
 
@@ -1115,7 +1172,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performOpenFileDiff(String file) {
         ActivityHelper.openDiffViewerActivity(
-                getContext(), mResponse.mChange, mCurrentRevision, file);
+                this, mResponse.mChange, mCurrentRevision, file, DIFF_REQUEST_CODE);
     }
 
     private void sortRevisions(ChangeInfo change) {
@@ -1189,6 +1246,12 @@ public class ChangeDetailsFragment extends Fragment {
     private void performMessagesRefresh() {
         if (!mModel.isLocked) {
             mMessagesRefreshLoader.restart();
+        }
+    }
+
+    private void performDraftsRefresh() {
+        if (!mModel.isLocked) {
+            mDraftsRefreshLoader.restart();
         }
     }
 

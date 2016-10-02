@@ -26,6 +26,7 @@
         <variable name="mode" type="java.lang.Integer" />
         <variable name="model" type="com.ruesga.rview.widget.DiffView.DiffInfoModel" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
+        <variable name="handlers" type="com.ruesga.rview.widget.DiffView.EventHandlers" />
     </data>
 
     <LinearLayout
@@ -44,6 +45,8 @@
             android:background="@color/diffLineBackgroundColor"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorPrimaryDark"
+            android:tag='@{"true/" + model.lineNumberA}'
+            android:onClick="@{handlers::onNewDraftPressed}"
             android:textSize="12sp"
             android:gravity="end"
             android:textStyle="bold"
@@ -62,6 +65,8 @@
             android:background="@color/diffLineBackgroundColor"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorPrimaryDark"
+            android:tag='@{"false/" + model.lineNumberB}'
+            android:onClick="@{handlers::onNewDraftPressed}"
             android:textSize="12sp"
             android:gravity="end"
             android:textStyle="bold"
@@ -118,6 +123,8 @@
             android:background="@color/diffLineBackgroundColor"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorPrimaryDark"
+            android:tag='@{"false/" + model.lineNumberB}'
+            android:onClick="@{handlers::onNewDraftPressed}"
             android:textSize="12sp"
             android:gravity="end"
             android:textStyle="bold"

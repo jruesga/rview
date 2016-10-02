@@ -22,10 +22,12 @@
         <import type="android.view.View" />
         <import type="android.view.ViewGroup.LayoutParams" />
         <import type="com.ruesga.rview.widget.DiffView" />
+        <variable name="canEdit" type="java.lang.Boolean" />
         <variable name="wrap" type="java.lang.Boolean" />
         <variable name="mode" type="java.lang.Integer" />
         <variable name="model" type="com.ruesga.rview.widget.DiffView.CommentModel" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
+        <variable name="handlers" type="com.ruesga.rview.widget.DiffView.EventHandlers" />
     </data>
 
     <LinearLayout
@@ -111,7 +113,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="3dp"
-                        android:paddingBottom="3dp">
+                        android:paddingBottom="3dp"
+                        android:orientation="horizontal">
 
                         <com.ruesga.rview.widget.StyleableTextView
                             android:layout_width="wrap_content"
@@ -138,6 +141,19 @@
                             android:textIsSelectable="true"
                             app:prettyDateTime="@{model.commentA.updated}"
                             android:gravity="center_vertical"/>
+
+                        <android.support.v4.widget.Space
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1"/>
+
+                        <include
+                            android:id="@+id/actionsA"
+                            layout="@layout/diff_comment_item_actions"
+                            app:canEdit="@{canEdit}"
+                            app:isDraft="@{model.isDraft}"
+                            app:model="@{model.commentA}"
+                            app:handlers="@{handlers}"/>
                     </LinearLayout>
 
                     <com.ruesga.rview.widget.StyleableTextView
@@ -242,6 +258,14 @@
                             android:textIsSelectable="true"
                             app:prettyDateTime="@{model.commentB.updated}"
                             android:gravity="center_vertical"/>
+
+                        <include
+                            android:id="@+id/actionsB"
+                            layout="@layout/diff_comment_item_actions"
+                            app:canEdit="@{canEdit}"
+                            app:isDraft="@{model.isDraft}"
+                            app:model="@{model.commentB}"
+                            app:handlers="@{handlers}" />
                     </LinearLayout>
 
                     <com.ruesga.rview.widget.StyleableTextView

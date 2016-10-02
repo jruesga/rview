@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
@@ -145,13 +146,13 @@ public class ActivityHelper {
         context.startActivity(intent);
     }
 
-    public static void openDiffViewerActivity(
-            Context context, ChangeInfo change, String revisionId, String file) {
-        Intent intent = new Intent(context, DiffViewerActivity.class);
+    public static void openDiffViewerActivity(Fragment fragment, ChangeInfo change,
+            String revisionId, String file, int requestCode) {
+        Intent intent = new Intent(fragment.getContext(), DiffViewerActivity.class);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_FILE, file);
         intent.putExtra(Constants.EXTRA_DATA, SerializationManager.getInstance().toJson(change));
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
-        context.startActivity(intent);
+        fragment.startActivityForResult(intent, requestCode);
     }
 }

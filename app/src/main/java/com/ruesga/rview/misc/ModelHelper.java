@@ -54,6 +54,10 @@ public class ModelHelper {
     public static final String ACTION_DELETE_CHANGE = "/";
     public static final String ACTION_SUBMIT = "submit";
 
+    public static final String ACTION_CREATE_DRAFT = "create_draft";
+    public static final String ACTION_UPDATE_DRAFT = "update_draft";
+    public static final String ACTION_DELETE_DRAFT = "delete_draft";
+
     public static GerritApi getGerritApi(Context applicationContext) {
         Account account = Preferences.getAccount(applicationContext);
         if (account == null) {
@@ -291,7 +295,7 @@ public class ModelHelper {
             boolean hasApproval = false;
             if (labelInfo.all != null) {
                 for (ApprovalInfo approval : labelInfo.all) {
-                    if (approval.value == approvalValue) {
+                    if (approval.value != null && approval.value == approvalValue) {
                         hasApproval = true;
                         break;
                     }

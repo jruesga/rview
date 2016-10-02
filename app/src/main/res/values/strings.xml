@@ -28,6 +28,7 @@
     <string name="action_share">Share</string>
     <string name="action_add">Add</string>
     <string name="action_change">Change</string>
+    <string name="action_save">Save</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -234,6 +235,11 @@
     <!-- Change topic dialog -->
     <string name="change_topic_title">Change topic</string>
     <string name="change_topic_hint">Topic name</string>
+
+    <!-- Drafts -->
+    <string name="draft_title">Draft</string>
+    <string name="draft_hint">Draft comment</string>
+    <string name="draft_reply_done" translatable="false">Done</string>
 
     <!-- Diff options -->
     <string name="options_base">Base</string>
