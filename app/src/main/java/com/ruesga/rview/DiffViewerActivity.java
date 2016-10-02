@@ -102,8 +102,6 @@ public class DiffViewerActivity extends BaseActivity {
                 FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
                 tx.replace(R.id.content, fragment, FRAGMENT_TAG);
                 tx.commit();
-            } else {
-                createDiffViewFragment(revisionId, file);
             }
         } else {
             createDiffViewFragment(revisionId, file);
