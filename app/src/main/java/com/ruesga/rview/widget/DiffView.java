@@ -522,7 +522,27 @@ public class DiffView extends FrameLayout {
                                 }
                                 m.lineA = span;
                             } else {
-                                m.lineA = line;
+                                // No intraline data, but it still could differ at start or at end
+                                if (diff.a != null && diff.b != null
+                                        && diff.a.length == 1 && diff.b.length == 1) {
+                                    Spannable span = spannableFactory.newSpannable(line);
+                                    int z = diff.a[0].indexOf(diff.b[0]);
+                                    if (z != -1) {
+                                        if (z > 0) {
+                                            span.setSpan(new BackgroundColorSpan(deletedFgColor),
+                                                    0, z, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                        if (z + diff.b[0].length() < diff.a[0].length()) {
+                                            z = z + diff.b[0].length();
+                                            span.setSpan(new BackgroundColorSpan(deletedFgColor),
+                                                    z, diff.a[0].length(),
+                                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                    }
+                                    m.lineA = span;
+                                } else {
+                                    m.lineA = line;
+                                }
                             }
                             m.colorA = deletedBgColor;
                             posA += line.length() + 1;
@@ -547,7 +567,27 @@ public class DiffView extends FrameLayout {
                                 }
                                 m.lineB = span;
                             } else {
-                                m.lineB = line;
+                                // No intraline data, but it still could differ at start or at end
+                                if (diff.a != null && diff.b != null
+                                        && diff.a.length == 1 && diff.b.length == 1) {
+                                    Spannable span = spannableFactory.newSpannable(line);
+                                    int z = diff.b[0].indexOf(diff.a[0]);
+                                    if (z != -1) {
+                                        if (z > 0) {
+                                            span.setSpan(new BackgroundColorSpan(addedFgColor),
+                                                    0, z, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                        if (z + diff.a[0].length() < diff.b[0].length()) {
+                                            z = z + diff.a[0].length();
+                                            span.setSpan(new BackgroundColorSpan(addedFgColor),
+                                                    z, diff.b[0].length(),
+                                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                    }
+                                    m.lineB = span;
+                                } else {
+                                    m.lineB = line;
+                                }
                             }
                             m.colorB = addedBgColor;
                             posB += line.length() + 1;
@@ -647,7 +687,27 @@ public class DiffView extends FrameLayout {
                                 }
                                 m.lineA = span;
                             } else {
-                                m.lineA = line;
+                                // No intraline data, but it still could differ at start or at end
+                                if (diff.a != null && diff.b != null
+                                        && diff.a.length == 1 && diff.b.length == 1) {
+                                    Spannable span = spannableFactory.newSpannable(line);
+                                    int z = diff.a[0].indexOf(diff.b[0]);
+                                    if (z != -1) {
+                                        if (z > 0) {
+                                            span.setSpan(new BackgroundColorSpan(deletedFgColor),
+                                                    0, z, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                        if (z + diff.b[0].length() < diff.a[0].length()) {
+                                            z = z + diff.b[0].length();
+                                            span.setSpan(new BackgroundColorSpan(deletedFgColor),
+                                                    z, diff.a[0].length(),
+                                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                    }
+                                    m.lineA = span;
+                                } else {
+                                    m.lineA = line;
+                                }
                             }
                             m.colorA = deletedBgColor;
                             m.colorB = noColor;
@@ -677,7 +737,27 @@ public class DiffView extends FrameLayout {
                                 }
                                 m.lineB = span;
                             } else {
-                                m.lineB = line;
+                                // No intraline data, but it still could differ at start or at end
+                                if (diff.a != null && diff.b != null
+                                        && diff.a.length == 1 && diff.b.length == 1) {
+                                    Spannable span = spannableFactory.newSpannable(line);
+                                    int z = diff.b[0].indexOf(diff.a[0]);
+                                    if (z != -1) {
+                                        if (z > 0) {
+                                            span.setSpan(new BackgroundColorSpan(addedFgColor),
+                                                    0, z, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                        if (z + diff.a[0].length() < diff.b[0].length()) {
+                                            z = z + diff.a[0].length();
+                                            span.setSpan(new BackgroundColorSpan(addedFgColor),
+                                                    z, diff.b[0].length(),
+                                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                        }
+                                    }
+                                    m.lineB = span;
+                                } else {
+                                    m.lineB = line;
+                                }
                             }
                             m.colorA = addedBgColor;
                             m.colorB = noColor;
