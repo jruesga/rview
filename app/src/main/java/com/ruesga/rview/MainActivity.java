@@ -208,12 +208,12 @@ public class MainActivity extends ChangeListBaseActivity {
             } else {
                 // Navigate to current item
                 requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
-                        ? defaultMenu : mModel.currentNavigationItemId);
+                        ? defaultMenu : mModel.currentNavigationItemId, true);
             }
         } else {
             // Navigate to current item
             requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
-                    ? defaultMenu : mModel.currentNavigationItemId);
+                    ? defaultMenu : mModel.currentNavigationItemId, true);
         }
     }
 
@@ -319,7 +319,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
         // Listen for click events and select the current one
         mBinding.drawerNavigationView.setNavigationItemSelectedListener(item -> {
-            requestNavigateTo(item.getItemId());
+            requestNavigateTo(item.getItemId(), false);
             return true;
         });
 
@@ -362,9 +362,9 @@ public class MainActivity extends ChangeListBaseActivity {
         return false;
     }
 
-    private void requestNavigateTo(int itemId) {
+    private void requestNavigateTo(int itemId, boolean force) {
         // Select the item
-        final boolean navigate = performSelectItem(itemId, false);
+        final boolean navigate = performSelectItem(itemId, force);
 
         // Close the drawer
         if (mBinding.drawerLayout != null) {
@@ -483,7 +483,7 @@ public class MainActivity extends ChangeListBaseActivity {
         performShowAccount(false);
 
         // And navigate to the default menu
-        requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount));
+        requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount), true);
     }
 
     private void requestAccountDeletion() {
