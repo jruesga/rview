@@ -408,13 +408,14 @@ public class DiffView extends FrameLayout {
 
         @Override
         protected void onPostExecute(List<AbstractModel> model) {
-            if (!mLayoutManager.equals(mTmpLayoutManager)) {
+            if (mNeedsNewLayoutManager || !mLayoutManager.equals(mTmpLayoutManager)) {
                 mDiffAdapter = new DiffAdapter(mDiffMode);
                 if (mTmpLayoutManager != null) {
                     mLayoutManager = mTmpLayoutManager;
                 }
                 mRecyclerView.setLayoutManager(mLayoutManager);
                 mRecyclerView.setAdapter(mDiffAdapter);
+                mNeedsNewLayoutManager = false;
             }
             mDiffAdapter.update(model);
         }
@@ -881,6 +882,8 @@ public class DiffView extends FrameLayout {
     private Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
     private OnCommentListener mOnCommentListener;
 
+    private boolean mNeedsNewLayoutManager;
+
     private EventHandlers mEventHandlers;
 
     private AsyncDiffProcessor mTask;
@@ -994,7 +997,10 @@ public class DiffView extends FrameLayout {
     }
 
     public DiffView mode(int mode) {
-        mDiffMode = mode;
+        if (mDiffMode != mode) {
+            mDiffMode = mode;
+            mNeedsNewLayoutManager = true;
+        }
         return this;
     }
 
