@@ -261,6 +261,7 @@ public class FileDiffViewerFragment extends Fragment {
             }
 
             // Fetch or join current loader
+            mForceRefresh = false;
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mLoader = loaderManager.create(
                     "file-diff-" + hashCode(), fetchDiffs(), mObserver).start();
@@ -382,7 +383,6 @@ public class FileDiffViewerFragment extends Fragment {
             Log.e(TAG, "Failed to load diff cached data", ex);
         }
 
-        mForceRefresh = false;
         return response;
     }
 

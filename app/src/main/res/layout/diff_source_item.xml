@@ -115,6 +115,12 @@
                 android:gravity="center_vertical"/>
         </LinearLayout>
 
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
+            android:background="?android:attr/listDivider"/>
+
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="0dp"
             app:bindLayoutWidth="@{measurement.lineNumBWidth}"

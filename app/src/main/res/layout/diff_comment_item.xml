@@ -130,25 +130,23 @@
                             android:gravity="center_vertical"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?android:attr/textColorSecondary"
                             android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
                             android:textSize="12sp"
-                            android:ellipsize="none"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:textIsSelectable="true"
                             app:prettyDateTime="@{model.commentA.updated}"
                             android:gravity="center_vertical"/>
 
-                        <android.support.v4.widget.Space
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            android:layout_weight="1"/>
-
                         <include
                             android:id="@+id/actionsA"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             layout="@layout/diff_comment_item_actions"
                             app:canEdit="@{canEdit}"
                             app:isDraft="@{model.isDraft}"
@@ -171,6 +169,12 @@
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
+            android:background="?android:attr/listDivider"/>
 
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="0dp"
@@ -231,7 +235,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingTop="3dp"
-                        android:paddingBottom="3dp">
+                        android:paddingBottom="3dp"
+                        android:orientation="horizontal">
 
                         <com.ruesga.rview.widget.StyleableTextView
                             android:layout_width="wrap_content"
@@ -247,20 +252,24 @@
                             android:gravity="center_vertical"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?android:attr/textColorSecondary"
                             android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
                             android:textSize="12sp"
-                            android:ellipsize="none"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:textIsSelectable="true"
                             app:prettyDateTime="@{model.commentB.updated}"
                             android:gravity="center_vertical"/>
 
                         <include
                             android:id="@+id/actionsB"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             layout="@layout/diff_comment_item_actions"
                             app:canEdit="@{canEdit}"
                             app:isDraft="@{model.isDraft}"

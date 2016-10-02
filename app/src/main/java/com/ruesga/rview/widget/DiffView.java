@@ -372,7 +372,7 @@ public class DiffView extends FrameLayout {
                 mDiffViewMeasurement.width =
                         mDiffViewMeasurement.lineNumAWidth + mDiffViewMeasurement.lineNumBWidth +
                         mDiffViewMeasurement.lineAWidth + mDiffViewMeasurement.lineBWidth +
-                        diffIndicatorWidth + (dp * 2);
+                        diffIndicatorWidth + (dp * 3);
 
                 if (mDiffViewMeasurement.width < getWidth()) {
                     mDiffViewMeasurement.width = getWidth();
@@ -380,7 +380,7 @@ public class DiffView extends FrameLayout {
                         mDiffViewMeasurement.lineAWidth = getWidth() -
                                 mDiffViewMeasurement.lineNumAWidth -
                                 mDiffViewMeasurement.lineNumBWidth -
-                                diffIndicatorWidth - (dp * 2);
+                                diffIndicatorWidth - (dp * 3);
                     }
                 }
             }
@@ -418,6 +418,7 @@ public class DiffView extends FrameLayout {
                 mNeedsNewLayoutManager = false;
             }
             mDiffAdapter.update(model);
+            mTmpLayoutManager = null;
         }
 
         private List<AbstractModel> processDiffs() {
