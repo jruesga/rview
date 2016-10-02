@@ -369,8 +369,9 @@ public class DiffViewerFragment extends Fragment {
         final List<String> revisions = new ArrayList<>(mAllRevisions);
         String value;
         if (v.getId() == R.id.baseLeft) {
-            value = mBase == null ? getString(R.string.options_base) : mBase;
-            revisions.add(0, value);
+            String baseText = getString(R.string.options_base);
+            value = mBase == null ? baseText : mBase;
+            revisions.add(0, baseText);
         } else {
             value = String.valueOf(mChange.revisions.get(mRevisionId).number);
         }
