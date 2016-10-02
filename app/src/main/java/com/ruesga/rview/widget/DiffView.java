@@ -27,6 +27,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.BackgroundColorSpan;
@@ -48,6 +49,7 @@ import com.ruesga.rview.databinding.DiffSourceItemBinding;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.misc.StringHelper;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -485,8 +487,8 @@ public class DiffView extends FrameLayout {
                         DiffInfoModel m = new DiffInfoModel();
                         m.lineNumberA = String.valueOf(++lineNumberA);
                         m.lineNumberB = String.valueOf(++lineNumberB);
-                        m.lineA = line;
-                        m.lineB = line;
+                        m.lineA = prepareTabs(line);
+                        m.lineB = prepareTabs(line);
                         m.colorA = noColor;
                         m.colorB = noColor;
                         processHighlights(m);
@@ -507,7 +509,7 @@ public class DiffView extends FrameLayout {
                             String line = diff.a[i];
                             m.lineNumberA = String.valueOf(++lineNumberA);
                             if (diff.editA != null) {
-                                Spannable span = spannableFactory.newSpannable(line);
+                                Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                                 int s2 = 0;
                                 for (ArrayList<Integer> intra : diff.editA) {
                                     int s1 = s2 + intra.get(0);
@@ -525,7 +527,7 @@ public class DiffView extends FrameLayout {
                                 // No intraline data, but it still could differ at start or at end
                                 if (diff.a != null && diff.b != null
                                         && diff.a.length == 1 && diff.b.length == 1) {
-                                    Spannable span = spannableFactory.newSpannable(line);
+                                    Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                                     int z = diff.a[0].indexOf(diff.b[0]);
                                     if (z != -1) {
                                         if (z > 0) {
@@ -541,7 +543,7 @@ public class DiffView extends FrameLayout {
                                     }
                                     m.lineA = span;
                                 } else {
-                                    m.lineA = line;
+                                    m.lineA = prepareTabs(line);
                                 }
                             }
                             m.colorA = deletedBgColor;
@@ -552,7 +554,7 @@ public class DiffView extends FrameLayout {
                             String line = diff.b[i];
                             m.lineNumberB = String.valueOf(++lineNumberB);
                             if (diff.editB != null) {
-                                Spannable span = spannableFactory.newSpannable(line);
+                                Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                                 int s2 = 0;
                                 for (ArrayList<Integer> intra : diff.editB) {
                                     int s1 = s2 + intra.get(0);
@@ -570,7 +572,7 @@ public class DiffView extends FrameLayout {
                                 // No intraline data, but it still could differ at start or at end
                                 if (diff.a != null && diff.b != null
                                         && diff.a.length == 1 && diff.b.length == 1) {
-                                    Spannable span = spannableFactory.newSpannable(line);
+                                    Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                                     int z = diff.b[0].indexOf(diff.a[0]);
                                     if (z != -1) {
                                         if (z > 0) {
@@ -586,7 +588,7 @@ public class DiffView extends FrameLayout {
                                     }
                                     m.lineB = span;
                                 } else {
-                                    m.lineB = line;
+                                    m.lineB = prepareTabs(line);
                                 }
                             }
                             m.colorB = addedBgColor;
@@ -658,8 +660,8 @@ public class DiffView extends FrameLayout {
                         DiffInfoModel m = new DiffInfoModel();
                         m.lineNumberA = String.valueOf(++lineNumberA);
                         m.lineNumberB = String.valueOf(++lineNumberB);
-                        m.lineA = line;
-                        m.lineB = line;
+                        m.lineA = prepareTabs(line);
+                        m.lineB = prepareTabs(line);
                         m.colorA = noColor;
                         m.colorB = noColor;
                         processHighlights(m);
@@ -672,7 +674,7 @@ public class DiffView extends FrameLayout {
                             DiffInfoModel m = new DiffInfoModel();
                             m.lineNumberA = String.valueOf(++lineNumberA);
                             if (diff.editA != null) {
-                                Spannable span = spannableFactory.newSpannable(line);
+                                Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                                 int s2 = 0;
                                 for (ArrayList<Integer> intra : diff.editA) {
                                     int s1 = s2 + intra.get(0);
@@ -690,7 +692,7 @@ public class DiffView extends FrameLayout {
                                 // No intraline data, but it still could differ at start or at end
                                 if (diff.a != null && diff.b != null
                                         && diff.a.length == 1 && diff.b.length == 1) {
-                                    Spannable span = spannableFactory.newSpannable(line);
+                                    Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                                     int z = diff.a[0].indexOf(diff.b[0]);
                                     if (z != -1) {
                                         if (z > 0) {
@@ -706,7 +708,7 @@ public class DiffView extends FrameLayout {
                                     }
                                     m.lineA = span;
                                 } else {
-                                    m.lineA = line;
+                                    m.lineA = prepareTabs(line);
                                 }
                             }
                             m.colorA = deletedBgColor;
@@ -722,7 +724,7 @@ public class DiffView extends FrameLayout {
                             DiffInfoModel m = new DiffInfoModel();
                             m.lineNumberB = String.valueOf(++lineNumberB);
                             if (diff.editB != null) {
-                                Spannable span = spannableFactory.newSpannable(line);
+                                Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                                 int s2 = 0;
                                 for (ArrayList<Integer> intra : diff.editB) {
                                     int s1 = s2 + intra.get(0);
@@ -740,7 +742,7 @@ public class DiffView extends FrameLayout {
                                 // No intraline data, but it still could differ at start or at end
                                 if (diff.a != null && diff.b != null
                                         && diff.a.length == 1 && diff.b.length == 1) {
-                                    Spannable span = spannableFactory.newSpannable(line);
+                                    Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                                     int z = diff.b[0].indexOf(diff.a[0]);
                                     if (z != -1) {
                                         if (z > 0) {
@@ -756,7 +758,7 @@ public class DiffView extends FrameLayout {
                                     }
                                     m.lineB = span;
                                 } else {
-                                    m.lineB = line;
+                                    m.lineB = prepareTabs(line);
                                 }
                             }
                             m.colorA = addedBgColor;
@@ -782,23 +784,23 @@ public class DiffView extends FrameLayout {
         }
 
         private CharSequence processHighlightTabs(CharSequence text) {
-            if (!mHighlightTabs || !text.toString().contains("\t")) {
+            if (!mHighlightTabs || !text.toString().contains("\u0001")) {
                 return text;
             }
 
             int color = ContextCompat.getColor(getContext(), R.color.diffHighlightColor);
-            final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
-            String line = text.toString().replaceAll("\t", "\u00BB   ");
-            Spannable span = spannableFactory.newSpannable(line);
-            int index = 0;
-            while ((index = line.indexOf("\u00BB", index)) != -1) {
-                span.setSpan(new ForegroundColorSpan(color),
+            SpannableStringBuilder ssb = new SpannableStringBuilder(text);
+            String line = text.toString();
+            int index = line.length();
+            while ((index = line.lastIndexOf(StringHelper.NON_PRINTABLE_CHAR, index)) != -1) {
+                ssb.replace(index, index + 1, "\u00BB    ");
+                ssb.setSpan(new ForegroundColorSpan(color),
                         index, index + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                span.setSpan(new StyleSpan(Typeface.BOLD),
+                ssb.setSpan(new StyleSpan(Typeface.BOLD),
                         index, index + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                index++;
+                index--;
             }
-            return span;
+            return ssb;
         }
 
         private CharSequence processHighlightTrailingSpaces(CharSequence text) {
@@ -819,6 +821,10 @@ public class DiffView extends FrameLayout {
                 return span;
             }
             return text;
+        }
+
+        private String prepareTabs(String line) {
+            return line.replaceAll("\t", StringHelper.NON_PRINTABLE_CHAR);
         }
 
         private List<AbstractModel> processComments(List<AbstractModel> model) {
