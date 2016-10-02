@@ -42,8 +42,8 @@
             android:visibility="@{model.prev != null ? View.VISIBLE : View.INVISIBLE}"
             tools:ignore="RtlSymmetry">
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="@dimen/pager_controller_chevron_size"
+                android:layout_height="@dimen/pager_controller_chevron_size"
                 app:srcCompat="@drawable/ic_chevron_left"
                 android:tint="@android:color/white"
                 tools:ignore="ContentDescription" />
@@ -54,12 +54,11 @@
                 android:layout_gravity="center_vertical"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/white"
-                android:textSize="11sp"
+                android:textSize="@dimen/pager_controller_text_size"
                 android:gravity="start"
                 android:ellipsize="end"
                 android:text="@{model.prev}"
-                android:maxLines="1"
-                tools:ignore="NestedWeights,SmallSp" />
+                android:maxLines="1" />
         </LinearLayout>
 
         <android.support.v4.widget.Space
@@ -83,14 +82,13 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@android:color/white"
                 android:text="@{model.next}"
-                android:textSize="11sp"
+                android:textSize="@dimen/pager_controller_text_size"
                 android:gravity="end"
                 android:ellipsize="end"
-                android:maxLines="1"
-                tools:ignore="NestedWeights,SmallSp"/>
+                android:maxLines="1"/>
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="@dimen/pager_controller_chevron_size"
+                android:layout_height="@dimen/pager_controller_chevron_size"
                 app:srcCompat="@drawable/ic_chevron_right"
                 android:tint="@android:color/white"
                 tools:ignore="ContentDescription" />

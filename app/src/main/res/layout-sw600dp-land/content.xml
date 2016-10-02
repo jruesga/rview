@@ -50,7 +50,7 @@
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
                     <FrameLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="?attr/actionBarSize"
                         android:layout_gravity="bottom"
                         android:layout_marginLeft="32dp"
@@ -68,7 +68,7 @@
                             app:tabIndicatorHeight="3dp"/>
                         <com.ruesga.rview.widget.PagerControllerLayout
                             android:id="@+id/pagerController"
-                            android:layout_width="match_parent"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="bottom"
                             android:visibility="@{model.hasPages ? View.VISIBLE : View.GONE}" />

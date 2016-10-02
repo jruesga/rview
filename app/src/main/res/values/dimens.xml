@@ -23,4 +23,6 @@
     <dimen name="dropdown_min_width">96dp</dimen>
     <dimen name="quote_margin">1.5dp</dimen>
     <dimen name="quote_width">2.5dp</dimen>
+    <dimen name="pager_controller_text_size">11sp</dimen>
+    <dimen name="pager_controller_chevron_size">20dp</dimen>
 </resources>
