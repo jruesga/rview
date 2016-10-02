@@ -16,12 +16,14 @@
 package com.ruesga.rview.fragments;
 
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -96,7 +98,8 @@ public class DiffViewerFragment extends Fragment {
             int revision = mChange.revisions.get(mRevisionId).number;
 
             final FileDiffViewerFragment fragment = FileDiffViewerFragment.newInstance(
-                    mRevisionId, mFile, base, revision, mMode, mWrap);
+                    mRevisionId, mFile, base, revision, mMode, mWrap,
+                    mHighlightTabs, mHighlightTrailingWhitespaces);
             mFragment = new WeakReference<>(fragment);
             return fragment;
         }
@@ -130,6 +133,15 @@ public class DiffViewerFragment extends Fragment {
                     case R.id.wrap_mode_off:
                         mWrap = false;
                         Preferences.setAccountWrapMode(getContext(), mAccount, mWrap);
+                        break;
+                    case R.id.highlight_tabs:
+                        mHighlightTabs = !mHighlightTabs;
+                        Preferences.setAccountHighlightTabs(getContext(), mAccount, mHighlightTabs);
+                        break;
+                    case R.id.highlight_trailing_whitespaces:
+                        mHighlightTrailingWhitespaces = !mHighlightTrailingWhitespaces;
+                        Preferences.setAccountHighlightTrailingWhitespaces(
+                                getContext(), mAccount, mHighlightTrailingWhitespaces);
                         break;
                 }
             }
@@ -178,6 +190,8 @@ public class DiffViewerFragment extends Fragment {
 
     private int mMode;
     private boolean mWrap;
+    private boolean mHighlightTabs;
+    private boolean mHighlightTrailingWhitespaces;
 
     private int mCurrentFile;
 
@@ -232,6 +246,9 @@ public class DiffViewerFragment extends Fragment {
             mMode = diffMode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
                     ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
             mWrap = Preferences.getAccountWrapMode(getContext(), mAccount);
+            mHighlightTabs = Preferences.isAccountHighlightTabs(getContext(), mAccount);
+            mHighlightTrailingWhitespaces =
+                    Preferences.isAccountHighlightTrailingWhitespaces(getContext(), mAccount);
 
             // Configure the pages adapter
             BaseActivity activity = ((BaseActivity) getActivity());
@@ -322,6 +339,10 @@ public class DiffViewerFragment extends Fragment {
     }
 
     private void openOptionsMenu() {
+        Drawable checkMark = ContextCompat.getDrawable(getContext(), R.drawable.ic_check_box);
+        Drawable uncheckMark = ContextCompat.getDrawable(
+                getContext(), R.drawable.ic_check_box_outline);
+
         // Update diff_options
         BaseActivity activity =  ((BaseActivity) getActivity());
         Menu menu = activity.getOptionsMenu().getMenu();
@@ -330,6 +351,9 @@ public class DiffViewerFragment extends Fragment {
         menu.findItem(R.id.diff_mode_unified).setChecked(mMode == DiffView.UNIFIED_MODE);
         menu.findItem(R.id.wrap_mode_on).setChecked(mWrap);
         menu.findItem(R.id.wrap_mode_off).setChecked(!mWrap);
+        menu.findItem(R.id.highlight_tabs).setIcon(mHighlightTabs ? checkMark : uncheckMark);
+        menu.findItem(R.id.highlight_trailing_whitespaces).setIcon(
+                mHighlightTrailingWhitespaces ? checkMark : uncheckMark);
 
         // Open drawer
         activity.openOptionsDrawer();

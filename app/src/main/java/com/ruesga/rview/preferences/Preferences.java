@@ -42,6 +42,8 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DOWNLOAD_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TABS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
@@ -233,6 +235,38 @@ public class Preferences {
 
         Editor editor = getAccountPreferences(context, account).edit();
         editor.putBoolean(PREF_ACCOUNT_WRAP_MODE, wrap);
+        editor.apply();
+    }
+
+    public static boolean isAccountHighlightTabs(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_HIGHLIGHT_TABS, true);
+    }
+
+    public static void setAccountHighlightTabs(
+            Context context, Account account, boolean highlight) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putBoolean(PREF_ACCOUNT_HIGHLIGHT_TABS, highlight);
+        editor.apply();
+    }
+
+    public static boolean isAccountHighlightTrailingWhitespaces(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES, true);
+    }
+
+    public static void setAccountHighlightTrailingWhitespaces(
+            Context context, Account account, boolean highlight) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putBoolean(PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES, highlight);
         editor.apply();
     }
 }

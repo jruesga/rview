@@ -244,6 +244,9 @@
     <string name="options_wrap_mode">Wrap mode</string>
     <string name="options_wrap_mode_on">Wrap lines</string>
     <string name="options_wrap_mode_off">Unwrap lines</string>
+    <string name="options_highlight">Highlight</string>
+    <string name="options_highlight_tabs">Tabs</string>
+    <string name="options_highlight_trailing_whitespaces">Trailing whitespaces</string>
 
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>

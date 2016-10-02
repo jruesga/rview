@@ -70,5 +70,8 @@ public class Constants {
     public static final String PREF_ACCOUNT_DOWNLOAD_FORMAT = "account_download_format";
     public static final String PREF_ACCOUNT_DIFF_MODE = "account_diff_mode";
     public static final String PREF_ACCOUNT_WRAP_MODE = "account_wrap_mode";
+    public static final String PREF_ACCOUNT_HIGHLIGHT_TABS = "account_highlight_tabs";
+    public static final String PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES
+            = "account_highlight_trailing_whitespaces";
 
 }

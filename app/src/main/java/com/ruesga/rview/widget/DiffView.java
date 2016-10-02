@@ -17,6 +17,7 @@ package com.ruesga.rview.widget;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -29,6 +30,8 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,10 +52,15 @@ import com.ruesga.rview.misc.SerializationManager;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class DiffView extends FrameLayout {
+
+    private final Pattern HIGHLIGHT_TRAIL_SPACES_PATTERN
+            = Pattern.compile("\\s$", Pattern.MULTILINE);
 
     private static final int SKIPPED_LINES = 10;
 
@@ -479,6 +487,7 @@ public class DiffView extends FrameLayout {
                         m.lineB = line;
                         m.colorA = noColor;
                         m.colorB = noColor;
+                        processHighlights(m);
                         model.add(m);
                     }
                 } else {
@@ -541,7 +550,7 @@ public class DiffView extends FrameLayout {
                             m.colorB = addedBgColor;
                             posB += line.length() + 1;
                         }
-
+                        processHighlights(m);
                         model.add(m);
                     }
                 }
@@ -611,6 +620,7 @@ public class DiffView extends FrameLayout {
                         m.lineB = line;
                         m.colorA = noColor;
                         m.colorB = noColor;
+                        processHighlights(m);
                         model.add(m);
                     }
                 } else {
@@ -639,6 +649,7 @@ public class DiffView extends FrameLayout {
                             }
                             m.colorA = deletedBgColor;
                             m.colorB = noColor;
+                            processHighlights(m);
                             model.add(m);
                             pos += line.length() + 1;
                         }
@@ -668,6 +679,7 @@ public class DiffView extends FrameLayout {
                             }
                             m.colorA = addedBgColor;
                             m.colorB = noColor;
+                            processHighlights(m);
                             model.add(m);
                             pos += line.length() + 1;
                         }
@@ -676,6 +688,55 @@ public class DiffView extends FrameLayout {
                 j++;
             }
             return model;
+        }
+
+        private void processHighlights(DiffInfoModel model) {
+            if (model.lineA != null) {
+                model.lineA = processHighlightTrailingSpaces(processHighlightTabs(model.lineA));
+            }
+            if (model.lineB != null) {
+                model.lineB = processHighlightTrailingSpaces(processHighlightTabs(model.lineB));
+            }
+        }
+
+        private CharSequence processHighlightTabs(CharSequence text) {
+            if (!mHighlightTabs || !text.toString().contains("\t")) {
+                return text;
+            }
+
+            int color = ContextCompat.getColor(getContext(), R.color.diffHighlightColor);
+            final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
+            String line = text.toString().replaceAll("\t", "\u00BB   ");
+            Spannable span = spannableFactory.newSpannable(line);
+            int index = 0;
+            while ((index = line.indexOf("\u00BB", index)) != -1) {
+                span.setSpan(new ForegroundColorSpan(color),
+                        index, index + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                span.setSpan(new StyleSpan(Typeface.BOLD),
+                        index, index + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                index++;
+            }
+            return span;
+        }
+
+        private CharSequence processHighlightTrailingSpaces(CharSequence text) {
+            if (!mHighlightTrailingWhitespaces) {
+                return text;
+            }
+
+            int color = ContextCompat.getColor(getContext(), R.color.diffHighlightColor);
+            final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
+            String line = text.toString();
+            final Matcher matcher = HIGHLIGHT_TRAIL_SPACES_PATTERN.matcher(line);
+            if (matcher.find()) {
+                int start = matcher.start();
+                int end = matcher.end();
+                Spannable span = spannableFactory.newSpannable(line);
+                span.setSpan(new BackgroundColorSpan(color),
+                        start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                return span;
+            }
+            return text;
         }
 
         private List<AbstractModel> processComments(List<AbstractModel> model) {
@@ -812,6 +873,7 @@ public class DiffView extends FrameLayout {
     private LayoutManager mTmpLayoutManager;
 
     private boolean mHighlightTabs;
+    private boolean mHighlightTrailingWhitespaces;
     private boolean mCanEdit;
     private int mDiffMode = UNIFIED_MODE;
     private DiffContentInfo[] mAllDiffs;
@@ -859,6 +921,7 @@ public class DiffView extends FrameLayout {
     protected Parcelable onSaveInstanceState() {
         SavedState savedState = new SavedState(super.onSaveInstanceState());
         savedState.mHighlightTabs = mHighlightTabs;
+        savedState.mHighlightTrailingWhitespaces = mHighlightTrailingWhitespaces;
         savedState.mCanEdit = mCanEdit;
         savedState.mDiffMode = mDiffMode;
         savedState.mAllDiffs = SerializationManager.getInstance().toJson(mAllDiffs);
@@ -879,6 +942,7 @@ public class DiffView extends FrameLayout {
         super.onRestoreInstanceState(savedState.getSuperState());
 
         mHighlightTabs = savedState.mHighlightTabs;
+        mHighlightTrailingWhitespaces = savedState.mHighlightTrailingWhitespaces;
         mCanEdit = savedState.mCanEdit;
         mDiffMode = savedState.mDiffMode;
         Type type = new TypeToken<DiffContentInfo[]>(){}.getType();
@@ -908,8 +972,13 @@ public class DiffView extends FrameLayout {
         return this;
     }
 
-    public DiffView highlightTabs(boolean highlightTabs) {
-        mHighlightTabs = highlightTabs;
+    public DiffView highlightTabs(boolean highlight) {
+        mHighlightTabs = highlight;
+        return this;
+    }
+
+    public DiffView highlightTrailingWhitespaces(boolean highlight) {
+        mHighlightTrailingWhitespaces = highlight;
         return this;
     }
 
@@ -950,6 +1019,7 @@ public class DiffView extends FrameLayout {
 
     static class SavedState extends BaseSavedState {
         boolean mHighlightTabs;
+        boolean mHighlightTrailingWhitespaces;
         boolean mCanEdit;
         int mDiffMode;
         String mAllDiffs;
@@ -963,6 +1033,7 @@ public class DiffView extends FrameLayout {
         private SavedState(Parcel in) {
             super(in);
             mHighlightTabs = in.readInt() == 1;
+            mHighlightTrailingWhitespaces = in.readInt() == 1;
             mCanEdit = in.readInt() == 1;
             mDiffMode = in.readInt();
             mAllDiffs = in.readString();
@@ -974,6 +1045,7 @@ public class DiffView extends FrameLayout {
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
             out.writeInt(mHighlightTabs ? 1 : 0);
+            out.writeInt(mHighlightTrailingWhitespaces ? 1 : 0);
             out.writeInt(mCanEdit ? 1 : 0);
             out.writeInt(mDiffMode);
             out.writeString(mAllDiffs);

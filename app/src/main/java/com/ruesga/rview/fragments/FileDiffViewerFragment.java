@@ -169,9 +169,12 @@ public class FileDiffViewerFragment extends Fragment {
 
     private int mMode;
     private boolean mWrap;
+    private boolean mHighlightTabs;
+    private boolean mHighlightTrailingWhitespaces;
 
     public static FileDiffViewerFragment newInstance(String revisionId, String file,
-            int base, int revision, int mode, boolean wrap) {
+            int base, int revision, int mode, boolean wrap,
+            boolean highlightTabs, boolean mHighlightTrailingWhitespaces) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
@@ -180,6 +183,8 @@ public class FileDiffViewerFragment extends Fragment {
         arguments.putInt(Constants.EXTRA_REVISION, revision);
         arguments.putInt("mode", mode);
         arguments.putBoolean("wrap", wrap);
+        arguments.putBoolean("highlight_tabs", highlightTabs);
+        arguments.putBoolean("highlight_trailing_whitespaces", mHighlightTrailingWhitespaces);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -195,7 +200,8 @@ public class FileDiffViewerFragment extends Fragment {
                     .wrap(mWrap)
                     .listenOn(mCommentListener)
                     .canEdit(mAccount.hasAuthenticatedAccessMode())
-                    .highlightTabs(false)
+                    .highlightTabs(mHighlightTabs)
+                    .highlightTrailingWhitespaces(mHighlightTrailingWhitespaces)
                     .update(),
             250L);
         }
@@ -215,6 +221,8 @@ public class FileDiffViewerFragment extends Fragment {
         mRevision = String.valueOf(getArguments().getInt(Constants.EXTRA_REVISION));
         mMode = getArguments().getInt("mode");
         mWrap = getArguments().getBoolean("wrap");
+        mHighlightTabs = getArguments().getBoolean("highlight_tabs");
+        mHighlightTrailingWhitespaces = getArguments().getBoolean("highlight_trailing_whitespaces");
     }
 
     @Nullable

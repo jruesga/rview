@@ -49,5 +49,19 @@
             </menu>
         </item>
     </group>
-
+    <group
+        android:checkableBehavior="none">
+        <item android:title="@string/options_highlight">
+            <menu>
+                <item
+                    android:id="@+id/highlight_tabs"
+                    android:title="@string/options_highlight_tabs"
+                    android:icon="@drawable/ic_check_box_outline"/>
+                <item
+                    android:id="@+id/highlight_trailing_whitespaces"
+                    android:title="@string/options_highlight_trailing_whitespaces"
+                    android:icon="@drawable/ic_check_box_outline"/>
+            </menu>
+        </item>
+    </group>
 </menu>
