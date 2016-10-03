@@ -40,7 +40,7 @@
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/lineNumA"
             android:layout_width="0dp"
-            app:bindLayoutWidth="@{measurement.lineNumAWidth}"
+            app:bindLayoutWidth="@{measurement.lineNumWidth}"
             android:layout_height="match_parent"
             android:padding="3dp"
             android:background="@color/diffLineBackgroundColor"
@@ -57,7 +57,7 @@
 
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="0dp"
-            app:bindLayoutWidth="@{measurement.lineNumBWidth}"
+            app:bindLayoutWidth="@{measurement.lineNumWidth}"
             android:layout_height="match_parent"
             android:padding="3dp"
             android:background="@color/diffLineBackgroundColor"
@@ -94,7 +94,7 @@
 
             <FrameLayout
                 android:layout_width="0dp"
-                app:bindLayoutWidth="@{measurement.lineAWidth}"
+                app:bindLayoutWidth="@{measurement.lineWidth}"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:layout_marginBottom="1dp"
@@ -178,7 +178,7 @@
 
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="0dp"
-            app:bindLayoutWidth="@{measurement.lineNumBWidth}"
+            app:bindLayoutWidth="@{measurement.lineNumWidth}"
             android:layout_height="match_parent"
             android:padding="3dp"
             android:background="@color/diffLineBackgroundColor"
@@ -216,7 +216,7 @@
 
             <FrameLayout
                 android:layout_width="0dp"
-                app:bindLayoutWidth="@{measurement.lineBWidth}"
+                app:bindLayoutWidth="@{measurement.lineWidth}"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="1dp"
                 android:layout_marginBottom="1dp"
