@@ -334,7 +334,7 @@ public class DiffView extends FrameLayout {
                                 mDiffViewMeasurement.lineAWidth = Math.max(
                                         mDiffViewMeasurement.lineAWidth, width);
                             } else {
-                                // All lines are displayed in A
+                                // Lines are displayed in A and B and both have the same size
                                 if (diff.lineA != null) {
                                     String lineA = String.valueOf(diff.lineA);
                                     int width = (int) paint.measureText(lineA) + padding;
@@ -347,6 +347,9 @@ public class DiffView extends FrameLayout {
                                     mDiffViewMeasurement.lineBWidth = Math.max(
                                             mDiffViewMeasurement.lineBWidth, width);
                                 }
+                                mDiffViewMeasurement.lineAWidth = mDiffViewMeasurement.lineBWidth =
+                                        Math.max(mDiffViewMeasurement.lineAWidth,
+                                                mDiffViewMeasurement.lineBWidth);
                             }
                         }
 
@@ -374,10 +377,11 @@ public class DiffView extends FrameLayout {
                 mDiffViewMeasurement.lineNumAWidth += (padding * 2);
                 mDiffViewMeasurement.lineNumBWidth += (padding * 2);
                 int diffIndicatorWidth = 16 * dp;
+                int separators = mMode == UNIFIED_MODE ? 2 : 3;
                 mDiffViewMeasurement.width =
                         mDiffViewMeasurement.lineNumAWidth + mDiffViewMeasurement.lineNumBWidth +
                         mDiffViewMeasurement.lineAWidth + mDiffViewMeasurement.lineBWidth +
-                        diffIndicatorWidth + (dp * 3);
+                        diffIndicatorWidth + (dp * separators);
 
                 if (mDiffViewMeasurement.width < getWidth()) {
                     mDiffViewMeasurement.width = getWidth();
@@ -385,7 +389,12 @@ public class DiffView extends FrameLayout {
                         mDiffViewMeasurement.lineAWidth = getWidth() -
                                 mDiffViewMeasurement.lineNumAWidth -
                                 mDiffViewMeasurement.lineNumBWidth -
-                                diffIndicatorWidth - (dp * 3);
+                                diffIndicatorWidth - (dp * separators);
+                    } else {
+                        mDiffViewMeasurement.lineAWidth = mDiffViewMeasurement.lineBWidth =
+                                (getWidth() - mDiffViewMeasurement.lineNumAWidth -
+                                mDiffViewMeasurement.lineNumBWidth -
+                                diffIndicatorWidth - (dp * separators)) / 2;
                     }
                 }
             }
