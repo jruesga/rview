@@ -16,6 +16,7 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -310,10 +311,10 @@ public class DiffView extends FrameLayout {
         private void computeViewChildMeasuresIfNeeded() {
             boolean wrap = isWrapMode();
             if (!mModel.isEmpty()) {
-                float dp = getResources().getDisplayMetrics().density;
+                final Resources res = getResources();
                 TextPaint paint = new TextPaint();
-                paint.setTextSize(12f * dp);
-                float padding = 3f * dp;
+                paint.setTextSize(res.getDimension(R.dimen.diff_line_text_size));
+                float padding = res.getDimension(R.dimen.diff_line_text_padding);
 
                 for (AbstractModel model : mModel) {
                     if (model instanceof DiffInfoModel) {
@@ -359,13 +360,16 @@ public class DiffView extends FrameLayout {
                 }
 
                 // Give line number a minimum width
-                mDiffViewMeasurement.lineNumWidth =
-                        Math.max(mDiffViewMeasurement.lineNumWidth, 20f * dp);
+                mDiffViewMeasurement.lineNumWidth = Math.max(
+                        mDiffViewMeasurement.lineNumWidth,
+                        res.getDimension(R.dimen.diff_line_number_min_width));
 
                 // Adjust padding
                 mDiffViewMeasurement.lineNumWidth += (padding * 2f);
-                float diffIndicatorWidth = mMode == UNIFIED_MODE ? 16f * dp : 0;
-                float separatorWidth = (mMode == UNIFIED_MODE ? 2 : 3) * dp;
+                float diffIndicatorWidth = mMode == UNIFIED_MODE
+                        ? res.getDimension(R.dimen.diff_line_indicator_width) : 0;
+                float separatorWidth = (mMode == UNIFIED_MODE ? 2 : 3) *
+                        res.getDimension(R.dimen.diff_line_separator_width);
                 float decorWidth = 2 * mDiffViewMeasurement.lineNumWidth +
                         diffIndicatorWidth + separatorWidth;
 
