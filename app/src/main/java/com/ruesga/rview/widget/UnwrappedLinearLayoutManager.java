@@ -136,8 +136,8 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
             v.setLeft(mOffset);
         }
 
-        if (Math.abs(mOffset) >= horizontalSpace) {
-            mOffset = -horizontalSpace;
+        if (Math.abs(mOffset) >= decoratedWidth) {
+            mOffset = -decoratedWidth;
             return 0;
         }
         return -delta;
@@ -185,8 +185,8 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
             v.setTop(mOffset);
         }
 
-        if (Math.abs(mOffset) >= verticalSpace) {
-            mOffset = -verticalSpace;
+        if (Math.abs(mOffset) >= decoratedHeight) {
+            mOffset = -decoratedHeight;
             return 0;
         }
         return -delta;
