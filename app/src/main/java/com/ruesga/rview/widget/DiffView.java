@@ -84,7 +84,7 @@ public class DiffView extends FrameLayout {
         }
 
         public void onNewDraftPressed(View v) {
-            if (mView.mCanEdit && mView.mOnCommentListener != null) {
+            if (mView.mCanEdit && mView.mOnCommentListener != null && v.getTag() != null) {
                 String[] s = ((String) v.getTag()).split("/");
                 mView.mOnCommentListener.onNewDraft(
                         v, Boolean.parseBoolean(s[0]), Integer.valueOf(s[1]));

@@ -45,7 +45,7 @@
             android:background="@color/diffLineBackgroundColor"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorPrimaryDark"
-            android:tag='@{"true/" + model.lineNumberA}'
+            android:tag='@{model.lineNumberA != null ? "true/" + model.lineNumberA : null}'
             android:onClick="@{handlers::onNewDraftPressed}"
             android:textSize="@dimen/diff_line_text_size"
             android:gravity="end"
@@ -65,7 +65,7 @@
             android:background="@color/diffLineBackgroundColor"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorPrimaryDark"
-            android:tag='@{"false/" + model.lineNumberB}'
+            android:tag='@{model.lineNumberB != null ? "false/" + model.lineNumberB : null}'
             android:onClick="@{handlers::onNewDraftPressed}"
             android:textSize="@dimen/diff_line_text_size"
             android:gravity="end"
@@ -129,7 +129,7 @@
             android:background="@color/diffLineBackgroundColor"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorPrimaryDark"
-            android:tag='@{"false/" + model.lineNumberB}'
+            android:tag='@{model.lineNumberB != null ? "false/" + model.lineNumberB : null}'
             android:onClick="@{handlers::onNewDraftPressed}"
             android:textSize="@dimen/diff_line_text_size"
             android:gravity="end"
