@@ -191,11 +191,11 @@ public class DiffView extends FrameLayout {
 
     @ProguardIgnored
     public static class DiffViewMeasurement {
-        public int width = -1;
-        public int lineAWidth = -1;
-        public int lineBWidth = -1;
-        public int lineNumAWidth = -1;
-        public int lineNumBWidth = -1;
+        public float width = -1;
+        public float lineAWidth = -1;
+        public float lineBWidth = -1;
+        public float lineNumAWidth = -1;
+        public float lineNumBWidth = -1;
 
         private void clear() {
             width = -1;
@@ -314,10 +314,10 @@ public class DiffView extends FrameLayout {
         private void computeViewChildMeasuresIfNeeded() {
             boolean wrap = isWrapMode();
             if (!mModel.isEmpty()) {
-                int dp = (int) getResources().getDisplayMetrics().density;
+                float dp = getResources().getDisplayMetrics().density;
                 TextPaint paint = new TextPaint();
-                paint.setTextSize(12 * dp);
-                int padding = 3 * dp;
+                paint.setTextSize(12f * dp);
+                float padding = 3f * dp;
 
                 for (AbstractModel model : mModel) {
                     if (model instanceof DiffInfoModel) {
@@ -330,22 +330,22 @@ public class DiffView extends FrameLayout {
                             if (mMode == UNIFIED_MODE) {
                                 // All lines are displayed in A
                                 CharSequence line = diff.lineA != null ? diff.lineA : diff.lineB;
-                                int width = (int) paint.measureText(String.valueOf(line)) + padding;
                                 mDiffViewMeasurement.lineAWidth = Math.max(
-                                        mDiffViewMeasurement.lineAWidth, width);
+                                        mDiffViewMeasurement.lineAWidth,
+                                        paint.measureText(String.valueOf(line)) + padding);
                             } else {
                                 // Lines are displayed in A and B and both have the same size
                                 if (diff.lineA != null) {
                                     String lineA = String.valueOf(diff.lineA);
-                                    int width = (int) paint.measureText(lineA) + padding;
                                     mDiffViewMeasurement.lineAWidth = Math.max(
-                                            mDiffViewMeasurement.lineAWidth, width);
+                                            mDiffViewMeasurement.lineAWidth,
+                                            paint.measureText(lineA) + padding);
                                 }
                                 if (diff.lineB != null) {
                                     String lineB = String.valueOf(diff.lineB);
-                                    int width = (int) paint.measureText(lineB) + padding;
                                     mDiffViewMeasurement.lineBWidth = Math.max(
-                                            mDiffViewMeasurement.lineBWidth, width);
+                                            mDiffViewMeasurement.lineBWidth,
+                                            paint.measureText(lineB) + padding);
                                 }
                                 mDiffViewMeasurement.lineAWidth = mDiffViewMeasurement.lineBWidth =
                                         Math.max(mDiffViewMeasurement.lineAWidth,
@@ -356,12 +356,12 @@ public class DiffView extends FrameLayout {
                         if (diff.lineNumberA != null) {
                             mDiffViewMeasurement.lineNumAWidth = Math.max(
                                     mDiffViewMeasurement.lineNumAWidth,
-                                    (int) paint.measureText(String.valueOf(diff.lineNumberA)));
+                                    paint.measureText(String.valueOf(diff.lineNumberA)));
                         }
                         if (diff.lineNumberB != null) {
                             mDiffViewMeasurement.lineNumBWidth = Math.max(
                                     mDiffViewMeasurement.lineNumBWidth,
-                                    (int) paint.measureText(String.valueOf(diff.lineNumberB)));
+                                    paint.measureText(String.valueOf(diff.lineNumberB)));
                         }
                     }
                 }
@@ -371,12 +371,12 @@ public class DiffView extends FrameLayout {
                         Math.max(mDiffViewMeasurement.lineNumAWidth,
                                 mDiffViewMeasurement.lineNumBWidth);
                 mDiffViewMeasurement.lineNumAWidth = mDiffViewMeasurement.lineNumBWidth =
-                        Math.max(mDiffViewMeasurement.lineNumAWidth, 20 * dp);
+                        Math.max(mDiffViewMeasurement.lineNumAWidth, 20f * dp);
 
                 // Adjust padding
-                mDiffViewMeasurement.lineNumAWidth += (padding * 2);
-                mDiffViewMeasurement.lineNumBWidth += (padding * 2);
-                int diffIndicatorWidth = 16 * dp;
+                mDiffViewMeasurement.lineNumAWidth += (padding * 2f);
+                mDiffViewMeasurement.lineNumBWidth += (padding * 2f);
+                float diffIndicatorWidth = 16f * dp;
                 int separators = mMode == UNIFIED_MODE ? 2 : 3;
                 mDiffViewMeasurement.width =
                         mDiffViewMeasurement.lineNumAWidth + mDiffViewMeasurement.lineNumBWidth +

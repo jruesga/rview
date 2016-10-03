@@ -47,10 +47,10 @@ public class BindingAdapters {
     }
 
     @BindingAdapter("bindLayoutWidth")
-    public static void bindLayoutWidth(View v, int width) {
+    public static void bindLayoutWidth(View v, float width) {
         v.getLayoutParams().width = width < 0
                 ? ViewGroup.LayoutParams.MATCH_PARENT
-                : width;
+                : (int) Math.ceil(width);
     }
 
     @BindingAdapter("bindLayoutWeight")
