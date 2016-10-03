@@ -18,22 +18,14 @@ package com.ruesga.rview.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.text.TextPaint;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,22 +42,16 @@ import com.ruesga.rview.databinding.DiffSourceItemBinding;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.misc.SerializationManager;
-import com.ruesga.rview.misc.StringHelper;
+import com.ruesga.rview.tasks.AsyncDiffProcessor;
+import com.ruesga.rview.tasks.AsyncDiffProcessor.OnDiffProcessEndedListener;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class DiffView extends FrameLayout {
-
-    private final Pattern HIGHLIGHT_TRAIL_SPACES_PATTERN
-            = Pattern.compile("\\s$", Pattern.MULTILINE);
-
-    private static final int SKIPPED_LINES = 10;
 
     public static final int SIDE_BY_SIDE_MODE = 0;
     public static final int UNIFIED_MODE = 1;
@@ -174,8 +160,8 @@ public class DiffView extends FrameLayout {
         public String lineNumberB;
         public int colorA;
         public int colorB;
-        CharSequence lineA;
-        CharSequence lineB;
+        public CharSequence lineA;
+        public CharSequence lineB;
     }
 
     @ProguardIgnored
@@ -400,29 +386,11 @@ public class DiffView extends FrameLayout {
         }
     }
 
-    private class AsyncDiffProcessor extends AsyncTask<Void, Void, List<AbstractModel>> {
-        private final int mMode;
-        private final DiffContentInfo[] mDiffs;
-        private final Pair<List<CommentInfo>, List<CommentInfo>> mComments;
-
-        AsyncDiffProcessor(int mode, DiffContentInfo[] diffs,
-                Pair<List<CommentInfo>, List<CommentInfo>> comments,
-                Pair<List<CommentInfo>, List<CommentInfo>> drafts) {
-            mMode = mode;
-            mDiffs = diffs;
-            mComments = comments;
-            mDrafts = drafts;
-        }
-
+    private OnDiffProcessEndedListener mProcessorListener = new OnDiffProcessEndedListener() {
         @Override
-        protected List<AbstractModel> doInBackground(Void... params) {
-            return processDrafts(processComments(processDiffs()));
-        }
-
-        @Override
-        protected void onPostExecute(List<AbstractModel> model) {
+        public void onDiffProcessEnded(List<AbstractModel> model) {
             if (mNeedsNewLayoutManager || !mLayoutManager.equals(mTmpLayoutManager)) {
-                mDiffAdapter = new DiffAdapter(mDiffMode);
+                mDiffAdapter = new DiffView.DiffAdapter(mDiffMode);
                 if (mTmpLayoutManager != null) {
                     mLayoutManager = mTmpLayoutManager;
                 }
@@ -433,538 +401,7 @@ public class DiffView extends FrameLayout {
             mDiffAdapter.update(model);
             mTmpLayoutManager = null;
         }
-
-        private List<AbstractModel> processDiffs() {
-            if (mMode == SIDE_BY_SIDE_MODE) {
-                return processSideBySideDiffs();
-            }
-            return processUnifiedDiffs();
-        }
-
-        private List<AbstractModel> processSideBySideDiffs() {
-            if (mDiffs == null) {
-                return new ArrayList<>();
-            }
-
-            int lineNumberA = 0;
-            int lineNumberB = 0;
-
-            final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
-            final int noColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
-            final int addedBgColor = ContextCompat.getColor(
-                    getContext(), R.color.diffAddedBackgroundColor);
-            final int addedFgColor = ContextCompat.getColor(
-                    getContext(), R.color.diffAddedForegroundColor);
-            final int deletedBgColor = ContextCompat.getColor(
-                    getContext(), R.color.diffDeletedBackgroundColor);
-            final int deletedFgColor = ContextCompat.getColor(
-                    getContext(), R.color.diffDeletedForegroundColor);
-
-            List<AbstractModel> model = new ArrayList<>();
-            int j = 0;
-            for (DiffContentInfo diff : mDiffs) {
-                if (diff.ab != null) {
-                    // Unchanged lines
-                    int count = diff.ab.length;
-                    int skipStartAt = -1, skippedLines = -1;
-                    boolean breakAfterSkip = false;
-                    if (j == 0 && diff.ab.length > SKIPPED_LINES) {
-                        skipStartAt = 0;
-                        skippedLines = count - SKIPPED_LINES - skipStartAt;
-                    } else if (j == (mDiffs.length - 1) && diff.ab.length > SKIPPED_LINES) {
-                        skipStartAt = SKIPPED_LINES;
-                        skippedLines = count - skipStartAt;
-                        breakAfterSkip = true;
-                    } else if (diff.ab.length > (SKIPPED_LINES * 2)) {
-                        skipStartAt = SKIPPED_LINES;
-                        skippedLines = count - SKIPPED_LINES - skipStartAt;
-                    }
-
-                    for (int i = 0; i < count; i++) {
-                        if (skipStartAt != -1 && skipStartAt == i) {
-                            lineNumberA += skippedLines;
-                            lineNumberB += skippedLines;
-                            i += skippedLines;
-                            SkipLineModel skip = new SkipLineModel();
-                            skip.msg = getResources().getQuantityString(
-                                    R.plurals.skipped_lines, skippedLines, skippedLines);
-                            model.add(skip);
-                            if (breakAfterSkip) {
-                                break;
-                            }
-                        }
-
-                        String line = diff.ab[i];
-                        DiffInfoModel m = new DiffInfoModel();
-                        m.lineNumberA = String.valueOf(++lineNumberA);
-                        m.lineNumberB = String.valueOf(++lineNumberB);
-                        m.lineA = prepareTabs(line);
-                        m.lineB = prepareTabs(line);
-                        m.colorA = noColor;
-                        m.colorB = noColor;
-                        processHighlights(m);
-                        model.add(m);
-                    }
-                } else {
-                    int posA = 0;
-                    int posB = 0;
-                    int count = Math.max(
-                            diff.a == null ? 0 : diff.a.length,
-                            diff.b == null ? 0 : diff.b.length);
-                    for (int i = 0; i < count; i++) {
-                        DiffInfoModel m = new DiffInfoModel();
-                        m.colorA = noColor;
-                        m.colorB = noColor;
-
-                        if (diff.a != null && i < diff.a.length) {
-                            String line = diff.a[i];
-                            m.lineNumberA = String.valueOf(++lineNumberA);
-                            if (diff.editA != null) {
-                                Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                                int s2 = 0;
-                                for (ArrayList<Integer> intra : diff.editA) {
-                                    int s1 = s2 + intra.get(0);
-                                    s2 = s1 + intra.get(1);
-                                    int l = posA + line.length();
-                                    if ((s1 >= posA && s1 <= l) || (s2 >= posA && s2 <= l)
-                                            || (s1 <= posA && s2 >= l)) {
-                                        span.setSpan(new BackgroundColorSpan(deletedFgColor),
-                                                Math.max(posA, s1) - posA, Math.min(l, s2) - posA,
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                    }
-                                }
-                                m.lineA = span;
-                            } else {
-                                // No intraline data, but it still could differ at start or at end
-                                if (diff.a != null && diff.b != null
-                                        && diff.a.length == 1 && diff.b.length == 1) {
-                                    Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                                    int z = diff.a[0].indexOf(diff.b[0]);
-                                    if (z != -1) {
-                                        if (z > 0) {
-                                            span.setSpan(new BackgroundColorSpan(deletedFgColor),
-                                                    0, z, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        }
-                                        if (z + diff.b[0].length() < diff.a[0].length()) {
-                                            z = z + diff.b[0].length();
-                                            span.setSpan(new BackgroundColorSpan(deletedFgColor),
-                                                    z, diff.a[0].length(),
-                                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        }
-                                    }
-                                    m.lineA = span;
-                                } else {
-                                    m.lineA = prepareTabs(line);
-                                }
-                            }
-                            m.colorA = deletedBgColor;
-                            posA += line.length() + 1;
-                        }
-
-                        if (diff.b != null && i < diff.b.length) {
-                            String line = diff.b[i];
-                            m.lineNumberB = String.valueOf(++lineNumberB);
-                            if (diff.editB != null) {
-                                Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                                int s2 = 0;
-                                for (ArrayList<Integer> intra : diff.editB) {
-                                    int s1 = s2 + intra.get(0);
-                                    s2 = s1 + intra.get(1);
-                                    int l = posB + line.length();
-                                    if ((s1 >= posB && s1 <= l) || (s2 >= posB && s2 <= l)
-                                            || (s1 <= posB && s2 >= l)) {
-                                        span.setSpan(new BackgroundColorSpan(addedFgColor),
-                                                Math.max(posB, s1) - posB, Math.min(l, s2) - posB,
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                    }
-                                }
-                                m.lineB = span;
-                            } else {
-                                // No intraline data, but it still could differ at start or at end
-                                if (diff.a != null && diff.b != null
-                                        && diff.a.length == 1 && diff.b.length == 1) {
-                                    Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                                    int z = diff.b[0].indexOf(diff.a[0]);
-                                    if (z != -1) {
-                                        if (z > 0) {
-                                            span.setSpan(new BackgroundColorSpan(addedFgColor),
-                                                    0, z, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        }
-                                        if (z + diff.a[0].length() < diff.b[0].length()) {
-                                            z = z + diff.a[0].length();
-                                            span.setSpan(new BackgroundColorSpan(addedFgColor),
-                                                    z, diff.b[0].length(),
-                                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        }
-                                    }
-                                    m.lineB = span;
-                                } else {
-                                    m.lineB = prepareTabs(line);
-                                }
-                            }
-                            m.colorB = addedBgColor;
-                            posB += line.length() + 1;
-                        }
-                        processHighlights(m);
-                        model.add(m);
-                    }
-                }
-                j++;
-            }
-            return model;
-        }
-
-        private List<AbstractModel> processUnifiedDiffs() {
-            if (mDiffs == null) {
-                return new ArrayList<>();
-            }
-
-            int lineNumberA = 0;
-            int lineNumberB = 0;
-
-            final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
-            final int noColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
-            final int addedBgColor = ContextCompat.getColor(
-                    getContext(), R.color.diffAddedBackgroundColor);
-            final int addedFgColor = ContextCompat.getColor(
-                    getContext(), R.color.diffAddedForegroundColor);
-            final int deletedBgColor = ContextCompat.getColor(
-                    getContext(), R.color.diffDeletedBackgroundColor);
-            final int deletedFgColor = ContextCompat.getColor(
-                    getContext(), R.color.diffDeletedForegroundColor);
-
-            List<AbstractModel> model = new ArrayList<>();
-            int j = 0;
-            for (DiffContentInfo diff : mDiffs) {
-                if (diff.ab != null) {
-                    // Unchanged lines
-                    int count = diff.ab.length;
-                    int skipStartAt = -1, skippedLines = -1;
-                    boolean breakAfterSkip = false;
-                    if (j == 0 && diff.ab.length > SKIPPED_LINES) {
-                        skipStartAt = 0;
-                        skippedLines = count - SKIPPED_LINES - skipStartAt;
-                    } else if (j == (mDiffs.length - 1) && diff.ab.length > SKIPPED_LINES) {
-                        skipStartAt = SKIPPED_LINES;
-                        skippedLines = count - skipStartAt;
-                        breakAfterSkip = true;
-                    } else if (diff.ab.length > (SKIPPED_LINES * 2)) {
-                        skipStartAt = SKIPPED_LINES;
-                        skippedLines = count - SKIPPED_LINES - skipStartAt;
-                    }
-
-                    for (int i = 0; i < count; i++) {
-                        if (skipStartAt != -1 && skipStartAt == i) {
-                            lineNumberA += skippedLines;
-                            lineNumberB += skippedLines;
-                            i += skippedLines;
-                            SkipLineModel skip = new SkipLineModel();
-                            skip.msg = getResources().getQuantityString(
-                                    R.plurals.skipped_lines, skippedLines, skippedLines);
-                            model.add(skip);
-                            if (breakAfterSkip) {
-                                break;
-                            }
-                        }
-
-                        String line = diff.ab[i];
-                        DiffInfoModel m = new DiffInfoModel();
-                        m.lineNumberA = String.valueOf(++lineNumberA);
-                        m.lineNumberB = String.valueOf(++lineNumberB);
-                        m.lineA = prepareTabs(line);
-                        m.lineB = prepareTabs(line);
-                        m.colorA = noColor;
-                        m.colorB = noColor;
-                        processHighlights(m);
-                        model.add(m);
-                    }
-                } else {
-                    if (diff.a != null) {
-                        int pos = 0;
-                        for (String line : diff.a) {
-                            DiffInfoModel m = new DiffInfoModel();
-                            m.lineNumberA = String.valueOf(++lineNumberA);
-                            if (diff.editA != null) {
-                                Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                                int s2 = 0;
-                                for (ArrayList<Integer> intra : diff.editA) {
-                                    int s1 = s2 + intra.get(0);
-                                    s2 = s1 + intra.get(1);
-                                    int l = pos + line.length();
-                                    if ((s1 >= pos && s1 <= l) || (s2 >= pos && s2 <= l)
-                                            || (s1 <= pos && s2 >= l)) {
-                                        span.setSpan(new BackgroundColorSpan(deletedFgColor),
-                                                Math.max(pos, s1) - pos, Math.min(l, s2) - pos,
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                    }
-                                }
-                                m.lineA = span;
-                            } else {
-                                // No intraline data, but it still could differ at start or at end
-                                if (diff.a != null && diff.b != null
-                                        && diff.a.length == 1 && diff.b.length == 1) {
-                                    Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                                    int z = diff.a[0].indexOf(diff.b[0]);
-                                    if (z != -1) {
-                                        if (z > 0) {
-                                            span.setSpan(new BackgroundColorSpan(deletedFgColor),
-                                                    0, z, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        }
-                                        if (z + diff.b[0].length() < diff.a[0].length()) {
-                                            z = z + diff.b[0].length();
-                                            span.setSpan(new BackgroundColorSpan(deletedFgColor),
-                                                    z, diff.a[0].length(),
-                                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        }
-                                    }
-                                    m.lineA = span;
-                                } else {
-                                    m.lineA = prepareTabs(line);
-                                }
-                            }
-                            m.colorA = deletedBgColor;
-                            m.colorB = noColor;
-                            processHighlights(m);
-                            model.add(m);
-                            pos += line.length() + 1;
-                        }
-                    }
-                    if (diff.b != null) {
-                        int pos = 0;
-                        for (String line : diff.b) {
-                            DiffInfoModel m = new DiffInfoModel();
-                            m.lineNumberB = String.valueOf(++lineNumberB);
-                            if (diff.editB != null) {
-                                Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                                int s2 = 0;
-                                for (ArrayList<Integer> intra : diff.editB) {
-                                    int s1 = s2 + intra.get(0);
-                                    s2 = s1 + intra.get(1);
-                                    int l = pos + line.length();
-                                    if ((s1 >= pos && s1 <= l) || (s2 >= pos && s2 <= l)
-                                            || (s1 <= pos && s2 >= l)) {
-                                        span.setSpan(new BackgroundColorSpan(addedFgColor),
-                                                Math.max(pos, s1) - pos, Math.min(l, s2) - pos,
-                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                    }
-                                }
-                                m.lineB = span;
-                            } else {
-                                // No intraline data, but it still could differ at start or at end
-                                if (diff.a != null && diff.b != null
-                                        && diff.a.length == 1 && diff.b.length == 1) {
-                                    Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                                    int z = diff.b[0].indexOf(diff.a[0]);
-                                    if (z != -1) {
-                                        if (z > 0) {
-                                            span.setSpan(new BackgroundColorSpan(addedFgColor),
-                                                    0, z, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        }
-                                        if (z + diff.a[0].length() < diff.b[0].length()) {
-                                            z = z + diff.a[0].length();
-                                            span.setSpan(new BackgroundColorSpan(addedFgColor),
-                                                    z, diff.b[0].length(),
-                                                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                        }
-                                    }
-                                    m.lineB = span;
-                                } else {
-                                    m.lineB = prepareTabs(line);
-                                }
-                            }
-                            m.colorA = addedBgColor;
-                            m.colorB = noColor;
-                            processHighlights(m);
-                            model.add(m);
-                            pos += line.length() + 1;
-                        }
-                    }
-                }
-                j++;
-            }
-            return model;
-        }
-
-        private void processHighlights(DiffInfoModel model) {
-            if (model.lineA != null) {
-                model.lineA = processHighlightTrailingSpaces(processHighlightTabs(model.lineA));
-            }
-            if (model.lineB != null) {
-                model.lineB = processHighlightTrailingSpaces(processHighlightTabs(model.lineB));
-            }
-        }
-
-        private CharSequence processHighlightTabs(CharSequence text) {
-            if (!mHighlightTabs || !text.toString().contains("\u0001")) {
-                return text;
-            }
-
-            int color = ContextCompat.getColor(getContext(), R.color.diffHighlightColor);
-            SpannableStringBuilder ssb = new SpannableStringBuilder(text);
-            String line = text.toString();
-            int index = line.length();
-            while ((index = line.lastIndexOf(StringHelper.NON_PRINTABLE_CHAR, index)) != -1) {
-                ssb.replace(index, index + 1, "\u00BB    ");
-                ssb.setSpan(new ForegroundColorSpan(color),
-                        index, index + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.setSpan(new StyleSpan(Typeface.BOLD),
-                        index, index + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                index--;
-            }
-            return ssb;
-        }
-
-        private CharSequence processHighlightTrailingSpaces(CharSequence text) {
-            if (!mHighlightTrailingWhitespaces) {
-                return text;
-            }
-
-            int color = ContextCompat.getColor(getContext(), R.color.diffHighlightColor);
-            final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
-            String line = text.toString();
-            final Matcher matcher = HIGHLIGHT_TRAIL_SPACES_PATTERN.matcher(line);
-            if (matcher.find()) {
-                int start = matcher.start();
-                int end = matcher.end();
-                Spannable span = spannableFactory.newSpannable(line);
-                span.setSpan(new BackgroundColorSpan(color),
-                        start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                return span;
-            }
-            return text;
-        }
-
-        private String prepareTabs(String line) {
-            return line.replaceAll("\t", StringHelper.NON_PRINTABLE_CHAR);
-        }
-
-        private List<AbstractModel> processComments(List<AbstractModel> model) {
-            if (mComments != null) {
-                // Comments on A
-                if (mComments.second != null) {
-                    addCommentsToModel(model, mComments.first, true, false);
-                }
-
-                // Comments on B
-                if (mComments.second != null) {
-                    addCommentsToModel(model, mComments.second, false, false);
-                }
-            }
-            return model;
-        }
-
-        private List<AbstractModel> processDrafts(List<AbstractModel> model) {
-            if (mDrafts != null) {
-                // Comments on A
-                if (mDrafts.second != null) {
-                    addCommentsToModel(model, mDrafts.first, true, true);
-                }
-
-                // Comments on B
-                if (mDrafts.second != null) {
-                    addCommentsToModel(model, mDrafts.second, false, true);
-                }
-            }
-            return model;
-        }
-
-        private void addCommentsToModel(List<AbstractModel> model,
-                List<CommentInfo> comments, boolean isA, boolean isDraft) {
-            if (comments == null) {
-                return;
-            }
-            int count = comments.size();
-            for (int i = 0; i < count; i++) {
-                CommentInfo comment = comments.get(i);
-                int pos = findLineInModel(model, isA, comment.line);
-                if (pos != -1) {
-                    if (mMode == UNIFIED_MODE) {
-                        CommentModel commentModel = new CommentModel();
-                        commentModel.isDraft = isDraft;
-                        commentModel.commentA = comment;
-                        int nextPos = findNextPositionWithoutComment(model, pos);
-                        if (nextPos != -1) {
-                            model.add(nextPos, commentModel);
-                        } else {
-                            model.add(pos + 1, commentModel);
-                        }
-                    } else {
-                        int reusablePos = findReusableCommentView(model, pos, isA);
-                        if (reusablePos != -1) {
-                            CommentModel commentModel = (CommentModel) model.get(reusablePos);
-                            commentModel.isDraft = isDraft;
-                            if (isA) {
-                                commentModel.commentA = comment;
-                            } else {
-                                commentModel.commentB = comment;
-                            }
-                        } else {
-                            CommentModel commentModel = new CommentModel();
-                            commentModel.isDraft = isDraft;
-                            if (isA) {
-                                commentModel.commentA = comment;
-                            } else {
-                                commentModel.commentB = comment;
-                            }
-                            int nextPos = findNextPositionWithoutComment(model, pos);
-                            if (nextPos != -1) {
-                                model.add(nextPos, commentModel);
-                            } else {
-                                model.add(pos + 1, commentModel);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private int findLineInModel(List<AbstractModel> model, boolean isA, int line) {
-            int count = model.size();
-            for (int i = 0; i < count; i++) {
-                AbstractModel m = model.get(i);
-                if (m instanceof DiffInfoModel) {
-                    DiffInfoModel diff = (DiffInfoModel) m;
-                    if (isA && diff.lineNumberA != null
-                            && Integer.valueOf(diff.lineNumberA) == line) {
-                        return i;
-                    } else if (!isA && diff.lineNumberB != null
-                            && Integer.valueOf(diff.lineNumberB) == line) {
-                        return i;
-                    }
-                }
-            }
-            return -1;
-        }
-
-        private int findReusableCommentView(List<AbstractModel> model, int pos, boolean isA) {
-            int count = model.size();
-            for (int i = pos + 1; i < count; i++) {
-                AbstractModel m = model.get(i);
-                if (!(m instanceof CommentModel)) {
-                    break;
-                }
-
-                CommentModel comment = (CommentModel) m;
-                if ((isA && comment.commentA == null && comment.commentB != null)
-                        || (!isA && comment.commentB == null && comment.commentA != null)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        private int findNextPositionWithoutComment(List<AbstractModel> model, int pos) {
-            int count = model.size();
-            for (int i = pos + 1; i < count; i++) {
-                AbstractModel m = model.get(i);
-                if (!(m instanceof CommentModel)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-    }
-
+    };
 
     private final RecyclerView mRecyclerView;
     private DiffAdapter mDiffAdapter;
@@ -1112,7 +549,8 @@ public class DiffView extends FrameLayout {
             mTask.cancel(true);
         }
 
-        mTask = new AsyncDiffProcessor(mDiffMode, mAllDiffs, mComments, mDrafts);
+        mTask = new AsyncDiffProcessor(getContext(), mDiffMode, mAllDiffs, mComments,
+                mDrafts, mHighlightTabs, mHighlightTrailingWhitespaces, mProcessorListener);
         mTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
