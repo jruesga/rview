@@ -28,8 +28,24 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     private boolean mCanScrollHorizontally;
     private boolean mCanScrollVertically;
 
+    private int mPrefetchedMeasuredWidth;
+    private int mPrefetchedMeasuredHeight;
+
     public UnwrappedLinearLayoutManager(Context context) {
+        this(context, -1, -1);
+    }
+
+    public UnwrappedLinearLayoutManager(Context context,
+            int prefetchedMeasuredChildWidth, int prefetchedMeasuredChildHeight) {
         super(context);
+    }
+
+    public void setPrefetchedMeasuredWidth(int prefetchedMeasuredWidth) {
+        mPrefetchedMeasuredWidth = prefetchedMeasuredWidth;
+    }
+
+    public void setPrefetchedMeasuredHeight(int prefetchedMeasuredHeight) {
+        mPrefetchedMeasuredHeight = prefetchedMeasuredHeight;
     }
 
     @Override
@@ -203,6 +219,10 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     }
 
     private int getMeasuredChildWidth(ViewGroup v) {
+        if (mPrefetchedMeasuredWidth != -1) {
+            return mPrefetchedMeasuredWidth;
+        }
+
         int count = v.getChildCount();
         int width = 0;
         for (int i = 0; i < count; i++) {
@@ -215,6 +235,10 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     }
 
     private int getMeasuredChildHeight(ViewGroup v) {
+        if (mPrefetchedMeasuredHeight != -1) {
+            return mPrefetchedMeasuredHeight;
+        }
+
         int count = v.getChildCount();
         int height = 0;
         for (int i = 0; i < count; i++) {

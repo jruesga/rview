@@ -384,6 +384,18 @@ public class DiffView extends FrameLayout {
                         mDiffViewMeasurement.lineWidth = (getWidth() - decorWidth) / 2;
                     }
                 }
+
+                // Update prefetch width to improve performance
+                if (mLayoutManager instanceof UnwrappedLinearLayoutManager) {
+                    ((UnwrappedLinearLayoutManager) mLayoutManager).setPrefetchedMeasuredWidth(
+                            (int) Math.ceil(mDiffViewMeasurement.width));
+                }
+
+            } else {
+                // Remove prefetched width
+                if (mLayoutManager instanceof UnwrappedLinearLayoutManager) {
+                    ((UnwrappedLinearLayoutManager) mLayoutManager).setPrefetchedMeasuredWidth(-1);
+                }
             }
         }
     }
