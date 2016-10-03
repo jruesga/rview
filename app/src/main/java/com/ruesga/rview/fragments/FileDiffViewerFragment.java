@@ -189,7 +189,7 @@ public class FileDiffViewerFragment extends Fragment {
         return fragment;
     }
 
-    public void update() {
+    private void update() {
         if (mResponse != null) {
             mHandler.postDelayed(() ->
                 mBinding.diff

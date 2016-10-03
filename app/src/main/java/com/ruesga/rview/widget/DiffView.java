@@ -264,6 +264,7 @@ public class DiffView extends FrameLayout {
                 if (mCanEdit) {
                     holder.mBinding.setHandlers(mEventHandlers);
                 }
+                holder.mBinding.executePendingBindings();
 
             } else if (vh instanceof DiffSkipViewHolder) {
                 DiffSkipViewHolder holder = ((DiffSkipViewHolder) vh);
@@ -272,6 +273,7 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setMode(mMode);
                 holder.mBinding.setModel(skip);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
+                holder.mBinding.executePendingBindings();
 
             } else if (vh instanceof DiffCommentViewHolder) {
                 DiffCommentViewHolder holder = ((DiffCommentViewHolder) vh);
@@ -288,6 +290,7 @@ public class DiffView extends FrameLayout {
                 if (comment.commentB != null) {
                     holder.mBinding.actionsB.edit.setTag(R.id.tag_key, comment.commentB.message);
                 }
+                holder.mBinding.executePendingBindings();
             }
         }
 

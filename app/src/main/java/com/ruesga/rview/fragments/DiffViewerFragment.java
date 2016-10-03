@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
@@ -146,9 +147,10 @@ public class DiffViewerFragment extends Fragment {
                 }
             }
 
-            // Close the drawer and force a refresh of the UI
+            // Close the drawer and force a refresh of the UI (give some time to
+            // ensure the drawer is closed)
             ((BaseActivity) getActivity()).closeOptionsDrawer();
-            forceRefresh();
+            mHandler.postDelayed(() -> forceRefresh(), 250L);
             return true;
         }
     };
@@ -179,6 +181,7 @@ public class DiffViewerFragment extends Fragment {
     private EventHandlers mEventHandlers;
 
     private WeakReference<FileDiffViewerFragment> mFragment;
+    private Handler mHandler;
 
     private ChangeInfo mChange;
     private final List<String> mFiles = new ArrayList<>();
@@ -210,6 +213,7 @@ public class DiffViewerFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEventHandlers = new EventHandlers(this);
+        mHandler = new Handler();
 
         Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
         mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
