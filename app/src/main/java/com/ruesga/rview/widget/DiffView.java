@@ -364,22 +364,19 @@ public class DiffView extends FrameLayout {
 
                 // Adjust padding
                 mDiffViewMeasurement.lineNumWidth += (padding * 2f);
-                float diffIndicatorWidth = 16f * dp;
-                int separators = mMode == UNIFIED_MODE ? 2 : 3;
-                mDiffViewMeasurement.width =
-                        2 * mDiffViewMeasurement.lineNumWidth +
-                        (mMode == UNIFIED_MODE ? 1 : 2) * mDiffViewMeasurement.lineWidth +
-                        diffIndicatorWidth + (dp * separators);
+                float diffIndicatorWidth = mMode == UNIFIED_MODE ? 16f * dp : 0;
+                float separatorWidth = (mMode == UNIFIED_MODE ? 2 : 3) * dp;
+                float decorWidth = 2 * mDiffViewMeasurement.lineNumWidth +
+                        diffIndicatorWidth + separatorWidth;
+
+                mDiffViewMeasurement.width = decorWidth +
+                        (mMode == UNIFIED_MODE ? 1 : 2) * mDiffViewMeasurement.lineWidth;
 
                 if (mDiffViewMeasurement.width < getWidth()) {
                     mDiffViewMeasurement.width = getWidth();
                     if (mMode == UNIFIED_MODE) {
-                        mDiffViewMeasurement.lineWidth = getWidth() -
-                                2 * mDiffViewMeasurement.lineNumWidth -
-                                diffIndicatorWidth - (dp * separators);
+                        mDiffViewMeasurement.lineWidth = getWidth() - decorWidth;
                     } else {
-                        float decorWidth = 2 * mDiffViewMeasurement.lineNumWidth +
-                                diffIndicatorWidth + (dp * separators);
                         mDiffViewMeasurement.lineWidth = (getWidth() - decorWidth) / 2;
                     }
                 }

@@ -96,7 +96,7 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="12sp"
                 android:gravity="center_horizontal"
-                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.INVISIBLE}"
+                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
                 android:text='@{model.lineNumberA != null &amp;&amp; model.lineNumberB != null ? " " : model.lineNumberA != null ? "-" : "+"}'/>
 
             <com.ruesga.rview.widget.StyleableTextView
@@ -161,7 +161,7 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="12sp"
                 android:gravity="center_horizontal"
-                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.INVISIBLE}"/>
+                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"/>
 
             <com.ruesga.rview.widget.StyleableTextView
                 android:id="@+id/diffB"
