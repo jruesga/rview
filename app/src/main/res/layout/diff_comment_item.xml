@@ -90,7 +90,7 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="12sp"
                 android:gravity="center_horizontal"
-                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.INVISIBLE}"/>
+                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"/>
 
             <FrameLayout
                 android:layout_width="0dp"
@@ -212,7 +212,7 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="12sp"
                 android:gravity="center_horizontal"
-                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.INVISIBLE}"/>
+                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"/>
 
             <FrameLayout
                 android:layout_width="0dp"
