@@ -715,6 +715,10 @@ public class ChangeDetailsFragment extends Fragment {
         mLegacyChangeId = getArguments().getInt(
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mPicasso = PicassoHelper.getPicassoClient(getContext());
+
+        if (savedInstanceState != null) {
+            mCurrentRevision = savedInstanceState.getString("current_revision", null);
+        }
     }
 
     @Nullable
@@ -741,6 +745,8 @@ public class ChangeDetailsFragment extends Fragment {
 
         Map<String, Integer> review = mBinding.reviewInfo.reviewLabels.getReview(false);
         outState.putString("review", SerializationManager.getInstance().toJson(review));
+        outState.putString("current_revision", mCurrentRevision);
+
     }
 
     @Override
