@@ -73,7 +73,6 @@ import com.ruesga.rview.gerrit.model.RestoreInput;
 import com.ruesga.rview.gerrit.model.RevertInput;
 import com.ruesga.rview.gerrit.model.ReviewInfo;
 import com.ruesga.rview.gerrit.model.ReviewInput;
-import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
@@ -100,7 +99,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -134,9 +132,6 @@ public class ChangeDetailsFragment extends Fragment {
     private static final List<ChangeOptions> MESSAGES_OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.MESSAGES);
-    }};
-    private static final List<ChangeOptions> ACTIONS_OPTIONS = new ArrayList<ChangeOptions>() {{
-        add(ChangeOptions.CHANGE_ACTIONS);
     }};
 
     private static final int DIFF_REQUEST_CODE = 99;
@@ -519,37 +514,8 @@ public class ChangeDetailsFragment extends Fragment {
     private final RxLoaderObserver<ReviewInfo> mReviewObserver = new RxLoaderObserver<ReviewInfo>() {
         @Override
         public void onNext(ReviewInfo review) {
-            // Check that structures were dimensioned correctly
-            if (mResponse.mChange.reviewers == null) {
-                mResponse.mChange.reviewers = new LinkedHashMap<>();
-                mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER, null);
-            }
-            if (mResponse.mChange.labels == null) {
-                mResponse.mChange.labels = new LinkedHashMap<>();
-            }
-
-
-            ReviewerInfo reviewer = ModelHelper.createReviewer(mAccount.mAccount, review) ;
-            // Update reviewers
-            AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
-            mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
-                    ModelHelper.addReviewers(new ReviewerInfo[]{reviewer}, reviewers));
-            // Update labels
-            for (String label : review.labels.keySet()) {
-                if (!mResponse.mChange.labels.containsKey(label)) {
-                    mResponse.mChange.labels.put(label, null);
-                }
-                ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
-                mResponse.mChange.labels.get(label).all =
-                        ModelHelper.updateApprovals(
-                                new ReviewerInfo[]{reviewer}, label, approvals);
-            }
-
-            // Refresh messages and actions
-            updateChangeInfo(mResponse);
-            updateReviewInfo(mResponse);
-            performMessagesRefresh();
-            performActionsRefresh();
+            // Fetch the whole change
+            forceRefresh();
 
             // Clean the message box
             mBinding.reviewInfo.reviewComment.setText(null);
@@ -602,20 +568,6 @@ public class ChangeDetailsFragment extends Fragment {
             Map<String, FileInfo> files = mResponse.mChange.revisions.get(mCurrentRevision).files;
             mModel.filesListModel.visible = files != null && !files.isEmpty();
             mFileAdapter.update(files, mResponse.mInlineComments, mResponse.mDraftComments);
-        }
-
-        @Override
-        public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
-        }
-    };
-
-    private final RxLoaderObserver<Map<String, ActionInfo>> mActionsRefreshObserver
-            = new RxLoaderObserver<Map<String, ActionInfo>>() {
-        @Override
-        public void onNext(Map<String, ActionInfo> actions) {
-            mResponse.mChange.actions = actions;
-            updateChangeInfo(mResponse);
         }
 
         @Override
@@ -742,7 +694,6 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader1<String, String> mChangeTopicLoader;
     private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
     private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
-    private RxLoader<Map<String, ActionInfo>> mActionsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
     private int mLegacyChangeId;
 
@@ -860,8 +811,6 @@ public class ChangeDetailsFragment extends Fragment {
                     "remove_reviewer", this::removeReviewer, mRemoveReviewerObserver);
             mMessagesRefreshLoader = loaderManager.create(
                     "messages_refresh", fetchMessages(), mMessagesRefreshObserver);
-            mActionsRefreshLoader = loaderManager.create(
-                    "actions_refresh", fetchActions(), mActionsRefreshObserver);
             mActionLoader = loaderManager.create(
                     "action", this::doAction, mActionObserver);
             mDraftsRefreshLoader = loaderManager.create(
@@ -1092,28 +1041,6 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Map<String, ActionInfo>> fetchActions() {
-        final Context ctx = getActivity();
-        final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
-            final ChangeInfo change = api.getChange(
-                    String.valueOf(mLegacyChangeId), ACTIONS_OPTIONS)
-                    .toBlocking().first();
-            Map<String, ActionInfo> actions =
-                    api.getChangeRevisionActions(String.valueOf(mLegacyChangeId),
-                        mCurrentRevision).toBlocking().first();
-            if (actions == null) {
-                actions = change.actions;
-            } else {
-                actions.putAll(change.actions);
-            }
-            return actions;
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    @SuppressWarnings("ConstantConditions")
     private Observable<Object> doAction(final String action, final String[] params) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -1284,12 +1211,6 @@ public class ChangeDetailsFragment extends Fragment {
     private void performDraftsRefresh() {
         if (!mModel.isLocked) {
             mDraftsRefreshLoader.restart();
-        }
-    }
-
-    private void performActionsRefresh() {
-        if (!mModel.isLocked) {
-            mActionsRefreshLoader.restart();
         }
     }
 
