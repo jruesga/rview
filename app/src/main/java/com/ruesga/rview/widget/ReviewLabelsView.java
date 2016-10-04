@@ -89,11 +89,11 @@ public class ReviewLabelsView extends LinearLayout {
         addView(mScoresLayout, new LinearLayoutCompat.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
     }
 
-    public ReviewLabelsView from(ChangeInfo change) {
+    public ReviewLabelsView from(ChangeInfo change, Map<String, Integer> review) {
         mLabels.clear();
         mLabels.addAll(ModelHelper.sortPermittedLabels(change.permittedLabels));
         updateLabels();
-        updateScores(change);
+        updateScores(change, review);
         return this;
     }
 
@@ -139,7 +139,7 @@ public class ReviewLabelsView extends LinearLayout {
         }
     }
 
-    private void updateScores(ChangeInfo change) {
+    private void updateScores(ChangeInfo change, Map<String, Integer> savedReview) {
         List<Integer> allScores = computeAllScores(change);
 
         int count = mLabels.size();
@@ -158,9 +158,17 @@ public class ReviewLabelsView extends LinearLayout {
             if (scores == null) {
                 scores = new Integer[0];
             }
+
+            Integer value;
+            if (savedReview != null) {
+                value = savedReview.get(label);
+            } else {
+                value = computeValue(change, label);
+            }
+
             view.withAllValues(allScores)
                 .withPermittedValues(Arrays.asList(scores))
-                .withValue(computeValue(change, label))
+                .withValue(value)
                 .listenTo(mScoreChangedListener)
                 .update();
             view.setVisibility(View.VISIBLE);
@@ -193,7 +201,7 @@ public class ReviewLabelsView extends LinearLayout {
         }
 
         ApprovalInfo[] approvals = change.labels.get(label).all;
-        if (approvals == null ||approvals.length == 0) {
+        if (approvals == null || approvals.length == 0) {
             return null;
         }
         for (ApprovalInfo approval : approvals) {
@@ -204,4 +212,5 @@ public class ReviewLabelsView extends LinearLayout {
 
         return null;
     }
+
 }

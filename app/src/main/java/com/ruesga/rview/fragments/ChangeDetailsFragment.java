@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.PatchSetsAdapter;
@@ -61,6 +62,7 @@ import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.CherryPickInput;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
+import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.FileInfo;
@@ -85,8 +87,10 @@ import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
@@ -94,6 +98,7 @@ import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -744,6 +749,8 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader2<String, String[], Object> mActionLoader;
     private int mLegacyChangeId;
 
+    private Map<String, Integer> savedReview;
+
     private Account mAccount;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
@@ -770,14 +777,22 @@ public class ChangeDetailsFragment extends Fragment {
                 inflater, R.layout.change_details_fragment, container, false);
         mBinding.setModel(mModel);
         mBinding.refresh.setEnabled(false);
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Map<String, Integer> review = mBinding.reviewInfo.reviewLabels.getReview(false);
+        outState.putString("review", SerializationManager.getInstance().toJson(review));
     }
 
     @Override
@@ -788,7 +803,7 @@ public class ChangeDetailsFragment extends Fragment {
         }
     }
 
-    private void startLoadersWithValidContext() {
+    private void startLoadersWithValidContext(Bundle savedInstanceState) {
         if (getActivity() == null) {
             return;
         }
@@ -821,6 +836,15 @@ public class ChangeDetailsFragment extends Fragment {
             mBinding.messageInfo.list.addItemDecoration(messageDivider);
             mBinding.messageInfo.list.setNestedScrollingEnabled(false);
             mBinding.messageInfo.list.setAdapter(mMessageAdapter);
+
+            // Restore user temporary review state
+            if (savedInstanceState != null) {
+                String review = savedInstanceState.getString("review", null);
+                if (review != null) {
+                    Type type = new TypeToken<Map<String, Integer>>(){}.getType();
+                    savedReview = SerializationManager.getInstance().fromJson(review, type);
+                }
+            }
 
             // Configure the refresh
             setupSwipeToRefresh();
@@ -899,7 +923,8 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.reviewInfo.setHandlers(mEventHandlers);
         mBinding.reviewInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
-        mBinding.reviewInfo.reviewLabels.from(response.mChange);
+        mBinding.reviewInfo.reviewLabels.from(response.mChange, savedReview);
+        savedReview = null;
     }
 
     private int computeMaxRevisionNumber(Collection<RevisionInfo> revisions) {
@@ -1135,7 +1160,7 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void forceRefresh() {
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(null);
         mChangeLoader.restart(String.valueOf(mLegacyChangeId));
     }
 
