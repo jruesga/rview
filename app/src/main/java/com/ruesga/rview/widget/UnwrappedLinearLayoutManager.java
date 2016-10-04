@@ -143,12 +143,6 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     }
 
     @Override
-    public void onScrollStateChanged(int state) {
-        super.onScrollStateChanged(state);
-        System.out.println("jrc: scroll changed: " + state);
-    }
-
-    @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
         if (getOrientation() == LinearLayoutManager.VERTICAL) {
