@@ -569,6 +569,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         RxLoader<Boolean> loader =  forward
                 ? mLoaders[mCurrentPage].second : mLoaders[mCurrentPage].first;
         if (loader != null) {
+            loader.clear();
             loader.restart();
         } else {
             // Run directly

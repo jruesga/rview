@@ -99,6 +99,7 @@ public class FileDiffViewerFragment extends Fragment {
         public void onNext(Object value) {
             // Force refresh
             mForceRefresh = true;
+            mLoader.clear();
             mLoader.restart();
         }
 
@@ -114,20 +115,27 @@ public class FileDiffViewerFragment extends Fragment {
             final String baseRevision = mBase == null ? "0" : mBase;
             String rev = left ? baseRevision : mRevision;
             performDraftMessageDialog(v, null,
-                    newValue -> mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
-                            new String[]{rev, null, String.valueOf(line), newValue}));
+                    newValue -> {
+                        mActionLoader.clear();
+                        mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
+                            new String[]{rev, null, String.valueOf(line), newValue});
+                    });
         }
 
         @Override
         public void onReply(View v, String revisionId, String commentId, int line) {
             performDraftMessageDialog(v, null,
-                    newValue -> mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
-                        new String[]{revisionId, commentId, String.valueOf(line), newValue}));
+                    newValue -> {
+                        mActionLoader.clear();
+                        mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
+                            new String[]{revisionId, commentId, String.valueOf(line), newValue}) ;
+                    });
         }
 
         @Override
         public void onDone(View v, String revisionId, String commentId, int line) {
             String msg = getString(R.string.draft_reply_done);
+            mActionLoader.clear();
             mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
                     new String[]{revisionId, commentId, String.valueOf(line), msg});
         }
@@ -136,13 +144,17 @@ public class FileDiffViewerFragment extends Fragment {
         public void onEditDraft(View v, String revisionId, String draftId,
                 String inReplyTo, int line, String msg) {
             performDraftMessageDialog(v, msg,
-                    newValue -> mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
+                    newValue -> {
+                        mActionLoader.clear();
+                        mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
                             new String[]{revisionId, draftId,
-                                    inReplyTo, String.valueOf(line), newValue}));
+                                    inReplyTo, String.valueOf(line), newValue});
+                    });
         }
 
         @Override
         public void onDeleteDraft(View v, String revisionId, String draftId) {
+            mActionLoader.clear();
             mActionLoader.restart(ModelHelper.ACTION_DELETE_DRAFT,
                     new String[]{revisionId, draftId});
         }

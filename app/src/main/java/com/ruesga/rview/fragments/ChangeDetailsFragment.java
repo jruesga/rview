@@ -1085,6 +1085,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void forceRefresh() {
         startLoadersWithValidContext(null);
+        mChangeLoader.clear();
         mChangeLoader.restart(String.valueOf(mLegacyChangeId));
     }
 
@@ -1174,12 +1175,14 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performStarred(boolean starred) {
         if (!mModel.isLocked) {
+            mStarredLoader.clear();
             mStarredLoader.restart(starred);
         }
     }
 
     private void performChangeTopic(String newTopic) {
         if (!mModel.isLocked) {
+            mChangeTopicLoader.clear();
             mChangeTopicLoader.restart(newTopic);
         }
     }
@@ -1192,24 +1195,28 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performAddReviewer(String reviewer) {
         if (!mModel.isLocked) {
+            mAddReviewerLoader.clear();
             mAddReviewerLoader.restart(reviewer);
         }
     }
 
     private void performRemoveAccount(AccountInfo account) {
         if (!mModel.isLocked) {
+            mRemoveReviewerLoader.clear();
             mRemoveReviewerLoader.restart(account);
         }
     }
 
     private void performMessagesRefresh() {
         if (!mModel.isLocked) {
+            mMessagesRefreshLoader.clear();
             mMessagesRefreshLoader.restart();
         }
     }
 
     private void performDraftsRefresh() {
         if (!mModel.isLocked) {
+            mDraftsRefreshLoader.clear();
             mDraftsRefreshLoader.restart();
         }
     }
@@ -1231,6 +1238,7 @@ public class ChangeDetailsFragment extends Fragment {
             }
             input.notify = NotifyType.ALL;
 
+            mReviewLoader.clear();
             mReviewLoader.restart(input);
         }
     }
@@ -1366,43 +1374,57 @@ public class ChangeDetailsFragment extends Fragment {
             String hint;
             switch (v.getId()) {
                 case R.id.cherrypick:
-                      performShowCherryPickDialog(v, o -> {
+                    performShowCherryPickDialog(v, o -> {
                           String[] result = (String[]) o;
+                          mActionLoader.clear();
                           mActionLoader.restart(ModelHelper.ACTION_CHERRY_PICK,
                                   new String[]{result[0], result[1]});
-                      });
+                    });
                     break;
 
                 case R.id.rebase:
-                    performShowChooseBaseDialog(v, o -> mActionLoader.restart(
-                            ModelHelper.ACTION_REBASE, new String[]{(String) o}));
+                    performShowChooseBaseDialog(v, o -> {
+                            mActionLoader.clear();
+                            mActionLoader.restart(
+                                ModelHelper.ACTION_REBASE, new String[]{(String) o});
+                            });
                     break;
 
                 case R.id.abandon:
                     action = getString(R.string.change_action_abandon);
                     hint = getString(R.string.actions_message_hint);
                     performShowRequestMessageDialog(v, action, action, hint, true,
-                            newValue -> mActionLoader.restart(
-                                    ModelHelper.ACTION_ABANDON, new String[]{newValue}));
+                            newValue -> {
+                                mActionLoader.clear();
+                                mActionLoader.restart(
+                                    ModelHelper.ACTION_ABANDON, new String[]{newValue});
+                            });
                     break;
 
                 case R.id.restore:
                     action = getString(R.string.change_action_restore);
                     hint = getString(R.string.actions_message_hint);
                     performShowRequestMessageDialog(v, action, action, hint, true,
-                            newValue -> mActionLoader.restart(
-                                    ModelHelper.ACTION_RESTORE, new String[]{newValue}));
+                            newValue -> {
+                                mActionLoader.clear();
+                                mActionLoader.restart(
+                                    ModelHelper.ACTION_RESTORE, new String[]{newValue});
+                            });
                     break;
 
                 case R.id.revert:
                     action = getString(R.string.change_action_revert);
                     hint = getString(R.string.actions_message_hint);
                     performShowRequestMessageDialog(v, action, action, hint, true,
-                            newValue -> mActionLoader.restart(
-                                    ModelHelper.ACTION_REVERT, new String[]{newValue}));
+                            newValue -> {
+                                mActionLoader.clear();
+                                mActionLoader.restart(
+                                    ModelHelper.ACTION_REVERT, new String[]{newValue});
+                            });
                     break;
 
                 case R.id.publish_draft:
+                    mActionLoader.clear();
                     mActionLoader.restart(ModelHelper.ACTION_PUBLISH_DRAFT, null);
                     break;
 
@@ -1410,8 +1432,10 @@ public class ChangeDetailsFragment extends Fragment {
                     AlertDialog dialog = new AlertDialog.Builder(getContext())
                             .setTitle(R.string.delete_draft_change_title)
                             .setMessage(R.string.delete_draft_change_confirm)
-                            .setPositiveButton(android.R.string.ok, (dialog1, which) ->
-                                    mActionLoader.restart(ModelHelper.ACTION_DELETE_CHANGE, null))
+                            .setPositiveButton(android.R.string.ok, (dialog1, which) -> {
+                                    mActionLoader.clear();
+                                    mActionLoader.restart(ModelHelper.ACTION_DELETE_CHANGE, null);
+                                })
                             .setNegativeButton(android.R.string.cancel, null)
                             .create();
                     dialog.show();
@@ -1421,11 +1445,15 @@ public class ChangeDetailsFragment extends Fragment {
                     action = getString(R.string.change_action_follow_up);
                     hint = getString(R.string.actions_message_hint);
                     performShowRequestMessageDialog(v, action, action, hint, false,
-                            newValue -> mActionLoader.restart(
-                                    ModelHelper.ACTION_FOLLOW_UP, new String[]{newValue}));
+                            newValue -> {
+                                mActionLoader.clear();
+                                mActionLoader.restart(
+                                    ModelHelper.ACTION_FOLLOW_UP, new String[]{newValue});
+                            });
                     break;
 
                 case R.id.submit:
+                    mActionLoader.clear();
                     mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
                     break;
             }

@@ -70,6 +70,7 @@ public class ChangeListByFilterFragment extends ChangeListFragment {
         final int count = Preferences.getAccountFetchedItems(
                 getContext(), Preferences.getAccount(getContext()));
         final int start = 0;
+        getChangesLoader().clear();
         getChangesLoader().restart(count, start);
     }
 
@@ -80,6 +81,7 @@ public class ChangeListByFilterFragment extends ChangeListFragment {
                 getContext(), Preferences.getAccount(getContext()));
         final int count = itemsToFetch + FETCHED_MORE_CHANGES_THRESHOLD;
         final int start = getCurrentData(false).size() - FETCHED_MORE_CHANGES_THRESHOLD;
+        getChangesLoader().clear();
         getChangesLoader().restart(count, start);
     }
 

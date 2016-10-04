@@ -70,6 +70,7 @@ public class RevisionRelatedChangesFragment extends ChangeListFragment {
 
     @Override
     public void fetchNewItems() {
+        getChangesLoader().clear();
         getChangesLoader().restart(0, 0);
     }
 
