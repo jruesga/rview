@@ -130,7 +130,7 @@
                             android:gravity="center_vertical"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?android:attr/textColorSecondary"
@@ -142,16 +142,6 @@
                             android:textIsSelectable="true"
                             app:prettyDateTime="@{model.commentA.updated}"
                             android:gravity="center_vertical"/>
-
-                        <include
-                            android:id="@+id/actionsA"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            layout="@layout/diff_comment_item_actions"
-                            app:canEdit="@{canEdit}"
-                            app:isDraft="@{model.isDraft}"
-                            app:model="@{model.commentA}"
-                            app:handlers="@{handlers}"/>
                     </LinearLayout>
 
                     <com.ruesga.rview.widget.StyleableTextView
@@ -166,6 +156,16 @@
                         android:textIsSelectable="true"
                         android:text="@{model.commentA.message}"
                         android:gravity="center_vertical"/>
+
+                    <include
+                        android:id="@+id/actionsA"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        layout="@layout/diff_comment_item_actions"
+                        app:canEdit="@{canEdit}"
+                        app:isDraft="@{model.isDraft}"
+                        app:model="@{model.commentA}"
+                        app:handlers="@{handlers}"/>
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
@@ -252,9 +252,8 @@
                             android:gravity="center_vertical"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?android:attr/textColorSecondary"
                             android:layout_marginStart="8dp"
@@ -265,16 +264,6 @@
                             android:textIsSelectable="true"
                             app:prettyDateTime="@{model.commentB.updated}"
                             android:gravity="center_vertical"/>
-
-                        <include
-                            android:id="@+id/actionsB"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            layout="@layout/diff_comment_item_actions"
-                            app:canEdit="@{canEdit}"
-                            app:isDraft="@{model.isDraft}"
-                            app:model="@{model.commentB}"
-                            app:handlers="@{handlers}" />
                     </LinearLayout>
 
                     <com.ruesga.rview.widget.StyleableTextView
@@ -289,6 +278,16 @@
                         android:textIsSelectable="true"
                         android:text="@{model.commentB.message}"
                         android:gravity="center_vertical"/>
+
+                    <include
+                        android:id="@+id/actionsB"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        layout="@layout/diff_comment_item_actions"
+                        app:canEdit="@{canEdit}"
+                        app:isDraft="@{model.isDraft}"
+                        app:model="@{model.commentB}"
+                        app:handlers="@{handlers}" />
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>
