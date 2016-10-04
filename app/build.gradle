@@ -28,6 +28,7 @@ dependencies {
     compile "com.android.support:preference-v14:${libraries.support}"
     compile "com.android.support:design:${libraries.support}"
     compile "com.android.support:customtabs:${libraries.support}"
+    compile "com.google.code.gson:gson:${libraries.gson}"
     compile "io.reactivex:rxjava:${libraries.rxjava}"
     compile "io.reactivex:rxandroid:${libraries.rxandroid}"
     compile("me.tatarka.rxloader:rxloader:${libraries.rxloader}") {
