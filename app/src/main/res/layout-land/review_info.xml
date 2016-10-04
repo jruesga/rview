@@ -67,8 +67,8 @@
                 <View
                     android:layout_width="0.5dp"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginEnd="24dp"
                     android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                     android:background="?android:attr/listDivider"/>
 
