@@ -48,6 +48,10 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
         mPrefetchedMeasuredHeight = prefetchedMeasuredHeight;
     }
 
+    public void requestBindViews() {
+        bindViews();
+    }
+
     @Override
     public boolean canScrollHorizontally() {
         if (!mCanScrollHorizontally) {
@@ -129,18 +133,19 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
         }
         mOffset += delta;
 
-        int start = findFirstVisibleItemPosition();
-        int end = findLastVisibleItemPosition();
-        for (int i = start; i <= end; i++) {
-            View v = findViewByPosition(i);
-            v.setLeft(mOffset);
-        }
+        bindViews();
 
         if (Math.abs(mOffset) >= decoratedWidth) {
             mOffset = -decoratedWidth;
             return 0;
         }
         return -delta;
+    }
+
+    @Override
+    public void onScrollStateChanged(int state) {
+        super.onScrollStateChanged(state);
+        System.out.println("jrc: scroll changed: " + state);
     }
 
     @Override
@@ -178,12 +183,7 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
         }
         mOffset += delta;
 
-        int start = findFirstVisibleItemPosition();
-        int end = findLastVisibleItemPosition();
-        for (int i = start; i <= end; i++) {
-            View v = findViewByPosition(i);
-            v.setTop(mOffset);
-        }
+        bindViews();
 
         if (Math.abs(mOffset) >= decoratedHeight) {
             mOffset = -decoratedHeight;
@@ -195,19 +195,7 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         super.onLayoutChildren(recycler, state);
-
-        int start = findFirstVisibleItemPosition();
-        int end = findLastVisibleItemPosition();
-        for (int i = start; i <= end; i++) {
-            View v = findViewByPosition(i);
-            if (v != null) {
-                if (getOrientation() == LinearLayoutManager.VERTICAL) {
-                    v.setLeft(mOffset);
-                } else {
-                    v.setTop(mOffset);
-                }
-            }
-        }
+        bindViews();
     }
 
     private int getHorizontalSpace() {
@@ -248,5 +236,21 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
             }
         }
         return height;
+    }
+
+    private void bindViews() {
+        int orientation = getOrientation();
+        int start = findFirstVisibleItemPosition();
+        int end = findLastVisibleItemPosition();
+        for (int i = start; i <= end; i++) {
+            View v = findViewByPosition(i);
+            if (v != null) {
+                if (orientation == LinearLayoutManager.VERTICAL) {
+                    v.setLeft(mOffset);
+                } else {
+                    v.setTop(mOffset);
+                }
+            }
+        }
     }
 }

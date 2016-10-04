@@ -275,6 +275,10 @@ public class DiffView extends FrameLayout {
                 }
                 holder.mBinding.executePendingBindings();
             }
+
+            if (mLayoutManager instanceof UnwrappedLinearLayoutManager) {
+                ((UnwrappedLinearLayoutManager) mLayoutManager).requestBindViews();
+            }
         }
 
         @Override
