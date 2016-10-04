@@ -206,6 +206,8 @@ public class ModelHelper {
             if (!exists) {
                 ApprovalInfo approvalInfo = new ApprovalInfo();
                 approvalInfo.owner = reviewer;
+                approvalInfo.date = new Date();
+                approvalInfo.value = reviewer.approvals.get(label);
                 newApprovals.add(approvalInfo);
             }
         }

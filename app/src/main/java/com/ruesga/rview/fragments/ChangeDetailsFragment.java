@@ -66,6 +66,7 @@ import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
+import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.gerrit.model.NotifyType;
 import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RestoreInput;
@@ -97,6 +98,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -515,22 +517,30 @@ public class ChangeDetailsFragment extends Fragment {
     private final RxLoaderObserver<ReviewInfo> mReviewObserver = new RxLoaderObserver<ReviewInfo>() {
         @Override
         public void onNext(ReviewInfo review) {
-            // Update internal objects
-            ReviewerInfo reviever = ModelHelper.createReviewer(mAccount.mAccount, review) ;
-            if (mResponse.mChange.reviewers != null) {
-                // Update reviewers
-                AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
-                mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
-                        ModelHelper.addReviewers(new ReviewerInfo[]{reviever}, reviewers));
+            // Check that structures were dimensioned correctly
+            if (mResponse.mChange.reviewers == null) {
+                mResponse.mChange.reviewers = new LinkedHashMap<>();
+                mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER, null);
             }
-            if (mResponse.mChange.labels != null) {
-                // Update labels
-                for (String label : mResponse.mChange.labels.keySet()) {
-                    ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
-                    mResponse.mChange.labels.get(label).all =
-                            ModelHelper.updateApprovals(
-                                    new ReviewerInfo[]{reviever}, label, approvals);
+            if (mResponse.mChange.labels == null) {
+                mResponse.mChange.labels = new LinkedHashMap<>();
+            }
+
+
+            ReviewerInfo reviewer = ModelHelper.createReviewer(mAccount.mAccount, review) ;
+            // Update reviewers
+            AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
+            mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
+                    ModelHelper.addReviewers(new ReviewerInfo[]{reviewer}, reviewers));
+            // Update labels
+            for (String label : review.labels.keySet()) {
+                if (!mResponse.mChange.labels.containsKey(label)) {
+                    mResponse.mChange.labels.put(label, null);
                 }
+                ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
+                mResponse.mChange.labels.get(label).all =
+                        ModelHelper.updateApprovals(
+                                new ReviewerInfo[]{reviewer}, label, approvals);
             }
 
             // Refresh messages and actions
