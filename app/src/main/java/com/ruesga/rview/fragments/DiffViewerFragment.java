@@ -15,6 +15,8 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -402,6 +404,10 @@ public class DiffViewerFragment extends Fragment {
                         mRevisionId = revision;
                     }
                 }
+
+                Intent data = new Intent();
+                data.putExtra(Constants.EXTRA_BASE, mRevisionId);
+                getActivity().setResult(Activity.RESULT_OK, data);
             }
 
             // Close the drawer

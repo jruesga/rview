@@ -746,7 +746,17 @@ public class ChangeDetailsFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == DIFF_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            // Refresh comments
+            if (data != null) {
+                String base = data.getStringExtra(Constants.EXTRA_BASE);
+                if (base != null && !base.equals(mCurrentRevision)) {
+                    // Change to the current revision
+                    mCurrentRevision = base;
+                    forceRefresh();
+                    return;
+                }
+            }
+
+            // Refresh drafts comments
             performDraftsRefresh();
         }
     }
