@@ -318,7 +318,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:visibility="@{(isCurrentRevision != null &amp;&amp; !isCurrentRevision) || submitType == null || !(model.status.equals(ChangeStatus.NEW)) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || submitType == null || !(model.status.equals(ChangeStatus.NEW))) ? View.GONE : View.VISIBLE}"
                 android:orientation="horizontal">
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="@dimen/label_min_width"
@@ -413,15 +413,19 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="16dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{(isCurrentRevision != null &amp;&amp; !isCurrentRevision) || submitType == null ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || submitType == null) ? View.GONE : View.VISIBLE}"
                 android:orientation="vertical">
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:visibility="@{(model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                     android:background="?android:attr/listDivider" />
