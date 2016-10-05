@@ -37,6 +37,7 @@ import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.DiffCommentItemBinding;
+import com.ruesga.rview.databinding.DiffNoDiffItemBinding;
 import com.ruesga.rview.databinding.DiffSkipItemBinding;
 import com.ruesga.rview.databinding.DiffSourceItemBinding;
 import com.ruesga.rview.gerrit.model.CommentInfo;
@@ -59,6 +60,7 @@ public class DiffView extends FrameLayout {
     private static final int SOURCE_VIEW_TYPE = 0;
     private static final int SKIP_VIEW_TYPE = 1;
     private static final int COMMENT_VIEW_TYPE = 2;
+    private static final int NO_DIFF_VIEW_TYPE = 3;
 
     @ProguardIgnored
     @SuppressWarnings({"UnusedParameters", "unused"})
@@ -151,6 +153,16 @@ public class DiffView extends FrameLayout {
         }
     }
 
+    private static class DiffNoDiffViewHolder extends RecyclerView.ViewHolder {
+        private DiffNoDiffItemBinding mBinding;
+
+        DiffNoDiffViewHolder(DiffNoDiffItemBinding binding) {
+            super(binding.getRoot());
+            mBinding = binding;
+            mBinding.executePendingBindings();
+        }
+    }
+
     public static abstract class AbstractModel {
     }
 
@@ -174,6 +186,10 @@ public class DiffView extends FrameLayout {
     @ProguardIgnored
     public static class SkipLineModel extends AbstractModel {
         public String msg;
+    }
+
+    @ProguardIgnored
+    public static class NoDiffModel extends AbstractModel {
     }
 
     @ProguardIgnored
@@ -221,6 +237,10 @@ public class DiffView extends FrameLayout {
             } else if (viewType == COMMENT_VIEW_TYPE) {
                 return new DiffCommentViewHolder(DataBindingUtil.inflate(
                         mLayoutInflater, R.layout.diff_comment_item, parent, false));
+
+            } else if (viewType == NO_DIFF_VIEW_TYPE) {
+                return new DiffNoDiffViewHolder(DataBindingUtil.inflate(
+                        mLayoutInflater, R.layout.diff_no_diff_item, parent, false));
             }
             return null;
         }
@@ -253,7 +273,6 @@ public class DiffView extends FrameLayout {
                 DiffSkipViewHolder holder = ((DiffSkipViewHolder) vh);
                 SkipLineModel skip = (SkipLineModel) model;
                 holder.mBinding.setWrap(isWrapMode());
-                holder.mBinding.setMode(mMode);
                 holder.mBinding.setModel(skip);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
                 holder.mBinding.executePendingBindings();
@@ -274,6 +293,12 @@ public class DiffView extends FrameLayout {
                     holder.mBinding.actionsB.edit.setTag(R.id.tag_key, comment.commentB.message);
                 }
                 holder.mBinding.executePendingBindings();
+
+            } else if (vh instanceof DiffNoDiffViewHolder) {
+                DiffNoDiffViewHolder holder = ((DiffNoDiffViewHolder) vh);
+                holder.mBinding.setWrap(isWrapMode());
+                holder.mBinding.setMeasurement(mDiffViewMeasurement);
+                holder.mBinding.executePendingBindings();
             }
 
             if (mLayoutManager instanceof UnwrappedLinearLayoutManager) {
@@ -290,7 +315,10 @@ public class DiffView extends FrameLayout {
             if (model instanceof SkipLineModel) {
                 return SKIP_VIEW_TYPE;
             }
-            return COMMENT_VIEW_TYPE;
+            if (model instanceof CommentModel) {
+                return COMMENT_VIEW_TYPE;
+            }
+            return NO_DIFF_VIEW_TYPE;
         }
 
         @Override

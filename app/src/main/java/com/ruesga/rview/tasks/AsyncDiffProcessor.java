@@ -111,11 +111,13 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
                 mContext, R.color.diffDeletedForegroundColor);
 
         List<DiffView.AbstractModel> model = new ArrayList<>();
+        boolean noDiffs = mDiffs.length == 1 && mDiffs[0].a == null  && mDiffs[0].b == null;
         int j = 0;
         for (DiffContentInfo diff : mDiffs) {
             if (diff.ab != null) {
                 // Unchanged lines
-                int[] p = processUnchangedLines(diff, model, j, lineNumberA, lineNumberB, noColor);
+                int[] p = processUnchangedLines(
+                        diff, model, j, lineNumberA, lineNumberB, noColor, noDiffs);
                 lineNumberA = p[0];
                 lineNumberB = p[0];
             } else {
@@ -209,11 +211,13 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
                 mContext, R.color.diffDeletedForegroundColor);
 
         List<DiffView.AbstractModel> model = new ArrayList<>();
+        boolean noDiffs = mDiffs.length == 1 && mDiffs[0].a == null  && mDiffs[0].b == null;
         int j = 0;
         for (DiffContentInfo diff : mDiffs) {
             if (diff.ab != null) {
                 // Unchanged lines
-                int[] p = processUnchangedLines(diff, model, j, lineNumberA, lineNumberB, noColor);
+                int[] p = processUnchangedLines(
+                        diff, model, j, lineNumberA, lineNumberB, noColor, noDiffs);
                 lineNumberA = p[0];
                 lineNumberB = p[0];
             } else {
@@ -286,33 +290,41 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
     }
 
     private int[] processUnchangedLines(DiffContentInfo diff, List<DiffView.AbstractModel> model,
-            int j, int lineNumberA, int lineNumberB, int noColor) {
+            int j, int lineNumberA, int lineNumberB, int noColor, boolean noDiffs) {
+        if (noDiffs) {
+            model.add(new DiffView.NoDiffModel());
+        }
+
         int count = diff.ab.length;
         int skipStartAt = -1, skippedLines = -1;
         boolean breakAfterSkip = false;
-        if (j == 0 && diff.ab.length > SKIPPED_LINES) {
-            skipStartAt = 0;
-            skippedLines = count - SKIPPED_LINES - skipStartAt;
-        } else if (j == (mDiffs.length - 1) && diff.ab.length > SKIPPED_LINES) {
-            skipStartAt = SKIPPED_LINES;
-            skippedLines = count - skipStartAt;
-            breakAfterSkip = true;
-        } else if (diff.ab.length > (SKIPPED_LINES * 2)) {
-            skipStartAt = SKIPPED_LINES;
-            skippedLines = count - SKIPPED_LINES - skipStartAt;
+        if (!noDiffs) {
+            if (j == 0 && diff.ab.length > SKIPPED_LINES) {
+                skipStartAt = 0;
+                skippedLines = count - SKIPPED_LINES - skipStartAt;
+            } else if (j == (mDiffs.length - 1) && diff.ab.length > SKIPPED_LINES) {
+                skipStartAt = SKIPPED_LINES;
+                skippedLines = count - skipStartAt;
+                breakAfterSkip = true;
+            } else if (diff.ab.length > (SKIPPED_LINES * 2)) {
+                skipStartAt = SKIPPED_LINES;
+                skippedLines = count - SKIPPED_LINES - skipStartAt;
+            }
         }
 
         for (int i = 0; i < count; i++) {
-            if (skipStartAt != -1 && skipStartAt == i) {
-                lineNumberA += skippedLines;
-                lineNumberB += skippedLines;
-                i += skippedLines;
-                DiffView.SkipLineModel skip = new DiffView.SkipLineModel();
-                skip.msg = mContext.getResources().getQuantityString(
-                        R.plurals.skipped_lines, skippedLines, skippedLines);
-                model.add(skip);
-                if (breakAfterSkip) {
-                    break;
+            if (!noDiffs) {
+                if (skipStartAt != -1 && skipStartAt == i) {
+                    lineNumberA += skippedLines;
+                    lineNumberB += skippedLines;
+                    i += skippedLines;
+                    DiffView.SkipLineModel skip = new DiffView.SkipLineModel();
+                    skip.msg = mContext.getResources().getQuantityString(
+                            R.plurals.skipped_lines, skippedLines, skippedLines);
+                    model.add(skip);
+                    if (breakAfterSkip) {
+                        break;
+                    }
                 }
             }
 

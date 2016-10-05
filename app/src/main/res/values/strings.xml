@@ -234,6 +234,9 @@
     <string name="draft_hint">Draft comment</string>
     <string name="draft_reply_done" translatable="false">Done</string>
 
+    <!-- Diff viewer -->
+    <string name="diff_viewer_no_diffs">No differences</string>
+
     <!-- Diff options -->
     <string name="options_base">Base</string>
     <string name="options_base_left">Left</string>

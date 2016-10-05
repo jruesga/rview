@@ -33,6 +33,7 @@
     <color name="diffAddedForegroundColor">#81c784</color>
     <color name="diffDeletedForegroundColor">#e48787</color>
     <color name="diffSkipBackgroundColor">#ddeeff</color>
+    <color name="diffNoDiffBackgroundColor">#ef9a9a</color>
     <color name="diffCommentBackgroundColor">#fffecc</color>
     <color name="diffHighlightColor">#d32f2f</color>
 

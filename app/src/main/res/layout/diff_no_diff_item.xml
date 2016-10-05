@@ -15,11 +15,10 @@
      limitations under the License.
  -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable name="wrap" type="java.lang.Boolean" />
-        <variable name="model" type="com.ruesga.rview.widget.DiffView.SkipLineModel" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
     </data>
 
@@ -27,19 +26,19 @@
         android:layout_width="0dp"
         app:wrapLayoutWidth="@{wrap != null &amp;&amp; wrap}"
         android:layout_height="wrap_content"
-        android:background="@color/diffSkipBackgroundColor">
+        android:background="@color/diffNoDiffBackgroundColor">
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="0dp"
             app:bindLayoutWidth="@{measurement.width}"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorPrimaryDark"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="12sp"
             android:ellipsize="none"
             android:textStyle="bold"
             android:padding="5dp"
             android:maxLines="1"
             android:gravity="center_horizontal"
-            android:text="@{model.msg}"/>
+            android:text="@string/diff_viewer_no_diffs"/>
     </FrameLayout>
 </layout>
