@@ -19,6 +19,7 @@ import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.TextUtils;
@@ -43,12 +44,15 @@ public class SearchActivity extends AppCompatActivity {
 
     private SearchActivityBinding mBinding;
     private int mCurrentOption;
+    private int[] mIcons;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.search_activity);
+
+        mIcons = loadSearchIcons();
 
         setupToolbar();
         if (getSupportActionBar() != null) {
@@ -71,6 +75,8 @@ public class SearchActivity extends AppCompatActivity {
         mBinding.searchView.setOnMenuItemClickListener(item -> performShowOptions());
 
         mCurrentOption = Preferences.getAccountSearchMode(this, Preferences.getAccount(this));
+        mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[mCurrentOption]));
+
         configureSearchHint();
     }
 
@@ -108,9 +114,8 @@ public class SearchActivity extends AppCompatActivity {
         final ListPopupWindow popupWindow = new ListPopupWindow(this);
         ArrayList<String> values = new ArrayList<>(
                 Arrays.asList(getResources().getStringArray(R.array.search_options_labels)));
-        int[] icons = loadSearchIcons();
         String value = values.get(mCurrentOption);
-        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(this, values, icons, value);
+        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(this, values, mIcons, value);
         popupWindow.setAnchorView(mBinding.searchView);
         popupWindow.setDropDownGravity(Gravity.END);
         popupWindow.setAdapter(adapter);
@@ -120,6 +125,7 @@ public class SearchActivity extends AppCompatActivity {
             mCurrentOption = position;
             Preferences.setAccountSearchMode(this, Preferences.getAccount(this), mCurrentOption);
             configureSearchHint();
+            mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[position]));
         });
         popupWindow.setModal(true);
         popupWindow.show();
@@ -147,6 +153,7 @@ public class SearchActivity extends AppCompatActivity {
                     // Not a valid filter
                     AndroidHelper.showErrorSnackbar(
                             this, mBinding.getRoot(), R.string.search_not_a_valid_change);
+                    return;
                 }
 
                 break;
@@ -157,6 +164,7 @@ public class SearchActivity extends AppCompatActivity {
                     // Not a valid filter
                     AndroidHelper.showErrorSnackbar(
                             this, mBinding.getRoot(), R.string.search_not_a_valid_commit);
+                    return;
                 }
                 break;
             case Constants.SEARCH_MODE_USER:
