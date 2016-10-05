@@ -296,7 +296,6 @@ public abstract class ChangeListFragment extends SelectableFragment {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.changes_fragment, container, false);
         mBinding.setModel(mModel);
-        mBinding.refresh.setEnabled(false);
         startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
@@ -383,7 +382,6 @@ public abstract class ChangeListFragment extends SelectableFragment {
 
             fetchNewItems();
         });
-        mBinding.refresh.setEnabled(false);
     }
 
     private void showProgress(boolean show) {
@@ -398,9 +396,6 @@ public abstract class ChangeListFragment extends SelectableFragment {
             }
         } else if (!show) {
             mEndlessScroller.loadCompleted();
-        }
-        if (mIsVisibleToUser) {
-            mBinding.refresh.setEnabled(!show);
         }
     }
 
