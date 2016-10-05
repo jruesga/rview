@@ -56,6 +56,12 @@ public class Constants {
     public static final String DIFF_MODE_UNIFIED = "unified";
     public static final String DIFF_MODE_SIDE_BY_SIDE = "sidebyside";
 
+    public static final int SEARCH_MODE_CHANGE = 0;
+    public static final int SEARCH_MODE_COMMIT = 1;
+    public static final int SEARCH_MODE_USER = 2;
+    public static final int SEARCH_MODE_COMMIT_MESSAGE = 3;
+    public static final int SEARCH_MODE_CUSTOM = 4;
+
     // --- Preference keys
     public static final String PREF_IS_FIRST_RUN = "first_run";
     public static final String PREF_ACCOUNT = "account";
@@ -73,5 +79,6 @@ public class Constants {
     public static final String PREF_ACCOUNT_HIGHLIGHT_TABS = "account_highlight_tabs";
     public static final String PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES
             = "account_highlight_trailing_whitespaces";
+    public static final String PREF_ACCOUNT_SEARCH_MODE = "account_search_mode";
 
 }

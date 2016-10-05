@@ -35,6 +35,7 @@ import com.ruesga.rview.ChangeListByFilterActivity;
 import com.ruesga.rview.DiffViewerActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.RelatedChangesActivity;
+import com.ruesga.rview.SearchActivity;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
@@ -154,5 +155,10 @@ public class ActivityHelper {
         intent.putExtra(Constants.EXTRA_DATA, SerializationManager.getInstance().toJson(change));
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         fragment.startActivityForResult(intent, requestCode);
+    }
+
+    public static void openSearchActivity(Context context) {
+        Intent intent = new Intent(context, SearchActivity.class);
+        context.startActivity(intent);
     }
 }

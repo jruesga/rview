@@ -18,6 +18,12 @@ package com.ruesga.rview.fragments;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
 
@@ -45,7 +51,7 @@ public class DashboardFragment extends PageableFragment {
 
     @Override
     public Fragment getFragment(int position) {
-        return ChangeListByFilterFragment.newInstance(mDashboardFilters[position]);
+        return ChangeListByFilterFragment.newInstance(mDashboardFilters[position], true);
     }
 
     @Override

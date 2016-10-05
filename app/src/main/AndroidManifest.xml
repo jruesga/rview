@@ -85,6 +85,14 @@
             android:exported="false" />
 
         <activity
+            android:name=".SearchActivity"
+            android:theme="@style/AppTheme.Translucent"
+            android:parentActivityName=".MainActivity"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
+
+        <activity
             android:name=".AccountSettingsActivity"
             android:theme="@style/AppTheme.Settings"
             android:parentActivityName=".MainActivity"

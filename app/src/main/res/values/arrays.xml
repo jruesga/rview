@@ -102,4 +102,21 @@
         <item>TBZ2</item>
         <item>TXZ</item>
     </string-array>
+
+
+
+    <string-array name="search_options_labels" translatable="false">
+        <item>@string/search_by_change</item>
+        <item>@string/search_by_commit</item>
+        <item>@string/search_by_user</item>
+        <item>@string/search_by_commit_message</item>
+        <item>@string/search_by_custom</item>
+    </string-array>
+    <integer-array name="search_options_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </integer-array>
 </resources>

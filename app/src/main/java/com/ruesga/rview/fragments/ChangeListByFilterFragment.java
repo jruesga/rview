@@ -17,11 +17,17 @@ package com.ruesga.rview.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
+import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -41,13 +47,40 @@ public class ChangeListByFilterFragment extends ChangeListFragment {
     }};
 
     private static final String EXTRA_FILTER = "filter";
+    private static final String EXTRA_HAS_SEARCH = "hasSearch";
 
     public static ChangeListByFilterFragment newInstance(String filter) {
+        return newInstance(filter, false);
+    }
+
+    public static ChangeListByFilterFragment newInstance(String filter, boolean hasSearch) {
         ChangeListByFilterFragment fragment = new ChangeListByFilterFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_FILTER, filter);
+        arguments.putBoolean(EXTRA_HAS_SEARCH, hasSearch);
         fragment.setArguments(arguments);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(getArguments().getBoolean(EXTRA_HAS_SEARCH, false));
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.search, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_search) {
+            // Show search fragment
+            ActivityHelper.openSearchActivity(getContext());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("ConstantConditions")

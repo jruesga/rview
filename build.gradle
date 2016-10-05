@@ -31,7 +31,8 @@ ext {
         picasso2                    : '2.5.2',
         picasso2_okhttp3_downloader : '1.0.2',
         prettytime                  : '4.0.1.Final',
-        flowlayout                  : '1.10'
+        flowlayout                  : '1.10',
+        floatingsearchview          : '2.0.3'
     ]
 
     testLibraries = [

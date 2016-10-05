@@ -46,6 +46,7 @@
     <string name="menu_other_accounts_category">Other accounts</string>
     <string name="menu_add_account">Add account</string>
     <string name="menu_help">Help</string>
+    <string name="menu_search">Search</string>
     <string name="menu_options">Options</string>
     <string name="menu_diff_options">Diff options</string>
 
@@ -250,6 +251,21 @@
     <string name="options_highlight">Highlight</string>
     <string name="options_highlight_tabs">Tabs</string>
     <string name="options_highlight_trailing_whitespaces">Trailing whitespaces</string>
+
+    <!-- Search dialog -->
+    <string name="search_by_change">Change</string>
+    <string name="search_by_change_hint">Type a change identifier</string>
+    <string name="search_by_commit">Commit</string>
+    <string name="search_by_commit_hint">Type a commit hash</string>
+    <string name="search_by_user">User</string>
+    <string name="search_by_user_hint">Type a user or email</string>
+    <string name="search_by_commit_message">Commit message</string>
+    <string name="search_by_commit_message_hint">Type a word or phrase</string>
+    <string name="search_by_custom">Custom</string>
+    <string name="search_by_custom_hint">Type a custom query</string>
+    <string name="search_not_a_valid_change">Not a valid change identifier</string>
+    <string name="search_not_a_valid_commit">Not a valid commit identifier</string>
+    <string name="search_not_a_valid_custom_query">Not a valid Gerrit query</string>
 
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>

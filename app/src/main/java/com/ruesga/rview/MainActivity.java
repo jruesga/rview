@@ -587,7 +587,7 @@ public class MainActivity extends ChangeListBaseActivity {
         if (oldFragment != null) {
             tx.remove(oldFragment);
         }
-        Fragment newFragment = ChangeListByFilterFragment.newInstance(filter);
+        Fragment newFragment = ChangeListByFilterFragment.newInstance(filter, true);
         tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
     }
 

@@ -46,6 +46,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TABS
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_WRAP_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_IS_FIRST_RUN;
@@ -267,6 +268,26 @@ public class Preferences {
 
         Editor editor = getAccountPreferences(context, account).edit();
         editor.putBoolean(PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES, highlight);
+        editor.apply();
+    }
+
+
+
+    public static int getAccountSearchMode(Context context, Account account) {
+        if (account == null) {
+            return Constants.SEARCH_MODE_CHANGE;
+        }
+        return getAccountPreferences(context, account).getInt(
+                PREF_ACCOUNT_SEARCH_MODE, Constants.SEARCH_MODE_CHANGE);
+    }
+
+    public static void setAccountSearchMode(Context context, Account account, int mode) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putInt(PREF_ACCOUNT_SEARCH_MODE, mode);
         editor.apply();
     }
 }
