@@ -728,7 +728,6 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.change_details_fragment, container, false);
         mBinding.setModel(mModel);
-        mBinding.refresh.setEnabled(false);
         startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
@@ -1096,7 +1095,6 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
         mBinding.refresh.setOnRefreshListener(this::forceRefresh);
-        mBinding.refresh.setEnabled(false);
     }
 
     private void forceRefresh() {
@@ -1112,7 +1110,7 @@ public class ChangeDetailsFragment extends Fragment {
         } else {
             activity.onRefreshEnd(change);
         }
-        mBinding.refresh.setEnabled(!show);
+        mBinding.refresh.setRefreshing(false);
     }
 
     private DataResponse combineResponse(DataResponse response, SubmitType submitType,
