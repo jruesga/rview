@@ -32,11 +32,20 @@ public class SimpleDropDownAdapter extends BaseAdapter {
 
     private Context mContext;
     private List<String> mValues;
+    private int[] mIcons;
     private String mValue;
 
     public SimpleDropDownAdapter(Context context, List<String> values, String value) {
         mContext = context;
         mValues = values;
+        mIcons = null;
+        mValue = value;
+    }
+
+    public SimpleDropDownAdapter(Context context, List<String> values, int[] icons, String value) {
+        mContext = context;
+        mValues = values;
+        mIcons = icons;
         mValue = value;
     }
 
@@ -66,8 +75,13 @@ public class SimpleDropDownAdapter extends BaseAdapter {
         }
 
         String s = mValues.get(position);
+        Integer icon = null;
+        if (mIcons != null) {
+            icon = mIcons[position];
+        }
         DropdownItemBinding binding = (DropdownItemBinding) v.getTag();
-        binding.item.setText(s);
+        binding.setText(s);
+        binding.setIcon(icon);
         binding.setIsSelected(s.equals(mValue));
         binding.executePendingBindings();
 

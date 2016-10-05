@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -107,8 +108,9 @@ public class SearchActivity extends AppCompatActivity {
         final ListPopupWindow popupWindow = new ListPopupWindow(this);
         ArrayList<String> values = new ArrayList<>(
                 Arrays.asList(getResources().getStringArray(R.array.search_options_labels)));
-        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
-                this, values, values.get(mCurrentOption));
+        int[] icons = loadSearchIcons();
+        String value = values.get(mCurrentOption);
+        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(this, values, icons, value);
         popupWindow.setAnchorView(mBinding.searchView);
         popupWindow.setDropDownGravity(Gravity.END);
         popupWindow.setAdapter(adapter);
@@ -177,5 +179,16 @@ public class SearchActivity extends AppCompatActivity {
 
         // Open the activity
         ActivityHelper.openChangeListByFilterActivity(this, null, filter);
+    }
+
+    private int[] loadSearchIcons() {
+        TypedArray ta = getResources().obtainTypedArray(R.array.search_options_icons);
+        int count = ta.length();
+        int[] icons = new int[count];
+        for (int i = 0; i < count; i++) {
+            icons[i] = ta.getResourceId(i, -1);
+        }
+        ta.recycle();
+        return icons;
     }
 }

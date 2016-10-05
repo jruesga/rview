@@ -20,7 +20,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
         <variable name="isSelected" type="Boolean" />
+        <variable name="text" type="String" />
+        <variable name="icon" type="Integer" />
     </data>
 
     <FrameLayout
@@ -36,6 +39,13 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             tools:ignore="UselessParent">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:bindResourceDrawable="@{icon}"
+                android:tint="?attr/colorAccent"
+                android:visibility="@{icon == null || icon == 0 ? View.GONE : View.VISIBLE}"
+                tools:ignore="ContentDescription" />
             <com.ruesga.rview.widget.StyleableTextView
                 android:id="@+id/item"
                 android:layout_width="match_parent"
@@ -43,6 +53,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
                 android:minWidth="@dimen/dropdown_min_width"
+                android:text="@{text}"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:textAppearance="?android:attr/textAppearanceSmall"

@@ -119,4 +119,12 @@
         <item>3</item>
         <item>4</item>
     </integer-array>
+    <integer-array name="search_options_icons" translatable="false">
+        <item>@drawable/ic_work</item>
+        <item>@drawable/ic_merged</item>
+        <item>@drawable/ic_account_circle</item>
+        <item>@drawable/ic_comment</item>
+        <item>@drawable/ic_filter_list</item>
+        <item>4</item>
+    </integer-array>
 </resources>

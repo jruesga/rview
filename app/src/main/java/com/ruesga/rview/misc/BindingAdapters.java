@@ -17,9 +17,11 @@ package com.ruesga.rview.misc;
 
 import android.databinding.BindingAdapter;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
@@ -63,8 +65,12 @@ public class BindingAdapters {
         v.setSelected(selected);
     }
 
-    @BindingAdapter("bindEmptyActions")
-    public static void bindEmptyActions(View v, Map<String, ActionInfo> actions) {
-        v.setVisibility(actions == null || actions.isEmpty() ? View.GONE : View.VISIBLE);
+    @BindingAdapter("bindResourceDrawable")
+    public static void bindResourceDrawable(ImageView v, Integer resource) {
+        if (resource == null || resource == 0) {
+            v.setImageDrawable(null);
+        } else {
+            v.setImageDrawable(ContextCompat.getDrawable(v.getContext(), resource));
+        }
     }
 }
