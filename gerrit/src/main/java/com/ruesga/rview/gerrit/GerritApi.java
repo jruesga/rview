@@ -1078,7 +1078,9 @@ public interface GerritApi {
             @NonNull @Path("file-id") String fileId,
             @Nullable @Query("base") Integer base,
             @Nullable @Query("intraline") Option intraline,
-            @Nullable @Query("weblinks-only") Option weblinksOnly);
+            @Nullable @Query("weblinks-only") Option weblinksOnly,
+            @Nullable @Query("whitespace ") WhitespaceType whitespace,
+            @Nullable @Query("context") ContextType context);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-blame"

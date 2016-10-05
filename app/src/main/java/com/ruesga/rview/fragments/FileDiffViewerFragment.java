@@ -37,6 +37,7 @@ import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.CommentInput;
+import com.ruesga.rview.gerrit.model.ContextType;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.misc.CacheHelper;
@@ -306,7 +307,9 @@ public class FileDiffViewerFragment extends Fragment {
                                 mFile,
                                 base,
                                 Option.INSTANCE,
-                                null),
+                                null,
+                                null,
+                                ContextType.ALL),
                         DiffInfo.class,
                         diffCacheId + CacheHelper.CACHE_DIFF_JSON
                 ),
