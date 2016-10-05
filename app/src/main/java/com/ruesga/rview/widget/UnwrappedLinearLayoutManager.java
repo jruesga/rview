@@ -31,6 +31,8 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     private int mPrefetchedMeasuredWidth;
     private int mPrefetchedMeasuredHeight;
 
+    private int mScrollState;
+
     public UnwrappedLinearLayoutManager(Context context) {
         this(context, -1, -1);
     }
@@ -49,7 +51,14 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     }
 
     public void requestBindViews() {
-        bindViews();
+        if (mScrollState != RecyclerView.SCROLL_STATE_DRAGGING) {
+            bindViews();
+        }
+    }
+
+    @Override
+    public void onScrollStateChanged(int state) {
+        mScrollState = state;
     }
 
     @Override
