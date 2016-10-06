@@ -16,5 +16,5 @@
 package com.ruesga.rview.gerrit.model;
 
 public enum ChangeStatus {
-    NEW, MERGED, ABANDONED, DRAFT
+    NEW, SUBMITTED, MERGED, ABANDONED, DRAFT
 }

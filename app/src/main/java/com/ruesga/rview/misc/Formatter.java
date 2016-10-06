@@ -349,6 +349,8 @@ public class Formatter {
                     view.setText(R.string.menu_open);
                 }
             }
+        } else if (ChangeStatus.SUBMITTED.equals(change.status)) {
+            view.setText(R.string.change_statuses_submitted);
         } else if (ChangeStatus.MERGED.equals(change.status)) {
             view.setText(R.string.menu_merged);
         } else if (ChangeStatus.ABANDONED.equals(change.status)) {

@@ -55,14 +55,14 @@
                 android:id="@+id/review_labels"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                 android:background="?android:attr/listDivider"/>
 
             <LinearLayout

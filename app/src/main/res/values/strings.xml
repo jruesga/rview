@@ -202,6 +202,7 @@
     <string name="file_status_rewritten">Rewritten</string>
 
     <!-- Change statuses -->
+    <string name="change_statuses_submitted">Submitted</string>
     <string name="change_statuses_not_current">Not current</string>
     <string name="change_statuses_ready_to_submit">Ready to submit</string>
     <string name="change_statuses_not_mergeable">Not mergeable</string>

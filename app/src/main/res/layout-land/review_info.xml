@@ -61,7 +61,7 @@
                 <com.ruesga.rview.widget.ReviewLabelsView
                     android:id="@+id/review_labels"
                     android:layout_width="wrap_content"
-                    android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                     android:layout_height="wrap_content"/>
 
                 <View
@@ -69,7 +69,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
-                    android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                     android:background="?android:attr/listDivider"/>
 
                 <RelativeLayout
