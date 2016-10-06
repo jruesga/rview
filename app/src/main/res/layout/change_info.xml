@@ -427,14 +427,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginBottom="16dp"
-                    android:visibility="@{(model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                     android:background="?android:attr/listDivider" />
 
                 <com.ruesga.rview.widget.LabelsView
                     android:id="@+id/labels"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{(model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}" />
+                    android:layout_height="wrap_content" />
 
                 <View
                     android:layout_width="match_parent"
