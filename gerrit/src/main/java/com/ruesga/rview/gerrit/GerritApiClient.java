@@ -43,11 +43,12 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
@@ -411,7 +412,7 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Response> getAccountAvatar(
+    public Observable<ResponseBody> getAccountAvatar(
             @NonNull String accountId, @Nullable Integer size) {
         return withVersionRequestCheck(mService.getAccountAvatar(accountId, size));
     }
@@ -918,14 +919,14 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Base64Data> getChangeRevisionFileContent(@NonNull String changeId,
+    public Observable<ResponseBody> getChangeRevisionFileContent(@NonNull String changeId,
             @NonNull String revisionId, @NonNull String fileId) {
         return withVersionRequestCheck(
                 mService.getChangeRevisionFileContent(changeId, revisionId, fileId));
     }
 
     @Override
-    public Observable<Response> getChangeRevisionFileDownload(@NonNull String changeId,
+    public Observable<ResponseBody> getChangeRevisionFileDownload(@NonNull String changeId,
             @NonNull String revisionId, @NonNull String fileId,
             @Nullable SuffixMode suffixMode, @Nullable Integer parent) {
         return withVersionRequestCheck(mService.getChangeRevisionFileDownload(
@@ -1346,7 +1347,7 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Response> runProjectGc(@NonNull String projectName, @NonNull GcInput input) {
+    public Observable<ResponseBody> runProjectGc(@NonNull String projectName, @NonNull GcInput input) {
         return withVersionRequestCheck(mService.runProjectGc(projectName, input));
     }
 

@@ -77,7 +77,7 @@ public class DiffViewerActivity extends BaseActivity {
         ChangeInfo change;
         try {
             change = SerializationManager.getInstance().fromJson(data, ChangeInfo.class);
-            CacheHelper.writeAccountDiffCacheDir(this,
+            CacheHelper.writeAccountDiffCacheFile(this,
                     CacheHelper.CACHE_CHANGE_JSON, data.getBytes());
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);

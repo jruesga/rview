@@ -19,6 +19,7 @@
 
     <data>
         <variable name="wrap" type="java.lang.Boolean" />
+        <variable name="advise" type="java.lang.String" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
     </data>
 
@@ -39,6 +40,6 @@
             android:padding="5dp"
             android:maxLines="1"
             android:gravity="center_horizontal"
-            android:text="@string/diff_viewer_no_diffs"/>
+            android:text="@{advise}"/>
     </FrameLayout>
 </layout>

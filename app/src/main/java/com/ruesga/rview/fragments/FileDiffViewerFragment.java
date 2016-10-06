@@ -23,6 +23,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.FileDiffViewerFragmentBinding;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
@@ -49,6 +51,7 @@ import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DiffView;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -60,6 +63,7 @@ import me.tatarka.rxloader.RxLoader2;
 import me.tatarka.rxloader.RxLoaderManager;
 import me.tatarka.rxloader.RxLoaderManagerCompat;
 import me.tatarka.rxloader.RxLoaderObserver;
+import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -72,6 +76,9 @@ public class FileDiffViewerFragment extends Fragment {
         DiffInfo diff;
         Pair<List<CommentInfo>, List<CommentInfo>> comments;
         Pair<List<CommentInfo>, List<CommentInfo>> draftComments;
+
+        File leftContent;
+        File rightContent;
     }
 
     private final RxLoaderObserver<FileDiffResponse> mObserver
@@ -204,9 +211,12 @@ public class FileDiffViewerFragment extends Fragment {
 
     private void update() {
         if (mResponse != null) {
+            // Only refresh the diff view if we can display text differences
             mHandler.postDelayed(() ->
                 mBinding.diff
-                    .from(mResponse.diff.content)
+                    .from(mResponse.diff)
+                    .withLeftContent(mResponse.leftContent)
+                    .withRightContent(mResponse.rightContent)
                     .withComments(mResponse.comments)
                     .withDrafts(mResponse.draftComments)
                     .mode(mMode)
@@ -265,7 +275,7 @@ public class FileDiffViewerFragment extends Fragment {
             try {
                 // Deserialize the change
                 mChange = SerializationManager.getInstance().fromJson(
-                        new String(CacheHelper.readAccountDiffCacheDir(
+                        new String(CacheHelper.readAccountDiffCacheFile(
                                 getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
 
             } catch (IOException ex) {
@@ -295,63 +305,80 @@ public class FileDiffViewerFragment extends Fragment {
         final String baseRevision = mBase == null ? "0" : mBase;
         final String diffCacheId = baseRevision + "_" + mRevision + "_" + mFileHash + "_";
         final Integer base = mBase == null ? null : Integer.valueOf(mBase);
-        final Type type = new TypeToken<Map<String, List<CommentInfo>>>(){}.getType();
+        final Type commentType = new TypeToken<Map<String, List<CommentInfo>>>(){}.getType();
+        final boolean isBinary = !mFile.equals(Constants.COMMIT_MESSAGE)
+                && mChange.revisions.get(mRevisionId).files.get(mFile).binary;
 
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
                 withCached(
-                        api.getChangeRevisionFileDiff(
-                                String.valueOf(mChange.legacyChangeId),
-                                mRevisionId,
-                                mFile,
-                                base,
-                                Option.INSTANCE,
-                                null,
-                                null,
-                                ContextType.ALL),
+                        Observable.fromCallable(() -> {
+                            if (!isBinary) {
+                                return api.getChangeRevisionFileDiff(
+                                        String.valueOf(mChange.legacyChangeId),
+                                        mRevisionId,
+                                        mFile,
+                                        base,
+                                        Option.INSTANCE,
+                                        null,
+                                        null,
+                                        ContextType.ALL)
+                                        .toBlocking().first();
+                            }
+
+                            DiffInfo diff = new DiffInfo();
+                            diff.binary = true;
+                            return diff;
+                        }),
                         DiffInfo.class,
                         diffCacheId + CacheHelper.CACHE_DIFF_JSON
                 ),
                 withCached(
                         Observable.fromCallable(() -> {
-                            if (mBase != null) {
+                            if (!isBinary && mBase != null) {
                                 return api.getChangeRevisionComments(
                                         String.valueOf(mChange.legacyChangeId), baseRevision)
                                         .toBlocking().first();
                             }
                             return new HashMap<>();
                         }),
-                        type,
+                        commentType,
                         baseRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON),
                 withCached(
-                        api.getChangeRevisionComments(
-                                String.valueOf(mChange.legacyChangeId), mRevisionId),
-                        type,
+                        Observable.fromCallable(() -> {
+                            if (!isBinary) {
+                                return api.getChangeRevisionComments(
+                                        String.valueOf(mChange.legacyChangeId), mRevisionId)
+                                        .toBlocking().first();
+                            }
+                            return new HashMap<>();
+                        }),
+                        commentType,
                         mRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON),
                 withCached(
                         Observable.fromCallable(() -> {
                             // Do no fetch drafts if the account is not authenticated
-                            if (mBase != null && mAccount.hasAuthenticatedAccessMode()) {
+                            if (!isBinary && mBase != null && mAccount.hasAuthenticatedAccessMode()) {
                                 return api.getChangeRevisionDrafts(
                                         String.valueOf(mChange.legacyChangeId), baseRevision)
                                         .toBlocking().first();
                             }
                             return new HashMap<>();
                         }),
-                        type,
+                        commentType,
                         baseRevision + "_" + CacheHelper.CACHE_DRAFT_JSON),
                 withCached(
                         Observable.fromCallable(() -> {
                             // Do no fetch drafts if the account is not authenticated
-                            if (mAccount.hasAuthenticatedAccessMode()) {
+                            if (!isBinary && mAccount.hasAuthenticatedAccessMode()) {
                                 return api.getChangeRevisionDrafts(
                                         String.valueOf(mChange.legacyChangeId), mRevisionId)
                                         .toBlocking().first();
                             }
                             return new HashMap<>();
                         }),
-                        type,
+                        commentType,
                         mRevision + "_" + CacheHelper.CACHE_DRAFT_JSON),
                 this::combine
             )
@@ -379,24 +406,27 @@ public class FileDiffViewerFragment extends Fragment {
             final String baseRevision = mBase == null ? "0" : mBase;
             final String diffCacheId = baseRevision + "_" + mRevision + "_" + mFileHash + "_";
 
-            CacheHelper.writeAccountDiffCacheDir(getContext(),
+            CacheHelper.writeAccountDiffCacheFile(getContext(),
                     diffCacheId + CacheHelper.CACHE_DIFF_JSON,
                     SerializationManager.getInstance().toJson(diff).getBytes());
-            CacheHelper.writeAccountDiffCacheDir(getContext(),
+            CacheHelper.writeAccountDiffCacheFile(getContext(),
                     baseRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON,
                     SerializationManager.getInstance().toJson(commentsA).getBytes());
-            CacheHelper.writeAccountDiffCacheDir(getContext(),
+            CacheHelper.writeAccountDiffCacheFile(getContext(),
                     mRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON,
                     SerializationManager.getInstance().toJson(commentsB).getBytes());
-            CacheHelper.writeAccountDiffCacheDir(getContext(),
+            CacheHelper.writeAccountDiffCacheFile(getContext(),
                     baseRevision + "_" + CacheHelper.CACHE_DRAFT_JSON,
                     SerializationManager.getInstance().toJson(draftsA).getBytes());
-            CacheHelper.writeAccountDiffCacheDir(getContext(),
+            CacheHelper.writeAccountDiffCacheFile(getContext(),
                     mRevision + "_" + CacheHelper.CACHE_DRAFT_JSON,
                     SerializationManager.getInstance().toJson(draftsB).getBytes());
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load diff cached data", ex);
         }
+
+        // We do need to download the file content
+        fetchRevisionsContentIfNeeded(response);
 
         return response;
     }
@@ -501,7 +531,7 @@ public class FileDiffViewerFragment extends Fragment {
         try {
             if (!mForceRefresh && CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
                 T o = SerializationManager.getInstance().fromJson(
-                        new String(CacheHelper.readAccountDiffCacheDir(
+                        new String(CacheHelper.readAccountDiffCacheFile(
                                 getContext(), name)), type);
                 return Observable.just((o));
             }
@@ -509,5 +539,87 @@ public class FileDiffViewerFragment extends Fragment {
             Log.e(TAG, "Failed to load diff cached data: " + name, ex);
         }
         return call;
+    }
+
+    private void fetchRevisionsContentIfNeeded(FileDiffResponse response) {
+        if (mMode == DiffView.IMAGE_MODE) {
+            // Base revision
+            final String baseRevision = mBase == null ? "0" : mBase;
+            if (baseRevision.equals("0")) {
+                // Base file is only available from the parent commit, so we need to
+                // fetch by commit to recover the parent id, and then fetch the revision
+                // to download the file
+                String parentRevision = mChange.revisions.get(mRevisionId).commit.parents[0].commit;
+                ChangeInfo parent = fetchParentChange(parentRevision);
+                if (parent != null) {
+                    response.leftContent = fetchCachedContent(
+                            String.valueOf(parent.legacyChangeId), parentRevision, baseRevision);
+                } else {
+                    response.leftContent = null;
+                }
+            } else {
+                response.leftContent = fetchCachedContent(
+                        String.valueOf(mChange.legacyChangeId), baseRevision, baseRevision);
+            }
+
+            // Current revision
+            response.rightContent = fetchCachedContent(
+                    String.valueOf(mChange.legacyChangeId), mRevisionId, mRevision);
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private File fetchCachedContent(String changeId, String revision, String base) {
+        String name = base + "_" + mFileHash + "_" + CacheHelper.CACHE_CONTENT;
+        File fetchedFile = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
+        if (!fetchedFile.exists()) {
+            try {
+                final Context ctx = getActivity();
+                final GerritApi api = ModelHelper.getGerritApi(ctx);
+                ResponseBody content = api.getChangeRevisionFileContent(
+                        changeId,
+                        revision,
+                        mFile)
+                        .toBlocking().first();
+                CacheHelper.writeAccountDiffCacheFile(
+                        getContext(),
+                        mAccount,
+                        name,
+                        Base64.decode(content.bytes(), Base64.NO_WRAP));
+            } catch (Exception ex) {
+                Log.e(TAG, "Can't download file content " + mFile + "; Revision: " + revision, ex);
+                fetchedFile = null;
+            }
+        }
+        return fetchedFile;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private ChangeInfo fetchParentChange(String parentRevision) {
+        try {
+            String name = parentRevision + "_" + CacheHelper.CACHE_PARENT;
+            File parent = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
+            if (!parent.exists()) {
+                // Fetch the change
+                final Context ctx = getActivity();
+                final GerritApi api = ModelHelper.getGerritApi(ctx);
+                ChangeQuery query = new ChangeQuery().commit(parentRevision);
+                List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).toBlocking().first();
+                ChangeInfo change = changes.size() > 0 ? changes.get(0) : null;
+
+                CacheHelper.writeAccountDiffCacheFile(getContext(),
+                        name, SerializationManager.getInstance().toJson(change).getBytes());
+                return change;
+            } else {
+                // Use the fetched change
+                return SerializationManager.getInstance().fromJson(
+                    new String(CacheHelper.readAccountDiffCacheFile(getContext(), name)),
+                    ChangeInfo.class);
+            }
+
+        } catch (Exception ex) {
+            Log.e(TAG, "Can't fetch parent change " + mChange.legacyChangeId, ex);
+        }
+        return null;
     }
 }

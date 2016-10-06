@@ -238,6 +238,7 @@
 
     <!-- Diff viewer -->
     <string name="diff_viewer_no_diffs">No differences</string>
+    <string name="diff_viewer_binary_file">Binary file. Diff not available.</string>
 
     <!-- Diff options -->
     <string name="options_base">Base</string>
@@ -246,6 +247,7 @@
     <string name="options_diff_mode">Diff mode</string>
     <string name="options_diff_mode_unified">Unified</string>
     <string name="options_diff_mode_side_by_side">Side by side</string>
+    <string name="options_diff_mode_image">Image</string>
     <string name="options_wrap_mode">Wrap mode</string>
     <string name="options_wrap_mode_on">Wrap lines</string>
     <string name="options_wrap_mode_off">Unwrap lines</string>

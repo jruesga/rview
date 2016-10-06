@@ -129,6 +129,9 @@ public class DiffViewerFragment extends Fragment {
                         Preferences.setAccountDiffMode(
                                 getContext(), mAccount, Constants.DIFF_MODE_SIDE_BY_SIDE);
                         break;
+                    case R.id.diff_mode_image:
+                        mMode = DiffView.IMAGE_MODE;
+                        break;
                     case R.id.wrap_mode_on:
                         mWrap = true;
                         Preferences.setAccountWrapMode(getContext(), mAccount, mWrap);
@@ -241,7 +244,7 @@ public class DiffViewerFragment extends Fragment {
         try {
             // Deserialize the change
             mChange = SerializationManager.getInstance().fromJson(
-                    new String(CacheHelper.readAccountDiffCacheDir(
+                    new String(CacheHelper.readAccountDiffCacheFile(
                             getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
             loadFiles();
             loadRevisions();
@@ -355,8 +358,11 @@ public class DiffViewerFragment extends Fragment {
         menu.findItem(R.id.diff_mode_side_by_side).setChecked(
                 mMode == DiffView.SIDE_BY_SIDE_MODE);
         menu.findItem(R.id.diff_mode_unified).setChecked(mMode == DiffView.UNIFIED_MODE);
+        menu.findItem(R.id.diff_mode_image).setChecked(mMode == DiffView.IMAGE_MODE);
+        menu.findItem(R.id.wrap_mode).setVisible(mMode != DiffView.IMAGE_MODE);
         menu.findItem(R.id.wrap_mode_on).setChecked(mWrap);
         menu.findItem(R.id.wrap_mode_off).setChecked(!mWrap);
+        menu.findItem(R.id.highlight).setVisible(mMode != DiffView.IMAGE_MODE);
         menu.findItem(R.id.highlight_tabs).setIcon(mHighlightTabs ? checkMark : uncheckMark);
         menu.findItem(R.id.highlight_trailing_whitespaces).setIcon(
                 mHighlightTrailingWhitespaces ? checkMark : uncheckMark);

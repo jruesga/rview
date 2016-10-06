@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -367,7 +367,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-avatar"
      */
     @GET("accounts/{account-id}/avatar")
-    Observable<Response> getAccountAvatar(
+    Observable<ResponseBody> getAccountAvatar(
             @NonNull @Path("account-id") String accountId,
             @Nullable @Query("s") Integer size);
 
@@ -1052,7 +1052,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content"
      */
     @GET("changes/{change-id}/revisions/{revision-id}/files/{file-id}/content")
-    Observable<Base64Data> getChangeRevisionFileContent(
+    Observable<ResponseBody> getChangeRevisionFileContent(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
             @NonNull @Path("file-id") String fileId);
@@ -1061,7 +1061,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-safe-content"
      */
     @GET("changes/{change-id}/revisions/{revision-id}/files/{file-id}/safe_content")
-    Observable<Response> getChangeRevisionFileDownload(
+    Observable<ResponseBody> getChangeRevisionFileDownload(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
             @NonNull @Path("file-id") String fileId,
@@ -1615,7 +1615,7 @@ public interface GerritApi {
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("projects/{project-name}/gc")
-    Observable<Response> runProjectGc(
+    Observable<ResponseBody> runProjectGc(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Body GcInput input);
 

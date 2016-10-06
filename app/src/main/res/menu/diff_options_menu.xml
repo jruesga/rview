@@ -29,12 +29,19 @@
                     android:title="@string/options_diff_mode_side_by_side"
                     android:icon="@drawable/ic_diff_side_by_side"
                     android:checkable="true"/>
+                <item
+                    android:id="@+id/diff_mode_image"
+                    android:title="@string/options_diff_mode_image"
+                    android:icon="@drawable/ic_image"
+                    android:checkable="true"/>
             </menu>
         </item>
     </group>
     <group
         android:checkableBehavior="none">
-        <item android:title="@string/options_wrap_mode">
+        <item
+            android:id="@+id/wrap_mode"
+            android:title="@string/options_wrap_mode">
             <menu>
                 <item
                     android:id="@+id/wrap_mode_on"
@@ -51,7 +58,9 @@
     </group>
     <group
         android:checkableBehavior="none">
-        <item android:title="@string/options_highlight">
+        <item
+            android:id="@+id/highlight"
+            android:title="@string/options_highlight">
             <menu>
                 <item
                     android:id="@+id/highlight_tabs"

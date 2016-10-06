@@ -38,6 +38,8 @@ public class CacheHelper {
     public static final String CACHE_DIFF_JSON = "diff.json";
     public static final String CACHE_COMMENTS_JSON = "comments.json";
     public static final String CACHE_DRAFT_JSON = "drafts.json";
+    public static final String CACHE_CONTENT = "content";
+    public static final String CACHE_PARENT = "parent";
 
     public static File getAccountCacheDir(Context context) {
         return getAccountCacheDir(context, Preferences.getAccount(context));
@@ -108,22 +110,22 @@ public class CacheHelper {
         return new File(getAccountDiffCacheDir(context, account), name).exists();
     }
 
-    public static byte[] readAccountDiffCacheDir(Context context, String name) throws IOException {
-        return readAccountDiffCacheDir(context, Preferences.getAccount(context), name);
+    public static byte[] readAccountDiffCacheFile(Context context, String name) throws IOException {
+        return readAccountDiffCacheFile(context, Preferences.getAccount(context), name);
     }
 
-    public static byte[] readAccountDiffCacheDir(Context context, Account account, String name)
+    public static byte[] readAccountDiffCacheFile(Context context, Account account, String name)
             throws IOException {
         return FileUtils.readFileToByteArray(
                 new File(getAccountDiffCacheDir(context, account), name));
     }
 
-    public static void writeAccountDiffCacheDir(Context context, String name, byte[] data)
+    public static void writeAccountDiffCacheFile(Context context, String name, byte[] data)
             throws IOException {
-        writeAccountDiffCacheDir(context, Preferences.getAccount(context), name, data);
+        writeAccountDiffCacheFile(context, Preferences.getAccount(context), name, data);
     }
 
-    public static void writeAccountDiffCacheDir(
+    public static void writeAccountDiffCacheFile(
             Context context, Account account, String name, byte[] data) throws IOException {
         FileUtils.writeByteArrayToFile(
                 new File(getAccountDiffCacheDir(context, account), name), data);

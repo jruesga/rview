@@ -30,6 +30,7 @@ import android.text.style.StyleSpan;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffContentInfo;
+import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.widget.DiffView;
 import com.ruesga.rview.widget.DiffView.DiffInfoModel;
@@ -39,10 +40,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.AbstractModel>> {
+public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.AbstractModel>> {
 
-    public interface OnDiffProcessEndedListener {
-        void onDiffProcessEnded(List<DiffView.AbstractModel> model);
+    public interface OnTextDiffProcessEndedListener {
+        void onTextDiffProcessEnded(List<DiffView.AbstractModel> model);
     }
 
     private static final int SKIPPED_LINES = 10;
@@ -52,21 +53,23 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
 
     private final Context mContext;
     private final int mMode;
+    private final boolean mIsBinary;
     private final DiffContentInfo[] mDiffs;
     private final Pair<List<CommentInfo>, List<CommentInfo>> mComments;
     private final Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
     private final boolean mHighlightTabs;
     private final boolean mHighlightTrailingWhitespaces;
-    private final OnDiffProcessEndedListener mCallback;
+    private final OnTextDiffProcessEndedListener mCallback;
 
-    public AsyncDiffProcessor(Context context, int mode, DiffContentInfo[] diffs,
+    public AsyncTextDiffProcessor(Context context, int mode, DiffInfo diff,
             Pair<List<CommentInfo>, List<CommentInfo>> comments,
             Pair<List<CommentInfo>, List<CommentInfo>> drafts,
             boolean highlightTabs, boolean highlightTrailingWhitespaces,
-            OnDiffProcessEndedListener cb) {
+            OnTextDiffProcessEndedListener cb) {
         mContext = context;
         mMode = mode;
-        mDiffs = diffs;
+        mIsBinary = diff.binary;
+        mDiffs = diff.content;
         mComments = comments;
         mDrafts = drafts;
         mHighlightTabs = highlightTabs;
@@ -81,7 +84,7 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
 
     @Override
     protected void onPostExecute(List<DiffView.AbstractModel> model) {
-        mCallback.onDiffProcessEnded(model);
+        mCallback.onTextDiffProcessEnded(model);
     }
 
     private List<DiffView.AbstractModel> processDiffs() {
@@ -92,8 +95,11 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
     }
 
     private List<DiffView.AbstractModel> processSideBySideDiffs() {
+        final List<DiffView.AbstractModel> model = new ArrayList<>();
+        addBinaryAdviseIfNeeded(model);
+
         if (mDiffs == null) {
-            return new ArrayList<>();
+            return model;
         }
 
         int lineNumberA = 0;
@@ -110,7 +116,7 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
         final int deletedFgColor = ContextCompat.getColor(
                 mContext, R.color.diffDeletedForegroundColor);
 
-        List<DiffView.AbstractModel> model = new ArrayList<>();
+
         boolean noDiffs = mDiffs.length == 1 && mDiffs[0].a == null  && mDiffs[0].b == null;
         int j = 0;
         for (DiffContentInfo diff : mDiffs) {
@@ -192,8 +198,11 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
     }
 
     private List<DiffView.AbstractModel> processUnifiedDiffs() {
+        final List<DiffView.AbstractModel> model = new ArrayList<>();
+        addBinaryAdviseIfNeeded(model);
+
         if (mDiffs == null) {
-            return new ArrayList<>();
+            return model;
         }
 
         int lineNumberA = 0;
@@ -210,7 +219,6 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
         final int deletedFgColor = ContextCompat.getColor(
                 mContext, R.color.diffDeletedForegroundColor);
 
-        List<DiffView.AbstractModel> model = new ArrayList<>();
         boolean noDiffs = mDiffs.length == 1 && mDiffs[0].a == null  && mDiffs[0].b == null;
         int j = 0;
         for (DiffContentInfo diff : mDiffs) {
@@ -289,10 +297,20 @@ public class AsyncDiffProcessor extends AsyncTask<Void, Void, List<DiffView.Abst
         return model;
     }
 
+    private void addBinaryAdviseIfNeeded(List<DiffView.AbstractModel> model) {
+        if (mIsBinary) {
+            DiffView.AdviseModel advise = new DiffView.AdviseModel();
+            advise.msg = mContext.getString(R.string.diff_viewer_binary_file);
+            model.add(advise);
+        }
+    }
+
     private int[] processUnchangedLines(DiffContentInfo diff, List<DiffView.AbstractModel> model,
             int j, int lineNumberA, int lineNumberB, int noColor, boolean noDiffs) {
         if (noDiffs) {
-            model.add(new DiffView.NoDiffModel());
+            DiffView.AdviseModel advise = new DiffView.AdviseModel();
+            advise.msg = mContext.getString(R.string.diff_viewer_no_diffs);
+            model.add(advise);
         }
 
         int count = diff.ab.length;

@@ -84,11 +84,17 @@ public class GerritServiceFactory {
 
         @Override
         public byte[] encodeBase64(byte[] data) {
+            if (data == null) {
+                return null;
+            }
             return Base64.encode(data, Base64.NO_WRAP);
         }
 
         @Override
         public byte[] decodeBase64(byte[] data) {
+            if (data == null) {
+                return null;
+            }
             return Base64.decode(data, Base64.NO_WRAP);
         }
 

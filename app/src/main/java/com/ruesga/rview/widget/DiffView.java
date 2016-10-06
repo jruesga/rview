@@ -18,6 +18,7 @@ package com.ruesga.rview.widget;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -36,16 +37,21 @@ import android.widget.TextView;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
+import com.ruesga.rview.databinding.DiffAdviseItemBinding;
 import com.ruesga.rview.databinding.DiffCommentItemBinding;
-import com.ruesga.rview.databinding.DiffNoDiffItemBinding;
 import com.ruesga.rview.databinding.DiffSkipItemBinding;
 import com.ruesga.rview.databinding.DiffSourceItemBinding;
+import com.ruesga.rview.databinding.DiffViewBinding;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffContentInfo;
+import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.SerializationManager;
-import com.ruesga.rview.tasks.AsyncDiffProcessor;
-import com.ruesga.rview.tasks.AsyncDiffProcessor.OnDiffProcessEndedListener;
+import com.ruesga.rview.tasks.AsyncImageDiffProcessor;
+import com.ruesga.rview.tasks.AsyncImageDiffProcessor.OnImageDiffProcessEndedListener;
+import com.ruesga.rview.tasks.AsyncTextDiffProcessor;
+import com.ruesga.rview.tasks.AsyncTextDiffProcessor.OnTextDiffProcessEndedListener;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,11 +62,12 @@ public class DiffView extends FrameLayout {
 
     public static final int SIDE_BY_SIDE_MODE = 0;
     public static final int UNIFIED_MODE = 1;
+    public static final int IMAGE_MODE = 2;
 
     private static final int SOURCE_VIEW_TYPE = 0;
     private static final int SKIP_VIEW_TYPE = 1;
     private static final int COMMENT_VIEW_TYPE = 2;
-    private static final int NO_DIFF_VIEW_TYPE = 3;
+    private static final int ADVISE_VIEW_TYPE = 3;
 
     @ProguardIgnored
     @SuppressWarnings({"UnusedParameters", "unused"})
@@ -153,10 +160,10 @@ public class DiffView extends FrameLayout {
         }
     }
 
-    private static class DiffNoDiffViewHolder extends RecyclerView.ViewHolder {
-        private DiffNoDiffItemBinding mBinding;
+    private static class DiffAdviseViewHolder extends RecyclerView.ViewHolder {
+        private DiffAdviseItemBinding mBinding;
 
-        DiffNoDiffViewHolder(DiffNoDiffItemBinding binding) {
+        DiffAdviseViewHolder(DiffAdviseItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
             mBinding.executePendingBindings();
@@ -189,7 +196,8 @@ public class DiffView extends FrameLayout {
     }
 
     @ProguardIgnored
-    public static class NoDiffModel extends AbstractModel {
+    public static class AdviseModel extends AbstractModel {
+        public String msg;
     }
 
     @ProguardIgnored
@@ -238,9 +246,9 @@ public class DiffView extends FrameLayout {
                 return new DiffCommentViewHolder(DataBindingUtil.inflate(
                         mLayoutInflater, R.layout.diff_comment_item, parent, false));
 
-            } else if (viewType == NO_DIFF_VIEW_TYPE) {
-                return new DiffNoDiffViewHolder(DataBindingUtil.inflate(
-                        mLayoutInflater, R.layout.diff_no_diff_item, parent, false));
+            } else if (viewType == ADVISE_VIEW_TYPE) {
+                return new DiffAdviseViewHolder(DataBindingUtil.inflate(
+                        mLayoutInflater, R.layout.diff_advise_item, parent, false));
             }
             return null;
         }
@@ -294,10 +302,12 @@ public class DiffView extends FrameLayout {
                 }
                 holder.mBinding.executePendingBindings();
 
-            } else if (vh instanceof DiffNoDiffViewHolder) {
-                DiffNoDiffViewHolder holder = ((DiffNoDiffViewHolder) vh);
+            } else if (vh instanceof DiffAdviseViewHolder) {
+                DiffAdviseViewHolder holder = ((DiffAdviseViewHolder) vh);
+                AdviseModel advise = (AdviseModel) model;
                 holder.mBinding.setWrap(isWrapMode());
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
+                holder.mBinding.setAdvise(advise.msg);
                 holder.mBinding.executePendingBindings();
             }
 
@@ -318,7 +328,7 @@ public class DiffView extends FrameLayout {
             if (model instanceof CommentModel) {
                 return COMMENT_VIEW_TYPE;
             }
-            return NO_DIFF_VIEW_TYPE;
+            return ADVISE_VIEW_TYPE;
         }
 
         @Override
@@ -418,9 +428,10 @@ public class DiffView extends FrameLayout {
         }
     }
 
-    private OnDiffProcessEndedListener mProcessorListener = new OnDiffProcessEndedListener() {
+    private OnTextDiffProcessEndedListener mTextProcessorListener
+            = new OnTextDiffProcessEndedListener() {
         @Override
-        public void onDiffProcessEnded(List<AbstractModel> model) {
+        public void onTextDiffProcessEnded(List<AbstractModel> model) {
             if (mNeedsNewLayoutManager || !mLayoutManager.equals(mTmpLayoutManager)) {
                 mDiffAdapter = new DiffView.DiffAdapter(mDiffMode);
                 if (mTmpLayoutManager != null) {
@@ -435,6 +446,17 @@ public class DiffView extends FrameLayout {
         }
     };
 
+    private OnImageDiffProcessEndedListener mImageProcessorListener
+            = new OnImageDiffProcessEndedListener() {
+        @Override
+        public void onImageDiffProcessEnded(Drawable[] drawables) {
+            mBinding.diffImageLayout.diffLeft.setImageDrawable(drawables[0]);
+            mBinding.diffImageLayout.diffRight.setImageDrawable(drawables[1]);
+        }
+    };
+
+    private DiffViewBinding mBinding;
+
     private final RecyclerView mRecyclerView;
     private DiffAdapter mDiffAdapter;
     private LayoutManager mLayoutManager;
@@ -444,16 +466,19 @@ public class DiffView extends FrameLayout {
     private boolean mHighlightTrailingWhitespaces;
     private boolean mCanEdit;
     private int mDiffMode = UNIFIED_MODE;
-    private DiffContentInfo[] mAllDiffs;
+    private DiffInfo mDiffInfo;
     private Pair<List<CommentInfo>, List<CommentInfo>> mComments;
     private Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
+    private File mLeftContent;
+    private File mRightContent;
     private OnCommentListener mOnCommentListener;
 
     private boolean mNeedsNewLayoutManager;
 
     private EventHandlers mEventHandlers;
 
-    private AsyncDiffProcessor mTask;
+    private AsyncTextDiffProcessor mTextDiffTask;
+    private AsyncImageDiffProcessor mImageDiffTask;
 
     public DiffView(Context context) {
         this(context, null);
@@ -466,25 +491,28 @@ public class DiffView extends FrameLayout {
     public DiffView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mEventHandlers = new EventHandlers(this);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                MATCH_PARENT, MATCH_PARENT);
-        mRecyclerView = new RecyclerView(context);
+        mBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(context), R.layout.diff_view, this, false);
+
+        mRecyclerView = mBinding.diffList;
         mLayoutManager = new LinearLayoutManager(context);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mDiffAdapter = new DiffAdapter(mDiffMode);
         mRecyclerView.setAdapter(mDiffAdapter);
         mRecyclerView.setVerticalScrollBarEnabled(true);
-        addView(mRecyclerView, params);
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                MATCH_PARENT, MATCH_PARENT);
+        addView(mBinding.getRoot(), params);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        mBinding.unbind();
 
         // Stops running things now
-        if (mTask != null) {
-            mTask.cancel(true);
-        }
+        stopTasks();
     }
 
     @Override
@@ -494,7 +522,7 @@ public class DiffView extends FrameLayout {
         savedState.mHighlightTrailingWhitespaces = mHighlightTrailingWhitespaces;
         savedState.mCanEdit = mCanEdit;
         savedState.mDiffMode = mDiffMode;
-        savedState.mAllDiffs = SerializationManager.getInstance().toJson(mAllDiffs);
+        savedState.mDiffInfo = SerializationManager.getInstance().toJson(mDiffInfo);
         savedState.mComments = SerializationManager.getInstance().toJson(mComments);
         savedState.mDrafts = SerializationManager.getInstance().toJson(mDrafts);
         return savedState;
@@ -515,15 +543,15 @@ public class DiffView extends FrameLayout {
         mHighlightTrailingWhitespaces = savedState.mHighlightTrailingWhitespaces;
         mCanEdit = savedState.mCanEdit;
         mDiffMode = savedState.mDiffMode;
-        Type type = new TypeToken<DiffContentInfo[]>(){}.getType();
-        mAllDiffs = SerializationManager.getInstance().fromJson(savedState.mAllDiffs, type);
-        type = new TypeToken<Pair<List<CommentInfo>, List<CommentInfo>>>(){}.getType();
+        mDiffInfo = SerializationManager.getInstance().fromJson(
+                savedState.mDiffInfo, DiffInfo.class);
+        Type type = new TypeToken<Pair<List<CommentInfo>, List<CommentInfo>>>(){}.getType();
         mComments = SerializationManager.getInstance().fromJson(savedState.mComments, type);
         mDrafts = SerializationManager.getInstance().fromJson(savedState.mDrafts, type);
     }
 
-    public DiffView from(DiffContentInfo[] allDiffs) {
-        mAllDiffs = allDiffs;
+    public DiffView from(DiffInfo diff) {
+        mDiffInfo = diff;
         return this;
     }
 
@@ -534,6 +562,16 @@ public class DiffView extends FrameLayout {
 
     public DiffView withDrafts(Pair<List<CommentInfo>, List<CommentInfo>> drafts) {
         mDrafts = drafts;
+        return this;
+    }
+
+    public DiffView withLeftContent(File path) {
+        mLeftContent = path;
+        return this;
+    }
+
+    public DiffView withRightContent(File path) {
+        mRightContent = path;
         return this;
     }
 
@@ -567,6 +605,7 @@ public class DiffView extends FrameLayout {
         if (mDiffMode != mode) {
             mDiffMode = mode;
             mNeedsNewLayoutManager = true;
+            mBinding.setMode(mode);
         }
         return this;
     }
@@ -577,26 +616,39 @@ public class DiffView extends FrameLayout {
     }
 
     public void update() {
-        if (mTask != null) {
-            mTask.cancel(true);
-        }
+        stopTasks();
 
-        mTask = new AsyncDiffProcessor(getContext(), mDiffMode, mAllDiffs, mComments,
-                mDrafts, mHighlightTabs, mHighlightTrailingWhitespaces, mProcessorListener);
-        mTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        if (mDiffMode != IMAGE_MODE) {
+            mTextDiffTask = new AsyncTextDiffProcessor(getContext(), mDiffMode, mDiffInfo, mComments,
+                    mDrafts, mHighlightTabs, mHighlightTrailingWhitespaces, mTextProcessorListener);
+            mTextDiffTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } else {
+            mImageDiffTask = new AsyncImageDiffProcessor(getContext(),
+                    mLeftContent, mRightContent, mImageProcessorListener);
+            mImageDiffTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
     }
 
     private boolean isWrapMode() {
         return mLayoutManager == null || !(mLayoutManager instanceof UnwrappedLinearLayoutManager);
     }
 
+    private void stopTasks() {
+        // Stops running things now
+        if (mTextDiffTask != null) {
+            mTextDiffTask.cancel(true);
+        }
+        if (mImageDiffTask != null) {
+            mImageDiffTask.cancel(true);
+        }
+    }
 
     static class SavedState extends BaseSavedState {
         boolean mHighlightTabs;
         boolean mHighlightTrailingWhitespaces;
         boolean mCanEdit;
         int mDiffMode;
-        String mAllDiffs;
+        String mDiffInfo;
         String mComments;
         String mDrafts;
 
@@ -610,7 +662,7 @@ public class DiffView extends FrameLayout {
             mHighlightTrailingWhitespaces = in.readInt() == 1;
             mCanEdit = in.readInt() == 1;
             mDiffMode = in.readInt();
-            mAllDiffs = in.readString();
+            mDiffInfo = in.readString();
             mComments = in.readString();
             mDrafts = in.readString();
         }
@@ -622,7 +674,7 @@ public class DiffView extends FrameLayout {
             out.writeInt(mHighlightTrailingWhitespaces ? 1 : 0);
             out.writeInt(mCanEdit ? 1 : 0);
             out.writeInt(mDiffMode);
-            out.writeString(mAllDiffs);
+            out.writeString(mDiffInfo);
             out.writeString(mComments);
             out.writeString(mDrafts);
         }
