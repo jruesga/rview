@@ -335,7 +335,7 @@ public class Formatter {
 
         if (!currentRevision) {
             view.setText(R.string.change_statuses_not_current);
-        } else if (change.status.equals(ChangeStatus.NEW)) {
+        } else if (ChangeStatus.NEW.equals(change.status)) {
             if (change.submittable) {
                 view.setText(R.string.change_statuses_ready_to_submit);
             } else if (!change.mergeable) {
@@ -349,11 +349,11 @@ public class Formatter {
                     view.setText(R.string.menu_open);
                 }
             }
-        } else if (change.status.equals(ChangeStatus.MERGED)) {
+        } else if (ChangeStatus.MERGED.equals(change.status)) {
             view.setText(R.string.menu_merged);
-        } else if (change.status.equals(ChangeStatus.ABANDONED)) {
+        } else if (ChangeStatus.ABANDONED.equals(change.status)) {
             view.setText(R.string.menu_abandoned);
-        } else if (change.status.equals(ChangeStatus.DRAFT)) {
+        } else if (ChangeStatus.DRAFT.equals(change.status)) {
             view.setText(R.string.menu_draft);
         } else {
             view.setText(null);
