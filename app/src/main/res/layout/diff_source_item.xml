@@ -15,6 +15,7 @@
      limitations under the License.
  -->
 <layout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -36,42 +37,72 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.ruesga.rview.widget.StyleableTextView
-            android:id="@+id/lineNumA"
+        <FrameLayout
             android:layout_width="0dp"
             app:bindLayoutWidth="@{measurement.lineNumWidth}"
             android:layout_height="match_parent"
-            android:padding="@dimen/diff_line_text_padding"
             android:background="@color/diffLineBackgroundColor"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorPrimaryDark"
             android:tag='@{model.lineNumberA != null ? "true/" + model.lineNumberA : null}'
             android:onClick="@{handlers::onNewDraftPressed}"
-            android:textSize="@dimen/diff_line_text_size"
-            android:gravity="end"
-            android:textStyle="bold"
-            android:text="@{model.lineNumberA}"/>
+            tools:ignore="Suspicious0dp">
+
+            <View
+                android:layout_width="3dp"
+                android:layout_height="match_parent"
+                android:background="@color/rejected"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_gravity="end"
+                android:visibility="@{model.lineNumberA == null ? View.VISIBLE : View.GONE}"/>
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:id="@+id/lineNumA"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:padding="@dimen/diff_line_text_padding"
+                android:textColor="?attr/colorPrimaryDark"
+                android:textSize="@dimen/diff_line_text_size"
+                android:gravity="end"
+                android:textStyle="bold"
+                android:text="@{model.lineNumberA}"/>
+        </FrameLayout>
 
         <View
             android:layout_width="@dimen/diff_line_separator_width"
             android:layout_height="match_parent"
             android:background="?android:attr/listDivider"/>
 
-        <com.ruesga.rview.widget.StyleableTextView
+        <FrameLayout
             android:layout_width="0dp"
             app:bindLayoutWidth="@{measurement.lineNumWidth}"
             android:layout_height="match_parent"
-            android:padding="@dimen/diff_line_text_padding"
             android:background="@color/diffLineBackgroundColor"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorPrimaryDark"
             android:tag='@{model.lineNumberB != null ? "false/" + model.lineNumberB : null}'
             android:onClick="@{handlers::onNewDraftPressed}"
-            android:textSize="@dimen/diff_line_text_size"
-            android:gravity="end"
-            android:textStyle="bold"
             android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
-            android:text="@{model.lineNumberB}"/>
+            tools:ignore="Suspicious0dp">
+
+            <View
+                android:layout_width="3dp"
+                android:layout_height="match_parent"
+                android:background="@color/rejected"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_gravity="end"
+                android:visibility="@{model.lineNumberB == null ? View.VISIBLE : View.GONE}"/>
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimaryDark"
+                android:padding="@dimen/diff_line_text_padding"
+                android:textSize="@dimen/diff_line_text_size"
+                android:gravity="end"
+                android:textStyle="bold"
+                android:text="@{model.lineNumberB}"/>
+        </FrameLayout>
 
         <View
             android:layout_width="@dimen/diff_line_separator_width"
@@ -108,11 +139,14 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:paddingTop="@dimen/diff_line_text_padding"
                 android:paddingBottom="@dimen/diff_line_text_padding"
+                android:paddingLeft="2dp"
+                android:paddingStart="2dp"
                 android:textSize="@dimen/diff_line_text_size"
                 android:ellipsize="none"
                 android:textIsSelectable="true"
                 android:maxLines="@{wrap != null &amp;&amp; wrap ? Integer.MAX_VALUE : 1}"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical"
+                tools:ignore="RtlSymmetry"/>
         </LinearLayout>
 
         <View
@@ -121,21 +155,36 @@
             android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
             android:background="?android:attr/listDivider"/>
 
-        <com.ruesga.rview.widget.StyleableTextView
+        <FrameLayout
             android:layout_width="0dp"
             app:bindLayoutWidth="@{measurement.lineNumWidth}"
             android:layout_height="match_parent"
-            android:padding="@dimen/diff_line_text_padding"
             android:background="@color/diffLineBackgroundColor"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorPrimaryDark"
             android:tag='@{model.lineNumberB != null ? "false/" + model.lineNumberB : null}'
             android:onClick="@{handlers::onNewDraftPressed}"
-            android:textSize="@dimen/diff_line_text_size"
-            android:gravity="end"
-            android:textStyle="bold"
             android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
-            android:text="@{model.lineNumberB}"/>
+            tools:ignore="Suspicious0dp">
+
+            <View
+                android:layout_width="3dp"
+                android:layout_height="match_parent"
+                android:background="@color/rejected"
+                android:layout_marginRight="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_gravity="end"
+                android:visibility="@{model.lineNumberB == null ? View.VISIBLE : View.GONE}"/>
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimaryDark"
+                android:padding="@dimen/diff_line_text_padding"
+                android:textSize="@dimen/diff_line_text_size"
+                android:gravity="end"
+                android:textStyle="bold"
+                android:text="@{model.lineNumberB}"/>
+        </FrameLayout>
 
         <View
             android:layout_width="@dimen/diff_line_separator_width"
@@ -172,11 +221,14 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:paddingTop="@dimen/diff_line_text_padding"
                 android:paddingBottom="@dimen/diff_line_text_padding"
+                android:paddingLeft="2dp"
+                android:paddingStart="2dp"
                 android:textSize="@dimen/diff_line_text_size"
                 android:ellipsize="none"
                 android:textIsSelectable="true"
                 android:maxLines="@{wrap != null &amp;&amp; wrap ? Integer.MAX_VALUE : 1}"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical"
+                tools:ignore="RtlSymmetry"/>
         </LinearLayout>
 
     </LinearLayout>
