@@ -206,7 +206,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
 
     private final List<String> mAllRevisions = new ArrayList<>();
 
-    private int mMode;
+    private int mMode = -1;
     private boolean mWrap;
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
@@ -234,6 +234,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
         mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
         mFile = state.getString(Constants.EXTRA_FILE_ID);
         mBase = state.getString(Constants.EXTRA_BASE);
+        if (savedInstanceState != null) {
+            mMode = savedInstanceState.getInt("mode", -1);
+        }
 
         setHasOptionsMenu(true);
     }
@@ -262,8 +265,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
             // Get diff user preferences
             mAccount = Preferences.getAccount(getContext());
             String diffMode = Preferences.getAccountDiffMode(getContext(), mAccount);
-            mMode = diffMode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
-                    ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
+            if (mMode == -1) {
+                mMode = diffMode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
+                        ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
+            }
             mWrap = Preferences.getAccountWrapMode(getContext(), mAccount);
             mHighlightTabs = Preferences.isAccountHighlightTabs(getContext(), mAccount);
             mHighlightTrailingWhitespaces =
@@ -322,6 +327,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         outState.putString(Constants.EXTRA_FILE, mFile);
         outState.putString(Constants.EXTRA_BASE, mBase);
+        outState.putInt("mode", mMode);
     }
 
     private void loadFiles() {
