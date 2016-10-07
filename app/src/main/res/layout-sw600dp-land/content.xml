@@ -132,23 +132,23 @@
 
         </android.support.design.widget.CoordinatorLayout>
 
-        <android.support.design.widget.NavigationView
+        <com.ruesga.rview.drawer.DrawerNavigationView
             android:id="@+id/drawer_navigation_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             app:theme="@style/AppTheme.DrawerMenu"
             app:menu="@menu/drawer">
-        </android.support.design.widget.NavigationView>
+        </com.ruesga.rview.drawer.DrawerNavigationView>
 
-        <android.support.design.widget.NavigationView
+        <com.ruesga.rview.drawer.DrawerNavigationView
             android:id="@+id/drawer_options_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
             app:theme="@style/AppTheme.DrawerMenu"
             app:headerLayout="@layout/options_header">
-        </android.support.design.widget.NavigationView>
+        </com.ruesga.rview.drawer.DrawerNavigationView>
 
     </android.support.v4.widget.DrawerLayout>
 

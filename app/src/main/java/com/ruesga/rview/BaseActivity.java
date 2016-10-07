@@ -20,21 +20,20 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.MenuRes;
 import android.support.annotation.StringRes;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
+import com.ruesga.rview.drawer.DrawerNavigationView;
+import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
 import com.ruesga.rview.fragments.PageableFragment.PageFragmentAdapter;
 import com.ruesga.rview.fragments.SelectableFragment;
 import com.ruesga.rview.misc.ActivityHelper;
@@ -219,10 +218,10 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         getContentBinding().setModel(mModel);
     }
 
-    public void configureOptionsMenu(@MenuRes int menu, OnNavigationItemSelectedListener cb) {
+    public void configureOptionsMenu(@MenuRes int menu, OnDrawerNavigationItemSelectedListener cb) {
         if (menu != 0) {
-            getContentBinding().drawerOptionsView.inflateMenu(menu);
-            getContentBinding().drawerOptionsView.setNavigationItemSelectedListener(cb);
+            getOptionsMenu().inflateMenu(menu);
+            getOptionsMenu().setDrawerNavigationItemSelectedListener(cb);
         }
     }
 
@@ -299,7 +298,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
                 getContentBinding().drawerOptionsView);
     }
 
-    public NavigationView getOptionsMenu() {
+    public DrawerNavigationView getOptionsMenu() {
         return getContentBinding().drawerOptionsView;
     }
 }

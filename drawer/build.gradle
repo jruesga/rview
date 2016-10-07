@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2016 Jorge Ruesga
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
+
+def libraries = rootProject.ext.libraries;
+
+dependencies {
+    compile "com.android.support:support-v4:${libraries.support}"
+    compile "com.android.support:appcompat-v7:${libraries.support}"
+    compile "com.android.support:design:${libraries.support}"
+    compile "io.reactivex:rxjava:${libraries.rxjava}"
+    compile "io.reactivex:rxandroid:${libraries.rxandroid}"
+    compile("me.tatarka.rxloader:rxloader:${libraries.rxloader}") {
+        exclude group: 'io.reactivex', module: 'rxandroid'
+    }
+}
+
+
+android {
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
+        consumerProguardFiles file('proguard-consumer.txt')
+    }
+}

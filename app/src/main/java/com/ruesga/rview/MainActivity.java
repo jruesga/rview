@@ -23,8 +23,6 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-import android.support.design.internal.NavigationMenu;
-import android.support.design.internal.NavigationSubMenu;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -40,6 +38,9 @@ import android.view.View;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
+import com.ruesga.rview.drawer.DrawerNavigationMenu;
+import com.ruesga.rview.drawer.DrawerNavigationSubMenu;
+import com.ruesga.rview.drawer.DrawerNavigationView;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -318,7 +319,7 @@ public class MainActivity extends ChangeListBaseActivity {
         performShowAccount(mModel.isAccountExpanded);
 
         // Listen for click events and select the current one
-        mBinding.drawerNavigationView.setNavigationItemSelectedListener(item -> {
+        mBinding.drawerNavigationView.setDrawerNavigationItemSelectedListener(item -> {
             requestNavigateTo(item.getItemId(), false);
             return true;
         });
@@ -429,13 +430,13 @@ public class MainActivity extends ChangeListBaseActivity {
 
     private void updateAccountsDrawerInfo() {
         // Remove all accounts and re-add them
-        final NavigationMenu menu = (NavigationMenu) mBinding.drawerNavigationView.getMenu();
+        final DrawerNavigationMenu menu = (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
         int otherAccountGroupIndex = menu.findGroupIndex(R.id.category_other_accounts);
         MenuItem group = menu.getItem(otherAccountGroupIndex);
         SubMenu otherAccountsSubMenu = group.getSubMenu();
         int count = otherAccountsSubMenu.size() - 1;
         for (int i = count; i > 0; i--) {
-            ((NavigationSubMenu) otherAccountsSubMenu).removeItemAt(i);
+            ((DrawerNavigationSubMenu) otherAccountsSubMenu).removeItemAt(i);
         }
         int i = 0;
         for (Account account : mAccounts) {
@@ -446,7 +447,9 @@ public class MainActivity extends ChangeListBaseActivity {
             }
 
             int id = OTHER_ACCOUNTS_GROUP_BASE_ID + i;
-            String title = account.getAccountDisplayName();
+            String title = account.getAccountDisplayName()
+                    + DrawerNavigationView.SUBTITLE_SEPARATOR
+                    + account.getRepositoryDisplayName();
             MenuItem item = otherAccountsSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
             item.setIcon(R.drawable.ic_account_circle);
             i++;
