@@ -495,7 +495,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     }
 
     private void addCommentsToModel(List<DiffView.AbstractModel> model,
-                                    List<CommentInfo> comments, boolean isA, boolean isDraft) {
+            List<CommentInfo> comments, boolean isA, boolean isDraft) {
         if (comments == null) {
             return;
         }
@@ -505,7 +505,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             int pos = findLineInModel(model, isA, comment.line);
             if (pos != -1) {
                 if (mMode == DiffView.UNIFIED_MODE) {
+                    DiffInfoModel diff = (DiffInfoModel) model.get(findDiffForComment(model, pos));
                     DiffView.CommentModel commentModel = new DiffView.CommentModel();
+                    commentModel.diff = diff;
                     commentModel.isDraft = isDraft;
                     commentModel.commentA = comment;
                     int nextPos = findNextPositionWithoutComment(model, pos);
@@ -517,7 +519,11 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                 } else {
                     int reusablePos = findReusableCommentView(model, pos, isA);
                     if (reusablePos != -1) {
-                        DiffView.CommentModel commentModel = (DiffView.CommentModel) model.get(reusablePos);
+                        DiffInfoModel diff = (DiffInfoModel) model.get(
+                                findDiffForComment(model, reusablePos));
+                        DiffView.CommentModel commentModel =
+                                (DiffView.CommentModel) model.get(reusablePos);
+                        commentModel.diff = diff;
                         commentModel.isDraft = isDraft;
                         if (isA) {
                             commentModel.commentA = comment;
@@ -525,7 +531,10 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                             commentModel.commentB = comment;
                         }
                     } else {
+                        DiffInfoModel diff = (DiffInfoModel) model.get(
+                                findDiffForComment(model, pos));
                         DiffView.CommentModel commentModel = new DiffView.CommentModel();
+                        commentModel.diff = diff;
                         commentModel.isDraft = isDraft;
                         if (isA) {
                             commentModel.commentA = comment;
@@ -557,6 +566,15 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         && Integer.valueOf(diff.lineNumberB) == line) {
                     return i;
                 }
+            }
+        }
+        return -1;
+    }
+
+    private int findDiffForComment(List<DiffView.AbstractModel> model, int pos) {
+        for (int i = pos; i >= 0; i--) {
+            if (model.get(i) instanceof DiffInfoModel) {
+                return i;
             }
         }
         return -1;

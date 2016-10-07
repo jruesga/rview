@@ -188,6 +188,7 @@ public class DiffView extends FrameLayout {
         public CommentInfo commentA;
         public CommentInfo commentB;
         public boolean isDraft;
+        public DiffInfoModel diff;
     }
 
     @ProguardIgnored
