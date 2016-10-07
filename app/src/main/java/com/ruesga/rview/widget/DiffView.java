@@ -39,11 +39,11 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.DiffAdviseItemBinding;
 import com.ruesga.rview.databinding.DiffCommentItemBinding;
+import com.ruesga.rview.databinding.DiffDecoratorItemBinding;
 import com.ruesga.rview.databinding.DiffSkipItemBinding;
 import com.ruesga.rview.databinding.DiffSourceItemBinding;
 import com.ruesga.rview.databinding.DiffViewBinding;
 import com.ruesga.rview.gerrit.model.CommentInfo;
-import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.tasks.AsyncImageDiffProcessor;
@@ -68,6 +68,7 @@ public class DiffView extends FrameLayout {
     private static final int SKIP_VIEW_TYPE = 1;
     private static final int COMMENT_VIEW_TYPE = 2;
     private static final int ADVISE_VIEW_TYPE = 3;
+    private static final int DECORATOR_VIEW_TYPE = 4;
 
     @ProguardIgnored
     @SuppressWarnings({"UnusedParameters", "unused"})
@@ -170,6 +171,16 @@ public class DiffView extends FrameLayout {
         }
     }
 
+    private static class DiffDecoratorViewHolder extends RecyclerView.ViewHolder {
+        private DiffDecoratorItemBinding mBinding;
+
+        DiffDecoratorViewHolder(DiffDecoratorItemBinding binding) {
+            super(binding.getRoot());
+            mBinding = binding;
+            mBinding.executePendingBindings();
+        }
+    }
+
     public static abstract class AbstractModel {
     }
 
@@ -199,6 +210,10 @@ public class DiffView extends FrameLayout {
     @ProguardIgnored
     public static class AdviseModel extends AbstractModel {
         public String msg;
+    }
+
+    @ProguardIgnored
+    public static class DecoratorModel extends AbstractModel {
     }
 
     @ProguardIgnored
@@ -250,6 +265,10 @@ public class DiffView extends FrameLayout {
             } else if (viewType == ADVISE_VIEW_TYPE) {
                 return new DiffAdviseViewHolder(DataBindingUtil.inflate(
                         mLayoutInflater, R.layout.diff_advise_item, parent, false));
+
+            } else if (viewType == DECORATOR_VIEW_TYPE) {
+                return new DiffDecoratorViewHolder(DataBindingUtil.inflate(
+                        mLayoutInflater, R.layout.diff_decorator_item, parent, false));
             }
             return null;
         }
@@ -310,6 +329,12 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
                 holder.mBinding.setAdvise(advise.msg);
                 holder.mBinding.executePendingBindings();
+
+            } else if (vh instanceof DiffDecoratorViewHolder) {
+                DiffDecoratorViewHolder holder = ((DiffDecoratorViewHolder) vh);
+                holder.mBinding.setWrap(isWrapMode());
+                holder.mBinding.setMeasurement(mDiffViewMeasurement);
+                holder.mBinding.executePendingBindings();
             }
 
             if (mLayoutManager instanceof UnwrappedLinearLayoutManager) {
@@ -329,7 +354,10 @@ public class DiffView extends FrameLayout {
             if (model instanceof CommentModel) {
                 return COMMENT_VIEW_TYPE;
             }
-            return ADVISE_VIEW_TYPE;
+            if (model instanceof AdviseModel) {
+                return ADVISE_VIEW_TYPE;
+            }
+            return DECORATOR_VIEW_TYPE;
         }
 
         @Override

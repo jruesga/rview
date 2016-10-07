@@ -88,10 +88,16 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     }
 
     private List<DiffView.AbstractModel> processDiffs() {
+        List<DiffView.AbstractModel> model;
         if (mMode == DiffView.SIDE_BY_SIDE_MODE) {
-            return processSideBySideDiffs();
+            model = processSideBySideDiffs();
+        } else {
+            model = processUnifiedDiffs();
         }
-        return processUnifiedDiffs();
+        if (!model.isEmpty()) {
+            model.add(new DiffView.DecoratorModel());
+        }
+        return model;
     }
 
     private List<DiffView.AbstractModel> processSideBySideDiffs() {
