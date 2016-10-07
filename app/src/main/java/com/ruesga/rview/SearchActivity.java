@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.KeyEvent;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -78,6 +79,17 @@ public class SearchActivity extends AppCompatActivity {
         mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[mCurrentOption]));
 
         configureSearchHint();
+    }
+
+    @Override
+    public boolean onKeyDown(int keycode, KeyEvent e) {
+        switch(keycode) {
+            case KeyEvent.KEYCODE_MENU:
+                mBinding.searchView.openMenu(true);
+                return true;
+        }
+
+        return super.onKeyDown(keycode, e);
     }
 
     protected void setupToolbar() {

@@ -22,25 +22,4 @@
         android:title="@string/menu_options"
         android:icon="@drawable/ic_more_vertical"
         app:showAsAction="ifRoom" />
-    <!--
-    <item
-        android:id="@+id/menu_search_by_change"
-        android:title="@string/search_by_change"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_search_by_commit"
-        android:title="@string/search_by_commit"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_search_by_user"
-        android:title="@string/search_by_user"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_search_by_commit_message"
-        android:title="@string/search_by_commit_message"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_search_by_custom"
-        android:title="@string/search_by_custom"
-        app:showAsAction="never" />-->
 </menu>

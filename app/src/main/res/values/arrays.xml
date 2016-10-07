@@ -103,8 +103,6 @@
         <item>TXZ</item>
     </string-array>
 
-
-
     <string-array name="search_options_labels" translatable="false">
         <item>@string/search_by_change</item>
         <item>@string/search_by_commit</item>
@@ -124,7 +122,7 @@
         <item>@drawable/ic_merged</item>
         <item>@drawable/ic_account_circle</item>
         <item>@drawable/ic_comment</item>
-        <item>@drawable/ic_filter_list</item>
+        <item>@drawable/ic_custom_search</item>
         <item>4</item>
     </integer-array>
 </resources>

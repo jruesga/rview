@@ -264,8 +264,8 @@
     <string name="search_by_user_hint">Type a user or email</string>
     <string name="search_by_commit_message">Commit message</string>
     <string name="search_by_commit_message_hint">Type a word or phrase</string>
-    <string name="search_by_custom">Custom</string>
-    <string name="search_by_custom_hint">Type a custom query</string>
+    <string name="search_by_custom">Custom search</string>
+    <string name="search_by_custom_hint">Type your custom query</string>
     <string name="search_not_a_valid_change">Not a valid change identifier</string>
     <string name="search_not_a_valid_commit">Not a valid commit identifier</string>
     <string name="search_not_a_valid_custom_query">Not a valid Gerrit query</string>

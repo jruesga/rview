@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.DiffViewerFragment;
@@ -137,5 +138,15 @@ public class DiffViewerActivity extends BaseActivity {
     @Override
     public ContentBinding getContentBinding() {
         return mBinding;
+    }
+
+    @Override
+    public boolean onKeyDown(int keycode, KeyEvent e) {
+        switch(keycode) {
+            case KeyEvent.KEYCODE_MENU:
+                return true;
+        }
+
+        return super.onKeyDown(keycode, e);
     }
 }

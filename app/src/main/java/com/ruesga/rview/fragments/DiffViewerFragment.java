@@ -27,6 +27,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,7 +58,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DiffViewerFragment extends Fragment {
+public class DiffViewerFragment extends Fragment implements KeyEventBindable {
 
     private static final String TAG = "DiffViewerFragment";
 
@@ -157,6 +158,17 @@ public class DiffViewerFragment extends Fragment {
             return true;
         }
     };
+
+    @Override
+    public boolean onKeyDown(int keycode, KeyEvent e) {
+        switch(keycode) {
+            case KeyEvent.KEYCODE_MENU:
+                ((BaseActivity) getActivity()).openOptionsDrawer();
+                return true;
+        }
+
+        return false;
+    }
 
     @ProguardIgnored
     public static class Model {

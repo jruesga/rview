@@ -257,6 +257,18 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (getContentBinding() != null && getContentBinding().drawerLayout != null) {
+            if (getContentBinding().drawerLayout.isDrawerOpen(
+                    getContentBinding().drawerOptionsView)) {
+                closeOptionsDrawer();
+                return;
+            }
+        }
+        super.onBackPressed();
+    }
+
     public void showError(@StringRes int message) {
         AndroidHelper.showErrorSnackbar(this, getContentBinding().getRoot(), message);
     }
@@ -285,14 +297,18 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     public void openOptionsDrawer() {
-        getContentBinding().drawerLayout.setDrawerLockMode(
-                DrawerLayout.LOCK_MODE_UNLOCKED,
-                getContentBinding().drawerOptionsView);
-        getContentBinding().drawerLayout.openDrawer(getContentBinding().drawerOptionsView);
+        if (!getContentBinding().drawerLayout.isDrawerOpen(getContentBinding().drawerOptionsView)) {
+            getContentBinding().drawerLayout.setDrawerLockMode(
+                    DrawerLayout.LOCK_MODE_UNLOCKED,
+                    getContentBinding().drawerOptionsView);
+            getContentBinding().drawerLayout.openDrawer(getContentBinding().drawerOptionsView);
+        }
     }
 
     public void closeOptionsDrawer() {
-        getContentBinding().drawerLayout.closeDrawer(getContentBinding().drawerOptionsView);
+        if (getContentBinding().drawerLayout.isDrawerOpen(getContentBinding().drawerOptionsView)) {
+            getContentBinding().drawerLayout.closeDrawer(getContentBinding().drawerOptionsView);
+        }
         getContentBinding().drawerLayout.setDrawerLockMode(
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
                 getContentBinding().drawerOptionsView);
