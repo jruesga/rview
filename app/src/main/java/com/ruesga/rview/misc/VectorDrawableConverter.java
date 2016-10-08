@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class VectorDrawableHelper {
+public class VectorDrawableConverter {
 
-    private static final String TAG = "VectorDrawableHelper";
+    private static final String TAG = "VectorDrawableConverter";
 
     private static final String SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 

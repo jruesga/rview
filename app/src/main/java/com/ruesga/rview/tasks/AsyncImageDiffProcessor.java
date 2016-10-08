@@ -33,7 +33,7 @@ import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.ruesga.rview.R;
 import com.ruesga.rview.misc.BitmapUtils;
-import com.ruesga.rview.misc.VectorDrawableHelper;
+import com.ruesga.rview.misc.VectorDrawableConverter;
 import com.ruesga.rview.widget.DiffView.ImageDiffModel;
 
 import java.io.BufferedInputStream;
@@ -184,7 +184,7 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
     private Pair<Drawable, int[]> loadFromVectorDrawable(File file) {
         try {
             // Convert the vector drawable to a svg document
-            CharSequence svgDocument = VectorDrawableHelper.toSvg(
+            CharSequence svgDocument = VectorDrawableConverter.toSvg(
                     new BufferedReader(new FileReader(file)));
             return loadSvg(new ByteArrayInputStream(svgDocument.toString().getBytes()));
 
