@@ -140,7 +140,7 @@ public class FileDiffViewerFragment extends Fragment {
         public void onNewDraft(View v, boolean left, int line) {
             final String baseRevision = mBase == null ? "0" : mBase;
             String rev = left ? baseRevision : mRevision;
-            performDraftMessageDialog(v, null,
+            performShowDraftMessageDialog(v, null,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
@@ -150,7 +150,7 @@ public class FileDiffViewerFragment extends Fragment {
 
         @Override
         public void onReply(View v, String revisionId, String commentId, int line) {
-            performDraftMessageDialog(v, null,
+            performShowDraftMessageDialog(v, null,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
@@ -169,7 +169,7 @@ public class FileDiffViewerFragment extends Fragment {
         @Override
         public void onEditDraft(View v, String revisionId, String draftId,
                 String inReplyTo, int line, String msg) {
-            performDraftMessageDialog(v, msg,
+            performShowDraftMessageDialog(v, msg,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
@@ -522,7 +522,7 @@ public class FileDiffViewerFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private void performDraftMessageDialog(
+    private void performShowDraftMessageDialog(
             View v, String comment, EditDialogFragment.OnEditChanged cb) {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
                 getString(R.string.draft_title), comment,
