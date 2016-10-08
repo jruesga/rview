@@ -46,6 +46,7 @@ import com.ruesga.rview.databinding.FileInfoItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
 import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
 import com.ruesga.rview.exceptions.OperationFailedException;
+import com.ruesga.rview.fragments.ConfirmDialogFragment.OnActionConfirmed;
 import com.ruesga.rview.fragments.EditDialogFragment.OnEditChanged;
 import com.ruesga.rview.fragments.FilterableDialogFragment.OnFilterSelectedListener;
 import com.ruesga.rview.gerrit.GerritApi;
@@ -1354,6 +1355,14 @@ public class ChangeDetailsFragment extends Fragment {
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
+    private void performConfirmDialog(
+            View v, String title, String message, String action, OnActionConfirmed cb) {
+        ConfirmDialogFragment fragment = ConfirmDialogFragment.newInstance(
+                title, message, action, v);
+        fragment.setOnActionConfirmed(cb);
+        fragment.show(getChildFragmentManager(), ConfirmDialogFragment.TAG);
+    }
+
     private void performReplyComment(int position) {
         String currentMessage = mBinding.reviewInfo.reviewComment.getText().toString();
         String replyMessage = mMessageAdapter.getMessage(position);
@@ -1467,8 +1476,12 @@ public class ChangeDetailsFragment extends Fragment {
                     break;
 
                 case R.id.submit:
-                    mActionLoader.clear();
-                    mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
+                    action = getString(R.string.change_action_submit);
+                    String message = getString(R.string.actions_confirm_submit);
+                    performConfirmDialog(v, action, message, action, () -> {
+                        mActionLoader.clear();
+                        mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
+                    });
                     break;
             }
         }

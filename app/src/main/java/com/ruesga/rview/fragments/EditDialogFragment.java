@@ -140,7 +140,9 @@ public class EditDialogFragment extends RevealDialogFragment {
     }
 
     private void performEditChanged() {
-        mCallback.onEditChanged(mModel.value);
+        if (mCallback != null) {
+            mCallback.onEditChanged(mModel.value);
+        }
     }
 
     private void enabledOrDisableButtons(String value) {
