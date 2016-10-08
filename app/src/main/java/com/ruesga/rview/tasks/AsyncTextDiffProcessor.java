@@ -510,19 +510,40 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             CommentInfo comment = comments.get(i);
             if (comment.line == null && comment.range == null) {
                 // File comment
-                DiffView.CommentModel commentModel = new DiffView.CommentModel();
-                commentModel.diff = null;
-                commentModel.isDraft = isDraft;
                 if (mMode == DiffView.UNIFIED_MODE) {
+                    DiffView.CommentModel commentModel = new DiffView.CommentModel();
+                    commentModel.diff = null;
+                    commentModel.isDraft = isDraft;
                     commentModel.commentA = comment;
+                    model.add(findNextPositionWithoutComment(model, -1), commentModel);
                 } else {
-                    if (isA) {
-                        commentModel.commentA = comment;
+                    int reusablePos = findReusableCommentView(model, -1, isA);
+                    if (reusablePos != -1) {
+                        DiffView.CommentModel commentModel =
+                                (DiffView.CommentModel) model.get(reusablePos);
+                        commentModel.isDraft = isDraft;
+                        if (isA) {
+                            commentModel.commentA = comment;
+                        } else {
+                            commentModel.commentB = comment;
+                        }
                     } else {
-                        commentModel.commentB = comment;
+                        DiffView.CommentModel commentModel = new DiffView.CommentModel();
+                        commentModel.isDraft = isDraft;
+                        if (isA) {
+                            commentModel.commentA = comment;
+                        } else {
+                            commentModel.commentB = comment;
+                        }
+                        model.add(findNextPositionWithoutComment(model, -1), commentModel);
                     }
                 }
-                model.add(0, commentModel);
+                continue;
+            }
+
+
+            // We don't support comment range yet, so skip this comment
+            if (comment.line == null) {
                 continue;
             }
 
