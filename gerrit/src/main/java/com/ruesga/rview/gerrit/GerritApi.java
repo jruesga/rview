@@ -83,6 +83,11 @@ public interface GerritApi {
             @NonNull String revisionId,
             @NonNull DownloadFormat format);
 
+    /**
+     * Return an implementation of ApiVersionMediator
+     */
+    ApiVersionMediator getApiVersionMediator();
+
 
     // ===============================
     // Gerrit access endpoints
@@ -1079,7 +1084,8 @@ public interface GerritApi {
             @Nullable @Query("base") Integer base,
             @Nullable @Query("intraline") Option intraline,
             @Nullable @Query("weblinks-only") Option weblinksOnly,
-            @Nullable @Query("whitespace ") WhitespaceType whitespace,
+            @Nullable @Query("whitespace") WhitespaceType whitespace,
+            @Nullable @Query("ignore-whitespace") IgnoreWhitespaceType ignoreWhitespace,
             @Nullable @Query("context") ContextType context);
 
     /**

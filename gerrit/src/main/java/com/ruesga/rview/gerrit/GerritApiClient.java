@@ -48,7 +48,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Body;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
@@ -56,6 +55,24 @@ public class GerritApiClient implements GerritApi {
     private final GerritApi mService;
     private final PlatformAbstractionLayer mAbstractionLayer;
     protected ServerVersion mServerVersion;
+
+    private final ApiVersionMediator mMediator = new ApiVersionMediator() {
+        @Override
+        public WhitespaceType resolveWhiteSpaceType(WhitespaceType type) {
+            if (mServerVersion.getVersion() >= 2.12) {
+                return null;
+            }
+            return type;
+        }
+
+        @Override
+        public IgnoreWhitespaceType resolveIgnoreWhiteSpaceType(IgnoreWhitespaceType type) {
+            if (mServerVersion.getVersion() < 2.12) {
+                return null;
+            }
+            return type;
+        }
+    };
 
     public GerritApiClient(String endpoint, Authorization authorization,
             PlatformAbstractionLayer abstractionLayer) {
@@ -207,6 +224,11 @@ public class GerritApiClient implements GerritApi {
         return Uri.parse(String.format(Locale.US, "%schanges/%s/revisions/%s/archive?format=%s",
                 toUnauthenticatedEndpoint(mEndPoint),
                 changeId, revisionId, format.toString().toLowerCase()));
+    }
+
+    @Override
+    public ApiVersionMediator getApiVersionMediator() {
+        return mMediator;
     }
 
 
@@ -937,9 +959,13 @@ public class GerritApiClient implements GerritApi {
     public Observable<DiffInfo> getChangeRevisionFileDiff(@NonNull String changeId,
             @NonNull String revisionId, @NonNull String fileId, @Nullable Integer base,
             @Nullable Option intraline, @Nullable Option weblinksOnly,
-            @Nullable WhitespaceType whitespace, @Nullable ContextType context) {
-        return withVersionRequestCheck(mService.getChangeRevisionFileDiff(
-                changeId, revisionId, fileId, base, intraline, weblinksOnly, whitespace, context));
+            @Nullable WhitespaceType whitespace, @Nullable IgnoreWhitespaceType ignoreWhitespace,
+            @Nullable ContextType context) {
+        return withVersionRequestCheck(mService.getChangeRevisionFileDiff(changeId, revisionId,
+                        fileId, base, intraline, weblinksOnly,
+                        mMediator.resolveWhiteSpaceType(whitespace),
+                        mMediator.resolveIgnoreWhiteSpaceType(ignoreWhitespace),
+                        context));
     }
 
     @Override

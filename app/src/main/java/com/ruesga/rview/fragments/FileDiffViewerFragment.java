@@ -42,7 +42,9 @@ import com.ruesga.rview.gerrit.model.CommentInput;
 import com.ruesga.rview.gerrit.model.ContextType;
 import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
+import com.ruesga.rview.gerrit.model.IgnoreWhitespaceType;
 import com.ruesga.rview.gerrit.model.SideType;
+import com.ruesga.rview.gerrit.model.WhitespaceType;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
@@ -326,7 +328,8 @@ public class FileDiffViewerFragment extends Fragment {
                                         base,
                                         Option.INSTANCE,
                                         null,
-                                        null,
+                                        WhitespaceType.IGNORE_NONE,
+                                        IgnoreWhitespaceType.NONE,
                                         ContextType.ALL)
                                         .toBlocking().first();
                             }
