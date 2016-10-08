@@ -22,6 +22,7 @@
         <import type="android.view.View" />
         <import type="com.ruesga.rview.widget.DiffView" />
         <variable name="mode" type="java.lang.Integer" />
+        <variable name="imageDiffModel" type="com.ruesga.rview.widget.DiffView.ImageDiffModel" />
     </data>
 
     <FrameLayout
@@ -39,7 +40,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             layout="@layout/diff_image_layout"
-            app:mode="@{mode}" />
+            app:mode="@{mode}"
+            app:imageDiffModel="@{imageDiffModel}" />
     </FrameLayout>
 
 </layout>

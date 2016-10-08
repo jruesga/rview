@@ -91,7 +91,6 @@
             android:excludeFromRecents="true"
             android:exported="false" />
 
-
         <activity
             android:name=".AccountSettingsActivity"
             android:theme="@style/AppTheme.Settings"

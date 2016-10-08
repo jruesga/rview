@@ -40,6 +40,7 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.CommentInput;
 import com.ruesga.rview.gerrit.model.ContextType;
+import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.misc.CacheHelper;
@@ -51,8 +52,11 @@ import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DiffView;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
@@ -543,8 +547,17 @@ public class FileDiffViewerFragment extends Fragment {
 
     private void fetchRevisionsContentIfNeeded(FileDiffResponse response) {
         if (mMode == DiffView.IMAGE_MODE) {
-            // Base revision
             final String baseRevision = mBase == null ? "0" : mBase;
+
+            // If is not a binary file, we can use the diff information to build the file
+            // instead of fetch it from the network
+            if (!response.diff.binary) {
+                response.leftContent = writeCachedContent(response, mBase, true);
+                response.rightContent = writeCachedContent(response, mRevision, false);
+                return;
+            }
+
+            // Base revision
             if (baseRevision.equals("0")) {
                 // Base file is only available from the parent commit, so we need to
                 // fetch by commit to recover the parent id, and then fetch the revision
@@ -595,6 +608,18 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
+    private File writeCachedContent(FileDiffResponse response, String base, boolean isA) {
+        String name = base + "_" + mFileHash + "_" + CacheHelper.CACHE_CONTENT;
+        File writtenFile = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
+        if (!writtenFile.exists()) {
+            if (writeDiffToFile(response, writtenFile, isA)) {
+                return writtenFile;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private ChangeInfo fetchParentChange(String parentRevision) {
         try {
             String name = parentRevision + "_" + CacheHelper.CACHE_PARENT;
@@ -621,5 +646,64 @@ public class FileDiffViewerFragment extends Fragment {
             Log.e(TAG, "Can't fetch parent change " + mChange.legacyChangeId, ex);
         }
         return null;
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private boolean writeDiffToFile(FileDiffResponse response, File file, boolean isA) {
+        Writer writer = null;
+        boolean hasData = false;
+        try {
+            writer = new BufferedWriter(new FileWriter(file));
+
+            DiffContentInfo[] content = response.diff.content;
+            for (DiffContentInfo c : content) {
+                // AB
+                if (c.ab != null) {
+                    for (String s : c.ab) {
+                        writer.write(s + "\n");
+                        hasData = true;
+                    }
+                }
+
+                if (isA) {
+                    // A
+                    if (c.a != null) {
+                        for (String s : c.a) {
+                            writer.write(s + "\n");
+                            hasData = true;
+                        }
+                    }
+                } else {
+                    // B
+                    if (c.b != null) {
+                        for (String s : c.b) {
+                            writer.write(s + "\n");
+                            hasData = true;
+                        }
+                    }
+                }
+            }
+
+            return hasData;
+
+        } catch (IOException ex) {
+            Log.e(TAG, "Can't write diffs to file " + file.getAbsolutePath(), ex);
+            hasData = false;
+
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                // Ignore
+            }
+
+            if (!hasData) {
+                file.delete();
+            }
+        }
+
+        return false;
     }
 }

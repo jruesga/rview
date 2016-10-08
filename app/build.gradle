@@ -42,6 +42,7 @@ dependencies {
     compile "org.ocpsoft.prettytime:prettytime:${libraries.prettytime}"
     compile "org.apmem.tools:layouts:${libraries.flowlayout}"
     compile "com.github.jruesga:floatingsearchview:${libraries.floatingsearchview}"
+    compile "com.github.BigBadaboom:androidsvg:${libraries.androidsvg}"
 }
 
 android {

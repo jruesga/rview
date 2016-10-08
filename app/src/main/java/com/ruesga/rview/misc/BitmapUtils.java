@@ -26,6 +26,16 @@ import java.io.IOException;
 
 public class BitmapUtils {
 
+    public static int[] decodeBitmapSize(File file) {
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final Options options = new Options();
+        options.inScaled = false;
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+        return new int[] {options.outWidth, options.outHeight};
+    }
+
     public static Bitmap decodeBitmap(File file, int dstWidth, int dstHeight) {
         // First decode with inJustDecodeBounds=true to check dimensions
         final Options options = new Options();

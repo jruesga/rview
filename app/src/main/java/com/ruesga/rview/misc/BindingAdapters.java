@@ -16,6 +16,7 @@
 package com.ruesga.rview.misc;
 
 import android.databinding.BindingAdapter;
+import android.graphics.drawable.Drawable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -25,9 +26,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
-import com.ruesga.rview.gerrit.model.ActionInfo;
-
-import java.util.Map;
 
 @ProguardIgnored
 @SuppressWarnings("unused")
@@ -72,5 +70,10 @@ public class BindingAdapters {
         } else {
             v.setImageDrawable(ContextCompat.getDrawable(v.getContext(), resource));
         }
+    }
+
+    @BindingAdapter("bindDrawable")
+    public static void bindDrawable(ImageView v, Drawable drawable) {
+        v.setImageDrawable(drawable);
     }
 }

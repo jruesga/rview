@@ -239,6 +239,11 @@
     <!-- Diff viewer -->
     <string name="diff_viewer_no_diffs">No differences</string>
     <string name="diff_viewer_binary_file">Binary file. Diff not available.</string>
+    <string name="diff_viewer_preview_not_available">Image preview\nnot available</string>
+    <string name="diff_viewer_image_size_label">Size</string>
+    <string name="diff_viewer_image_size"><xliff:g id="size" example="12 Kb">%1$d</xliff:g> Kb</string>
+    <string name="diff_viewer_image_dimensions_label">Dimensions</string>
+    <string name="diff_viewer_image_dimensions"><xliff:g id="width">%1$d</xliff:g> x <xliff:g id="height">%2$d</xliff:g></string>
 
     <!-- Diff options -->
     <string name="options_base">Base</string>

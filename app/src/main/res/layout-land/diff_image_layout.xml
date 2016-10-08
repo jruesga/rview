@@ -16,13 +16,13 @@
  -->
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="android.view.View" />
         <import type="com.ruesga.rview.widget.DiffView" />
         <variable name="mode" type="java.lang.Integer" />
+        <variable name="imageDiffModel" type="com.ruesga.rview.widget.DiffView.ImageDiffModel" />
     </data>
 
     <LinearLayout
@@ -31,7 +31,6 @@
         android:visibility="@{mode != null &amp;&amp; mode == DiffView.IMAGE_MODE ? View.VISIBLE : View.GONE}"
         android:orientation="horizontal">
 
-        <!-- Left -->
         <android.support.v7.widget.CardView
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -40,32 +39,16 @@
             android:layout_marginEnd="8dp"
             app:cardElevation="3dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+            <include
+                android:id="@+id/diff_left"
+                layout="@layout/diff_image_layout_item"
+                app:drawable="@{imageDiffModel.left}"
+                app:size="@{imageDiffModel.sizeLeft}"
+                app:dimensions="@{imageDiffModel.dimensionsLeft}"
+                app:side="@{context.getString(com.ruesga.rview.R.string.options_base_left)}"/>
 
-                <com.ruesga.rview.widget.StyleableTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="5dp"
-                    style="@style/HeaderLabel"
-                    android:text="@string/options_base_left" />
-
-                <ImageView
-                    android:id="@+id/diff_left"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="16dp"
-                    android:scaleType="fitCenter"
-                    android:background="@color/primaryBackgroundColor"
-                    tools:ignore="ContentDescription" />
-            </LinearLayout>
         </android.support.v7.widget.CardView>
 
-        <!-- Left -->
         <android.support.v7.widget.CardView
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -74,29 +57,14 @@
             android:layout_marginEnd="8dp"
             app:cardElevation="3dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+            <include
+                android:id="@+id/diff_right"
+                layout="@layout/diff_image_layout_item"
+                app:drawable="@{imageDiffModel.right}"
+                app:size="@{imageDiffModel.sizeRight}"
+                app:dimensions="@{imageDiffModel.dimensionsRight}"
+                app:side="@{context.getString(com.ruesga.rview.R.string.options_base_right)}"/>
 
-                <com.ruesga.rview.widget.StyleableTextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="5dp"
-                    style="@style/HeaderLabel"
-                    android:text="@string/options_base_right" />
-
-                <ImageView
-                    android:id="@+id/diff_right"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="16dp"
-                    android:scaleType="fitCenter"
-                    android:background="@color/primaryBackgroundColor"
-                    tools:ignore="ContentDescription" />
-            </LinearLayout>
         </android.support.v7.widget.CardView>
 
     </LinearLayout>

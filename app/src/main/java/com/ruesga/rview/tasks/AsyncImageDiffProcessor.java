@@ -20,18 +20,36 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PictureDrawable;
 import android.os.AsyncTask;
+import android.util.Log;
+import android.util.Pair;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGParseException;
+import com.ruesga.rview.R;
 import com.ruesga.rview.misc.BitmapUtils;
+import com.ruesga.rview.misc.VectorDrawableHelper;
+import com.ruesga.rview.widget.DiffView.ImageDiffModel;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 
-public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, Drawable[]> {
+public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffModel> {
+
+    private static final String TAG = "AsyncImageDiffProcessor";
 
     public interface OnImageDiffProcessEndedListener {
-        void onImageDiffProcessEnded(Drawable[] drawables);
+        void onImageDiffProcessEnded(ImageDiffModel model);
     }
 
     private final Context mContext;
@@ -55,25 +73,160 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, Drawable[]> {
     }
 
     @Override
-    protected Drawable[] doInBackground(Void... params) {
-        Drawable[] drawables = new Drawable[2];
-        drawables[0] = loadAsDrawable(mLeft);
-        drawables[1] = loadAsDrawable(mRight);
-        return drawables;
+    protected ImageDiffModel doInBackground(Void... params) {
+        ImageDiffModel model = new ImageDiffModel();
+        if (mLeft != null) {
+            Pair<Drawable, int[]> l = loadAsDrawable(mLeft);
+            if (l != null && l.first != null) {
+                model.left = l.first;
+                model.sizeLeft = mContext.getString(
+                        R.string.diff_viewer_image_size, mLeft.length() / 1024);
+                model.dimensionsLeft = mContext.getString(
+                        R.string.diff_viewer_image_dimensions, l.second[0], l.second[1]);
+            }
+        }
+        if (mRight != null) {
+            Pair<Drawable, int[]> r = loadAsDrawable(mRight);
+            if (r != null && r.first != null) {
+                model.right = r.first;
+                model.sizeRight = mContext.getString(
+                        R.string.diff_viewer_image_size, mRight.length() / 1024);
+                model.dimensionsRight = mContext.getString(
+                        R.string.diff_viewer_image_dimensions, r.second[0], r.second[1]);
+            }
+        }
+
+        if (model.sizeLeft == null) {
+            model.sizeLeft = "-";
+        }
+        if (model.dimensionsLeft == null) {
+            model.dimensionsLeft = "-";
+        }
+
+        if (model.sizeRight == null) {
+            model.sizeRight = "-";
+        }
+        if (model.dimensionsRight == null) {
+            model.dimensionsRight = "-";
+        }
+
+        return model;
     }
 
     @Override
-    protected void onPostExecute(Drawable[] drawables) {
-        mCallback.onImageDiffProcessEnded(drawables);
+    protected void onPostExecute(ImageDiffModel model) {
+        mCallback.onImageDiffProcessEnded(model);
     }
 
-    private Drawable loadAsDrawable(File file) {
-        if (file != null) {
-            Bitmap bitmap = BitmapUtils.decodeBitmap(file, mSize, mSize);
-            if (bitmap != null) {
-                return new BitmapDrawable(mContext.getResources(), bitmap);
+    private Pair<Drawable, int[]> loadAsDrawable(File file) {
+        // 1.- Decode bitmap
+        int[] size = BitmapUtils.decodeBitmapSize(file);
+        if (size[0] != -1 && size[1] != -1) {
+            return loadFromBitmap(file, size);
+        }
+
+        // Read the xml header
+        String header = readXmlHeader(file);
+        if (header == null) {
+            return null;
+        }
+
+        // 2.- Decode SVG
+        if (isSvg(file, header)) {
+            return loadFromSvg(file);
+        }
+
+        // 3.- Decode Vector Drawable
+        if (isVectorDrawable(file, header)) {
+            return loadFromVectorDrawable(file);
+        }
+
+        return null;
+    }
+
+    private static boolean isSvg(File file, String header) {
+        return !(file == null || !file.exists()) && hasXmlTag(header, "svg");
+    }
+
+    private static boolean isVectorDrawable(File file, String header) {
+        return !(file == null || !file.exists()) && hasXmlTag(header, "vector");
+    }
+
+    private Pair<Drawable, int[]> loadFromBitmap(File file, int[] size) {
+        Bitmap bitmap = BitmapUtils.decodeBitmap(file, mSize, mSize);
+        if (bitmap != null) {
+            return new Pair<>(new BitmapDrawable(mContext.getResources(), bitmap), size);
+        }
+
+        Log.e(TAG, "Can't load " + file.getAbsolutePath() + " as image.");
+        return null;
+    }
+
+    @SuppressWarnings("TryWithIdenticalCatches")
+    private Pair<Drawable, int[]> loadFromSvg(File file) {
+        try {
+            return loadSvg(new BufferedInputStream(new FileInputStream(file)));
+
+        } catch (IOException ex) {
+            Log.e(TAG, "Can't parse " + file.getAbsolutePath() + " as SVG.", ex);
+
+        } catch (SVGParseException ex) {
+            Log.e(TAG, "Can't parse " + file.getAbsolutePath() + " as SVG.", ex);
+        }
+
+        return null;
+    }
+
+    @SuppressWarnings("TryWithIdenticalCatches")
+    private Pair<Drawable, int[]> loadFromVectorDrawable(File file) {
+        try {
+            // Convert the vector drawable to a svg document
+            CharSequence svgDocument = VectorDrawableHelper.toSvg(
+                    new BufferedReader(new FileReader(file)));
+            return loadSvg(new ByteArrayInputStream(svgDocument.toString().getBytes()));
+
+        } catch (Exception ex) {
+            Log.e(TAG, "Can't parse " + file.getAbsolutePath() + " as VectorDrawable.", ex);
+
+        }
+
+        return null;
+    }
+
+    private Pair<Drawable, int[]> loadSvg(InputStream is) throws IOException, SVGParseException {
+        SVG svg = SVG.getFromInputStream(is);
+        int[] size = new int[2];
+        size[0] = (int) svg.getDocumentViewBox().width();
+        size[1] = (int) svg.getDocumentViewBox().height();
+        svg.setDocumentWidth(mSize);
+        svg.setDocumentHeight(mSize);
+        return new Pair<>(new PictureDrawable(svg.renderToPicture()), size);
+    }
+
+    private static String readXmlHeader(File file) {
+        Reader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            char[] data = new char[1024];
+            int read = reader.read(data, 0, 1024);
+            if (read != -1) {
+                return new String(data, 0, read);
+            }
+        } catch (IOException ex) {
+            // Ignore
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException ex) {
+                // Ignore
             }
         }
         return null;
+    }
+
+    private static boolean hasXmlTag(String header, String xmlTag) {
+        return header.contains("<" + xmlTag + " ") || header.contains(":" + xmlTag + " ");
     }
 }

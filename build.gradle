@@ -32,7 +32,8 @@ ext {
         picasso2_okhttp3_downloader : '1.0.2',
         prettytime                  : '4.0.1.Final',
         flowlayout                  : '1.10',
-        floatingsearchview          : 'fcd0666ac4'
+        floatingsearchview          : 'fcd0666ac4',
+        androidsvg                  : 'd4ec6d8d13'
     ]
 
     testLibraries = [

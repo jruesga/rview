@@ -229,6 +229,17 @@ public class DiffView extends FrameLayout {
         }
     }
 
+    @ProguardIgnored
+    public static class ImageDiffModel {
+        public Drawable left;
+        public String sizeLeft;
+        public String dimensionsLeft;
+        public Drawable right;
+        public String sizeRight;
+        public String dimensionsRight;
+    }
+
+
     private class DiffAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private LayoutInflater mLayoutInflater;
         private final List<AbstractModel> mModel = new ArrayList<>();
@@ -478,9 +489,9 @@ public class DiffView extends FrameLayout {
     private OnImageDiffProcessEndedListener mImageProcessorListener
             = new OnImageDiffProcessEndedListener() {
         @Override
-        public void onImageDiffProcessEnded(Drawable[] drawables) {
-            mBinding.diffImageLayout.diffLeft.setImageDrawable(drawables[0]);
-            mBinding.diffImageLayout.diffRight.setImageDrawable(drawables[1]);
+        public void onImageDiffProcessEnded(ImageDiffModel model) {
+            mBinding.setImageDiffModel(model);
+            mBinding.executePendingBindings();
         }
     };
 
