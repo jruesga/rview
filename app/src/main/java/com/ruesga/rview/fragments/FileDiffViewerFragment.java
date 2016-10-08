@@ -128,6 +128,13 @@ public class FileDiffViewerFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<Boolean> mReviewedObserver
+            = new RxLoaderObserver<Boolean>() {
+        @Override
+        public void onNext(Boolean result) {
+        }
+    };
+
     private DiffView.OnCommentListener mCommentListener = new DiffView.OnCommentListener() {
         @Override
         public void onNewDraft(View v, boolean left, int line) {
@@ -185,6 +192,7 @@ public class FileDiffViewerFragment extends Fragment {
 
     private RxLoader<FileDiffResponse> mLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
+    private RxLoader<Boolean> mReviewedLoader;
 
     private ChangeInfo mChange;
 
@@ -301,6 +309,8 @@ public class FileDiffViewerFragment extends Fragment {
                     "file-diff-" + hashCode(), fetchDiffs(), mObserver).start();
             mActionLoader = loaderManager.create(
                     "file-diff-action" + hashCode(), this::doAction, mActionObserver);
+            mReviewedLoader = loaderManager.create(
+                    "file-reviewed" + hashCode(), performReviewedStatus(), mReviewedObserver);
         }
     }
 
@@ -398,6 +408,20 @@ public class FileDiffViewerFragment extends Fragment {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Boolean> performReviewedStatus() {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.fromCallable(() -> {
+                    api.setChangeRevisionFileAsReviewed(
+                                String.valueOf(mChange.legacyChangeId), mRevisionId, mFile
+                            ).toBlocking().first();
+                    return true;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     private FileDiffResponse combine(DiffInfo diff, Map<String, List<CommentInfo>> commentsA,
             Map<String, List<CommentInfo>> commentsB, Map<String, List<CommentInfo>> draftsA,
             Map<String, List<CommentInfo>> draftsB) {
@@ -453,6 +477,12 @@ public class FileDiffViewerFragment extends Fragment {
             // We need to re-fetch the content in case, we changed from text to image diff mode.
             // Nothing is fetched if it doesn't really needed
             fetchRevisionsContentIfNeeded(response);
+        }
+
+        // Mark the file as reviewed
+        if (mAccount.hasAuthenticatedAccessMode()) {
+            mReviewedLoader.clear();
+            mReviewedLoader.restart();
         }
 
         return response;
