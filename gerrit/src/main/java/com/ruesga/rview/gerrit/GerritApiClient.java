@@ -18,6 +18,7 @@ package com.ruesga.rview.gerrit;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 
 import com.burgstaller.okhttp.AuthenticationCacheInterceptor;
 import com.burgstaller.okhttp.CachingAuthenticatorDecorator;
@@ -54,7 +55,8 @@ public class GerritApiClient implements GerritApi {
     private final String mEndPoint;
     private final GerritApi mService;
     private final PlatformAbstractionLayer mAbstractionLayer;
-    protected ServerVersion mServerVersion;
+    private long mLastServerVersionCheck = 0;
+    ServerVersion mServerVersion;
 
     private final ApiVersionMediator mMediator = new ApiVersionMediator() {
         @Override
@@ -156,8 +158,11 @@ public class GerritApiClient implements GerritApi {
 
     private <T> Observable<T> withVersionRequestCheck(final Observable<T> observable) {
         return Observable.fromCallable(() -> {
-            if (mServerVersion == null) {
+            long now = System.currentTimeMillis();
+            if (mServerVersion == null ||
+                    (now - mLastServerVersionCheck > DateUtils.DAY_IN_MILLIS)) {
                 mServerVersion = getServerVersion().toBlocking().first();
+                mLastServerVersionCheck = now;
             }
             return observable.toBlocking().first();
         });
