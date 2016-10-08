@@ -458,7 +458,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         if (matcher.find()) {
             int start = matcher.start();
             int end = matcher.end();
-            Spannable span = spannableFactory.newSpannable(line);
+            Spannable span = spannableFactory.newSpannable(text);
             span.setSpan(new BackgroundColorSpan(color),
                     start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             return span;
