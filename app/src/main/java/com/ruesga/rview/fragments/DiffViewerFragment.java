@@ -42,6 +42,7 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.DiffBaseChooserViewBinding;
 import com.ruesga.rview.databinding.DiffViewerFragmentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
+import com.ruesga.rview.fragments.FileDiffViewerFragment.OnDiffCompleteListener;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.SerializationManager;
@@ -58,9 +59,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class DiffViewerFragment extends Fragment implements KeyEventBindable {
+public class DiffViewerFragment extends Fragment implements KeyEventBindable, OnDiffCompleteListener {
 
     private static final String TAG = "DiffViewerFragment";
+
+    @ProguardIgnored
+    public static class Model {
+        public String baseLeft;
+        public String baseRight;
+    }
+
+    @ProguardIgnored
+    @SuppressWarnings("unused")
+    public static class EventHandlers {
+        private final DiffViewerFragment mFragment;
+
+        public EventHandlers(DiffViewerFragment fragment) {
+            mFragment = fragment;
+        }
+
+        public void onBaseChooserPressed(View v) {
+            mFragment.performShowBaseChooser(v);
+        }
+    }
 
     private PagerControllerAdapter<String> mAdapter = new PagerControllerAdapter<String>() {
 
@@ -113,7 +134,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
         }
     };
 
-    private OnDrawerNavigationItemSelectedListener mOptionsItemListener = new OnDrawerNavigationItemSelectedListener() {
+    private OnDrawerNavigationItemSelectedListener mOptionsItemListener
+            = new OnDrawerNavigationItemSelectedListener() {
         @Override
         public boolean onDrawerNavigationItemSelected(MenuItem item) {
             if (mFragment != null && mFragment.get() != null) {
@@ -170,24 +192,11 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
         return false;
     }
 
-    @ProguardIgnored
-    public static class Model {
-        public String baseLeft;
-        public String baseRight;
-    }
-
-    @ProguardIgnored
-    @SuppressWarnings("unused")
-    public static class EventHandlers {
-        private final DiffViewerFragment mFragment;
-
-        public EventHandlers(DiffViewerFragment fragment) {
-            mFragment = fragment;
-        }
-
-        public void onBaseChooserPressed(View v) {
-            mFragment.performShowBaseChooser(v);
-        }
+    @Override
+    public void onDiffComplete(boolean isBinary, boolean hasImagePreview) {
+        mIsBinary = isBinary;
+        mHasImagePreview = hasImagePreview;
+        applyModeRestrictions();
     }
 
     private DiffViewerFragmentBinding mBinding;
@@ -210,6 +219,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
     private boolean mWrap;
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
+
+    private boolean mIsBinary = false;
+    private boolean mHasImagePreview = false;
 
     private int mCurrentFile;
 
@@ -236,6 +248,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
         mBase = state.getString(Constants.EXTRA_BASE);
         if (savedInstanceState != null) {
             mMode = savedInstanceState.getInt("mode", -1);
+            mIsBinary = savedInstanceState.getBoolean("is_binary", false);
+            mHasImagePreview = savedInstanceState.getBoolean("has_image_preview", false);
+            applyModeRestrictions();
         }
 
         setHasOptionsMenu(true);
@@ -328,6 +343,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
         outState.putString(Constants.EXTRA_FILE, mFile);
         outState.putString(Constants.EXTRA_BASE, mBase);
         outState.putInt("mode", mMode);
+        outState.putBoolean("is_binary", mIsBinary);
+        outState.putBoolean("has_image_preview", mHasImagePreview);
     }
 
     private void loadFiles() {
@@ -371,10 +388,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
         // Update diff_options
         BaseActivity activity =  ((BaseActivity) getActivity());
         Menu menu = activity.getOptionsMenu().getMenu();
-        menu.findItem(R.id.diff_mode_side_by_side).setChecked(
-                mMode == DiffView.SIDE_BY_SIDE_MODE);
+        menu.findItem(R.id.diff_mode_side_by_side).setChecked(mMode == DiffView.SIDE_BY_SIDE_MODE);
         menu.findItem(R.id.diff_mode_unified).setChecked(mMode == DiffView.UNIFIED_MODE);
         menu.findItem(R.id.diff_mode_image).setChecked(mMode == DiffView.IMAGE_MODE);
+        menu.findItem(R.id.diff_mode_side_by_side).setVisible(!mIsBinary || !mHasImagePreview);
+        menu.findItem(R.id.diff_mode_unified).setVisible(!mIsBinary || !mHasImagePreview);
+        menu.findItem(R.id.diff_mode_image).setVisible(mHasImagePreview);
         menu.findItem(R.id.wrap_mode).setVisible(mMode != DiffView.IMAGE_MODE);
         menu.findItem(R.id.wrap_mode_on).setChecked(mWrap);
         menu.findItem(R.id.wrap_mode_off).setChecked(!mWrap);
@@ -447,4 +466,11 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable {
         mAdapter.notifyDataSetChanged();
     }
 
+    private void applyModeRestrictions() {
+        if (mMode == DiffView.IMAGE_MODE && !mHasImagePreview) {
+            mMode = Preferences.getAccountSearchMode(getContext(), mAccount);
+        } else if (mMode != DiffView.IMAGE_MODE && mIsBinary && mHasImagePreview) {
+            mMode = DiffView.IMAGE_MODE;
+        }
+    }
 }

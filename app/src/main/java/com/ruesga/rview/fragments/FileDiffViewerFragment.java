@@ -52,6 +52,7 @@ import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.tasks.AsyncImageDiffProcessor;
 import com.ruesga.rview.widget.DiffView;
 
 import java.io.BufferedWriter;
@@ -77,6 +78,10 @@ import rx.schedulers.Schedulers;
 public class FileDiffViewerFragment extends Fragment {
 
     private static final String TAG = "FileDiffViewerFragment";
+
+    public interface OnDiffCompleteListener {
+        void onDiffComplete(boolean isBinary, boolean hasImagePreview);
+    }
 
     public static class FileDiffResponse {
         DiffInfo diff;
@@ -435,6 +440,21 @@ public class FileDiffViewerFragment extends Fragment {
         // We do need to download the file content
         fetchRevisionsContentIfNeeded(response);
 
+        // Change mode and options according to the type of supported diffs
+        boolean hasImagePreview = AsyncImageDiffProcessor.hasImagePreview(
+                new File(mFile), response.rightContent);
+        if (getParentFragment() != null && getParentFragment() instanceof OnDiffCompleteListener) {
+            ((OnDiffCompleteListener) getParentFragment()).onDiffComplete(
+                    response.diff.binary, hasImagePreview);
+        }
+        int mode = mMode;
+        applyModeRestrictions(response.diff.binary, hasImagePreview);
+        if (mode != mMode) {
+            // We need to re-fetch the content in case, we changed from text to image diff mode.
+            // Nothing is fetched if it doesn't really needed
+            fetchRevisionsContentIfNeeded(response);
+        }
+
         return response;
     }
 
@@ -549,16 +569,16 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     private void fetchRevisionsContentIfNeeded(FileDiffResponse response) {
+        // If is not a binary file, we can use the diff information to build the file
+        // instead of fetch it from the network
+        if (!response.diff.binary) {
+            response.leftContent = writeCachedContent(response, mBase, true);
+            response.rightContent = writeCachedContent(response, mRevision, false);
+            return;
+        }
+
         if (mMode == DiffView.IMAGE_MODE) {
             final String baseRevision = mBase == null ? "0" : mBase;
-
-            // If is not a binary file, we can use the diff information to build the file
-            // instead of fetch it from the network
-            if (!response.diff.binary) {
-                response.leftContent = writeCachedContent(response, mBase, true);
-                response.rightContent = writeCachedContent(response, mRevision, false);
-                return;
-            }
 
             // Base revision
             if (baseRevision.equals("0")) {
@@ -708,5 +728,13 @@ public class FileDiffViewerFragment extends Fragment {
         }
 
         return false;
+    }
+
+    private void applyModeRestrictions(boolean isBinary, boolean hasImagePreview) {
+        if (mMode == DiffView.IMAGE_MODE && !hasImagePreview) {
+            mMode = Preferences.getAccountSearchMode(getContext(), mAccount);
+        } else if (mMode != DiffView.IMAGE_MODE && isBinary && hasImagePreview) {
+            mMode = DiffView.IMAGE_MODE;
+        }
     }
 }

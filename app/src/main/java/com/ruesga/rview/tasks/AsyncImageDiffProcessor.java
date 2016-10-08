@@ -22,10 +22,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PictureDrawable;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
@@ -43,6 +45,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Locale;
 
 public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffModel> {
 
@@ -204,23 +207,25 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
     }
 
     private static String readXmlHeader(File file) {
-        Reader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
-            char[] data = new char[1024];
-            int read = reader.read(data, 0, 1024);
-            if (read != -1) {
-                return new String(data, 0, read);
-            }
-        } catch (IOException ex) {
-            // Ignore
-        } finally {
+        if (file != null && file.exists()) {
+            Reader reader = null;
             try {
-                if (reader != null) {
-                    reader.close();
+                reader = new BufferedReader(new FileReader(file));
+                char[] data = new char[1024];
+                int read = reader.read(data, 0, 1024);
+                if (read != -1) {
+                    return new String(data, 0, read);
                 }
             } catch (IOException ex) {
                 // Ignore
+            } finally {
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException ex) {
+                    // Ignore
+                }
             }
         }
         return null;
@@ -228,5 +233,27 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
 
     private static boolean hasXmlTag(String header, String xmlTag) {
         return header.contains("<" + xmlTag + " ") || header.contains(":" + xmlTag + " ");
+    }
+
+    public static boolean hasImagePreview(File file, File content) {
+        String name = file.getName().toLowerCase(Locale.US);
+        String ext = "";
+        int p = name.lastIndexOf(".");
+        if (p != -1) {
+            ext = name.substring(p + 1);
+        }
+        String mimeType = "";
+        if (!TextUtils.isEmpty(ext)) {
+            MimeTypeMap a = MimeTypeMap.getSingleton();
+            mimeType = a.getMimeTypeFromExtension(ext);
+        }
+        String header = readXmlHeader(content);
+
+        // 1.- Any image
+        // 2.- A svg
+        // 3.- A xml with "svg" tag or "vector" tag
+        return (mimeType != null && mimeType.startsWith("image/")) || ext.equals("svg")
+                || (header != null && ext.equals("xml")
+                    && (hasXmlTag(header, "svg") || hasXmlTag(header, "vector")));
     }
 }
