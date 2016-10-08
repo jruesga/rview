@@ -515,7 +515,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     commentModel.diff = null;
                     commentModel.isDraft = isDraft;
                     commentModel.commentA = comment;
-                    model.add(findNextPositionWithoutComment(model, -1), commentModel);
+                    int pos = findNextPositionWithoutComment(model, -1);
+                    model.add(pos == -1 ? 0 : pos, commentModel);
                 } else {
                     int reusablePos = findReusableCommentView(model, -1, isA);
                     if (reusablePos != -1) {
@@ -535,7 +536,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         } else {
                             commentModel.commentB = comment;
                         }
-                        model.add(findNextPositionWithoutComment(model, -1), commentModel);
+                        int pos = findNextPositionWithoutComment(model, -1);
+                        model.add(pos == -1 ? 0 : pos, commentModel);
                     }
                 }
                 continue;
