@@ -508,6 +508,24 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         int count = comments.size();
         for (int i = 0; i < count; i++) {
             CommentInfo comment = comments.get(i);
+            if (comment.line == null && comment.range == null) {
+                // File comment
+                DiffView.CommentModel commentModel = new DiffView.CommentModel();
+                commentModel.diff = null;
+                commentModel.isDraft = isDraft;
+                if (mMode == DiffView.UNIFIED_MODE) {
+                    commentModel.commentA = comment;
+                } else {
+                    if (isA) {
+                        commentModel.commentA = comment;
+                    } else {
+                        commentModel.commentB = comment;
+                    }
+                }
+                model.add(0, commentModel);
+                continue;
+            }
+
             int pos = findLineInModel(model, isA, comment.line);
             if (pos != -1) {
                 if (mMode == DiffView.UNIFIED_MODE) {

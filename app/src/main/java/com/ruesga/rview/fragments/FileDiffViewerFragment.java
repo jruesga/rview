@@ -150,32 +150,34 @@ public class FileDiffViewerFragment extends Fragment {
         }
 
         @Override
-        public void onReply(View v, String revisionId, String commentId, int line) {
+        public void onReply(View v, String revisionId, String commentId, Integer line) {
             performShowDraftMessageDialog(v, null,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
-                            new String[]{revisionId, commentId, String.valueOf(line), newValue}) ;
+                            new String[]{revisionId, commentId,
+                                    line == null ? null : String.valueOf(line), newValue}) ;
                     });
         }
 
         @Override
-        public void onDone(View v, String revisionId, String commentId, int line) {
+        public void onDone(View v, String revisionId, String commentId, Integer line) {
             String msg = getString(R.string.draft_reply_done);
             mActionLoader.clear();
             mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
-                    new String[]{revisionId, commentId, String.valueOf(line), msg});
+                    new String[]{revisionId, commentId,
+                            line == null ? null : String.valueOf(line), msg});
         }
 
         @Override
         public void onEditDraft(View v, String revisionId, String draftId,
-                String inReplyTo, int line, String msg) {
+                String inReplyTo, Integer line, String msg) {
             performShowDraftMessageDialog(v, msg,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
-                            new String[]{revisionId, draftId,
-                                    inReplyTo, String.valueOf(line), newValue});
+                            new String[]{revisionId, draftId, inReplyTo,
+                                    line == null ? null : String.valueOf(line), newValue});
                     });
         }
 
@@ -508,11 +510,13 @@ public class FileDiffViewerFragment extends Fragment {
         return Observable.fromCallable(() -> {
                     switch (action) {
                         case ModelHelper.ACTION_CREATE_DRAFT:
+                            Integer line = params[2] == null ? null : Integer.valueOf(params[2]);
                             return performCreateDraft(api,
-                                    params[0], params[1], Integer.parseInt(params[2]), params[3]);
+                                    params[0], params[1], line, params[3]);
                         case ModelHelper.ACTION_UPDATE_DRAFT:
+                            line = params[3] == null ? null : Integer.valueOf(params[3]);
                             return performUpdateDraft(api, params[0], params[1], params[2],
-                                    Integer.parseInt(params[3]), params[4]);
+                                    line, params[4]);
                         case ModelHelper.ACTION_DELETE_DRAFT:
                             performDeleteDraft(api, params[0], params[1]);
                             break;
@@ -533,7 +537,7 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     private CommentInfo performCreateDraft(GerritApi api, String revision,
-            String commentId, int line, String msg) {
+            String commentId, Integer line, String msg) {
         int base = Integer.parseInt(revision);
         SideType side = base == 0 ? SideType.PARENT : SideType.REVISION;
         String rev = base == 0 ? mRevisionId : revision;
@@ -543,7 +547,10 @@ public class FileDiffViewerFragment extends Fragment {
             input.inReplyTo = commentId;
         }
         input.message = msg;
-        input.line = line;
+        input.message = msg;
+        if (line != null) {
+            input.line = line;
+        }
         input.path = mFile;
         input.side = side;
         return api.createChangeRevisionDraft(
@@ -551,7 +558,7 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     private CommentInfo performUpdateDraft(GerritApi api, String revision,
-            String draftId, String inReplyTo, int line, String msg) {
+            String draftId, String inReplyTo, Integer line, String msg) {
         int base = Integer.parseInt(revision);
         SideType side = base == 0 ? SideType.PARENT : SideType.REVISION;
         String rev = base == 0 ? mRevisionId : revision;
@@ -560,7 +567,9 @@ public class FileDiffViewerFragment extends Fragment {
         input.id = draftId;
         input.inReplyTo = inReplyTo;
         input.message = msg;
-        input.line = line;
+        if (line != null) {
+            input.line = line;
+        }
         input.path = mFile;
         input.side = side;
         return api.updateChangeRevisionDraft(

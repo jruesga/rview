@@ -28,7 +28,7 @@ public class CommentInfo {
     @SerializedName("path") public String path;
     @SerializedName("side") public SideType side;
     @SerializedName("parent") public String parent;
-    @SerializedName("line") public int line;
+    @SerializedName("line") public Integer line;
     @SerializedName("range") public CommentRange range;
     @SerializedName("inReplyTo") public String inReplyTo;
     @SerializedName("message") public String message;

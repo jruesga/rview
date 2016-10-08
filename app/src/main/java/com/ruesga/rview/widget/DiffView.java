@@ -90,14 +90,16 @@ public class DiffView extends FrameLayout {
         public void onReplyPressed(View v) {
             if (mView.mOnCommentListener != null) {
                 String[] s = ((String) v.getTag()).split("/");
-                mView.mOnCommentListener.onReply(v, s[0], s[1], Integer.valueOf(s[2]));
+                Integer line = s[2] == null || s[2].equals("null") ? null : Integer.valueOf(s[2]);
+                mView.mOnCommentListener.onReply(v, s[0], s[1], line);
             }
         }
 
         public void onDonePressed(View v) {
             if (mView.mOnCommentListener != null) {
                 String[] s = ((String) v.getTag()).split("/");
-                mView.mOnCommentListener.onDone(v, s[0], s[1], Integer.valueOf(s[2]));
+                Integer line = s[2] == null || s[2].equals("null") ? null : Integer.valueOf(s[2]);
+                mView.mOnCommentListener.onDone(v, s[0], s[1], line);
             }
         }
 
@@ -105,8 +107,9 @@ public class DiffView extends FrameLayout {
             if (mView.mOnCommentListener != null) {
                 String[] s = ((String) v.getTag()).split("/");
                 String msg = (String) v.getTag(R.id.tag_key);
+                Integer line = s[3] == null || s[3].equals("null") ? null : Integer.valueOf(s[3]);
                 mView.mOnCommentListener.onEditDraft(
-                        v, s[0], s[1], s[2], Integer.valueOf(s[3]), msg);
+                        v, s[0], s[1], s[2], line, msg);
             }
         }
 
@@ -121,12 +124,12 @@ public class DiffView extends FrameLayout {
     public interface OnCommentListener {
         void onNewDraft(View v, boolean left, int line);
 
-        void onReply(View v, String revisionId, String commentId, int line);
+        void onReply(View v, String revisionId, String commentId, Integer line);
 
-        void onDone(View v, String revisionId, String commentId, int line);
+        void onDone(View v, String revisionId, String commentId, Integer line);
 
         void onEditDraft(View v, String revisionId, String draftId,
-                String inReplyTo, int line, String msg);
+                String inReplyTo, Integer line, String msg);
 
         void onDeleteDraft(View v, String revisionId, String draftId);
     }

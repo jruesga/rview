@@ -51,7 +51,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_gravity="end"
-                android:visibility="@{model.diff.lineNumberA == null ? View.VISIBLE : View.GONE}"/>
+                android:visibility="@{model.diff != null &amp;&amp; model.diff.lineNumberA == null ? View.VISIBLE : View.GONE}"/>
 
             <com.ruesga.rview.widget.StyleableTextView
                 android:id="@+id/lineNumA"
@@ -85,7 +85,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_gravity="end"
-                android:visibility="@{model.diff.lineNumberB == null ? View.VISIBLE : View.GONE}"/>
+                android:visibility="@{model.diff != null &amp;&amp; model.diff.lineNumberB == null ? View.VISIBLE : View.GONE}"/>
 
             <com.ruesga.rview.widget.StyleableTextView
                 android:layout_width="match_parent"
@@ -221,7 +221,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_gravity="end"
-                android:visibility="@{model.diff.lineNumberB == null ? View.VISIBLE : View.GONE}"/>
+                android:visibility="@{model.diff != null &amp;&amp; model.diff.lineNumberB == null ? View.VISIBLE : View.GONE}"/>
 
             <com.ruesga.rview.widget.StyleableTextView
                 android:layout_width="match_parent"
