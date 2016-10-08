@@ -638,8 +638,9 @@ public class FileDiffViewerFragment extends Fragment {
             if (writeDiffToFile(response, writtenFile, isA)) {
                 return writtenFile;
             }
+            return null;
         }
-        return null;
+        return writtenFile;
     }
 
     @SuppressWarnings("ConstantConditions")
