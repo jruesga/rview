@@ -42,6 +42,7 @@ import com.ruesga.rview.gerrit.model.CommentInput;
 import com.ruesga.rview.gerrit.model.ContextType;
 import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
+import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.IgnoreWhitespaceType;
 import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.WhitespaceType;
@@ -599,11 +600,17 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     private void fetchRevisionsContentIfNeeded(FileDiffResponse response) {
+        FileStatus fileStatus = mChange.revisions.get(mRevisionId).files.get(mFile).status;
+
         // If is not a binary file, we can use the diff information to build the file
         // instead of fetch it from the network
         if (!response.diff.binary) {
-            response.leftContent = writeCachedContent(response, mBase, true);
-            response.rightContent = writeCachedContent(response, mRevision, false);
+            if (!fileStatus.equals(FileStatus.A)) {
+                response.leftContent = writeCachedContent(response, mBase, true);
+            }
+            if (!fileStatus.equals(FileStatus.D)) {
+                response.rightContent = writeCachedContent(response, mRevision, false);
+            }
             return;
         }
 
@@ -611,26 +618,31 @@ public class FileDiffViewerFragment extends Fragment {
             final String baseRevision = mBase == null ? "0" : mBase;
 
             // Base revision
-            if (baseRevision.equals("0")) {
-                // Base file is only available from the parent commit, so we need to
-                // fetch by commit to recover the parent id, and then fetch the revision
-                // to download the file
-                String parentRevision = mChange.revisions.get(mRevisionId).commit.parents[0].commit;
-                ChangeInfo parent = fetchParentChange(parentRevision);
-                if (parent != null) {
-                    response.leftContent = fetchCachedContent(
-                            String.valueOf(parent.legacyChangeId), parentRevision, baseRevision);
+            if (!fileStatus.equals(FileStatus.A)) {
+                if (baseRevision.equals("0")) {
+                    // Base file is only available from the parent commit, so we need to
+                    // fetch by commit to recover the parent id, and then fetch the revision
+                    // to download the file
+                    String parentRevision =
+                            mChange.revisions.get(mRevisionId).commit.parents[0].commit;
+                    ChangeInfo parent = fetchParentChange(parentRevision);
+                    if (parent != null) {
+                        response.leftContent = fetchCachedContent(
+                                String.valueOf(parent.legacyChangeId), parentRevision, baseRevision);
+                    } else {
+                        response.leftContent = null;
+                    }
                 } else {
-                    response.leftContent = null;
+                    response.leftContent = fetchCachedContent(
+                            String.valueOf(mChange.legacyChangeId), baseRevision, baseRevision);
                 }
-            } else {
-                response.leftContent = fetchCachedContent(
-                        String.valueOf(mChange.legacyChangeId), baseRevision, baseRevision);
             }
 
             // Current revision
-            response.rightContent = fetchCachedContent(
-                    String.valueOf(mChange.legacyChangeId), mRevisionId, mRevision);
+            if (!fileStatus.equals(FileStatus.D)) {
+                response.rightContent = fetchCachedContent(
+                        String.valueOf(mChange.legacyChangeId), mRevisionId, mRevision);
+            }
         }
     }
 
