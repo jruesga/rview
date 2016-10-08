@@ -16,6 +16,7 @@
 package com.ruesga.rview.misc;
 
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Xml;
 
@@ -55,11 +56,7 @@ public class VectorDrawableHelper {
                 serializer.attribute(SVG_NAMESPACE, "viewBox",
                         String.format(Locale.US, "0 0 %f %f", vector.mWidth, vector.mHeight));
                 for (Group group : vector.mGroups)  {
-                    serializer.startTag(SVG_NAMESPACE, "g");
-                    for (Path path : group.mPaths)  {
-                        serializePath(serializer, path);
-                    }
-                    serializer.endTag(SVG_NAMESPACE, "g");
+                    serializeGroup(serializer, vector, group);
                 }
                 for (Path path : vector.mPaths)  {
                     serializePath(serializer, path);
@@ -76,12 +73,97 @@ public class VectorDrawableHelper {
         return null;
     }
 
+    private static void serializeGroup(
+            XmlSerializer serializer, Vector vector, Group group) throws IOException {
+        serializer.startTag(SVG_NAMESPACE, "g");
+        if (group.mName != null) {
+            serializer.attribute(SVG_NAMESPACE, "id", group.mName);
+        }
+        String transform = "";
+        if (group.mRotation != null) {
+            transform += " rotate("
+                    + String.format(Locale.US, "%f", group.mRotation)
+                    + ","
+                    + (group.mPivotX == null ? "" : String.format(Locale.US, "%f", group.mPivotX))
+                    + ","
+                    + (group.mPivotY == null ? "" : String.format(Locale.US, "%f", group.mPivotY))
+                    + ")";
+        }
+        if (group.mTranslateX != null || group.mTranslateY != null) {
+            transform += " translate("
+                    + (group.mTranslateX == null ? "0" : String.format(Locale.US, "%f", group.mTranslateX))
+                    + ","
+                    + (group.mTranslateY == null ? "0" : String.format(Locale.US, "%f", group.mTranslateY))
+                    + ")";
+        }
+        if (group.mScaleX != null || group.mScaleY != null) {
+            float scaleX = group.mScaleX == null ? 0f : group.mScaleX;
+            float scaleY = group.mScaleY == null ? scaleX : group.mScaleY;
+            float cx = (1 - scaleX) * vector.mWidth / 2;
+            float cy = (1 - scaleY) * vector.mHeight / 2;
+            transform += " translate("
+                    + String.format(Locale.US, "%f", cx)
+                    + ","
+                    + String.format(Locale.US, "%f", cy)
+                    + ")";
+            transform += " scale("
+                    + (group.mScaleX == null ? "0" : String.format(Locale.US, "%f", group.mScaleX))
+                    + ","
+                    + (group.mScaleY == null ? "0" : String.format(Locale.US, "%f", group.mScaleY))
+                    + ")";
+        }
+
+        if (!TextUtils.isEmpty(transform)) {
+            serializer.attribute(SVG_NAMESPACE, "transform", transform);
+        }
+
+
+        for (Path path : group.mPaths)  {
+            serializePath(serializer, path);
+        }
+        serializer.endTag(SVG_NAMESPACE, "g");
+    }
+
     private static void serializePath(XmlSerializer serializer, Path path) throws IOException {
         serializer.startTag(SVG_NAMESPACE, "path");
+        if (path.mName != null) {
+            serializer.attribute(SVG_NAMESPACE, "id", path.mName);
+        }
         serializer.attribute(SVG_NAMESPACE, "d", path.mPathData);
         if (path.mFillColor != null) {
             serializer.attribute(SVG_NAMESPACE, "fill", toSvgColor(path.mFillColor));
         }
+        if (path.mFillAlpha != null) {
+            serializer.attribute(SVG_NAMESPACE, "fill-opacity",
+                    String.format(Locale.US, "%f", path.mFillAlpha));
+        }
+        if (path.mStrokeColor != null) {
+            serializer.attribute(SVG_NAMESPACE, "stroke", toSvgColor(path.mStrokeColor));
+        }
+        if (path.mStrokeWidth != null) {
+            serializer.attribute(SVG_NAMESPACE, "stroke-width",
+                    String.format(Locale.US, "%f", path.mStrokeWidth));
+        }
+        if (path.mStrokeAlpha != null) {
+            serializer.attribute(SVG_NAMESPACE, "stroke-opacity",
+                    String.format(Locale.US, "%f", path.mStrokeAlpha));
+        }
+
+        if (path.mStrokeLineCap != null) {
+            serializer.attribute(SVG_NAMESPACE, "stroke-linecap", path.mStrokeLineCap.toString());
+        }
+        if (path.mStrokeLineJoin != null) {
+            serializer.attribute(SVG_NAMESPACE, "stroke-linejoin", path.mStrokeLineJoin.toString());
+        }
+        if (path.mStrokeMiterLimit != null) {
+            serializer.attribute(SVG_NAMESPACE, "stroke-miterlimit",
+                    String.format(Locale.US, "%f", path.mStrokeMiterLimit));
+        }
+        if (path.mFillRule != null) {
+            serializer.attribute(SVG_NAMESPACE, "fill-rule", path.mFillRule.toString());
+        }
+
+
         serializer.endTag(SVG_NAMESPACE, "path");
     }
 
@@ -113,20 +195,46 @@ public class VectorDrawableHelper {
                     switch (name) {
                         case "vector":
                             vector = new Vector();
-                            vector.mWidth = getAttributeValueAsDouble(xmlParser, "viewportWidth");
-                            vector.mHeight = getAttributeValueAsDouble(xmlParser, "viewportHeight");
+                            vector.mWidth = getAttributeValueAsFloat(xmlParser, "viewportWidth");
+                            vector.mHeight = getAttributeValueAsFloat(xmlParser, "viewportHeight");
                             break;
                         case "group":
                             if (vector != null) {
                                 group = new Group();
+                                group.mName = getAttributeValue(xmlParser, "name");
+                                group.mRotation = getAttributeValueAsFloat(xmlParser, "rotation");
+                                group.mPivotX = getAttributeValueAsFloat(xmlParser, "pivotX");
+                                group.mPivotY = getAttributeValueAsFloat(xmlParser, "pivotY");
+                                group.mScaleX = getAttributeValueAsFloat(xmlParser, "scaleX");
+                                group.mScaleY = getAttributeValueAsFloat(xmlParser, "scaleY");
+                                group.mTranslateX = getAttributeValueAsFloat(xmlParser, "translateX");
+                                group.mTranslateY = getAttributeValueAsFloat(xmlParser, "translateY");
                                 vector.mGroups.add(group);
                             }
                             break;
 
                         case "path":
                             path = new Path();
-                            path.mFillColor = getAttributeValue(xmlParser, "fillColor");
+                            path.mName = getAttributeValue(xmlParser, "name");
                             path.mPathData = getAttributeValue(xmlParser, "pathData");
+                            path.mFillColor = getAttributeValue(xmlParser, "fillColor");
+                            path.mFillAlpha = getAttributeValueAsFloat(xmlParser, "fillAlpha");
+                            path.mStrokeColor = getAttributeValue(xmlParser, "strokeColor");
+                            path.mStrokeWidth = getAttributeValueAsFloat(xmlParser, "strokeWidth");
+                            path.mStrokeAlpha = getAttributeValueAsFloat(xmlParser, "strokeAlpha");
+                            String strokeLineCap = getAttributeValue(xmlParser, "strokeLineCap");
+                            if (strokeLineCap != null) {
+                                path.mStrokeLineCap = LineCap.valueOf(strokeLineCap);
+                            }
+                            String strokeLineJoin = getAttributeValue(xmlParser, "strokeLineJoin");
+                            if (strokeLineJoin != null) {
+                                path.mStrokeLineJoin = LineJoin.valueOf(strokeLineJoin);
+                            }
+                            path.mStrokeMiterLimit = getAttributeValueAsFloat(xmlParser, "strokeMiterLimit");
+                            String fillRule = getAttributeValue(xmlParser, "fillRule");
+                            if (fillRule != null) {
+                                path.mFillRule = FillRule.valueOf(fillRule);
+                            }
 
                             if (group != null) {
                                 group.mPaths.add(path);
@@ -167,29 +275,57 @@ public class VectorDrawableHelper {
         return null;
     }
 
-    private static Double getAttributeValueAsDouble(XmlPullParser xmlParser, String attrName) {
+    private static Float getAttributeValueAsFloat(XmlPullParser xmlParser, String attrName) {
         try {
-            return Double.valueOf(getAttributeValue(xmlParser, attrName));
+            return Float.valueOf(getAttributeValue(xmlParser, attrName));
         } catch (Exception ex) {
             return null;
         }
     }
 
+    private enum LineCap {
+        butt, round, square
+    }
+
+    private enum LineJoin {
+        miter,round,bevel
+    }
+
+    private enum FillRule {
+        nonzero,evenodd,inherit
+    }
 
     private static class Path {
+        private String mName;
         private String mPathData;
         private String mFillColor;
-
+        private String mStrokeColor;
+        private Float mStrokeWidth;
+        private Float mStrokeAlpha;
+        private Float mFillAlpha;
+        private LineCap mStrokeLineCap;
+        private LineJoin mStrokeLineJoin;
+        private Float mStrokeMiterLimit;
+        private FillRule mFillRule;
     }
 
     private static class Group {
+        private String mName;
+        private Float mRotation;
+        private Float mPivotX;
+        private Float mPivotY;
+        private Float mScaleX;
+        private Float mScaleY;
+        private Float mTranslateX;
+        private Float mTranslateY;
+
         private final List<Path> mPaths = new ArrayList<>();
     }
 
     private static class Vector {
         private final List<Path> mPaths = new ArrayList<>();
         private final List<Group> mGroups = new ArrayList<>();
-        private double mHeight;
-        private double mWidth;
+        private float mHeight;
+        private float mWidth;
     }
 }
