@@ -82,8 +82,8 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
             Pair<Drawable, int[]> l = loadAsDrawable(mLeft);
             if (l != null && l.first != null) {
                 model.left = l.first;
-                model.sizeLeft = mContext.getString(
-                        R.string.diff_viewer_image_size, mLeft.length() / 1024);
+                int size = ((int) Math.floor(mLeft.length() / 1024)) + 1;
+                model.sizeLeft = mContext.getString(R.string.diff_viewer_image_size, size);
                 model.dimensionsLeft = mContext.getString(
                         R.string.diff_viewer_image_dimensions, l.second[0], l.second[1]);
             }
@@ -92,8 +92,8 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
             Pair<Drawable, int[]> r = loadAsDrawable(mRight);
             if (r != null && r.first != null) {
                 model.right = r.first;
-                model.sizeRight = mContext.getString(
-                        R.string.diff_viewer_image_size, mRight.length() / 1024);
+                int size = ((int) Math.floor(mRight.length() / 1024)) + 1;
+                model.sizeRight = mContext.getString(R.string.diff_viewer_image_size, size);
                 model.dimensionsRight = mContext.getString(
                         R.string.diff_viewer_image_dimensions, r.second[0], r.second[1]);
             }
