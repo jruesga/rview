@@ -185,12 +185,11 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
         try {
             // Convert the vector drawable to a svg document
             CharSequence svgDocument = VectorDrawableConverter.toSvg(
-                    new BufferedReader(new FileReader(file)));
+                    mContext, new BufferedReader(new FileReader(file)));
             return loadSvg(new ByteArrayInputStream(svgDocument.toString().getBytes()));
 
         } catch (Exception ex) {
             Log.e(TAG, "Can't parse " + file.getAbsolutePath() + " as VectorDrawable.", ex);
-
         }
 
         return null;

@@ -15,9 +15,12 @@
  */
 package com.ruesga.rview.misc;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -38,11 +41,11 @@ public class VectorDrawableConverter {
     private static final String SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
 
-    public static CharSequence toSvg(Reader in) {
-        return writeSvg(parseVector(in));
+    public static CharSequence toSvg(Context ctx, Reader in) {
+        return writeSvg(ctx, parseVector(in));
     }
 
-    private static CharSequence writeSvg(Vector vector) {
+    private static CharSequence writeSvg(Context ctx, Vector vector) {
         if (vector != null) {
             try {
                 CharArrayWriter writer = new CharArrayWriter();
@@ -56,10 +59,10 @@ public class VectorDrawableConverter {
                 serializer.attribute(SVG_NAMESPACE, "viewBox",
                         String.format(Locale.US, "0 0 %f %f", vector.mWidth, vector.mHeight));
                 for (Group group : vector.mGroups)  {
-                    serializeGroup(serializer, vector, group);
+                    serializeGroup(ctx, serializer, vector, group);
                 }
                 for (Path path : vector.mPaths)  {
-                    serializePath(serializer, path);
+                    serializePath(ctx, serializer, path);
                 }
                 serializer.endTag(SVG_NAMESPACE, "svg");
                 serializer.endDocument();
@@ -73,8 +76,8 @@ public class VectorDrawableConverter {
         return null;
     }
 
-    private static void serializeGroup(
-            XmlSerializer serializer, Vector vector, Group group) throws IOException {
+    private static void serializeGroup(Context ctx, XmlSerializer serializer,
+            Vector vector, Group group) throws IOException {
         serializer.startTag(SVG_NAMESPACE, "g");
         if (group.mName != null) {
             serializer.attribute(SVG_NAMESPACE, "id", group.mName);
@@ -119,26 +122,27 @@ public class VectorDrawableConverter {
 
 
         for (Path path : group.mPaths)  {
-            serializePath(serializer, path);
+            serializePath(ctx, serializer, path);
         }
         serializer.endTag(SVG_NAMESPACE, "g");
     }
 
-    private static void serializePath(XmlSerializer serializer, Path path) throws IOException {
+    private static void serializePath(Context ctx, XmlSerializer serializer, Path path)
+            throws IOException {
         serializer.startTag(SVG_NAMESPACE, "path");
         if (path.mName != null) {
             serializer.attribute(SVG_NAMESPACE, "id", path.mName);
         }
         serializer.attribute(SVG_NAMESPACE, "d", path.mPathData);
         if (path.mFillColor != null) {
-            serializer.attribute(SVG_NAMESPACE, "fill", toSvgColor(path.mFillColor));
+            serializer.attribute(SVG_NAMESPACE, "fill", toSvgColor(ctx, path.mFillColor));
         }
         if (path.mFillAlpha != null) {
             serializer.attribute(SVG_NAMESPACE, "fill-opacity",
                     String.format(Locale.US, "%f", path.mFillAlpha));
         }
         if (path.mStrokeColor != null) {
-            serializer.attribute(SVG_NAMESPACE, "stroke", toSvgColor(path.mStrokeColor));
+            serializer.attribute(SVG_NAMESPACE, "stroke", toSvgColor(ctx, path.mStrokeColor));
         }
         if (path.mStrokeWidth != null) {
             serializer.attribute(SVG_NAMESPACE, "stroke-width",
@@ -167,9 +171,31 @@ public class VectorDrawableConverter {
         serializer.endTag(SVG_NAMESPACE, "path");
     }
 
-    private static String toSvgColor(String color) {
-        int c = Color.parseColor(color);
-        return String.format("#%02X%02X%02X", Color.red(c), Color.green(c), Color.blue(c));
+    private static String toSvgColor(Context ctx, String color) {
+        try {
+            int c = 0;
+            if (color.startsWith("?") || color.startsWith("@")) {
+                int start = color.indexOf(":") + 1;
+                int end = color.indexOf("/") + 1;
+                if (start == -1) {
+                    start = 1;
+                }
+                String type = color.substring(start, end - 1);
+                String name = color.substring(end);
+
+                TypedValue typedValue = new TypedValue();
+                Resources.Theme theme = ctx.getTheme();
+                int id = ctx.getResources().getIdentifier(name, type, ctx.getPackageName());
+                theme.resolveAttribute(id, typedValue, true);
+                c = typedValue.data;
+            } else {
+                c = Color.parseColor(color);
+            }
+            return String.format("#%02X%02X%02X", Color.red(c), Color.green(c), Color.blue(c));
+        } catch (Exception ex) {
+            // Fallback to black
+            return "#000000";
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
