@@ -301,7 +301,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             activity.configureOptionsTitle(getString(R.string.menu_diff_options));
             activity.configureOptionsMenu(R.menu.diff_options_menu, mOptionsItemListener);
             mBaseChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
-                    R.layout.diff_base_chooser_view, activity.getOptionsMenu(), false);
+                    R.layout.diff_base_chooser_header, activity.getOptionsMenu(), false);
             updateModel();
             mBaseChooserBinding.setHandlers(mEventHandlers);
             activity.getOptionsMenu().addHeaderView(mBaseChooserBinding.getRoot());
