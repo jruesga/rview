@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable name="model" type="com.ruesga.rview.fragments.DiffViewerFragment.Model" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.DiffViewerFragment.EventHandlers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:gravity="center_vertical|start"
+            android:maxLines="1"
+            android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+            android:paddingStart="?attr/listPreferredItemPaddingLeft"
+            android:paddingRight="?attr/listPreferredItemPaddingRight"
+            android:paddingEnd="?attr/listPreferredItemPaddingRight"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="?android:textColorSecondary"
+            android:text="@string/options_actions"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:visibility="@{(model.hasCommentAction || model.hasLeftDownloadActionAction) ? View.VISIBLE : View.GONE}"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|start"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+                android:paddingStart="?attr/listPreferredItemPaddingLeft"
+                android:paddingRight="?attr/listPreferredItemPaddingRight"
+                android:paddingEnd="?attr/listPreferredItemPaddingRight"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="?android:textColorPrimary"
+                android:text="@string/options_base_left"/>
+
+            <include
+                android:id="@+id/options_actions_left"
+                layout="@layout/diff_actions"
+                app:handlers="@{handlers}"
+                app:isLeft="@{true}"
+                app:model="@{model}"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:visibility="@{(model.hasCommentAction || model.hasRightDownloadActionAction) ? View.VISIBLE : View.GONE}"
+            android:orientation="horizontal"
+            android:baselineAligned="false">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|start"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+                android:paddingStart="?attr/listPreferredItemPaddingLeft"
+                android:paddingRight="?attr/listPreferredItemPaddingRight"
+                android:paddingEnd="?attr/listPreferredItemPaddingRight"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="?android:textColorPrimary"
+                android:text="@string/options_base_right"/>
+
+            <include
+                android:id="@+id/options_actions_left"
+                layout="@layout/diff_actions"
+                app:handlers="@{handlers}"
+                app:isLeft="@{false}"
+                app:model="@{model}"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"/>
+    </LinearLayout>
+</layout>

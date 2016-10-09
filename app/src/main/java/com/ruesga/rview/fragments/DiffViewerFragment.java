@@ -39,11 +39,13 @@ import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
-import com.ruesga.rview.databinding.DiffBaseChooserViewBinding;
+import com.ruesga.rview.databinding.DiffActionsHeaderBinding;
+import com.ruesga.rview.databinding.DiffBaseChooserHeaderBinding;
 import com.ruesga.rview.databinding.DiffViewerFragmentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
 import com.ruesga.rview.fragments.FileDiffViewerFragment.OnDiffCompleteListener;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
@@ -67,6 +69,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     public static class Model {
         public String baseLeft;
         public String baseRight;
+
+        public boolean hasCommentAction;
+        public boolean hasLeftDownloadAction;
+        public boolean hasRightDownloadAction;
     }
 
     @ProguardIgnored
@@ -80,6 +86,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
         public void onBaseChooserPressed(View v) {
             mFragment.performShowBaseChooser(v);
+        }
+
+        public void onActionPressed(View v) {
         }
     }
 
@@ -197,10 +206,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         mIsBinary = isBinary;
         mHasImagePreview = hasImagePreview;
         applyModeRestrictions();
+        updateModel();
     }
 
     private DiffViewerFragmentBinding mBinding;
-    private DiffBaseChooserViewBinding mBaseChooserBinding;
+    private DiffBaseChooserHeaderBinding mBaseChooserBinding;
+    private DiffActionsHeaderBinding mActionsBinding;
     private Model mModel = new Model();
     private EventHandlers mEventHandlers;
 
@@ -297,14 +308,24 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             });
             activity.getContentBinding().pagerController.currentPage(mCurrentFile);
 
+
+
             // Configure the diff_options menu
             activity.configureOptionsTitle(getString(R.string.menu_diff_options));
             activity.configureOptionsMenu(R.menu.diff_options_menu, mOptionsItemListener);
+
             mBaseChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
                     R.layout.diff_base_chooser_header, activity.getOptionsMenu(), false);
-            updateModel();
             mBaseChooserBinding.setHandlers(mEventHandlers);
             activity.getOptionsMenu().addHeaderView(mBaseChooserBinding.getRoot());
+
+            mActionsBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
+                    R.layout.diff_actions_header, activity.getOptionsMenu(), false);
+            mActionsBinding.setHandlers(mEventHandlers);
+            mActionsBinding.setHandlers(mEventHandlers);
+            activity.getOptionsMenu().addHeaderView(mActionsBinding.getRoot());
+
+            updateModel();
 
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);
@@ -406,10 +427,21 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         activity.openOptionsDrawer();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void updateModel() {
         mModel.baseLeft = mBase == null ? getString(R.string.options_base) : mBase;
         mModel.baseRight = String.valueOf(mChange.revisions.get(mRevisionId).number);
+
+        // Actions
+        if (mChange != null) {
+            FileStatus status = mChange.revisions.get(mRevisionId).files.get(mFile).status;
+            mModel.hasCommentAction = mMode != DiffView.IMAGE_MODE;
+            mModel.hasLeftDownloadAction = !status.equals(FileStatus.A);
+            mModel.hasRightDownloadAction = !status.equals(FileStatus.D);
+        }
+
         mBaseChooserBinding.setModel(mModel);
+        mActionsBinding.setModel(mModel);
     }
 
     private void performShowBaseChooser(View v) {

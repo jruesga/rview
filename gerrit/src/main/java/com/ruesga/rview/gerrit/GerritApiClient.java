@@ -35,6 +35,7 @@ import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class GerritApiClient implements GerritApi {
     private final PlatformAbstractionLayer mAbstractionLayer;
     private long mLastServerVersionCheck = 0;
     ServerVersion mServerVersion;
+    private List<Features> mSupportedFeatures;
 
     private final ApiVersionMediator mMediator = new ApiVersionMediator() {
         @Override
@@ -162,6 +164,7 @@ public class GerritApiClient implements GerritApi {
             if (mServerVersion == null ||
                     (now - mLastServerVersionCheck > DateUtils.DAY_IN_MILLIS)) {
                 mServerVersion = getServerVersion().toBlocking().first();
+                mSupportedFeatures = filterByVersion(Arrays.asList(Features.values()));
                 mLastServerVersionCheck = now;
             }
             return observable.toBlocking().first();
@@ -234,6 +237,11 @@ public class GerritApiClient implements GerritApi {
     @Override
     public ApiVersionMediator getApiVersionMediator() {
         return mMediator;
+    }
+
+    @Override
+    public boolean supportsFeature(Features feature) {
+        return mSupportedFeatures.contains(feature);
     }
 
 
@@ -968,8 +976,8 @@ public class GerritApiClient implements GerritApi {
             @Nullable ContextType context) {
         return withVersionRequestCheck(mService.getChangeRevisionFileDiff(changeId, revisionId,
                         fileId, base, intraline, weblinksOnly,
-                        mMediator.resolveWhiteSpaceType(whitespace),
-                        mMediator.resolveIgnoreWhiteSpaceType(ignoreWhitespace),
+                        getApiVersionMediator().resolveWhiteSpaceType(whitespace),
+                        getApiVersionMediator().resolveIgnoreWhiteSpaceType(ignoreWhitespace),
                         context));
     }
 

@@ -88,6 +88,11 @@ public interface GerritApi {
      */
     ApiVersionMediator getApiVersionMediator();
 
+    /**
+     * Return an implementation of ApiVersionMediator
+     */
+    boolean supportsFeature(Features feature);
+
 
     // ===============================
     // Gerrit access endpoints
