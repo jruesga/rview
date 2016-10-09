@@ -62,6 +62,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -435,11 +438,11 @@ public class FileDiffViewerFragment extends Fragment {
         FileDiffResponse response = new FileDiffResponse();
         response.diff = diff;
         response.comments = new Pair<>(
-                setRevision(commentsA, base, base),
-                setRevision(commentsB, revision, base));
+                setRevisionAndSort(commentsA, base, base),
+                setRevisionAndSort(commentsB, revision, base));
         response.draftComments = new Pair<>(
-                setRevision(draftsA, base, base),
-                setRevision(draftsB, revision, base));
+                setRevisionAndSort(draftsA, base, base),
+                setRevisionAndSort(draftsB, revision, base));
 
         // Cache the fetched data
         try {
@@ -492,16 +495,20 @@ public class FileDiffViewerFragment extends Fragment {
         return response;
     }
 
-    private List<CommentInfo> setRevision(Map<String, List<CommentInfo>> comments,
+    private List<CommentInfo> setRevisionAndSort(Map<String, List<CommentInfo>> comments,
             int base, int parentBase) {
-        if (comments != null && comments.get(mFile) != null) {
-            for (CommentInfo comment : comments.get(mFile)) {
-                comment.patchSet = comment.side != null && comment.side.equals(SideType.PARENT)
-                        ? parentBase : base;
-            }
-            return comments.get(mFile);
+        List<CommentInfo> commentList = comments != null ? comments.get(mFile) : null;
+        if (commentList == null) {
+            return null;
         }
-        return null;
+
+        List<CommentInfo> copy = new ArrayList<>(commentList);
+        for (CommentInfo comment : copy) {
+            comment.patchSet = SideType.PARENT.equals(comment.side) ? parentBase : base;
+        }
+        Collections.sort(copy,
+                (CommentInfo lhs, CommentInfo rhs) -> lhs.updated.compareTo(rhs.updated));
+        return copy;
     }
 
     @SuppressWarnings("ConstantConditions")
