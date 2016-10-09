@@ -345,6 +345,19 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     DiffView.SkipLineModel skip = new DiffView.SkipLineModel();
                     skip.msg = mContext.getResources().getQuantityString(
                             R.plurals.skipped_lines, skippedLines, skippedLines);
+                    skip.skippedLines = new DiffInfoModel[skippedLines];
+                    for (int k = i - skippedLines, l = 0; k < i; k++, l++) {
+                        // TODO Handle comments in skipped lines
+                        DiffInfoModel m = new DiffInfoModel();
+                        m.lineNumberA = m.lineNumberB = String.valueOf(k + 1);
+                        if (mMode == DiffView.SIDE_BY_SIDE_MODE) {
+                            m.lineA = m.lineB = processHighlights(diff.ab[k]);
+                        } else {
+                            m.lineA = processHighlights(diff.ab[k]);
+                        }
+                        m.colorA = m.colorB = noColor;
+                        skip.skippedLines[l] = m;
+                    }
                     model.add(skip);
                     if (breakAfterSkip) {
                         break;
@@ -356,10 +369,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             DiffInfoModel m = new DiffInfoModel();
             m.lineNumberA = String.valueOf(++lineNumberA);
             m.lineNumberB = String.valueOf(++lineNumberB);
-            m.lineA = prepareTabs(line);
-            m.lineB = prepareTabs(line);
-            m.colorA = noColor;
-            m.colorB = noColor;
+            m.lineA = m.lineB = prepareTabs(line);
+            m.colorA = m.colorB = noColor;
             processHighlights(m);
             model.add(m);
         }
@@ -424,6 +435,10 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         if (model.lineB != null) {
             model.lineB = processHighlightTrailingSpaces(processHighlightTabs(model.lineB));
         }
+    }
+
+    private CharSequence processHighlights(CharSequence line) {
+        return processHighlightTrailingSpaces(processHighlightTabs(line));
     }
 
     private CharSequence processHighlightTabs(CharSequence text) {

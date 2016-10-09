@@ -19,14 +19,18 @@
 
     <data>
         <variable name="wrap" type="java.lang.Boolean" />
+        <variable name="index" type="java.lang.Integer" />
         <variable name="model" type="com.ruesga.rview.widget.DiffView.SkipLineModel" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
+        <variable name="handlers" type="com.ruesga.rview.widget.DiffView.EventHandlers" />
     </data>
 
     <FrameLayout
         android:layout_width="0dp"
         app:wrapLayoutWidth="@{wrap != null &amp;&amp; wrap}"
         android:layout_height="wrap_content"
+        android:onClick="@{handlers::onSkipLinePressed}"
+        android:tag="@{index}"
         android:background="@color/diffSkipBackgroundColor">
         <com.ruesga.rview.widget.StyleableTextView
             android:layout_width="0dp"

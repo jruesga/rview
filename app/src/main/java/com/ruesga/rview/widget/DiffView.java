@@ -119,6 +119,11 @@ public class DiffView extends FrameLayout {
                 mView.mOnCommentListener.onDeleteDraft(v, s[0], s[1]);
             }
         }
+
+        public void onSkipLinePressed(View v) {
+            int position = (int) v.getTag();
+            mView.onSkipLinePressed(position);
+        }
     }
 
     public interface OnCommentListener {
@@ -208,6 +213,7 @@ public class DiffView extends FrameLayout {
     @ProguardIgnored
     public static class SkipLineModel extends AbstractModel {
         public String msg;
+        public DiffInfoModel[] skippedLines;
     }
 
     @ProguardIgnored
@@ -254,12 +260,25 @@ public class DiffView extends FrameLayout {
             mMode = mode;
         }
 
-        void update(List<AbstractModel> diffs) {
+        private void update(List<AbstractModel> diffs) {
             mModel.clear();
             mModel.addAll(diffs);
             mDiffViewMeasurement.clear();
             computeViewChildMeasuresIfNeeded();
             notifyDataSetChanged();
+        }
+
+        private void showSkippedLinesAt(int position) {
+            AbstractModel model = mDiffAdapter.mModel.get(position);
+            if (model instanceof SkipLineModel) {
+                SkipLineModel m = (SkipLineModel) model;
+                mDiffAdapter.mModel.remove(position);
+                int count = m.skippedLines.length;
+                for (int i = 0; i < count; i++, position++) {
+                    mDiffAdapter.mModel.add(position, m.skippedLines[i]);
+                }
+            }
+            mDiffAdapter.notifyDataSetChanged();
         }
 
         @Override
@@ -316,6 +335,8 @@ public class DiffView extends FrameLayout {
                 SkipLineModel skip = (SkipLineModel) model;
                 holder.mBinding.setWrap(isWrapMode());
                 holder.mBinding.setModel(skip);
+                holder.mBinding.setHandlers(mEventHandlers);
+                holder.mBinding.setIndex(position);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
                 holder.mBinding.executePendingBindings();
 
@@ -684,6 +705,10 @@ public class DiffView extends FrameLayout {
         if (mImageDiffTask != null) {
             mImageDiffTask.cancel(true);
         }
+    }
+
+    private void onSkipLinePressed(int position) {
+        mDiffAdapter.showSkippedLinesAt(position);
     }
 
     static class SavedState extends BaseSavedState {
