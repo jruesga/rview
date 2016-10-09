@@ -122,7 +122,7 @@ public class DiffView extends FrameLayout {
     }
 
     public interface OnCommentListener {
-        void onNewDraft(View v, boolean left, int line);
+        void onNewDraft(View v, boolean left, Integer line);
 
         void onReply(View v, String revisionId, String commentId, Integer line);
 

@@ -138,14 +138,15 @@ public class FileDiffViewerFragment extends Fragment {
 
     private DiffView.OnCommentListener mCommentListener = new DiffView.OnCommentListener() {
         @Override
-        public void onNewDraft(View v, boolean left, int line) {
+        public void onNewDraft(View v, boolean left, Integer line) {
             final String baseRevision = mBase == null ? "0" : mBase;
             String rev = left ? baseRevision : mRevision;
             performShowDraftMessageDialog(v, null,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
-                            new String[]{rev, null, String.valueOf(line), newValue});
+                            new String[]{rev, null,
+                                    line == null ? null : String.valueOf(line), newValue});
                     });
         }
 
@@ -788,5 +789,9 @@ public class FileDiffViewerFragment extends Fragment {
         } else if (mMode != DiffView.IMAGE_MODE && isBinary && hasImagePreview) {
             mMode = DiffView.IMAGE_MODE;
         }
+    }
+
+    DiffView.OnCommentListener getmCommentListener() {
+        return mCommentListener;
     }
 }

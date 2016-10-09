@@ -89,6 +89,15 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         }
 
         public void onActionPressed(View v) {
+            final boolean isLeft = (boolean) v.getTag();
+            switch (v.getId()) {
+                case R.id.comment:
+                    mFragment.performFileComment(v, isLeft);
+                    break;
+                case R.id.download:
+                    mFragment.performFileDownload(v, isLeft);
+                    break;
+            }
         }
     }
 
@@ -504,5 +513,18 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         } else if (mMode != DiffView.IMAGE_MODE && mIsBinary && mHasImagePreview) {
             mMode = DiffView.IMAGE_MODE;
         }
+    }
+
+    private void performFileComment(View v, boolean isLeft) {
+        ((BaseActivity) getActivity()).closeOptionsDrawer();
+
+        FileDiffViewerFragment fragment = mFragment.get();
+        if (fragment != null) {
+            fragment.getmCommentListener().onNewDraft(v, isLeft, null);
+        }
+    }
+
+    private void performFileDownload(View v, boolean isLeft) {
+        ((BaseActivity) getActivity()).closeOptionsDrawer();
     }
 }
