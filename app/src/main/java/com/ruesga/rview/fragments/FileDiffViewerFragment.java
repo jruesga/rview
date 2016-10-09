@@ -792,7 +792,9 @@ public class FileDiffViewerFragment extends Fragment {
 
     private void applyModeRestrictions(boolean isBinary, boolean hasImagePreview) {
         if (mMode == DiffView.IMAGE_MODE && !hasImagePreview) {
-            mMode = Preferences.getAccountSearchMode(getContext(), mAccount);
+            String mode = Preferences.getAccountDiffMode(getContext(), mAccount);
+            mMode = mode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
+                    ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
         } else if (mMode != DiffView.IMAGE_MODE && isBinary && hasImagePreview) {
             mMode = DiffView.IMAGE_MODE;
         }

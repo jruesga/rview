@@ -532,7 +532,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private void applyModeRestrictions() {
         if (mMode == DiffView.IMAGE_MODE && !mHasImagePreview) {
-            mMode = Preferences.getAccountSearchMode(getContext(), mAccount);
+            String mode = Preferences.getAccountDiffMode(getContext(), mAccount);
+            mMode = mode.equals(Constants.DIFF_MODE_SIDE_BY_SIDE)
+                    ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
         } else if (mMode != DiffView.IMAGE_MODE && mIsBinary && mHasImagePreview) {
             mMode = DiffView.IMAGE_MODE;
         }
