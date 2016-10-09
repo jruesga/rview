@@ -38,6 +38,8 @@
             android:layout_height="24dp"
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
+            android:tag="@{index}"
+            android:onClick="@{handlers::onMessageAvatarPressed}"
             tools:ignore="ContentDescription"/>
 
         <com.ruesga.rview.widget.StyleableTextView
@@ -48,6 +50,8 @@
             android:layout_toEndOf="@id/avatar"
             android:layout_alignParentTop="true"
             app:accountDisplayName="@{model.author}"
+            android:tag="@{index}"
+            android:onClick="@{handlers::onMessageAvatarPressed}"
             app:font="bold"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorPrimary" />

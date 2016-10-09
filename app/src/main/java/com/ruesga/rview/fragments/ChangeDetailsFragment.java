@@ -231,6 +231,12 @@ public class ChangeDetailsFragment extends Fragment {
         public void onApplyFilterPressed(View v) {
             mFragment.performApplyFilter(v);
         }
+
+        public void onMessageAvatarPressed(View v) {
+            int position = (int) v.getTag();
+            mFragment.performAccountClicked(
+                    mFragment.mResponse.mChange.messages[position].author);
+        }
     }
 
     @ProguardIgnored
