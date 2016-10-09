@@ -18,13 +18,43 @@ package com.ruesga.rview.misc;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 
 import java.io.File;
 import java.io.IOException;
 
 public class BitmapUtils {
+
+    public static Bitmap convertToBitmap (Drawable dw) {
+        Bitmap bitmap;
+
+        if (dw instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) dw;
+            if(bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        if(dw.getIntrinsicWidth() <= 0 || dw.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        } else {
+            bitmap = Bitmap.createBitmap(
+                    dw.getIntrinsicWidth(),
+                    dw.getIntrinsicHeight(),
+                    Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        dw.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        dw.draw(canvas);
+        return bitmap;
+    }
+
+
 
     public static int[] decodeBitmapSize(File file) {
         // First decode with inJustDecodeBounds=true to check dimensions

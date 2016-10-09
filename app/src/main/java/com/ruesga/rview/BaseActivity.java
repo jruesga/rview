@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.MenuRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -42,6 +43,8 @@ import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.widget.PagerControllerLayout;
 import com.ruesga.rview.widget.PagerControllerLayout.OnPageSelectionListener;
 import com.ruesga.rview.widget.PagerControllerLayout.PagerControllerAdapter;
+
+import java.util.List;
 
 public abstract class BaseActivity extends AppCompatActivity implements OnRefreshListener {
 
@@ -316,5 +319,17 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
 
     public DrawerNavigationView getOptionsMenu() {
         return getContentBinding().drawerOptionsView;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment fragment : fragments) {
+                fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+        }
     }
 }

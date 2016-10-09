@@ -15,15 +15,26 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
@@ -34,6 +45,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
@@ -47,6 +59,7 @@ import com.ruesga.rview.fragments.FileDiffViewerFragment.OnDiffCompleteListener;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -54,16 +67,26 @@ import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DiffView;
 import com.ruesga.rview.widget.PagerControllerLayout.PagerControllerAdapter;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class DiffViewerFragment extends Fragment implements KeyEventBindable, OnDiffCompleteListener {
 
     private static final String TAG = "DiffViewerFragment";
+
+    private static final int REQUEST_PERMISSION_LEFT = 100;
+    private static final int REQUEST_PERMISSION_RIGHT = 101;
+    private static final String[] PERMISSIONS  = {
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE"
+    };
 
     @ProguardIgnored
     public static class Model {
@@ -95,7 +118,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                     mFragment.performFileComment(v, isLeft);
                     break;
                 case R.id.download:
-                    mFragment.performFileDownload(v, isLeft);
+                    mFragment.requestPermissionsOrDownloadFile(isLeft);
                     break;
             }
         }
@@ -524,7 +547,107 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         }
     }
 
-    private void performFileDownload(View v, boolean isLeft) {
+    private void requestPermissionsOrDownloadFile(boolean isLeft) {
         ((BaseActivity) getActivity()).closeOptionsDrawer();
+
+        int readPermissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+        int writePermissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (readPermissionCheck !=  PackageManager.PERMISSION_GRANTED ||
+                writePermissionCheck !=  PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(PERMISSIONS,
+                    isLeft ? REQUEST_PERMISSION_LEFT : REQUEST_PERMISSION_RIGHT);
+        } else {
+            // Permissions granted
+            performFileDownload(isLeft);
+        }
     }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION_LEFT || requestCode == REQUEST_PERMISSION_RIGHT) {
+            boolean granted = true;
+            for (int permissionGrant : grantResults) {
+                if (permissionGrant !=  PackageManager.PERMISSION_GRANTED) {
+                    granted = false;
+                    break;
+                }
+            }
+
+            // Now, download the file
+            if (granted) {
+                performFileDownload(requestCode == REQUEST_PERMISSION_LEFT);
+            }
+        }
+    }
+
+    private void performFileDownload(boolean isLeft) {
+        String revision = String.valueOf(mChange.revisions.get(mRevisionId).number);
+        String fileHash = FowlerNollVo.fnv1a_64(mFile.getBytes()).toString();
+        String base = isLeft ? mBase == null ? "0" : String.valueOf(mBase) : revision;
+        String name = base + "_" + fileHash + "_" + CacheHelper.CACHE_CONTENT;
+        File src = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
+        if (src.exists()) {
+            name = base + "_" + new File(mFile).getName().toLowerCase(Locale.US);
+
+            // Copy source file to download folder
+            File downloadFolder = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS);
+            File dst = new File(downloadFolder, name);
+            int i = 0;
+            while(dst.exists()) {
+                i++;
+                dst = new File(downloadFolder, "(" + i + ") " + name);
+            }
+            try {
+                FileUtils.copyFile(src, dst);
+                final String msg = getString(
+                        R.string.notification_file_download_text_success, dst.getName());
+
+                // Scan the file
+                MediaScannerConnection.scanFile(
+                        getContext(),
+                        new String[]{dst.getAbsolutePath()},
+                        null,
+                        (path, uri) ->
+                                mHandler.post(() -> showDownloadNotification(uri, msg)));
+
+            } catch (IOException ex) {
+                Log.e(TAG, "Failed to copy " + src + " to " + dst, ex);
+
+                final String msg = getString(
+                        R.string.notification_file_download_text_failure, dst.getName());
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void showDownloadNotification(Uri uri, String msg) {
+        final Context ctx = getContext();
+
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.setData(uri);
+        PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, PendingIntent.FLAG_ONE_SHOT);
+
+        // Create a notification
+        Notification notification = new NotificationCompat.Builder(getContext())
+                .setContentTitle(getString(R.string.notification_file_download_title))
+                .setContentText(msg)
+                .setTicker(msg)
+                .setSmallIcon(R.drawable.ic_file_download)
+                .setAutoCancel(true)
+                .setContentIntent(pi)
+                .setGroup("rview-downloads")
+                .setWhen(System.currentTimeMillis())
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .build();
+        NotificationManagerCompat nm = NotificationManagerCompat.from(ctx);
+        nm.notify(notification.hashCode(), notification);
+
+        Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
+    }
+
 }

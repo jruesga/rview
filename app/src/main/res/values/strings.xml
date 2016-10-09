@@ -279,6 +279,11 @@
     <string name="search_not_a_valid_commit">Not a valid commit identifier</string>
     <string name="search_not_a_valid_custom_query">Not a valid Gerrit query</string>
 
+    <!-- Notifications -->
+    <string name="notification_file_download_title">Download completed</string>
+    <string name="notification_file_download_text_success">File <xliff:g id="height">%1$s</xliff:g> downloaded successfully</string>
+    <string name="notification_file_download_text_failure">File <xliff:g id="height">%1$s</xliff:g> download failed</string>
+
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>
 
