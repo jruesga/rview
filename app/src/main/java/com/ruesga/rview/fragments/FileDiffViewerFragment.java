@@ -617,7 +617,10 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     private void fetchRevisionsContentIfNeeded(FileDiffResponse response) {
-        FileStatus fileStatus = mChange.revisions.get(mRevisionId).files.get(mFile).status;
+        FileStatus fileStatus = FileStatus.A;
+        if (mChange.revisions.get(mRevisionId).files.containsKey(mFile)) {
+            fileStatus = mChange.revisions.get(mRevisionId).files.get(mFile).status;
+        }
 
         // If is not a binary file, we can use the diff information to build the file
         // instead of fetch it from the network

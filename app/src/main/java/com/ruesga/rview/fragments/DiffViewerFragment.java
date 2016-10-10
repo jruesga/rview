@@ -466,7 +466,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
         // Actions
         if (mChange != null) {
-            FileStatus status = mChange.revisions.get(mRevisionId).files.get(mFile).status;
+            FileStatus status = FileStatus.A;
+            if (mChange.revisions.get(mRevisionId).files.containsKey(mFile)) {
+                status = mChange.revisions.get(mRevisionId).files.get(mFile).status;
+            }
             mModel.hasCommentAction =
                     mAccount.hasAuthenticatedAccessMode() && mMode != DiffView.IMAGE_MODE;
             mModel.hasLeftDownloadAction = !status.equals(FileStatus.A);
