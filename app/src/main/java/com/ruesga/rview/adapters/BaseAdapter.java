@@ -41,7 +41,7 @@ public class BaseAdapter extends FilterableAdapter {
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"ConstantConditions", "Convert2streamapi"})
     public List<CharSequence> getResults() {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         ChangeQuery query = new ChangeQuery().project(mProjectId)

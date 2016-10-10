@@ -415,6 +415,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         }
     }
 
+    @SuppressWarnings("Convert2streamapi")
     private void loadRevisions() {
         mAllRevisions.clear();
         for (String revision : mChange.revisions.keySet()) {
@@ -480,6 +481,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         mActionsBinding.setModel(mModel);
     }
 
+    @SuppressWarnings("Convert2streamapi")
     private void performShowBaseChooser(View v) {
         final List<String> revisions = new ArrayList<>(mAllRevisions);
         String value;

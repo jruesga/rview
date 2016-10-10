@@ -43,5 +43,7 @@ dependencies {
 android {
     defaultConfig {
         consumerProguardFiles file('proguard-consumer.txt')
+
+        return void;
     }
 }

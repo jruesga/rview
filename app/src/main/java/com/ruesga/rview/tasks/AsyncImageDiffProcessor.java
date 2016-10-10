@@ -195,7 +195,7 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
         return null;
     }
 
-    private Pair<Drawable, int[]> loadSvg(InputStream is) throws IOException, SVGParseException {
+    private Pair<Drawable, int[]> loadSvg(InputStream is) throws SVGParseException {
         SVG svg = SVG.getFromInputStream(is);
         int[] size = new int[2];
         size[0] = (int) svg.getDocumentViewBox().width();

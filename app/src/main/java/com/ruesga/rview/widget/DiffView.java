@@ -400,6 +400,7 @@ public class DiffView extends FrameLayout {
             return mModel.size();
         }
 
+        @SuppressWarnings("Convert2streamapi")
         private void computeViewChildMeasuresIfNeeded() {
             boolean wrap = isWrapMode();
             if (!mModel.isEmpty()) {

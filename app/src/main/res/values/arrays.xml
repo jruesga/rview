@@ -110,13 +110,6 @@
         <item>@string/search_by_commit_message</item>
         <item>@string/search_by_custom</item>
     </string-array>
-    <integer-array name="search_options_values" translatable="false">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </integer-array>
     <integer-array name="search_options_icons" translatable="false">
         <item>@drawable/ic_work</item>
         <item>@drawable/ic_merged</item>

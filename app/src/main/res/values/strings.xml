@@ -74,7 +74,6 @@
     <string name="account_deletion_title">Account deletion</string>
     <string name="account_deletion_message">This action will delete the account and all information associated to it.</string>
     <string name="account_deletion_confirm_message">Account deleted</string>
-    <string name="account_account_not_exists">Account does not exist</string>
     <string name="account_exists">Account exists</string>
 
     <!-- Account wizard -->

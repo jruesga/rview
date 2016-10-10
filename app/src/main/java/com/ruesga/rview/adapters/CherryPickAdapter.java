@@ -37,7 +37,7 @@ public class CherryPickAdapter extends FilterableAdapter {
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"ConstantConditions", "Convert2streamapi"})
     public List<CharSequence> getResults() {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         List<BranchInfo> branches = api.getProjectBranches(

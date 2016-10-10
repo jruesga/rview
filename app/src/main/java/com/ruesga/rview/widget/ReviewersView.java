@@ -138,6 +138,7 @@ public class ReviewersView extends FlowLayout {
         return sortReviewers(reviewers);
     }
 
+    @SuppressWarnings("Convert2streamapi")
     private List<AccountInfo> fromLabels(ChangeInfo change) {
         List<Integer> accountIds = new ArrayList<>();
         List<AccountInfo> reviewers = new ArrayList<>();

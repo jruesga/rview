@@ -27,6 +27,7 @@ import com.ruesga.rview.gerrit.NoConnectivityException;
 import retrofit2.adapter.rxjava.HttpException;
 
 public class ExceptionHelper {
+    @SuppressWarnings("SimplifiableIfStatement")
     public static <T extends Throwable> boolean isException(Throwable cause, Class<T> c) {
         if (c.isInstance(cause)) {
             return true;

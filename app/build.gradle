@@ -95,4 +95,6 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    return void;
 }

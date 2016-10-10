@@ -173,7 +173,7 @@ public class VectorDrawableConverter {
 
     private static String toSvgColor(Context ctx, String color) {
         try {
-            int c = 0;
+            int c;
             if (color.startsWith("?") || color.startsWith("@")) {
                 int start = color.indexOf(":") + 1;
                 int end = color.indexOf("/") + 1;

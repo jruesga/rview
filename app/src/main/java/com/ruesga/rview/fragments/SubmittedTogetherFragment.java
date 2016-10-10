@@ -87,6 +87,7 @@ public class SubmittedTogetherFragment extends ChangeListFragment {
         return false;
     }
 
+    @SuppressWarnings("Convert2streamapi")
     private List<ChangeInfo> fetchChanges(GerritApi api, List<ChangeInfo> changes) {
         List<ChangeInfo> c = new ArrayList<>(changes.size());
         for (ChangeInfo change : changes) {
