@@ -47,6 +47,7 @@
             android:layout_height="?attr/listPreferredItemHeightSmall"
             android:visibility="@{(model.hasCommentAction || model.hasLeftDownloadAction) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:baselineAligned="false">
 
             <com.ruesga.rview.widget.StyleableTextView
@@ -77,6 +78,7 @@
             android:layout_height="?attr/listPreferredItemHeightSmall"
             android:visibility="@{(model.hasCommentAction || model.hasRightDownloadAction) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:baselineAligned="false">
 
             <com.ruesga.rview.widget.StyleableTextView
