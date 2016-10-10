@@ -33,6 +33,10 @@
         android:allowBackup="false"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="b2c84f851d7fd2a1a261bc1fb0a2f364704f7f10" />
+
         <activity
             android:name=".MainActivity"
             android:clearTaskOnLaunch="true"

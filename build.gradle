@@ -47,16 +47,19 @@ allprojects {
     buildscript {
         repositories {
             jcenter()
+            maven { url 'https://maven.fabric.io/public' }
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:2.2.1'
             classpath 'me.tatarka:gradle-retrolambda:3.3.0'
+            classpath 'io.fabric.tools:gradle:1.22.0'
         }
     }
 
     repositories {
         jcenter()
         maven { url "https://jitpack.io" }
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
 
