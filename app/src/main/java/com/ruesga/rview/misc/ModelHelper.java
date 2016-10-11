@@ -58,14 +58,14 @@ public class ModelHelper {
     public static final String ACTION_UPDATE_DRAFT = "update_draft";
     public static final String ACTION_DELETE_DRAFT = "delete_draft";
 
-    public static GerritApi getGerritApi(Context applicationContext) {
-        Account account = Preferences.getAccount(applicationContext);
+    public static GerritApi getGerritApi(Context context) {
+        Account account = Preferences.getAccount(context);
         if (account == null) {
             return null;
         }
         Authorization authorization = new Authorization(account.mAccount.username, account.mToken);
         return GerritServiceFactory.getInstance(
-                applicationContext, account.mRepository.mUrl, authorization);
+                context.getApplicationContext(), account.mRepository.mUrl, authorization);
     }
 
     public static List<String> getAvatarUrl(Context context, AccountInfo account) {
