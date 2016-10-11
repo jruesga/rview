@@ -4,6 +4,7 @@
 -dontwarn okio.*
 -dontwarn rx.internal.util.unsafe.*
 -dontwarn com.squareup.picasso.*
+-dontwarn java.lang.invoke**
 
 -keep @com.ruesga.rview.annotations.ProguardIgnored public class *
 

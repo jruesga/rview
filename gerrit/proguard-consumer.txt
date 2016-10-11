@@ -4,6 +4,7 @@
 -dontwarn okio.*
 -dontwarn rx.internal.util.unsafe.*
 -dontwarn org.antlr.runtime.tree.*
+-dontwarn java.lang.invoke**
 
 -keep class com.ruesga.rview.gerrit.model.** { *; }
 

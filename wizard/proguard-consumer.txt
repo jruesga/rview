@@ -1,5 +1,6 @@
 -dontwarn android.support.v4.app.NotificationCompatBase
 -dontwarn rx.internal.util.unsafe.*
+-dontwarn java.lang.invoke**
 
 -keep @com.ruesga.rview.wizard.annotations.ProguardIgnored public class *
 

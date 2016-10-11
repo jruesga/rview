@@ -1,1 +1,2 @@
 -dontwarn android.support.v4.app.NotificationCompatBase
+-dontwarn java.lang.invoke**
