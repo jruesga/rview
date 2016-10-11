@@ -35,6 +35,7 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,11 +47,12 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
     private Context mContext;
     private String mLegacyChangeId;
     private List<SuggestedReviewerInfo> mReviewers = new ArrayList<>();
-    private final ReviewerFilter mFilter = new ReviewerFilter();
+    private final ReviewerFilter mFilter;
 
     public ReviewersAdapter(Context context, int legacyChangeId) {
         mContext = context;
         mLegacyChangeId = String.valueOf(legacyChangeId);
+        mFilter = new ReviewerFilter(this);
     }
 
     @Override
@@ -132,9 +134,20 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
     }
 
 
-    private class ReviewerFilter extends Filter {
+    private static class ReviewerFilter extends Filter {
 
+        private final WeakReference<ReviewersAdapter> mAdapter;
+        private final Account mAccount;
+        private final GerritApi mGerritApi;
+        private String mLegacyChangeId;
         private CharSequence mConstraint;
+
+        private ReviewerFilter(ReviewersAdapter adapter) {
+            mAdapter = new WeakReference<>(adapter);
+            mGerritApi = ModelHelper.getGerritApi(adapter.mContext);
+            mAccount = Preferences.getAccount(adapter.mContext);
+            mLegacyChangeId = adapter.mLegacyChangeId;
+        }
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -153,31 +166,32 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
         @Override
         @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            mConstraint = constraint;
-            mReviewers.clear();
-            if (results.count > 0) {
-                mReviewers.addAll((List<SuggestedReviewerInfo>) results.values);
-                notifyDataSetChanged();
-            } else {
-                notifyDataSetInvalidated();
+            ReviewersAdapter adapter = mAdapter.get();
+            if (adapter != null) {
+                mConstraint = constraint;
+                adapter.mReviewers.clear();
+                if (results.count > 0) {
+                    adapter.mReviewers.addAll((List<SuggestedReviewerInfo>) results.values);
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter.notifyDataSetInvalidated();
+                }
             }
         }
 
         @SuppressWarnings("ConstantConditions")
         private List<SuggestedReviewerInfo> fetchSuggestedReviewers(String query) {
-            final GerritApi api = ModelHelper.getGerritApi(mContext);
-            return api.getChangeSuggestedReviewers(mLegacyChangeId, query, MAX_RESULTS)
+            return mGerritApi.getChangeSuggestedReviewers(mLegacyChangeId, query, MAX_RESULTS)
                     .toBlocking()
                     .first();
         }
 
         private void removeSelfFromReviewers(List<SuggestedReviewerInfo> reviewers) {
-            Account account = Preferences.getAccount(mContext);
-            if (account != null) {
+            if (mAccount != null) {
                 Iterator<SuggestedReviewerInfo> it = reviewers.iterator();
                 while (it.hasNext()) {
                     SuggestedReviewerInfo reviewer = it.next();
-                    if (reviewer.account.accountId == account.mAccount.accountId) {
+                    if (reviewer.account.accountId == mAccount.mAccount.accountId) {
                         it.remove();
                         return;
                     }

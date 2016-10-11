@@ -26,6 +26,7 @@ import android.widget.Filterable;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.DropdownItemBinding;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,10 +37,11 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
     private Context mContext;
     private List<CharSequence> mResults;
     private List<CharSequence> mFilteredResults = new ArrayList<>();
-    private final ResultFilter mFilter = new ResultFilter();
+    private final ResultFilter mFilter;
 
     public FilterableAdapter(Context context) {
         mContext = context;
+        mFilter = new ResultFilter(this);
     }
 
     public Context getContext() {
@@ -91,27 +93,35 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
     public abstract List<CharSequence> getResults();
 
 
-    private class ResultFilter extends Filter {
+    private static class ResultFilter extends Filter {
 
+        private WeakReference<FilterableAdapter> mInnerClass;
         private final List<CharSequence> mTemp = new ArrayList<>();
+
+        ResultFilter(FilterableAdapter adapter) {
+            mInnerClass = new WeakReference<>(adapter);
+        }
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
+            FilterableAdapter innerClass = mInnerClass.get();
+
             FilterResults results = new FilterResults();
-            if (constraint != null) {
+            if (innerClass != null && constraint != null) {
                 // Fetch if needed
-                if (mResults == null) {
-                    mResults = getResults();
+                if (innerClass.mResults == null) {
+                    innerClass.mResults = innerClass.getResults();
                 }
 
                 // Filter results
                 mTemp.clear();
-                if (mResults != null) {
-                    for (CharSequence v : mResults) {
+                if (innerClass.mResults != null) {
+                    for (CharSequence v : innerClass.mResults) {
                         if (v.toString().contains(constraint)) {
                             mTemp.add(v);
                         }
-                        if (getMaxResults() > 0 &&  mTemp.size() >= getMaxResults()) {
+                        final int maxResults = innerClass.getMaxResults();
+                        if (maxResults > 0 &&  mTemp.size() >= maxResults) {
                             break;
                         }
                     }
@@ -126,12 +136,15 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
         @Override
         @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFilteredResults.clear();
-            if (results.count > 0) {
-                mFilteredResults.addAll((List<CharSequence>) results.values);
-                notifyDataSetChanged();
-            } else {
-                notifyDataSetInvalidated();
+            FilterableAdapter innerClass = mInnerClass.get();
+            if (innerClass != null) {
+                innerClass.mFilteredResults.clear();
+                if (results.count > 0) {
+                    innerClass.mFilteredResults.addAll((List<CharSequence>) results.values);
+                    innerClass.notifyDataSetChanged();
+                } else {
+                    innerClass.notifyDataSetInvalidated();
+                }
             }
         }
     }
