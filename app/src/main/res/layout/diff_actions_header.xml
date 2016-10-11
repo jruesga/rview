@@ -96,7 +96,7 @@
                 android:text="@string/options_base_right"/>
 
             <include
-                android:id="@+id/options_actions_left"
+                android:id="@+id/options_actions_right"
                 layout="@layout/diff_actions"
                 app:handlers="@{handlers}"
                 app:isLeft="@{false}"
