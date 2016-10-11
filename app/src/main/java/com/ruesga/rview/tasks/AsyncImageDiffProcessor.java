@@ -182,14 +182,23 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
 
     @SuppressWarnings("TryWithIdenticalCatches")
     private Pair<Drawable, int[]> loadFromVectorDrawable(File file) {
+        Reader reader = null;
         try {
             // Convert the vector drawable to a svg document
-            CharSequence svgDocument = VectorDrawableConverter.toSvg(
-                    mContext, new BufferedReader(new FileReader(file)));
+            reader = new BufferedReader(new FileReader(file));
+            CharSequence svgDocument = VectorDrawableConverter.toSvg(mContext, reader);
             return loadSvg(new ByteArrayInputStream(svgDocument.toString().getBytes()));
 
         } catch (Exception ex) {
             Log.e(TAG, "Can't parse " + file.getAbsolutePath() + " as VectorDrawable.", ex);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    // Ignore
+                }
+            }
         }
 
         return null;
