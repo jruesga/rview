@@ -8,6 +8,10 @@
 
 -keep @com.ruesga.rview.annotations.ProguardIgnored public class *
 
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable,*Annotation*
+
+
 ##---------------Begin: proguard configuration for RxJava  ----------
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
    long producerIndex;
