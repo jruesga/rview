@@ -39,5 +39,5 @@ Contacting Us
 If there are any question regarding this privacy policy, you may using the
 information below.
 
-Jorge Ruesga
+Jorge Ruesga  
 j.ruesga.criado@gmail.com
