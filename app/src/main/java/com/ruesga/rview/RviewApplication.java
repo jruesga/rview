@@ -16,11 +16,13 @@
 package com.ruesga.rview;
 
 import android.app.Application;
+import android.os.StrictMode;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.ruesga.rview.misc.Formatter;
+import com.squareup.leakcanary.LeakCanary;
 
 import io.fabric.sdk.android.Fabric;
 import io.fabric.sdk.android.Kit;
@@ -29,6 +31,25 @@ public class RviewApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // Memory leaks detection in debug builds
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+          // This process is dedicated to LeakCanary for heap analysis.
+          return;
+        }
+        LeakCanary.install(this);
+
+        // Enable StrictMode  in debug builds
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build());
+        }
 
         // Install a hook to Crashlytics and Answers (only in production releases)
         CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
