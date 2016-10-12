@@ -289,7 +289,7 @@ public class ModelHelper {
         for (String label : sortLabels(labels)) {
             LabelInfo labelInfo = labels.get(label);
 
-            if (labelInfo.optional) {
+            if (labelInfo.optional || labelInfo.values == null) {
                 continue;
             }
 
@@ -297,7 +297,7 @@ public class ModelHelper {
             boolean hasApproval = false;
             if (labelInfo.all != null) {
                 for (ApprovalInfo approval : labelInfo.all) {
-                    if (approval.value != null && approval.value == approvalValue) {
+                    if (approval.value != null && approval.value >= approvalValue) {
                         hasApproval = true;
                         break;
                     }
