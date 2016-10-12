@@ -84,7 +84,7 @@
                 app:srcDrawable="@{workflow.backDrawable}"
                 android:visibility="@{workflow.hasBack ? View.VISIBLE : View.GONE}"
                 android:enabled="@{!workflow.isInProgress &amp;&amp; workflow.isBackEnabled}"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:onClick="@{handlers::onActionPressed}"
                 tools:ignore="RtlSymmetry"/>
 
@@ -104,7 +104,7 @@
                 android:text="@android:string/cancel"
                 android:visibility="@{workflow.hasCancel ? View.VISIBLE : View.GONE}"
                 android:enabled="@{!workflow.isInProgress}"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:onClick="@{handlers::onActionPressed}"
                 tools:ignore="ButtonOrder,RtlSymmetry"/>
 
@@ -120,7 +120,7 @@
                 app:srcDrawable="@{workflow.forwardDrawable}"
                 android:visibility="@{workflow.hasForward ? View.VISIBLE : View.GONE}"
                 android:enabled="@{!workflow.isInProgress &amp;&amp; workflow.isForwardEnabled}"
-                android:background="?attr/selectableItemBackground"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:onClick="@{handlers::onActionPressed}"
                 tools:ignore="RtlSymmetry"/>
         </LinearLayout>
