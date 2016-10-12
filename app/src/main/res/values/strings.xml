@@ -278,6 +278,12 @@
     <string name="search_not_a_valid_commit">Not a valid commit identifier</string>
     <string name="search_not_a_valid_custom_query">Not a valid Gerrit query</string>
 
+    <!-- Stats -->
+    <string name="stats_info_title">Info</string>
+    <string name="stats_changes_title">Changes</string>
+    <string name="stats_page_details_title">Details</string>
+    <string name="stats_page_stats_title">Stats</string>
+
     <!-- Notifications -->
     <string name="notification_file_download_title">Download completed</string>
     <string name="notification_file_download_text_success">File <xliff:g id="height">%1$s</xliff:g> downloaded successfully</string>

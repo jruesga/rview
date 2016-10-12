@@ -23,14 +23,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 
 import com.ruesga.rview.databinding.ContentBinding;
-import com.ruesga.rview.fragments.RelatedChangesFragment;
+import com.ruesga.rview.fragments.StatsFragment;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.preferences.Constants;
 
-public class RelatedChangesActivity extends ChangeListBaseActivity {
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 
-    private int mSelectedChangeId = INVALID_ITEM;
+public class TabFragmentActivity extends ChangeListBaseActivity {
 
     private final String EXTRA_SELECTED_ITEM = "selected_item";
+
+    private int mSelectedChangeId = INVALID_ITEM;
 
     private ContentBinding mBinding;
 
@@ -40,38 +45,46 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
 
-        // Check we have valid arguments
-        if (getIntent() == null) {
-            finish();
-            return;
-        }
-        int legacyChangeId = getIntent().getIntExtra(Constants.EXTRA_LEGACY_CHANGE_ID, -1);
-        if (legacyChangeId == -1) {
-            finish();
-            return;
-        }
-        String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
-        if (changeId == null) {
-            finish();
-            return;
-        }
-        String projectId = getIntent().getStringExtra(Constants.EXTRA_PROJECT_ID);
-        if (projectId == null) {
-            finish();
-            return;
-        }
-        String revisionId = getIntent().getStringExtra(Constants.EXTRA_REVISION_ID);
-        if (revisionId == null) {
-            finish();
-            return;
-        }
-        String topic = getIntent().getStringExtra(Constants.EXTRA_TOPIC);
+//        // Check we have valid arguments
+//        if (getIntent() == null) {
+//            finish();
+//            return;
+//        }
+//
+//        String fragment = getIntent().getStringExtra(Constants.EXTRA_FRAGMENT);
+//        if (fragment == null) {
+//            finish();
+//            return;
+//        }
+//        ArrayList<String> args = getIntent().getStringArrayListExtra(Constants.EXTRA_FRAGMENT_ARGS);
+//        if (args == null) {
+//            finish();
+//            return;
+//        }
+//
+//        String title = getIntent().getStringExtra(Constants.EXTRA_TITLE);
+//        if (title == null) {
+//            finish();
+//            return;
+//        }
+//        String subtitle = getIntent().getStringExtra(Constants.EXTRA_SUBTITLE);
+
+        // FIXME Remove
+        String fragment = "com.ruesga.rview.fragments.StatsFragment";
+        ArrayList<String> args = new ArrayList<>();
+        ChangeQuery filter = new ChangeQuery().owner("mikeioannina");
+        args.add(String.valueOf(StatsFragment.ACCOUNT_STATS));
+        args.add(String.valueOf(4550));
+        args.add(filter.toString());
+        args.add(null);
+        String title = "Michael Bestas";
+        String subtitle = null;
 
         // Setup the title
         setupActivity();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
-            getSupportActionBar().setSubtitle(changeId);
+            getSupportActionBar().setTitle(title);
+            getSupportActionBar().setSubtitle(subtitle);
         }
 
         if (savedInstanceState != null) {
@@ -89,18 +102,26 @@ public class RelatedChangesActivity extends ChangeListBaseActivity {
                 }
                 tx.commit();
             } else {
-                openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId, topic);
+                openFragment(fragment, args);
             }
         } else {
-            openRelatedChangesFragment(legacyChangeId, changeId, projectId, revisionId, topic);
+            openFragment(fragment, args);
         }
     }
 
-    private void openRelatedChangesFragment(int legacyChangeId, String changeId,
-            String projectId, String revisionId, String topic) {
+    @SuppressWarnings("ConfusingArgumentToVarargsMethod")
+    private void openFragment(String fragmentName, ArrayList<String> args)
+            throws IllegalArgumentException {
+        Fragment fragment;
+        try {
+            Class<?> cls = Class.forName(fragmentName);
+            Method m = cls.getDeclaredMethod("newFragment", ArrayList.class);
+            fragment = (Fragment) m.invoke(null, args);
+        } catch (Exception cause) {
+            throw new IllegalArgumentException(cause);
+        }
+
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = RelatedChangesFragment.newInstance(
-                legacyChangeId, changeId, projectId, revisionId, topic);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG_LIST);
         tx.commit();
     }

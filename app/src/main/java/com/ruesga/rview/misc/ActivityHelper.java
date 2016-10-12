@@ -34,12 +34,17 @@ import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.ChangeListByFilterActivity;
 import com.ruesga.rview.DiffViewerActivity;
 import com.ruesga.rview.R;
-import com.ruesga.rview.RelatedChangesActivity;
 import com.ruesga.rview.SearchActivity;
+import com.ruesga.rview.TabFragmentActivity;
+import com.ruesga.rview.fragments.RelatedChangesFragment;
+import com.ruesga.rview.fragments.StatsFragment;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ActivityHelper {
 
@@ -136,15 +141,42 @@ public class ActivityHelper {
     }
 
     public static void openRelatedChangesActivity(
-            Context context, ChangeInfo change, String revisionId) {
-        Intent intent = new Intent(context, RelatedChangesActivity.class);
-        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
-        intent.putExtra(Constants.EXTRA_CHANGE_ID, change.changeId);
-        intent.putExtra(Constants.EXTRA_PROJECT_ID, change.project);
-        intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
-        intent.putExtra(Constants.EXTRA_TOPIC, change.topic);
+            Context ctx, ChangeInfo change, String revisionId) {
+        Intent intent = new Intent(ctx, TabFragmentActivity.class);
+
+        final String title = ctx.getString(R.string.change_details_title, change.legacyChangeId);
+        ArrayList<String> args = new ArrayList<>(
+                Arrays.asList(
+                        new String[]{
+                                String.valueOf(change.legacyChangeId),
+                                change.changeId,
+                                change.project,
+                                revisionId,
+                                change.topic}));
+        intent.putExtra(Constants.EXTRA_TITLE, title);
+        intent.putExtra(Constants.EXTRA_SUBTITLE, change.changeId);
+        intent.putExtra(Constants.EXTRA_FRAGMENT, RelatedChangesFragment.class.getName());
+        intent.putStringArrayListExtra(Constants.EXTRA_FRAGMENT_ARGS, args);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
-        context.startActivity(intent);
+        ctx.startActivity(intent);
+    }
+
+    public static void openStatsActivity(
+            Context ctx, String title, int type, String id, ChangeQuery filter, String extra) {
+        Intent intent = new Intent(ctx, TabFragmentActivity.class);
+
+        ArrayList<String> args = new ArrayList<>(
+                Arrays.asList(
+                        new String[]{
+                                String.valueOf(type),
+                                id,
+                                filter.toString(),
+                                extra}));
+        intent.putExtra(Constants.EXTRA_TITLE, title);
+        intent.putExtra(Constants.EXTRA_FRAGMENT, StatsFragment.class.getName());
+        intent.putStringArrayListExtra(Constants.EXTRA_FRAGMENT_ARGS, args);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
+        ctx.startActivity(intent);
     }
 
     public static void openDiffViewerActivity(Fragment fragment, ChangeInfo change,

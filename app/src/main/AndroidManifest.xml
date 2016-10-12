@@ -51,14 +51,7 @@
         <activity
             android:name=".ChangeDetailsActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
-            android:parentActivityName=".MainActivity">
-            <!-- FIXME Remove
-            android:exported="false"
-             -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
-        </activity>
+            android:parentActivityName=".MainActivity" />
         <activity-alias
             android:name=".ExternalChangeDetailsActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
@@ -73,6 +66,18 @@
         </activity-alias>
 
         <activity
+            android:name=".TabFragmentActivity"
+            android:theme="@style/AppTheme.NoStatusBarColor"
+            android:parentActivityName=".MainActivity">
+            <!-- FIXME Remove
+            android:exported="false"
+             -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".DiffViewerActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:parentActivityName=".ChangeDetailsActivity"
@@ -82,12 +87,6 @@
             android:name=".ChangeListByFilterActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:parentActivityName=".MainActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".RelatedChangesActivity"
-            android:theme="@style/AppTheme.NoStatusBarColor"
-            android:parentActivityName=".ChangeDetailsActivity"
             android:exported="false" />
 
         <activity

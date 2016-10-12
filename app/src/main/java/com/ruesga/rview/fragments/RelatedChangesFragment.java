@@ -23,6 +23,7 @@ import android.text.TextUtils;
 import com.ruesga.rview.R;
 import com.ruesga.rview.preferences.Constants;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class RelatedChangesFragment extends PageableFragment {
@@ -35,14 +36,15 @@ public class RelatedChangesFragment extends PageableFragment {
     private int mLegacyChangeId;
     private String mRevisionId;
 
-    public static RelatedChangesFragment newInstance(int legacyChangeId, String changeId,
-                String projectId, String revisionId, String topic) {
+    @SuppressWarnings("unused")
+    public static RelatedChangesFragment newFragment(ArrayList<String> args) {
         RelatedChangesFragment fragment = new RelatedChangesFragment();
         Bundle arguments = new Bundle();
-        arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
-        arguments.putString(Constants.EXTRA_CHANGE_ID, changeId);
-        arguments.putString(Constants.EXTRA_PROJECT_ID, projectId);
-        arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
+        arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, Integer.valueOf(args.get(0)));
+        arguments.putString(Constants.EXTRA_CHANGE_ID, args.get(1));
+        arguments.putString(Constants.EXTRA_PROJECT_ID, args.get(2));
+        arguments.putString(Constants.EXTRA_REVISION_ID, args.get(3));
+        final String topic = args.get(4);
         arguments.putString(Constants.EXTRA_TOPIC, TextUtils.isEmpty(topic) ? NULL_TOPIC : topic);
         fragment.setArguments(arguments);
         return fragment;

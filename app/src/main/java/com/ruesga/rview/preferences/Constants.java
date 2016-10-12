@@ -23,6 +23,8 @@ public class Constants {
 
     public static final int INVALID_CHANGE_ID = -1;
 
+    public static final String EXTRA_ID = "id";
+    public static final String EXTRA_TYPE = "type";
     public static final String EXTRA_CHANGE_ID = "changeId";
     public static final String EXTRA_LEGACY_CHANGE_ID = "legacyChangeId";
     public static final String EXTRA_PROJECT_ID = "projectId";
@@ -35,8 +37,12 @@ public class Constants {
     public static final String EXTRA_MESSAGE = "message";
     public static final String EXTRA_FILTER = "filter";
     public static final String EXTRA_TITLE = "title";
+    public static final String EXTRA_SUBTITLE = "subtitle";
     public static final String EXTRA_BASE = "base";
     public static final String EXTRA_DATA = "data";
+    public static final String EXTRA_FRAGMENT = "fragment";
+    public static final String EXTRA_FRAGMENT_ARGS = "fragment_args";
+    public static final String EXTRA_FRAGMENT_EXTRA = "fragment_extra";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
 

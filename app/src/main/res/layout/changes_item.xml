@@ -180,7 +180,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_warning"
+                        app:srcCompat="@drawable/ic_warning"
                         android:tint="@color/accent"
                         android:layout_marginEnd="4dp"
                         android:layout_marginRight="4dp"

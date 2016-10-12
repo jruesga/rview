@@ -1211,7 +1211,9 @@ public class ChangeDetailsFragment extends Fragment {
     private void performAccountClicked(AccountInfo account) {
         ChangeQuery filter = new ChangeQuery().owner(ModelHelper.getSafeAccountOwner(account));
         String title = ModelHelper.getAccountDisplayName(account);
-        ActivityHelper.openChangeListByFilterActivity(getContext(), title, filter);
+        String extra = SerializationManager.getInstance().toJson(account);
+        ActivityHelper.openStatsActivity(getContext(), title,
+                StatsFragment.ACCOUNT_STATS, String.valueOf(account.accountId), filter, extra);
     }
 
     private void performAddReviewer(String reviewer) {
@@ -1383,8 +1385,11 @@ public class ChangeDetailsFragment extends Fragment {
         switch (v.getId()) {
             case R.id.project:
                 title = getString(R.string.change_details_project);
-                filter = new ChangeQuery().project(((TextView) v).getText().toString());
-                break;
+                String project = ((TextView) v).getText().toString();
+                filter = new ChangeQuery().project(project);
+                ActivityHelper.openStatsActivity(getContext(), title,
+                        StatsFragment.PROJECT_STATS, project, filter, null);
+                return;
             case R.id.branch:
                 title = getString(R.string.change_details_branch);
                 filter = new ChangeQuery().branch(((TextView) v).getText().toString());
