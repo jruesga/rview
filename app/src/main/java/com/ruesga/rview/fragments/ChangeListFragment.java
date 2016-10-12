@@ -35,8 +35,13 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangesFragmentBinding;
 import com.ruesga.rview.databinding.ChangesItemBinding;
 import com.ruesga.rview.databinding.FetchingMoreItemBinding;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.EndlessRecyclerViewScrollListener;
@@ -92,6 +97,11 @@ public abstract class ChangeListFragment extends SelectableFragment {
         public void onItemPressed(View view) {
             ChangeInfo item = (ChangeInfo) view.getTag();
             mFragment.onItemClick(item);
+        }
+
+        public void onAvatarPressed(View view) {
+            AccountInfo account = (AccountInfo) view.getTag();
+            mFragment.onAvatarClick(account);
         }
     }
 
@@ -405,6 +415,15 @@ public abstract class ChangeListFragment extends SelectableFragment {
             mAdapter.notifyDataSetChanged();
         }
         ((OnChangeItemListener) getActivity()).onChangeItemPressed(item);
+    }
+
+    private void onAvatarClick(AccountInfo account) {
+        ChangeQuery filter = new ChangeQuery().owner(ModelHelper.getSafeAccountOwner(account));
+        String title = getString(R.string.account_details);
+        String displayName = ModelHelper.getAccountDisplayName(account);
+        String extra = SerializationManager.getInstance().toJson(account);
+        ActivityHelper.openStatsActivity(getContext(), title, displayName,
+                StatsFragment.ACCOUNT_STATS, String.valueOf(account.accountId), filter, extra);
     }
 
     private void notifyItemRestored() {
