@@ -126,7 +126,7 @@ public class GerritServiceFactory {
 
         // Create a hash from the endpoint + authorization
         String credentials = "";
-        if (authorization != null && authorization.isAnonymousUser()) {
+        if (authorization != null && !authorization.isAnonymousUser()) {
             credentials += authorization.mUsername + ":"
                     + (TextUtils.isEmpty(authorization.mPassword) ? "" : authorization.mPassword);
         }
