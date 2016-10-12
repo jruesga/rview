@@ -21,7 +21,7 @@ ext {
         retrofit2                   : '2.1.0',
         okhttp3                     : '3.4.1',
         okio                        : '1.10.0',
-        okhttp_digest               : '1.9',
+        okhttp_digest               : '2c51ebafcb',
         rxjava                      : '1.1.10',
         rxandroid                   : '1.2.1',
         rxloader                    : '1.1.0',
