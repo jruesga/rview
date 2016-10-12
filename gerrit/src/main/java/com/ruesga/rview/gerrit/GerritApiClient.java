@@ -53,6 +53,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
+    private static final Map<String, CachingAuthenticator> sAuthCache = new ConcurrentHashMap<>();
+
     private final String mEndPoint;
     private final GerritApi mService;
     private final PlatformAbstractionLayer mAbstractionLayer;
@@ -104,10 +106,9 @@ public class GerritApiClient implements GerritApi {
                 .addInterceptor(createLoggingInterceptor())
                 .addInterceptor(createHeadersInterceptor());
         if (authorization != null && !authorization.isAnonymousUser()) {
-            final Map<String, CachingAuthenticator> authCache = new ConcurrentHashMap<>();
             clientBuilder
-                    .authenticator(new CachingAuthenticatorDecorator(authenticator, authCache))
-                    .addInterceptor(new AuthenticationCacheInterceptor(authCache));
+                    .authenticator(new CachingAuthenticatorDecorator(authenticator, sAuthCache))
+                    .addInterceptor(new AuthenticationCacheInterceptor(sAuthCache));
         }
         OkHttpClient client = clientBuilder.build();
 
