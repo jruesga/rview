@@ -161,8 +161,8 @@ public class ActivityHelper {
         ctx.startActivity(intent);
     }
 
-    public static void openStatsActivity(
-            Context ctx, String title, int type, String id, ChangeQuery filter, String extra) {
+    public static void openStatsActivity(Context ctx, String title, String subtitle,
+            int type, String id, ChangeQuery filter, String extra) {
         Intent intent = new Intent(ctx, TabFragmentActivity.class);
 
         ArrayList<String> args = new ArrayList<>(
@@ -173,6 +173,7 @@ public class ActivityHelper {
                                 filter.toString(),
                                 extra}));
         intent.putExtra(Constants.EXTRA_TITLE, title);
+        intent.putExtra(Constants.EXTRA_SUBTITLE, subtitle);
         intent.putExtra(Constants.EXTRA_FRAGMENT, StatsFragment.class.getName());
         intent.putStringArrayListExtra(Constants.EXTRA_FRAGMENT_ARGS, args);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);

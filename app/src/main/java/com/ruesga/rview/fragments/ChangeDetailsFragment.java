@@ -1210,9 +1210,10 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performAccountClicked(AccountInfo account) {
         ChangeQuery filter = new ChangeQuery().owner(ModelHelper.getSafeAccountOwner(account));
-        String title = ModelHelper.getAccountDisplayName(account);
+        String title = getString(R.string.account_details);
+        String displayName = ModelHelper.getAccountDisplayName(account);
         String extra = SerializationManager.getInstance().toJson(account);
-        ActivityHelper.openStatsActivity(getContext(), title,
+        ActivityHelper.openStatsActivity(getContext(), title, displayName,
                 StatsFragment.ACCOUNT_STATS, String.valueOf(account.accountId), filter, extra);
     }
 
@@ -1387,7 +1388,7 @@ public class ChangeDetailsFragment extends Fragment {
                 title = getString(R.string.change_details_project);
                 String project = ((TextView) v).getText().toString();
                 filter = new ChangeQuery().project(project);
-                ActivityHelper.openStatsActivity(getContext(), title,
+                ActivityHelper.openStatsActivity(getContext(), title, project,
                         StatsFragment.PROJECT_STATS, project, filter, null);
                 return;
             case R.id.branch:

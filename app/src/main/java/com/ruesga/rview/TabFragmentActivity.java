@@ -26,6 +26,7 @@ import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.StatsFragment;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
 import java.lang.reflect.Method;
@@ -45,40 +46,29 @@ public class TabFragmentActivity extends ChangeListBaseActivity {
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
 
-//        // Check we have valid arguments
-//        if (getIntent() == null) {
-//            finish();
-//            return;
-//        }
-//
-//        String fragment = getIntent().getStringExtra(Constants.EXTRA_FRAGMENT);
-//        if (fragment == null) {
-//            finish();
-//            return;
-//        }
-//        ArrayList<String> args = getIntent().getStringArrayListExtra(Constants.EXTRA_FRAGMENT_ARGS);
-//        if (args == null) {
-//            finish();
-//            return;
-//        }
-//
-//        String title = getIntent().getStringExtra(Constants.EXTRA_TITLE);
-//        if (title == null) {
-//            finish();
-//            return;
-//        }
-//        String subtitle = getIntent().getStringExtra(Constants.EXTRA_SUBTITLE);
+        // Check we have valid arguments
+        if (getIntent() == null) {
+            finish();
+            return;
+        }
 
-        // FIXME Remove
-        String fragment = "com.ruesga.rview.fragments.StatsFragment";
-        ArrayList<String> args = new ArrayList<>();
-        ChangeQuery filter = new ChangeQuery().owner("mikeioannina");
-        args.add(String.valueOf(StatsFragment.ACCOUNT_STATS));
-        args.add(String.valueOf(4550));
-        args.add(filter.toString());
-        args.add(null);
-        String title = "Michael Bestas";
-        String subtitle = null;
+        String fragment = getIntent().getStringExtra(Constants.EXTRA_FRAGMENT);
+        if (fragment == null) {
+            finish();
+            return;
+        }
+        ArrayList<String> args = getIntent().getStringArrayListExtra(Constants.EXTRA_FRAGMENT_ARGS);
+        if (args == null) {
+            finish();
+            return;
+        }
+
+        String title = getIntent().getStringExtra(Constants.EXTRA_TITLE);
+        if (title == null) {
+            finish();
+            return;
+        }
+        String subtitle = getIntent().getStringExtra(Constants.EXTRA_SUBTITLE);
 
         // Setup the title
         setupActivity();

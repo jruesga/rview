@@ -77,7 +77,7 @@ public class StatsFragment extends PageableFragment {
                 case ACCOUNT_STATS:
                     return AccountStatsPageFragment.newFragment(mId, mExtra);
                 case PROJECT_STATS:
-                    return ProjectStatsPageFragment.newFragment(mId, mExtra);
+                    return ProjectStatsPageFragment.newFragment(mId);
             }
 
             return null;

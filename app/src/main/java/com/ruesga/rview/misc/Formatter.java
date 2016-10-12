@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
+import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -40,6 +41,7 @@ import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
+import com.ruesga.rview.gerrit.model.ProjectStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
@@ -428,5 +430,39 @@ public class Formatter {
     @BindingAdapter("bindEmptyActions")
     public static void bindEmptyActions(View v, Map<String, ActionInfo> actions) {
         v.setVisibility(actions == null || actions.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    @BindingAdapter("accountEmails")
+    public static void toAccountEmails(TextView v, AccountDetailInfo account) {
+        if (account == null || account.email == null) {
+            v.setText(null);
+            return;
+        }
+
+        String emails = account.email;
+        if (account.secondaryEmails != null) {
+            for (String email : account.secondaryEmails) {
+                emails += "\n" + email;
+            }
+        }
+        v.setText(emails);
+    }
+
+    @BindingAdapter("projectStatus")
+    public static void toProjectStatus(TextView v, ProjectStatus status) {
+        if (status == null) {
+            v.setText(null);
+            return;
+        }
+
+        String statusText = null;
+        if (status.equals(ProjectStatus.ACTIVE)) {
+            statusText = v.getContext().getString(R.string.project_details_status_active);
+        } else if (status.equals(ProjectStatus.READ_ONLY)) {
+            statusText = v.getContext().getString(R.string.project_details_status_read_only);
+        } else if (status.equals(ProjectStatus.HIDDEN)) {
+            statusText = v.getContext().getString(R.string.project_details_status_hidden);
+        }
+        v.setText(statusText);
     }
 }

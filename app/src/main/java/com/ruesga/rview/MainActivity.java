@@ -43,10 +43,15 @@ import com.ruesga.rview.drawer.DrawerNavigationSubMenu;
 import com.ruesga.rview.drawer.DrawerNavigationView;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
+import com.ruesga.rview.fragments.StatsFragment;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.Formatter;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
@@ -384,6 +389,9 @@ public class MainActivity extends ChangeListBaseActivity {
             case R.id.menu_account_settings:
                 openAccountSettings();
                 break;
+            case R.id.menu_account_stats:
+                openAccountStats();
+                break;
             case R.id.menu_delete_account:
                 requestAccountDeletion();
                 break;
@@ -542,6 +550,18 @@ public class MainActivity extends ChangeListBaseActivity {
             Intent i = new Intent(this, AccountSettingsActivity.class);
             startActivityForResult(i, REQUEST_ACCOUNT_SETTINGS);
             performShowAccount(false);
+        }
+    }
+
+    private void openAccountStats() {
+        if (mAccount != null) {
+            ChangeQuery filter = new ChangeQuery().owner(
+                    ModelHelper.getSafeAccountOwner(mAccount.mAccount));
+            String title = getString(R.string.account_details);
+            String displayName = ModelHelper.getAccountDisplayName(mAccount.mAccount);
+            String extra = SerializationManager.getInstance().toJson(mAccount.mAccount);
+            ActivityHelper.openStatsActivity(this, title, displayName, StatsFragment.ACCOUNT_STATS,
+                    String.valueOf(mAccount.mAccount.accountId), filter, extra);
         }
     }
 

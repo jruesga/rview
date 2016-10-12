@@ -42,6 +42,7 @@
     <string name="menu_starred">Starred</string>
     <string name="menu_watched">Watched</string>
     <string name="menu_account_settings">Account settings</string>
+    <string name="menu_account_stats">Account stats</string>
     <string name="menu_delete_account">Delete account</string>
     <string name="menu_other_accounts_category">Other accounts</string>
     <string name="menu_add_account">Add account</string>
@@ -283,6 +284,23 @@
     <string name="stats_changes_title">Changes</string>
     <string name="stats_page_details_title">Details</string>
     <string name="stats_page_stats_title">Stats</string>
+
+    <!-- Account stats -->
+    <string name="account_details">Account</string>
+    <string name="account_details_id">Account Id.</string>
+    <string name="account_details_username">Username</string>
+    <string name="account_details_name">Name</string>
+    <string name="account_details_emails">Emails</string>
+    <string name="account_details_registered_on">Registered</string>
+
+    <!-- Project stats -->
+    <string name="project_details_name">Name</string>
+    <string name="project_details_parent">Parent</string>
+    <string name="project_details_description">Description</string>
+    <string name="project_details_status">Status</string>
+    <string name="project_details_status_active">Active</string>
+    <string name="project_details_status_read_only">Read-only</string>
+    <string name="project_details_status_hidden">Hidden</string>
 
     <!-- Notifications -->
     <string name="notification_file_download_title">Download completed</string>

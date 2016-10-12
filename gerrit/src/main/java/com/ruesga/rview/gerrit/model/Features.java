@@ -19,5 +19,7 @@ import com.google.gson.annotations.Since;
 
 public enum Features {
     @Since(2.12)
-    BLAME
+    BLAME,
+    @Since(2.12)
+    ACCOUNT_DETAILS
 }
