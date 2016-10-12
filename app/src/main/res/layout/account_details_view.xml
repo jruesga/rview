@@ -16,6 +16,7 @@
  -->
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -27,127 +28,142 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            tools:ignore="ContentDescription"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:orientation="horizontal">
-            <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="@dimen/label_min_width"
-                android:layout_height="wrap_content"
-                android:text="@string/account_details_id"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp" />
-            <com.ruesga.rview.widget.StyleableTextView
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:text="@{String.valueOf(model.accountId)}"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
-                android:textSize="12sp" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:orientation="horizontal">
-            <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="@dimen/label_min_width"
-                android:layout_height="wrap_content"
-                android:text="@string/account_details_username"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp" />
-            <com.ruesga.rview.widget.StyleableTextView
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:orientation="horizontal">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_details_id"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="@{String.valueOf(model.accountId)}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:text="@{model.username}"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
-                android:textSize="12sp" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:orientation="horizontal">
-            <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="@dimen/label_min_width"
-                android:layout_height="wrap_content"
-                android:text="@string/account_details_name"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp" />
-            <com.ruesga.rview.widget.StyleableTextView
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:orientation="horizontal">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_details_username"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="@{model.username}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                android:text="@{model.name}"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
-                android:textSize="12sp" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:orientation="horizontal">
-            <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="@dimen/label_min_width"
-                android:layout_height="wrap_content"
-                android:text="@string/account_details_emails"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp" />
-            <com.ruesga.rview.widget.RegExLinkifyTextView
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:orientation="horizontal">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_details_name"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="@{model.name}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:accountEmails="@{model}"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
-                android:textSize="12sp" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:orientation="horizontal">
-            <com.ruesga.rview.widget.StyleableTextView
-                android:layout_width="@dimen/label_min_width"
-                android:layout_height="wrap_content"
-                android:text="@string/account_details_registered_on"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp" />
-            <com.ruesga.rview.widget.StyleableTextView
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:orientation="horizontal">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_details_emails"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <com.ruesga.rview.widget.RegExLinkifyTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    app:accountEmails="@{model}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
-                app:prettyDateTime="@{model.registeredOn}"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
-                android:textSize="12sp" />
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:orientation="horizontal">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_details_registered_on"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    app:prettyDateTime="@{model.registeredOn}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </layout>

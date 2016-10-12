@@ -30,10 +30,12 @@ import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     private AccountDetailsViewBinding mBinding;
     private String mAccountId;
     private AccountDetailInfo mCachedAccount;
+    private Picasso mPicasso;
 
     public static AccountStatsPageFragment newFragment(String accountId, String account) {
         AccountStatsPageFragment fragment = new AccountStatsPageFragment();
@@ -67,6 +70,12 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        mPicasso = PicassoHelper.getPicassoClient(getContext());
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public View inflateDetails(LayoutInflater inflater, @Nullable ViewGroup container) {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.account_details_view, container, false);
@@ -75,7 +84,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"ConstantConditions", "Convert2streamapi"})
     public Observable<AccountDetailInfo> fetchDetails() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -120,6 +129,8 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
 
     @Override
     public void bindDetails(AccountDetailInfo result) {
+        PicassoHelper.bindAvatar(getContext(), mPicasso, result, mBinding.avatar,
+                PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDark));
         mBinding.setModel(result);
         mBinding.executePendingBindings();
     }

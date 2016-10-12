@@ -63,7 +63,6 @@ public abstract class StatsPageFragment<T> extends Fragment {
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.stats_page_fragment, container, false);
         mBinding.details.addView(inflateDetails(inflater, mBinding.details));
-        startLoadersWithValidContext();
         return mBinding.getRoot();
     }
 

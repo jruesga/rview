@@ -60,7 +60,7 @@ public class GerritApiClient implements GerritApi {
     private final PlatformAbstractionLayer mAbstractionLayer;
     private long mLastServerVersionCheck = 0;
     ServerVersion mServerVersion;
-    private List<Features> mSupportedFeatures;
+    private List<Features> mSupportedFeatures = new ArrayList<>();
 
     private final ApiVersionMediator mMediator = new ApiVersionMediator() {
         @Override
