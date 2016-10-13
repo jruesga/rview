@@ -142,6 +142,11 @@ public class MainActivity extends ChangeListBaseActivity {
     }
 
     private final Handler.Callback mMessenger = message -> {
+        // Has the activity saved its state? Ignore any operation from here then.
+        if (hasStateSaved()) {
+            return true;
+        }
+
         if (message.what == MESSAGE_NAVIGATE_TO) {
             performNavigateTo();
             return true;

@@ -532,6 +532,11 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     }
 
     private void forceRefresh() {
+        // Check if activity is still attached
+        if (getActivity() == null) {
+            return;
+        }
+
         updateModel();
         mAdapter.notifyDataSetChanged();
     }

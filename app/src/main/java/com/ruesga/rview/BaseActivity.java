@@ -96,8 +96,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
 
 
     private Model mModel = new Model();
-
     private ViewPager mViewPager;
+    private boolean mHasStateSaved;
 
     public abstract DrawerLayout getDrawerLayout();
 
@@ -151,6 +151,10 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
                 }
             });
         }
+    }
+
+    public boolean hasStateSaved() {
+        return mHasStateSaved;
     }
 
     public void setUseTwoPanel(boolean useTwoPanel) {
@@ -248,6 +252,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         super.onSaveInstanceState(outState);
         outState.putParcelable(getClass().getSimpleName()
                 + "_base_activity_model", mModel);
+        mHasStateSaved = true;
     }
 
     @Override

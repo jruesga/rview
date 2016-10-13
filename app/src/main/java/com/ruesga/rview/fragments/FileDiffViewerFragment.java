@@ -237,7 +237,12 @@ public class FileDiffViewerFragment extends Fragment {
     private void update() {
         if (mResponse != null) {
             // Only refresh the diff view if we can display text differences
-            mHandler.postDelayed(() ->
+            mHandler.postDelayed(() -> {
+                // Check if activity is still attached
+                if (getActivity() == null ) {
+                    return;
+                }
+
                 mBinding.diff
                     .from(mResponse.diff)
                     .withLeftContent(mResponse.leftContent)
@@ -250,7 +255,8 @@ public class FileDiffViewerFragment extends Fragment {
                     .canEdit(mAccount.hasAuthenticatedAccessMode())
                     .highlightTabs(mHighlightTabs)
                     .highlightTrailingWhitespaces(mHighlightTrailingWhitespaces)
-                    .update(),
+                    .update();
+            },
             250L);
         }
     }
