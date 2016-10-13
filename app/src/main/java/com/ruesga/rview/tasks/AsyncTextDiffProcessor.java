@@ -339,6 +339,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         for (int i = 0; i < count; i++) {
             if (!noDiffs) {
                 if (skipStartAt != -1 && skipStartAt == i) {
+                    int startA = lineNumberA + 1;
+                    int startB = lineNumberB + 1;
                     lineNumberA += skippedLines;
                     lineNumberB += skippedLines;
                     i += skippedLines;
@@ -349,7 +351,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     for (int k = i - skippedLines, l = 0; k < i; k++, l++) {
                         // TODO Handle comments in skipped lines
                         DiffInfoModel m = new DiffInfoModel();
-                        m.lineNumberA = m.lineNumberB = String.valueOf(k + 1);
+                        m.lineNumberA = String.valueOf(startA + l);
+                        m.lineNumberB = String.valueOf(startB + l);
                         if (mMode == DiffView.SIDE_BY_SIDE_MODE) {
                             m.lineA = m.lineB = processHighlights(diff.ab[k]);
                         } else {
