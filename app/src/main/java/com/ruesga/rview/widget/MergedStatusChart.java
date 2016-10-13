@@ -76,9 +76,10 @@ public class MergedStatusChart extends View {
         mHeightBarPadding = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 5, res.getDisplayMetrics());
         mMinBarWidth = 0f;
-        int openColor = Color.WHITE;
-        int mergedColor = Color.WHITE;
-        int abandonedColor = Color.WHITE;
+        int openColor = Color.DKGRAY;
+        int mergedColor = Color.DKGRAY;
+        int abandonedColor = Color.DKGRAY;
+        int textColor = Color.WHITE;
 
         Resources.Theme theme = context.getTheme();
         TypedArray a = theme.obtainStyledAttributes(
@@ -89,6 +90,7 @@ public class MergedStatusChart extends View {
             switch (attr) {
                 case R.styleable.MergedStatusChart_heightBarPadding:
                     mHeightBarPadding = a.getDimension(attr, mHeightBarPadding);
+                    break;
 
                 case R.styleable.MergedStatusChart_minBarWidth:
                     mMinBarWidth = a.getDimension(attr, mMinBarWidth);
@@ -105,6 +107,10 @@ public class MergedStatusChart extends View {
                 case R.styleable.MergedStatusChart_abandonedColor:
                     abandonedColor = a.getColor(attr, abandonedColor);
                     break;
+
+                case R.styleable.MergedStatusChart_statusLabelTextColor:
+                    textColor = a.getColor(attr, textColor);
+                    break;
             }
         }
         a.recycle();
@@ -118,12 +124,11 @@ public class MergedStatusChart extends View {
         mAbandonedPaint.setColor(abandonedColor);
 
         mLabelPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.LINEAR_TEXT_FLAG);
-        mLabelPaint.setTextAlign(Paint.Align.RIGHT);
+        mLabelPaint.setTextAlign(Paint.Align.LEFT);
         mLabelPaint.setFakeBoldText(true);
-        mLabelPaint.setColor(Color.WHITE);
-        mLabelPaint.setAlpha(180);
+        mLabelPaint.setColor(textColor);
         mLabelPaint.setTextSize(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, 8f, res.getDisplayMetrics()));
+                TypedValue.COMPLEX_UNIT_SP, 10f, res.getDisplayMetrics()));
         mLabelPadding = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_SP, 2f, res.getDisplayMetrics());
         Rect bounds = new Rect();
@@ -145,17 +150,17 @@ public class MergedStatusChart extends View {
 
         canvas.drawText(
                 String.valueOf(mOpen),
-                mOpenRect.right - mLabelPadding,
+                mOpenRect.left + mLabelPadding,
                 mOpenRect.top + (mOpenRect.height() / 2) + (mLabelHeight / 2),
                 mLabelPaint);
         canvas.drawText(
                 String.valueOf(mMerged),
-                mMergedRect.right - mLabelPadding,
+                mOpenRect.left + mLabelPadding,
                 mMergedRect.top + (mMergedRect.height() / 2) + (mLabelHeight / 2),
                 mLabelPaint);
         canvas.drawText(
                 String.valueOf(mAbandoned),
-                mAbandonedRect.right - mLabelPadding,
+                mOpenRect.left + mLabelPadding,
                 mAbandonedRect.top + (mAbandonedRect.height() / 2) + (mLabelHeight / 2),
                 mLabelPaint);
     }
@@ -205,17 +210,17 @@ public class MergedStatusChart extends View {
         mOpenRect.set(
                 0,
                 mHeightBarPadding,
-                Math.max((totalWidth * mOpen / mTotal), mMinBarWidth),
+                mTotal == 0 ? 0 : Math.max((totalWidth * mOpen / mTotal), mMinBarWidth),
                 mHeightBarPadding + barHeight);
         mMergedRect.set(
                 0,
                 (mHeightBarPadding * 2) + barHeight,
-                Math.max((totalWidth * mMerged / mTotal), mMinBarWidth),
+                mTotal == 0 ? 0 : Math.max((totalWidth * mMerged / mTotal), mMinBarWidth),
                 (mHeightBarPadding * 2) + (barHeight * 2));
         mAbandonedRect.set(
                 0,
                 (mHeightBarPadding * 3) + (barHeight * 2),
-                Math.max((totalWidth * mAbandoned / mTotal), mMinBarWidth),
+                mTotal == 0 ? 0 : Math.max((totalWidth * mAbandoned / mTotal), mMinBarWidth),
                 (mHeightBarPadding * 3) + (barHeight * 3));
     }
 }

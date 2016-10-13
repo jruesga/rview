@@ -121,6 +121,8 @@
                             android:id="@+id/activity_chart"
                             android:layout_width="match_parent"
                             android:visibility="@{!loading  &amp;&amp; !empty ? View.VISIBLE : View.INVISIBLE}"
+                            app:charLineColor="@color/stats_open"
+                            app:charLineTextColor="@android:color/black"
                             android:layout_height="96dp"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
@@ -159,11 +161,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="96dp"
                             android:visibility="@{!loading  &amp;&amp; !empty ? View.VISIBLE : View.INVISIBLE}"
-                            app:minBarWidth="5dp"
+                            app:minBarWidth="16dp"
                             app:heightBarPadding="8dp"
                             app:openColor="@color/stats_open"
                             app:mergedColor="@color/stats_merged"
-                            app:abandonedColor="@color/stats_abandoned"/>
+                            app:abandonedColor="@color/stats_abandoned"
+                            app:statusLabelTextColor="@android:color/white"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
                             android:layout_width="match_parent"

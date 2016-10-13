@@ -41,5 +41,11 @@
         <attr name="openColor" format="color"/>
         <attr name="mergedColor" format="color"/>
         <attr name="abandonedColor" format="color"/>
+        <attr name="statusLabelTextColor" format="color"/>
     </declare-styleable>
+    <declare-styleable name="ActivityStatsChart">
+        <attr name="charLineColor" format="color"/>
+        <attr name="charLineTextColor" format="color"/>
+    </declare-styleable>
+
 </resources>

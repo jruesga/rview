@@ -18,6 +18,7 @@ package com.ruesga.rview.widget;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -168,9 +169,30 @@ public class ActivityStatsChart extends View {
         final Resources r = getResources();
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
+        int color = Color.DKGRAY;
+        int textColor = Color.WHITE;
+
+        Resources.Theme theme = context.getTheme();
+        TypedArray a = theme.obtainStyledAttributes(
+                attrs, R.styleable.ActivityStatsChart, defStyleAttr, 0);
+        int n = a.getIndexCount();
+        for (int i = 0; i < n; i++) {
+            int attr = a.getIndex(i);
+            switch (attr) {
+                case R.styleable.ActivityStatsChart_charLineColor:
+                    color = a.getColor(attr, color);
+                    break;
+
+                case R.styleable.ActivityStatsChart_charLineTextColor:
+                    textColor = a.getColor(attr, textColor);
+                    break;
+            }
+        }
+        a.recycle();
+
         mLinePaint = new Paint();
         mLinePaint.setStyle(Paint.Style.STROKE);
-        mLinePaint.setColor(ContextCompat.getColor(context, R.color.stats_open));
+        mLinePaint.setColor(color);
         mLinePaint.setStrokeWidth(TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, 1.5f, r.getDisplayMetrics()));
 
@@ -186,6 +208,7 @@ public class ActivityStatsChart extends View {
         mGridLinesPaint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0));
 
         mTicksPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.LINEAR_TEXT_FLAG);
+        mTicksPaint.setColor(textColor);
         mTicksPaint.setTextAlign(Paint.Align.RIGHT);
         mTicksPaint.setAlpha(180);
         mTicksPaint.setTextSize(TypedValue.applyDimension(
