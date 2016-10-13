@@ -239,12 +239,19 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mHasStateSaved = false;
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedState) {
         if (savedState != null) {
             super.onRestoreInstanceState(savedState);
             mModel = savedState.getParcelable(getClass().getSimpleName()
                     + "_base_activity_model");
         }
+        mHasStateSaved = false;
     }
 
     @Override

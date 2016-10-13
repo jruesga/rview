@@ -234,6 +234,12 @@ public class MainActivity extends ChangeListBaseActivity {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mUiHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
     protected void onRestoreInstanceState(Bundle savedState) {
         if (savedState != null) {
             super.onRestoreInstanceState(savedState);
