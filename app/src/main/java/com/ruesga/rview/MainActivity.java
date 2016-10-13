@@ -354,6 +354,8 @@ public class MainActivity extends ChangeListBaseActivity {
                 (mAccount != null && mAccount.hasAuthenticatedAccessMode()));
         menu.setGroupVisible(R.id.category_my_account, show);
         menu.setGroupVisible(R.id.category_other_accounts, show);
+        menu.findItem(R.id.menu_account_stats).setVisible(
+                mAccount != null && mAccount.hasAuthenticatedAccessMode());
         mModel.isAccountExpanded = show;
         mHeaderDrawerBinding.setModel(mModel);
 
