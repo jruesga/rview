@@ -23,6 +23,7 @@
         <import type="android.view.View" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="index" type="java.lang.Integer" />
+        <variable name="folded" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeMessageInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
@@ -30,6 +31,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{handlers::onMessagePressed}"
+        android:background="?attr/selectableItemBackground"
+        android:tag="@{index}"
         android:padding="16dp">
 
         <ImageView
@@ -51,7 +55,6 @@
             android:layout_alignParentTop="true"
             app:accountDisplayName="@{model.author}"
             android:tag="@{index}"
-            android:onClick="@{handlers::onMessageAvatarPressed}"
             app:font="bold"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorPrimary" />
@@ -72,11 +75,31 @@
             app:prettyDateTime="@{model.date}"
             android:textAppearance="@style/TextAppearance.VerySmall" />
 
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/folded_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/author"
+            android:layout_toRightOf="@id/avatar"
+            android:layout_toEndOf="@id/avatar"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:bindUnwrappedText="@{model.message}"
+            android:textAppearance="@style/TextAppearance.VerySmall"
+            android:visibility="@{folded ? View.VISIBLE : View.GONE}"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textIsSelectable="true"
+            tools:ignore="Deprecated"/>
+
         <ImageView
             android:id="@+id/reply"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="4dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_below="@id/timestamp"
@@ -84,7 +107,7 @@
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:onClick="@{handlers::onReplyCommentPressed}"
-            android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
+            android:visibility="@{!folded &amp;&amp; isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
             android:tag="@{index}"
             tools:ignore="ContentDescription"/>
 
@@ -92,7 +115,7 @@
             android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="4dp"
             android:layout_below="@id/author"
             android:layout_toRightOf="@id/avatar"
             android:layout_toEndOf="@id/avatar"
@@ -101,6 +124,7 @@
             android:layout_alignWithParentIfMissing="true"
             app:userMessage="@{model.message}"
             app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
+            android:visibility="@{!folded ? View.VISIBLE : View.GONE}"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true" />

@@ -46,6 +46,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TABS
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_FOLDED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_WRAP_MODE;
@@ -289,5 +290,10 @@ public class Preferences {
         Editor editor = getAccountPreferences(context, account).edit();
         editor.putInt(PREF_ACCOUNT_SEARCH_MODE, mode);
         editor.apply();
+    }
+
+    public static boolean isAccountMessagesFolded(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_MESSAGES_FOLDED, true);
     }
 }

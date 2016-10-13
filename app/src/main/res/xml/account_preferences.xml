@@ -42,6 +42,11 @@
             android:key="account_highlight_unreviewed"
             android:title="@string/account_settings_highlight_unreviewed"
             android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="account_messages_folded"
+            android:title="@string/account_settings_messages_folded"
+            android:defaultValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory

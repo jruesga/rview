@@ -80,4 +80,15 @@ public class BindingAdapters {
     public static void bindDrawable(ImageView v, Drawable drawable) {
         v.setImageDrawable(drawable);
     }
+
+    @BindingAdapter("bindUnwrappedText")
+    public static void bindUnwrappedText(TextView v, String text) {
+        if (TextUtils.isEmpty(text)) {
+            v.setText(null);
+            return;
+        }
+
+        // Remove line breaks
+        v.setText(text.replaceAll("\r\n", " ").replaceAll("\r", " ").replaceAll("\n", " "));
+    }
 }

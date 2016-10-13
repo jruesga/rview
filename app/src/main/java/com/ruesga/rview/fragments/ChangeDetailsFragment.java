@@ -237,6 +237,11 @@ public class ChangeDetailsFragment extends Fragment {
             mFragment.performAccountClicked(
                     mFragment.mResponse.mChange.messages[position].author);
         }
+
+        public void onMessagePressed(View v) {
+            int position = (int) v.getTag();
+            mFragment.performMessageClick(position);
+        }
     }
 
     @ProguardIgnored
@@ -273,6 +278,9 @@ public class ChangeDetailsFragment extends Fragment {
         MessageViewHolder(MessageItemBinding binding) {
             super(binding.getRoot());
             mBinding = binding;
+            final Context ctx = binding.getRoot().getContext();
+            Account account = Preferences.getAccount(ctx);
+            mBinding.setFolded(Preferences.isAccountMessagesFolded(ctx, account));
             binding.executePendingBindings();
         }
     }
@@ -392,21 +400,36 @@ public class ChangeDetailsFragment extends Fragment {
         private final AccountInfo mBuildBotSystemAccount;
         private final EventHandlers mEventHandlers;
         private ChangeMessageInfo[] mMessages;
-        private boolean mIsAuthenticated;
+        private boolean[] mFolded;
+        private final boolean mIsAuthenticated;
+        private final boolean mIsFolded;
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers,
-                boolean isAuthenticated) {
+                boolean isAuthenticated, boolean isFolded) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
             mIsAuthenticated = isAuthenticated;
+            mIsFolded = isFolded;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
         }
 
+        void changeFoldedStatus(int position) {
+            mFolded[position] = !mFolded[position];
+            notifyItemChanged(position);
+        }
 
         void update(ChangeMessageInfo[] messages) {
             mMessages = messages;
+
+            int count = messages.length;
+            boolean[] old = mFolded;
+            mFolded = new boolean[count];
+            for (int i = 0; i < count; i++) {
+                mFolded[i] = old != null && old.length > i ? old[i] : mIsFolded;
+            }
+
             notifyDataSetChanged();
         }
 
@@ -439,6 +462,7 @@ public class ChangeDetailsFragment extends Fragment {
             holder.mBinding.setIsAuthenticated(mIsAuthenticated);
             holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);
+            holder.mBinding.setFolded(mFolded[position]);
             holder.mBinding.setHandlers(mEventHandlers);
         }
     }
@@ -795,7 +819,9 @@ public class ChangeDetailsFragment extends Fragment {
             mBinding.fileInfo.list.setNestedScrollingEnabled(false);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
-            mMessageAdapter = new MessageAdapter(this, mEventHandlers, mModel.isAuthenticated);
+            boolean isFolder = Preferences.isAccountMessagesFolded(getContext(), mAccount);
+            mMessageAdapter = new MessageAdapter(
+                    this, mEventHandlers, mModel.isAuthenticated, isFolder);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(
@@ -1568,5 +1594,9 @@ public class ChangeDetailsFragment extends Fragment {
         input.destination = branch;
         input.message = msg;
         return api.cherryPickChangeRevision(changeId, mCurrentRevision, input).toBlocking().first();
+    }
+
+    private void performMessageClick(int position) {
+        mMessageAdapter.changeFoldedStatus(position);
     }
 }
