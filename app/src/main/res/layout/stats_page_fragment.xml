@@ -15,12 +15,17 @@
      limitations under the License.
  -->
 <layout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data />
+    <data>
+        <import type="android.view.View" />
+        <variable name="loading" type="java.lang.Boolean" />
+        <variable name="empty" type="java.lang.Boolean" />
+    </data>
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -65,7 +70,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-android:visibility="gone"
                 app:cardElevation="3dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -75,14 +79,151 @@ android:visibility="gone"
                     android:layout_marginBottom="8dp"
                     android:orientation="vertical">
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.ruesga.rview.widget.StyleableTextView
+                            android:id="@+id/stats_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="@style/HeaderLabel"
+                            android:text="@string/stats_page_stats_title" />
+
+                        <com.ruesga.rview.widget.StyleableTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_toRightOf="@id/stats_title"
+                            android:layout_toEndOf="@id/stats_title"
+                            android:layout_alignBaseline="@id/stats_title"
+                            android:text="@string/stats_page_stats_computed_last_30_days"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginStart="5dp"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:textSize="10sp"
+                            tools:ignore="SmallSp"/>
+                    </RelativeLayout>
+
+                    <!-- Activity -->
                     <com.ruesga.rview.widget.StyleableTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        style="@style/HeaderLabel"
-                        android:text="@string/stats_page_stats_title" />
+                        style="@style/TitleLabel"
+                        android:text="@string/stats_page_stats_activity_title" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.ruesga.rview.widget.ActivityStatsChart
+                            android:id="@+id/activity_chart"
+                            android:layout_width="match_parent"
+                            android:visibility="@{!loading  &amp;&amp; !empty ? View.VISIBLE : View.INVISIBLE}"
+                            android:layout_height="96dp"/>
+
+                        <com.ruesga.rview.widget.StyleableTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/stats_page_stats_empty"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:visibility="@{!loading &amp;&amp; empty ? View.VISIBLE : View.GONE}"
+                            android:textStyle="bold"
+                            android:textSize="12sp" />
+
+                        <ProgressBar
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:visibility="@{loading ? View.VISIBLE : View.GONE}"
+                            android:layout_gravity="center"
+                            android:indeterminate="true"/>
+                    </FrameLayout>
+
+                    <!-- Merged status -->
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        style="@style/TitleLabel"
+                        android:text="@string/stats_page_stats_merged_status_title" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.ruesga.rview.widget.MergedStatusChart
+                            android:id="@+id/merged_status_chart"
+                            android:layout_width="match_parent"
+                            android:layout_height="96dp"
+                            android:visibility="@{!loading  &amp;&amp; !empty ? View.VISIBLE : View.INVISIBLE}"
+                            app:minBarWidth="5dp"
+                            app:heightBarPadding="8dp"
+                            app:openColor="@color/stats_open"
+                            app:mergedColor="@color/stats_merged"
+                            app:abandonedColor="@color/stats_abandoned"/>
+
+                        <com.ruesga.rview.widget.StyleableTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/stats_page_stats_empty"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:visibility="@{!loading &amp;&amp; empty ? View.VISIBLE : View.GONE}"
+                            android:textStyle="bold"
+                            android:textSize="12sp" />
+
+                        <ProgressBar
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:visibility="@{loading ? View.VISIBLE : View.GONE}"
+                            android:layout_gravity="center"
+                            android:indeterminate="true"/>
+                    </FrameLayout>
+
+                    <!-- Top 5 -->
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        style="@style/TitleLabel"
+                        android:text="@string/stats_page_stats_top_5" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp">
+
+                        <com.ruesga.rview.widget.Top5StatsView
+                            android:id="@+id/top5_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:visibility="@{!loading  &amp;&amp; !empty ? View.VISIBLE : View.INVISIBLE}"/>
+
+                        <com.ruesga.rview.widget.StyleableTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/stats_page_stats_empty"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:visibility="@{!loading &amp;&amp; empty ? View.VISIBLE : View.GONE}"
+                            android:textStyle="bold"
+                            android:textSize="12sp" />
+
+                        <ProgressBar
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:visibility="@{loading ? View.VISIBLE : View.GONE}"
+                            android:layout_gravity="center"
+                            android:indeterminate="true"/>
+                    </FrameLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 </layout>

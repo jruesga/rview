@@ -37,6 +37,10 @@
     <color name="diffCommentBackgroundColor">#fffecc</color>
     <color name="diffHighlightColor">#d32f2f</color>
 
+    <color name="stats_open">#90caf9</color>
+    <color name="stats_merged">#aed581</color>
+    <color name="stats_abandoned">#a1887f</color>
+
     <color name="starred">#d9b864</color>
 
     <color name="quote">#9e9e9e</color>

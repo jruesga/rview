@@ -284,6 +284,11 @@
     <string name="stats_changes_title">Changes</string>
     <string name="stats_page_details_title">Details</string>
     <string name="stats_page_stats_title">Stats</string>
+    <string name="stats_page_stats_merged_status_title">Open vs Merged vs Abandoned</string>
+    <string name="stats_page_stats_activity_title">Activity</string>
+    <string name="stats_page_stats_top_5">Top 5</string>
+    <string name="stats_page_stats_empty">No stats available</string>
+    <string name="stats_page_stats_computed_last_30_days">(computed from last 30 days)</string>
 
     <!-- Account stats -->
     <string name="account_details">Account</string>

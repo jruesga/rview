@@ -35,4 +35,11 @@
     <declare-styleable name="DelayedAutocompleteTextView">
         <attr name="delay" format="integer"/>
     </declare-styleable>
+    <declare-styleable name="MergedStatusChart">
+        <attr name="minBarWidth" format="dimension"/>
+        <attr name="heightBarPadding" format="dimension"/>
+        <attr name="openColor" format="color"/>
+        <attr name="mergedColor" format="color"/>
+        <attr name="abandonedColor" format="color"/>
+    </declare-styleable>
 </resources>

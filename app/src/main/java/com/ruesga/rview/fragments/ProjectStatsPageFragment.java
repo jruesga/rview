@@ -25,6 +25,9 @@ import android.view.ViewGroup;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ProjectDetailsViewBinding;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.TimeUnit;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.preferences.Constants;
@@ -66,6 +69,14 @@ public class ProjectStatsPageFragment extends StatsPageFragment<ProjectInfo> {
         return api.getProject(mProjectName);
     }
 
+
+
+    @Override
+    public ChangeQuery getStatsQuery() {
+        return new ChangeQuery().project(mProjectName).and(
+                new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.DAYS, getMaxDays())));
+    }
+
     @Override
     public void bindDetails(ProjectInfo result) {
         mBinding.setModel(result);
@@ -75,5 +86,10 @@ public class ProjectStatsPageFragment extends StatsPageFragment<ProjectInfo> {
     @Override
     public String getStatsFragmentTag() {
         return TAG;
+    }
+
+    @Override
+    public String getTop5StatsDescription(ChangeInfo change) {
+        return ModelHelper.getAccountDisplayName(change.owner);
     }
 }

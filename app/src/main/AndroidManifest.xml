@@ -68,13 +68,8 @@
         <activity
             android:name=".TabFragmentActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
-            android:parentActivityName=".MainActivity">
-            <!-- FIXME Remove
-            android:exported="false"
-             -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
+            android:parentActivityName=".MainActivity"
+            android:exported="false">
         </activity>
 
         <activity

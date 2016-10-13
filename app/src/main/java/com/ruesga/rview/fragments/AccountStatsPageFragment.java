@@ -26,7 +26,10 @@ import android.view.ViewGroup;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.AccountDetailsViewBinding;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.TimeUnit;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ModelHelper;
@@ -69,10 +72,28 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
                 AccountDetailInfo.class);
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater,
+            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        loadWithContext();
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        mPicasso = PicassoHelper.getPicassoClient(getContext());
+        loadWithContext();
         super.onActivityCreated(savedInstanceState);
+    }
+
+    private void loadWithContext() {
+        if (getActivity() == null) {
+            return;
+        }
+
+        if (mPicasso == null) {
+            mPicasso = PicassoHelper.getPicassoClient(getContext());
+        }
     }
 
     @Override
@@ -128,6 +149,12 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     }
 
     @Override
+    public ChangeQuery getStatsQuery() {
+        return new ChangeQuery().owner(mAccountId).and(
+                new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.DAYS, getMaxDays())));
+    }
+
+    @Override
     public void bindDetails(AccountDetailInfo result) {
         PicassoHelper.bindAvatar(getContext(), mPicasso, result, mBinding.avatar,
                 PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDark));
@@ -138,5 +165,10 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     @Override
     public String getStatsFragmentTag() {
         return TAG;
+    }
+
+    @Override
+    public String getTop5StatsDescription(ChangeInfo change) {
+        return change.project;
     }
 }
