@@ -18,8 +18,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-        <variable name="model" type="com.ruesga.rview.widget.Top5StatsView.Model" />
         <variable name="even" type="java.lang.Boolean" />
+        <variable name="model" type="com.ruesga.rview.widget.Top5StatsView.Model" />
+        <variable name="handlers" type="com.ruesga.rview.widget.Top5StatsView.EventHandlers" />
     </data>
 
     <LinearLayout
@@ -28,6 +29,8 @@
         android:minHeight="?attr/listPreferredItemHeightSmall"
         android:gravity="center_vertical"
         android:background="@{even ? @color/selectedItem : @android:color/transparent}"
+        android:onClick="@{handlers::onItemPressed}"
+        android:tag="@{model.tag}"
         android:orientation="horizontal">
 
         <com.ruesga.rview.widget.StyleableTextView

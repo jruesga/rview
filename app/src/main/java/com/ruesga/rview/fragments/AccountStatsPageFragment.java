@@ -32,6 +32,7 @@ import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.Features;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
@@ -168,7 +169,25 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     }
 
     @Override
-    public String getTop5StatsDescription(ChangeInfo change) {
+    public String getDescription(ChangeInfo change) {
+        return ModelHelper.formatAccountWithEmail(change.owner);
+    }
+
+    @Override
+    public String getCrossDescription(ChangeInfo change) {
         return change.project;
+    }
+
+    @Override
+    public String getSerializedCrossItem(ChangeInfo change) {
+        return change.project;
+    }
+
+    @Override
+    public void openCrossItem(String item) {
+        String title = getString(R.string.change_details_project);
+        ChangeQuery filter = new ChangeQuery().project(item);
+        ActivityHelper.openStatsActivity(getContext(), title, item,
+                StatsFragment.PROJECT_STATS, item, filter, null);
     }
 }

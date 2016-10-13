@@ -34,6 +34,7 @@ import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Stats;
+import com.ruesga.rview.widget.Top5StatsView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,7 +86,9 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
         public void onNext(List<Stats> stats) {
             mBinding.mergedStatusChart.update(stats);
             mBinding.activityChart.update(stats);
-            mBinding.top5List.update(stats);
+            mBinding.top5List.listenTo(item -> {
+                    openCrossItem(item);
+                }).update(stats);
             mBinding.setLoading(false);
             mBinding.setEmpty(stats == null || stats.isEmpty());
         }
@@ -135,7 +138,13 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
 
     public abstract ChangeQuery getStatsQuery();
 
-    public abstract String getTop5StatsDescription(ChangeInfo change);
+    public abstract String getDescription(ChangeInfo change);
+
+    public abstract String getCrossDescription(ChangeInfo change);
+
+    public abstract String getSerializedCrossItem(ChangeInfo change);
+
+    public abstract void openCrossItem(String item);
 
     protected int getMaxDays() {
         return MAX_DAYS;
@@ -191,7 +200,9 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
                             } else {
                                 s.mDate = change.updated;
                             }
-                            s.mTop5Description = getTop5StatsDescription(change);
+                            s.mDescription = getDescription(change);
+                            s.mCrossDescription = getCrossDescription(change);
+                            s.mCrossItem = getSerializedCrossItem(change);
                             stats.add(s);
                         }
 

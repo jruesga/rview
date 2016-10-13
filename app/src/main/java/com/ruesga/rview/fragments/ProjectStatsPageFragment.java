@@ -27,9 +27,12 @@ import com.ruesga.rview.databinding.ProjectDetailsViewBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.TimeUnit;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
 import rx.Observable;
@@ -89,7 +92,28 @@ public class ProjectStatsPageFragment extends StatsPageFragment<ProjectInfo> {
     }
 
     @Override
-    public String getTop5StatsDescription(ChangeInfo change) {
-        return ModelHelper.getAccountDisplayName(change.owner);
+    public String getDescription(ChangeInfo change) {
+        return change.project;
+    }
+
+    @Override
+    public String getCrossDescription(ChangeInfo change) {
+        return ModelHelper.formatAccountWithEmail(change.owner);
+    }
+
+    @Override
+    public String getSerializedCrossItem(ChangeInfo change) {
+        return SerializationManager.getInstance().toJson(change.owner);
+    }
+
+    @Override
+    public void openCrossItem(String item) {
+        AccountInfo account = SerializationManager.getInstance().fromJson(item, AccountInfo.class);
+        String title = getString(R.string.account_details);
+        String id = String.valueOf(account.accountId);
+        String displayName = ModelHelper.getAccountDisplayName(account);
+        ChangeQuery filter = new ChangeQuery().owner(id);
+        ActivityHelper.openStatsActivity(
+                getContext(), title, displayName, StatsFragment.ACCOUNT_STATS, id, filter, item);
     }
 }

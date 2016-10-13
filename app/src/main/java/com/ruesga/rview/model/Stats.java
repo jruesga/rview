@@ -22,5 +22,7 @@ import java.util.Date;
 public class Stats {
     public Date mDate;
     public ChangeStatus mStatus;
-    public String mTop5Description;
+    public String mDescription;
+    public String mCrossDescription;
+    public String mCrossItem;
 }
