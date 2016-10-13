@@ -278,6 +278,7 @@ public class DiffView extends FrameLayout {
                     mDiffAdapter.mModel.add(position, m.skippedLines[i]);
                 }
             }
+            computeViewChildMeasuresIfNeeded();
             mDiffAdapter.notifyDataSetChanged();
         }
 
@@ -411,44 +412,7 @@ public class DiffView extends FrameLayout {
 
                 for (AbstractModel model : mModel) {
                     if (model instanceof DiffInfoModel) {
-                        DiffInfoModel diff = (DiffInfoModel) model;
-
-                        if (wrap) {
-                            mDiffViewMeasurement.lineWidth = MATCH_PARENT;
-                        } else {
-                            if (mMode == UNIFIED_MODE) {
-                                // All lines are displayed in A
-                                CharSequence line = diff.lineA != null ? diff.lineA : diff.lineB;
-                                mDiffViewMeasurement.lineWidth = Math.max(
-                                        mDiffViewMeasurement.lineWidth,
-                                        paint.measureText(String.valueOf(line)) + padding);
-                            } else {
-                                // Lines are displayed in A and B and both have the same size
-                                if (diff.lineA != null) {
-                                    String lineA = String.valueOf(diff.lineA);
-                                    mDiffViewMeasurement.lineWidth = Math.max(
-                                            mDiffViewMeasurement.lineWidth,
-                                            paint.measureText(lineA) + padding);
-                                }
-                                if (diff.lineB != null) {
-                                    String lineB = String.valueOf(diff.lineB);
-                                    mDiffViewMeasurement.lineWidth = Math.max(
-                                            mDiffViewMeasurement.lineWidth,
-                                            paint.measureText(lineB) + padding);
-                                }
-                            }
-                        }
-
-                        if (diff.lineNumberA != null) {
-                            mDiffViewMeasurement.lineNumWidth = Math.max(
-                                    mDiffViewMeasurement.lineNumWidth,
-                                    paint.measureText(String.valueOf(diff.lineNumberA)));
-                        }
-                        if (diff.lineNumberB != null) {
-                            mDiffViewMeasurement.lineNumWidth = Math.max(
-                                    mDiffViewMeasurement.lineNumWidth,
-                                    paint.measureText(String.valueOf(diff.lineNumberB)));
-                        }
+                        measureDiffInfoModel((DiffInfoModel) model, wrap, paint, padding);
                     }
                 }
 
@@ -489,6 +453,46 @@ public class DiffView extends FrameLayout {
                 if (mLayoutManager instanceof UnwrappedLinearLayoutManager) {
                     ((UnwrappedLinearLayoutManager) mLayoutManager).setPrefetchedMeasuredWidth(-1);
                 }
+            }
+        }
+
+        private void measureDiffInfoModel(
+                DiffInfoModel diff, boolean wrap, TextPaint paint, float padding) {
+            if (wrap) {
+                mDiffViewMeasurement.lineWidth = MATCH_PARENT;
+            } else {
+                if (mMode == UNIFIED_MODE) {
+                    // All lines are displayed in A
+                    CharSequence line = diff.lineA != null ? diff.lineA : diff.lineB;
+                    mDiffViewMeasurement.lineWidth = Math.max(
+                            mDiffViewMeasurement.lineWidth,
+                            paint.measureText(String.valueOf(line)) + padding);
+                } else {
+                    // Lines are displayed in A and B and both have the same size
+                    if (diff.lineA != null) {
+                        String lineA = String.valueOf(diff.lineA);
+                        mDiffViewMeasurement.lineWidth = Math.max(
+                                mDiffViewMeasurement.lineWidth,
+                                paint.measureText(lineA) + padding);
+                    }
+                    if (diff.lineB != null) {
+                        String lineB = String.valueOf(diff.lineB);
+                        mDiffViewMeasurement.lineWidth = Math.max(
+                                mDiffViewMeasurement.lineWidth,
+                                paint.measureText(lineB) + padding);
+                    }
+                }
+            }
+
+            if (diff.lineNumberA != null) {
+                mDiffViewMeasurement.lineNumWidth = Math.max(
+                        mDiffViewMeasurement.lineNumWidth,
+                        paint.measureText(String.valueOf(diff.lineNumberA)));
+            }
+            if (diff.lineNumberB != null) {
+                mDiffViewMeasurement.lineNumWidth = Math.max(
+                        mDiffViewMeasurement.lineNumWidth,
+                        paint.measureText(String.valueOf(diff.lineNumberB)));
             }
         }
     }
