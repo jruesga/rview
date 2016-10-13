@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,7 +58,7 @@ import me.tatarka.rxloader.RxLoaderManagerCompat;
 import me.tatarka.rxloader.RxLoaderObserver;
 import rx.Observable;
 
-public abstract class ChangeListFragment extends SelectableFragment {
+public abstract class ChangeListFragment extends Fragment implements SelectableFragment {
 
     private static final String TAG = "ChangeListFragment";
 
@@ -432,6 +433,7 @@ public abstract class ChangeListFragment extends SelectableFragment {
 
     @Override
     public void onFragmentSelected() {
+        ((BaseActivity) getActivity()).setUseTwoPanel(true);
         if (mAdapter == null || mAdapter.mData.isEmpty()) {
             ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);
         } else {

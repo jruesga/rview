@@ -153,7 +153,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         }
     }
 
-    protected void setUseTwoPanel(boolean useTwoPanel) {
+    public void setUseTwoPanel(boolean useTwoPanel) {
         mModel.useTowPane = useTwoPanel;
         getContentBinding().setModel(mModel);
     }

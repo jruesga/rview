@@ -23,10 +23,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 
 import com.ruesga.rview.databinding.ContentBinding;
-import com.ruesga.rview.fragments.StatsFragment;
-import com.ruesga.rview.gerrit.filter.ChangeQuery;
-import com.ruesga.rview.misc.ModelHelper;
-import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
 import java.lang.reflect.Method;

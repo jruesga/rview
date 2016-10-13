@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.preferences.Constants;
@@ -61,6 +62,7 @@ public class StatsFragment extends PageableFragment {
                 getString(R.string.stats_info_title),
                 getString(R.string.stats_changes_title)};
 
+        ((BaseActivity) getActivity()).setUseTwoPanel(false);
         super.onActivityCreated(savedInstanceState);
     }
 

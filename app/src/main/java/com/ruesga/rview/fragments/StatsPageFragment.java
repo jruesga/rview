@@ -48,7 +48,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public abstract class StatsPageFragment<T> extends Fragment {
+public abstract class StatsPageFragment<T> extends Fragment implements SelectableFragment {
 
     private static final int MAX_CHANGES = 500;
     private static final int MAX_DAYS = 30;
@@ -102,7 +102,7 @@ public abstract class StatsPageFragment<T> extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.stats_page_fragment, container, false);
-        mBinding.details.addView(inflateDetails(inflater, mBinding.details));
+        mBinding.detailsStub.addView(inflateDetails(inflater, mBinding.detailsStub));
         mBinding.setLoading(true);
         mBinding.setEmpty(true);
         startLoadersWithValidContext();
@@ -206,5 +206,10 @@ public abstract class StatsPageFragment<T> extends Fragment {
     private void performRequestStats() {
         mStatsLoader.clear();
         mStatsLoader.restart();
+    }
+
+    @Override
+    public void onFragmentSelected() {
+        ((BaseActivity) getActivity()).setUseTwoPanel(false);
     }
 }

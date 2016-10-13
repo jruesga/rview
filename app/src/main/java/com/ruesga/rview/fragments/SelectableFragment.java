@@ -15,8 +15,6 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.support.v4.app.Fragment;
-
-public abstract class SelectableFragment extends Fragment {
-    public abstract void onFragmentSelected();
+public interface SelectableFragment {
+    void onFragmentSelected();
 }
