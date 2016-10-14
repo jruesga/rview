@@ -84,6 +84,9 @@ public class FileDiffViewerFragment extends Fragment {
 
     public interface OnDiffCompleteListener {
         void onDiffComplete(boolean isBinary, boolean hasImagePreview);
+        void onNewDraftCreated(String revision, String draftId);
+        void onDraftUpdated(String revision, String draftId);
+        void onDraftDeleted(String revision, String draftId);
     }
 
     public static class FileDiffResponse {
@@ -566,8 +569,14 @@ public class FileDiffViewerFragment extends Fragment {
         }
         input.path = mFile;
         input.side = side;
-        return api.createChangeRevisionDraft(
+        CommentInfo comment = api.createChangeRevisionDraft(
                 String.valueOf(mChange.legacyChangeId), rev, input).toBlocking().first();
+
+        if (getParentFragment() != null && getParentFragment() instanceof OnDiffCompleteListener) {
+            ((OnDiffCompleteListener) getParentFragment()).onNewDraftCreated(revision, comment.id);
+        }
+
+        return comment;
     }
 
     private CommentInfo performUpdateDraft(GerritApi api, String revision,
@@ -585,8 +594,14 @@ public class FileDiffViewerFragment extends Fragment {
         }
         input.path = mFile;
         input.side = side;
-        return api.updateChangeRevisionDraft(
+        CommentInfo comment = api.updateChangeRevisionDraft(
                 String.valueOf(mChange.legacyChangeId), rev, draftId, input).toBlocking().first();
+
+        if (getParentFragment() != null && getParentFragment() instanceof OnDiffCompleteListener) {
+            ((OnDiffCompleteListener) getParentFragment()).onDraftUpdated(revision, draftId);
+        }
+
+        return comment;
     }
 
     private void performDeleteDraft(GerritApi api, String revision, String draftId) {
@@ -595,6 +610,10 @@ public class FileDiffViewerFragment extends Fragment {
         api.deleteChangeRevisionDraft(
                 String.valueOf(mChange.legacyChangeId), rev, draftId)
                     .toBlocking().first();
+
+        if (getParentFragment() != null && getParentFragment() instanceof OnDiffCompleteListener) {
+            ((OnDiffCompleteListener) getParentFragment()).onDraftDeleted(revision, draftId);
+        }
     }
 
     private void showProgress(boolean show) {

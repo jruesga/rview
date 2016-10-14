@@ -43,6 +43,7 @@ public class Constants {
     public static final String EXTRA_FRAGMENT = "fragment";
     public static final String EXTRA_FRAGMENT_ARGS = "fragment_args";
     public static final String EXTRA_FRAGMENT_EXTRA = "fragment_extra";
+    public static final String EXTRA_DATA_CHANGED = "data_changed";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
 

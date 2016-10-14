@@ -790,10 +790,13 @@ public class ChangeDetailsFragment extends Fragment {
                     forceRefresh();
                     return;
                 }
-            }
 
-            // Refresh drafts comments
-            performDraftsRefresh();
+                boolean dataChanged = data.getBooleanExtra(Constants.EXTRA_DATA_CHANGED, false);
+                if (dataChanged) {
+                    // Refresh drafts comments
+                    performDraftsRefresh();
+                }
+            }
         }
     }
 

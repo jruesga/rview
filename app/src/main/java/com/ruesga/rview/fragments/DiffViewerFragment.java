@@ -241,6 +241,29 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         updateModel();
     }
 
+    @Override
+    public void onNewDraftCreated(String revision, String draftId) {
+        if (mResult == null) {
+            mResult = new Intent();
+        }
+        mResult.putExtra(Constants.EXTRA_DATA_CHANGED, true);
+        getActivity().setResult(Activity.RESULT_OK, mResult);
+    }
+
+    @Override
+    public void onDraftDeleted(String revision, String draftId) {
+        if (mResult == null) {
+            mResult = new Intent();
+        }
+        mResult.putExtra(Constants.EXTRA_DATA_CHANGED, true);
+        getActivity().setResult(Activity.RESULT_OK, mResult);
+    }
+
+    @Override
+    public void onDraftUpdated(String revision, String draftId) {
+        // Ignore
+    }
+
     private DiffViewerFragmentBinding mBinding;
     private DiffBaseChooserHeaderBinding mBaseChooserBinding;
     private DiffActionsHeaderBinding mActionsBinding;
@@ -270,6 +293,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private Account mAccount;
 
+    private Intent mResult;
+
     public static DiffViewerFragment newInstance(String revisionId, String file) {
         DiffViewerFragment fragment = new DiffViewerFragment();
         Bundle arguments = new Bundle();
@@ -289,6 +314,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
         mFile = state.getString(Constants.EXTRA_FILE_ID);
         mBase = state.getString(Constants.EXTRA_BASE);
+        if (state.containsKey(Constants.EXTRA_DATA)) {
+            mResult = state.getParcelable(Constants.EXTRA_DATA);
+        }
         if (savedInstanceState != null) {
             mMode = savedInstanceState.getInt("mode", -1);
             mIsBinary = savedInstanceState.getBoolean("is_binary", false);
@@ -359,6 +387,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
             updateModel();
 
+            if (mResult != null) {
+                getActivity().setResult(Activity.RESULT_OK, mResult);
+            }
+
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);
             getActivity().finish();
@@ -398,6 +430,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         outState.putInt("mode", mMode);
         outState.putBoolean("is_binary", mIsBinary);
         outState.putBoolean("has_image_preview", mHasImagePreview);
+        outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
+        if (mResult != null) {
+            outState.putParcelable(Constants.EXTRA_DATA, mResult);
+        }
     }
 
     private void loadFiles() {
@@ -520,9 +556,11 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                 if (!revisionId.equals(mRevisionId)) {
                     mRevisionId = revisionId;
 
-                    Intent data = new Intent();
-                    data.putExtra(Constants.EXTRA_BASE, mRevisionId);
-                    getActivity().setResult(Activity.RESULT_OK, data);
+                    if (mResult == null) {
+                        mResult = new Intent();
+                    }
+                    mResult.putExtra(Constants.EXTRA_BASE, mRevisionId);
+                    getActivity().setResult(Activity.RESULT_OK, mResult);
                 }
             }
 
