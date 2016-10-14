@@ -124,8 +124,17 @@ public class FileDiffViewerFragment extends Fragment {
         public void onNext(Object value) {
             // Force refresh
             mForceRefresh = true;
-            mLoader.clear();
-            mLoader.restart();
+
+            // Some servers could need a bit of delay to index the drafts. Just let the server
+            // to process the changes before refresh the data
+            mHandler.postDelayed(() -> {
+                if (getActivity() == null) {
+                    return;
+                }
+
+                mLoader.clear();
+                mLoader.restart();
+            }, 500L);
         }
 
         @Override
