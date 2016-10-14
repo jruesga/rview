@@ -75,7 +75,9 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
 
         CharSequence result = mFilteredResults.get(position);
         DropdownItemBinding binding = (DropdownItemBinding) v.getTag();
-        binding.item.setText(result);
+        binding.setText(result.toString());
+        binding.setIcon(null);
+        binding.setIsSelected(false);
         binding.executePendingBindings();
 
         return v;
