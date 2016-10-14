@@ -26,7 +26,7 @@ public class StringHelper {
     public static final String NON_PRINTABLE_CHAR = "\u0001";
 
     private static final Pattern A_NON_WORD_CHARACTER_AT_END
-            = Pattern.compile(".*[^(\\w,;)]", Pattern.MULTILINE);
+            = Pattern.compile(".*[^([a-zA-Z],;)]", Pattern.MULTILINE);
     private static final Pattern A_NON_WORD_CHARACTER_AT_START
             = Pattern.compile("[^\\w].*", Pattern.MULTILINE);
 
