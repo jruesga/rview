@@ -509,16 +509,21 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                     mBase = null;
                 }
             } else {
+                String revisionId = mRevisionId;
                 int rev = Integer.parseInt(revisions.get(position));
                 for (String revision : mChange.revisions.keySet()) {
                     if (mChange.revisions.get(revision).number == rev) {
-                        mRevisionId = revision;
+                        revisionId = revision;
                     }
                 }
 
-                Intent data = new Intent();
-                data.putExtra(Constants.EXTRA_BASE, mRevisionId);
-                getActivity().setResult(Activity.RESULT_OK, data);
+                if (!revisionId.equals(mRevisionId)) {
+                    mRevisionId = revisionId;
+
+                    Intent data = new Intent();
+                    data.putExtra(Constants.EXTRA_BASE, mRevisionId);
+                    getActivity().setResult(Activity.RESULT_OK, data);
+                }
             }
 
             // Close the drawer
