@@ -591,8 +591,6 @@ public class DiffView extends FrameLayout {
         savedState.mHighlightTrailingWhitespaces = mHighlightTrailingWhitespaces;
         savedState.mCanEdit = mCanEdit;
         savedState.mDiffMode = mDiffMode;
-        savedState.mDiffInfo = SerializationManager.getInstance().toJson(mDiffInfo);
-        savedState.mComments = SerializationManager.getInstance().toJson(mComments);
         savedState.mDrafts = SerializationManager.getInstance().toJson(mDrafts);
         return savedState;
     }
@@ -612,10 +610,7 @@ public class DiffView extends FrameLayout {
         mHighlightTrailingWhitespaces = savedState.mHighlightTrailingWhitespaces;
         mCanEdit = savedState.mCanEdit;
         mDiffMode = savedState.mDiffMode;
-        mDiffInfo = SerializationManager.getInstance().fromJson(
-                savedState.mDiffInfo, DiffInfo.class);
         Type type = new TypeToken<Pair<List<CommentInfo>, List<CommentInfo>>>(){}.getType();
-        mComments = SerializationManager.getInstance().fromJson(savedState.mComments, type);
         mDrafts = SerializationManager.getInstance().fromJson(savedState.mDrafts, type);
     }
 
@@ -721,8 +716,6 @@ public class DiffView extends FrameLayout {
         boolean mHighlightTrailingWhitespaces;
         boolean mCanEdit;
         int mDiffMode;
-        String mDiffInfo;
-        String mComments;
         String mDrafts;
 
         SavedState(Parcelable superState) {
@@ -735,8 +728,6 @@ public class DiffView extends FrameLayout {
             mHighlightTrailingWhitespaces = in.readInt() == 1;
             mCanEdit = in.readInt() == 1;
             mDiffMode = in.readInt();
-            mDiffInfo = in.readString();
-            mComments = in.readString();
             mDrafts = in.readString();
         }
 
@@ -747,8 +738,6 @@ public class DiffView extends FrameLayout {
             out.writeInt(mHighlightTrailingWhitespaces ? 1 : 0);
             out.writeInt(mCanEdit ? 1 : 0);
             out.writeInt(mDiffMode);
-            out.writeString(mDiffInfo);
-            out.writeString(mComments);
             out.writeString(mDrafts);
         }
 
