@@ -561,7 +561,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
         FileDiffViewerFragment fragment = mFragment.get();
         if (fragment != null) {
-            fragment.getmCommentListener().onNewDraft(v, isLeft, null);
+            fragment.getCommentListener().onNewDraft(v, isLeft, null);
         }
     }
 

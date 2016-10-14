@@ -808,7 +808,7 @@ public class FileDiffViewerFragment extends Fragment {
         }
     }
 
-    DiffView.OnCommentListener getmCommentListener() {
+    DiffView.OnCommentListener getCommentListener() {
         return mCommentListener;
     }
 }
