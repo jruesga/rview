@@ -294,6 +294,6 @@ public class Preferences {
 
     public static boolean isAccountMessagesFolded(Context context, Account account) {
         return account == null || getAccountPreferences(
-                context, account).getBoolean(PREF_ACCOUNT_MESSAGES_FOLDED, true);
+                context, account).getBoolean(PREF_ACCOUNT_MESSAGES_FOLDED, false);
     }
 }

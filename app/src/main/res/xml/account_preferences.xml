@@ -46,7 +46,7 @@
         <SwitchPreference
             android:key="account_messages_folded"
             android:title="@string/account_settings_messages_folded"
-            android:defaultValue="true" />
+            android:defaultValue="false" />
     </PreferenceCategory>
 
     <PreferenceCategory

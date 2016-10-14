@@ -463,7 +463,7 @@ public class ChangeDetailsFragment extends Fragment {
             holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);
             holder.mBinding.setFolded(mFolded[position]);
-            holder.mBinding.setHandlers(mEventHandlers);
+            holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
         }
     }
 
@@ -822,9 +822,9 @@ public class ChangeDetailsFragment extends Fragment {
             mBinding.fileInfo.list.setNestedScrollingEnabled(false);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
-            boolean isFolder = Preferences.isAccountMessagesFolded(getContext(), mAccount);
+            boolean isFolded = Preferences.isAccountMessagesFolded(getContext(), mAccount);
             mMessageAdapter = new MessageAdapter(
-                    this, mEventHandlers, mModel.isAuthenticated, isFolder);
+                    this, mEventHandlers, mModel.isAuthenticated, isFolded);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(

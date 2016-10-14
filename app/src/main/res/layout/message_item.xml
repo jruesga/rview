@@ -26,12 +26,13 @@
         <variable name="folded" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeMessageInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
+        <variable name="foldHandlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{handlers::onMessagePressed}"
+        android:onClick="@{foldHandlers::onMessagePressed}"
         android:background="?attr/selectableItemBackground"
         android:tag="@{index}"
         android:padding="16dp">
