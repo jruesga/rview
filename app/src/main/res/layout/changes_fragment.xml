@@ -36,8 +36,8 @@
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                android:visibility="@{empty.state != EmptyState.NORMAL_STATE ? View.VISIBLE : View.GONE}">
+                android:visibility="@{empty.state == EmptyState.NORMAL_STATE ? View.VISIBLE : View.GONE}"
+                android:scrollbars="vertical">
             </android.support.v7.widget.RecyclerView>
 
             <include
@@ -45,7 +45,6 @@
                 layout="@layout/empty_state"
                 app:model="@{empty}"
                 app:handlers="@{emptyHandlers}"/>
-
         </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </layout>

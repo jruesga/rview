@@ -36,11 +36,11 @@
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="@{empty.state == EmptyState.NORMAL_STATE ? View.VISIBLE : View.GONE}"
                 android:scrollbars="vertical">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="@{empty.state != EmptyState.NORMAL_STATE ? View.VISIBLE : View.GONE}"
                     android:orientation="vertical">
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -95,7 +95,6 @@
                 layout="@layout/empty_state"
                 app:model="@{empty}"
                 app:handlers="@{emptyHandlers}"/>
-
         </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </layout>
