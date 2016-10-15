@@ -465,4 +465,13 @@ public class Formatter {
         }
         v.setText(statusText);
     }
+
+    @BindingAdapter("commentLine")
+    public static void toCommentLine(TextView v, Integer line) {
+        if (line == null) {
+            v.setText(R.string.change_details_comment_file);
+        } else {
+            v.setText(v.getContext().getString(R.string.change_details_comment_line_number, line));
+        }
+    }
 }

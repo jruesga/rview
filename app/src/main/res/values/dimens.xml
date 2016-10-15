@@ -19,6 +19,7 @@
     <dimen name="max_avatar_size">48dp</dimen>
     <dimen name="chips_margin">3dp</dimen>
     <dimen name="label_min_width">72dp</dimen>
+    <dimen name="line_min_width">36dp</dimen>
     <dimen name="message_list_left_padding">56dp</dimen>
     <dimen name="dropdown_min_width">96dp</dimen>
     <dimen name="quote_margin">1.5dp</dimen>

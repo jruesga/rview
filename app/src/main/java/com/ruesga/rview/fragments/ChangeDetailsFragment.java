@@ -31,6 +31,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,9 +101,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import me.tatarka.rxloader.RxLoader;
 import me.tatarka.rxloader.RxLoader1;
@@ -134,6 +137,9 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.MESSAGES);
     }};
+
+    private static final Pattern COMMENTS_PATTERN
+            = Pattern.compile("^(\\(\\d+ comment(s)?\\))$", Pattern.MULTILINE);
 
     private static final int DIFF_REQUEST_CODE = 99;
 
@@ -275,12 +281,10 @@ public class ChangeDetailsFragment extends Fragment {
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
         private final MessageItemBinding mBinding;
-        MessageViewHolder(MessageItemBinding binding) {
+        MessageViewHolder(MessageItemBinding binding, boolean isMessagesFolded) {
             super(binding.getRoot());
             mBinding = binding;
-            final Context ctx = binding.getRoot().getContext();
-            Account account = Preferences.getAccount(ctx);
-            mBinding.setFolded(Preferences.isAccountMessagesFolded(ctx, account));
+            mBinding.setFolded(isMessagesFolded);
             binding.executePendingBindings();
         }
     }
@@ -400,6 +404,7 @@ public class ChangeDetailsFragment extends Fragment {
         private final AccountInfo mBuildBotSystemAccount;
         private final EventHandlers mEventHandlers;
         private ChangeMessageInfo[] mMessages;
+        private Map<String, LinkedHashMap<String, List<CommentInfo>>> mMessagesWithComments;
         private boolean[] mFolded;
         private final boolean mIsAuthenticated;
         private final boolean mIsFolded;
@@ -420,8 +425,10 @@ public class ChangeDetailsFragment extends Fragment {
             notifyItemChanged(position);
         }
 
-        void update(ChangeMessageInfo[] messages) {
+        void update(ChangeMessageInfo[] messages,
+                    Map<String, LinkedHashMap<String, List<CommentInfo>>> messagesWithComments) {
             mMessages = messages;
+            mMessagesWithComments = messagesWithComments;
 
             int count = messages.length;
             boolean[] old = mFolded;
@@ -446,7 +453,7 @@ public class ChangeDetailsFragment extends Fragment {
         public MessageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new MessageViewHolder(DataBindingUtil.inflate(
-                    inflater, R.layout.message_item, parent, false));
+                    inflater, R.layout.message_item, parent, false), mIsFolded);
         }
 
         @Override
@@ -456,12 +463,15 @@ public class ChangeDetailsFragment extends Fragment {
             if (message.author == null) {
                 message.author = mBuildBotSystemAccount;
             }
+            Map<String, List<CommentInfo>> comments = mMessagesWithComments.get(message.id);
+
             PicassoHelper.bindAvatar(context, PicassoHelper.getPicassoClient(context),
                     message.author, holder.mBinding.avatar,
                     PicassoHelper.getDefaultAvatar(context, R.color.primaryDark));
             holder.mBinding.setIsAuthenticated(mIsAuthenticated);
             holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);
+            holder.mBinding.comments.from(comments);
             holder.mBinding.setFolded(mFolded[position]);
             holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
         }
@@ -474,6 +484,7 @@ public class ChangeDetailsFragment extends Fragment {
         Map<String, Integer> mInlineComments;
         Map<String, Integer> mDraftComments;
         ConfigInfo mProjectConfig;
+        Map<String, LinkedHashMap<String, List<CommentInfo>>> mMessagesWithComments = new HashMap<>();
     }
 
     private final RxLoaderObserver<DataResponse> mChangeObserver =
@@ -504,7 +515,7 @@ public class ChangeDetailsFragment extends Fragment {
                         mFileAdapter.update(files, result.mInlineComments, result.mDraftComments);
                         mModel.msgListModel.visible =
                                 change.messages != null && change.messages.length > 0;
-                        mMessageAdapter.update(change.messages);
+                        mMessageAdapter.update(change.messages, result.mMessagesWithComments);
                     }
 
                     // Invalidate the diff cache. we have new data
@@ -579,9 +590,10 @@ public class ChangeDetailsFragment extends Fragment {
             = new RxLoaderObserver<ChangeMessageInfo[]>() {
         @Override
         public void onNext(ChangeMessageInfo[] messages) {
+            // TODO Fetch comments
             mResponse.mChange.messages = messages;
             mModel.msgListModel.visible = messages != null && messages.length > 0;
-            mMessageAdapter.update(messages);
+            mMessageAdapter.update(messages, mResponse.mMessagesWithComments);
         }
 
         @Override
@@ -732,6 +744,8 @@ public class ChangeDetailsFragment extends Fragment {
 
     private Account mAccount;
 
+    private boolean mIsInlineCommentsInMessages;
+
     public static ChangeDetailsFragment newInstance(int changeId) {
         ChangeDetailsFragment fragment = new ChangeDetailsFragment();
         Bundle arguments = new Bundle();
@@ -813,6 +827,10 @@ public class ChangeDetailsFragment extends Fragment {
             }
             updateAuthenticatedAndOwnerStatus();
 
+            boolean isMessagesFolded = Preferences.isAccountMessagesFolded(getContext(), mAccount);
+            mIsInlineCommentsInMessages =
+                    Preferences.isAccountInlineCommentInMessages(getContext(), mAccount);
+
 
             mEventHandlers = new EventHandlers(this);
 
@@ -822,9 +840,8 @@ public class ChangeDetailsFragment extends Fragment {
             mBinding.fileInfo.list.setNestedScrollingEnabled(false);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
-            boolean isFolded = Preferences.isAccountMessagesFolded(getContext(), mAccount);
             mMessageAdapter = new MessageAdapter(
-                    this, mEventHandlers, mModel.isAuthenticated, isFolded);
+                    this, mEventHandlers, mModel.isAuthenticated, isMessagesFolded);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(
@@ -1165,6 +1182,9 @@ public class ChangeDetailsFragment extends Fragment {
                 draftComments.put(file, revisionDraftComments.get(file).size());
             }
         }
+
+        // Fetch revision comments
+        fetchNeededRevisionComments(response);
 
         // Join the actions
         response.mActions = actions;
@@ -1601,5 +1621,78 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performMessageClick(int position) {
         mMessageAdapter.changeFoldedStatus(position);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void fetchNeededRevisionComments(DataResponse response) {
+        if (!mIsInlineCommentsInMessages) {
+            return;
+        }
+
+        // Determine which patchset needs request comments for
+        List<Integer> revisionsWithComments = new ArrayList<>();
+        if (response.mChange.messages != null) {
+            for (ChangeMessageInfo message : response.mChange.messages) {
+                if (message.message != null && COMMENTS_PATTERN.matcher(message.message).find()) {
+                    if (!revisionsWithComments.contains(message.revisionNumber)) {
+                        revisionsWithComments.add(message.revisionNumber);
+                    }
+                }
+            }
+        }
+
+        // Fetch comments of needed revisions
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        response.mMessagesWithComments.clear();
+        for (int rev : revisionsWithComments) {
+            try {
+                Map<String, List<CommentInfo>> comments = api.getChangeRevisionComments(
+                        String.valueOf(response.mChange.legacyChangeId),
+                        String.valueOf(rev)).toBlocking().first();
+                if (comments == null) {
+                    continue;
+                }
+
+                updateMessageComments(response, comments);
+            } catch (Exception ex) {
+                Log.e(TAG, "Can't match comments for messages.", ex);
+            }
+        }
+    }
+
+    private void updateMessageComments(
+            DataResponse response, Map<String, List<CommentInfo>> comments) {
+        final Map<String, LinkedHashMap<String, List<CommentInfo>>> mwc =
+                response.mMessagesWithComments;
+
+        // Match comments with messages
+        for (ChangeMessageInfo message : response.mChange.messages) {
+            if (message.message != null && COMMENTS_PATTERN.matcher(message.message).find()) {
+                for (String file : comments.keySet()) {
+                    List<CommentInfo> items = comments.get(file);
+                    if (items != null) {
+                        for (CommentInfo comment : items) {
+                            if (comment.updated.compareTo(message.date) == 0 &&
+                                    comment.author.accountId == message.author.accountId) {
+                                if (!mwc.containsKey(message.id)) {
+                                    mwc.put(message.id, new LinkedHashMap<>());
+                                }
+
+                                final LinkedHashMap<String, List<CommentInfo>> filesAndComments
+                                        = mwc.get(message.id);
+                                if (!filesAndComments.containsKey(file)) {
+                                    filesAndComments.put(file, new ArrayList<>());
+                                }
+
+                                List<CommentInfo> list = filesAndComments.get(file);
+                                comment.patchSet = message.revisionNumber;
+                                list.add(comment);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

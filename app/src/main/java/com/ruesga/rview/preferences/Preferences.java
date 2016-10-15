@@ -46,6 +46,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TABS
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_FOLDED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
@@ -295,5 +296,10 @@ public class Preferences {
     public static boolean isAccountMessagesFolded(Context context, Account account) {
         return account == null || getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_MESSAGES_FOLDED, false);
+    }
+
+    public static boolean isAccountInlineCommentInMessages(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES, true);
     }
 }

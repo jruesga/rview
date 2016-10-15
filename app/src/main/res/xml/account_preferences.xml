@@ -47,6 +47,11 @@
             android:key="account_messages_folded"
             android:title="@string/account_settings_messages_folded"
             android:defaultValue="false" />
+
+        <SwitchPreference
+            android:key="account_inline_comment_in_messages"
+            android:title="@string/account_settings_inline_comment_in_messages"
+            android:defaultValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory

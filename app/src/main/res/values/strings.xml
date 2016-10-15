@@ -163,6 +163,8 @@
     <string name="change_details_view_patchset">View</string>
     <string name="change_details_review">Review</string>
     <string name="change_details_review_hint">Comment on this change</string>
+    <string name="change_details_comment_line_number">L<xliff:g id="line_number" example="1">%1$d</xliff:g>:</string>
+    <string name="change_details_comment_file">File:</string>
 
     <!-- Actions -->
     <string name="change_action_cherrypick">Cherry-Pick</string>
@@ -195,6 +197,7 @@
     <string name="account_settings_display_format_username">Username</string>
     <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>
     <string name="account_settings_messages_folded">Fold messages</string>
+    <string name="account_settings_inline_comment_in_messages">Display inline comments in messages</string>
     <string name="account_settings_external_category">External viewers</string>
     <string name="account_settings_use_custom_tabs">Use custom tabs</string>
     <string name="account_settings_download_format">Download format</string>

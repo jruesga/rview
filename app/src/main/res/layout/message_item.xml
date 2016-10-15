@@ -33,7 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="@{foldHandlers::onMessagePressed}"
-        android:background="?attr/selectableItemBackground"
         android:tag="@{index}"
         android:padding="16dp">
 
@@ -129,6 +128,18 @@
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true" />
+
+        <com.ruesga.rview.widget.FilesAndCommentsView
+            android:id="@+id/comments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_below="@id/message"
+            android:layout_toRightOf="@id/avatar"
+            android:layout_toEndOf="@id/avatar"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="@{!folded ? View.VISIBLE : View.GONE}" />
 
     </RelativeLayout>
 </layout>

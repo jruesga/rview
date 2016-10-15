@@ -84,6 +84,8 @@ public class Constants {
     public static final String PREF_ACCOUNT_DIFF_MODE = "account_diff_mode";
     public static final String PREF_ACCOUNT_WRAP_MODE = "account_wrap_mode";
     public static final String PREF_ACCOUNT_MESSAGES_FOLDED = "account_messages_folded";
+    public static final String PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES
+            = "account_inline_comment_in_messages";
     public static final String PREF_ACCOUNT_HIGHLIGHT_TABS = "account_highlight_tabs";
     public static final String PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES
             = "account_highlight_trailing_whitespaces";
