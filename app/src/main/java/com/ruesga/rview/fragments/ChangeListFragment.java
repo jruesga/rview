@@ -206,6 +206,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mEmptyState.state = ExceptionHelper.hasConnectivity(error)
                     ? EmptyState.ERROR_STATE : EmptyState.NOT_CONNECTIVITY_STATE;
             mBinding.setEmpty(mEmptyState);
+            mChangesLoader.clear();
             ((BaseActivity) getActivity()).handleException(TAG, error);
             showProgress(false);
         }
