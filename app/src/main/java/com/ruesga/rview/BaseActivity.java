@@ -293,7 +293,13 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     public void handleException(String tag, Throwable cause) {
-        showError(ExceptionHelper.exceptionToMessage(this, tag, cause));
+        int level = ExceptionHelper.exceptionToLevel(cause);
+        int res = ExceptionHelper.exceptionToMessage(this, tag, cause);
+        if (level == 0) {
+            showError(res);
+        } else {
+            showWarning(res);
+        }
     }
 
     private void changeInProgressStatus(boolean status) {

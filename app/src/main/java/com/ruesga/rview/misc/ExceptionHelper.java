@@ -80,7 +80,20 @@ public class ExceptionHelper {
         }
 
         // Log an return the translated message
-        Log.e(tag, context.getString(message), cause);
+        if (exceptionToLevel(cause) == 0) {
+            Log.e(tag, context.getString(message), cause);
+        } else {
+            Log.w(tag, context.getString(message));
+        }
         return message;
     }
+
+    public static int exceptionToLevel(Throwable cause) {
+        if (isException(cause, NoConnectivityException.class)
+                || isException(cause, IllegalQueryExpressionException.class)) {
+            return 1;
+        }
+        return 0;
+    }
+
 }
