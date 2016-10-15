@@ -199,6 +199,11 @@ public abstract class WizardActivity extends AppCompatActivity {
             }
         }
 
+        if (mCurrentPage < 0 || mCurrentPage >= mPages.size()) {
+            performNavigateToPage(mCurrentPage);
+            return;
+        }
+
         // Prepared the back and forward loaders
         //noinspection unchecked
         mLoaders = new Pair[mPages.size()];
@@ -582,7 +587,6 @@ public abstract class WizardActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(() -> changeInProgressStatus(true))
-//                .doOnError(throwable -> mWorkflow.isBackEnabled = false)
                 .doOnTerminate(() -> changeInProgressStatus(false));
     }
 
