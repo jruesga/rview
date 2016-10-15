@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="com.ruesga.rview.model.EmptyState" />
+        <variable name="model" type="com.ruesga.rview.model.EmptyState" />
+        <variable name="handlers" type="com.ruesga.rview.model.EmptyState.EventHandlers" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="@{model != null &amp;&amp; model.state != EmptyState.NORMAL_STATE ? View.VISIBLE : View.GONE}">
+
+        <ImageView
+            android:id="@+id/empty_icon"
+            android:layout_width="124dp"
+            android:layout_height="124dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="-74dp"
+            android:tint="@color/empty_state"
+            app:emptyStateDrawable="@{model}"
+            tools:ignore="ContentDescription"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/empty_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="16dp"
+            android:textSize="20sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:maxLines="2"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            app:emptyStatedDescription="@{model}"
+            tools:ignore="Deprecated"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="64dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:text="@{model != null &amp;&amp; model.state != EmptyState.NORMAL_STATE ? @string/action_retry : null}"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            android:onClick="@{handlers::onRetry}"
+            android:textStyle="bold"
+            app:allCaps="true"
+            android:textSize="16sp"/>
+
+    </FrameLayout>
+</layout>

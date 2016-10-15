@@ -45,6 +45,7 @@ import com.ruesga.rview.gerrit.model.ProjectStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.text.QuotedSpan;
@@ -472,6 +473,35 @@ public class Formatter {
             v.setText(R.string.change_details_comment_file);
         } else {
             v.setText(v.getContext().getString(R.string.change_details_comment_line_number, line));
+        }
+    }
+
+    @BindingAdapter("emptyStateDrawable")
+    public static void toEmptyStateDrawable(ImageView v, EmptyState state) {
+        if (state == null || state.state == EmptyState.NORMAL_STATE) {
+            v.setImageDrawable(null);
+        } else if (state.state == EmptyState.EMPTY_STATE) {
+            v.setImageDrawable(ContextCompat.getDrawable(
+                    v.getContext(), R.drawable.ic_empty));
+        } else if (state.state == EmptyState.NOT_CONNECTIVITY_STATE) {
+            v.setImageDrawable(ContextCompat.getDrawable(
+                    v.getContext(), R.drawable.ic_cloud_off));
+        } else if (state.state == EmptyState.ERROR_STATE) {
+            v.setImageDrawable(ContextCompat.getDrawable(
+                    v.getContext(), R.drawable.ic_error_outline));
+        }
+    }
+
+    @BindingAdapter("emptyStatedDescription")
+    public static void toEmptyStateDescription(TextView v, EmptyState state) {
+        if (state == null || state.state == EmptyState.NORMAL_STATE) {
+            v.setText(null);
+        } else if (state.state == EmptyState.EMPTY_STATE) {
+            v.setText(R.string.empty_states_empty);
+        } else if (state.state == EmptyState.NOT_CONNECTIVITY_STATE) {
+            v.setText(R.string.empty_states_not_connectivity);
+        } else if (state.state == EmptyState.ERROR_STATE) {
+            v.setText(R.string.empty_states_error);
         }
     }
 }

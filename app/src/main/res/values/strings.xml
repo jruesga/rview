@@ -29,6 +29,7 @@
     <string name="action_add">Add</string>
     <string name="action_change">Change</string>
     <string name="action_save">Save</string>
+    <string name="action_retry">Retry</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -315,6 +316,11 @@
     <string name="notification_file_download_title">Download completed</string>
     <string name="notification_file_download_text_success">File <xliff:g id="height">%1$s</xliff:g> downloaded successfully</string>
     <string name="notification_file_download_text_failure">File <xliff:g id="height">%1$s</xliff:g> download failed</string>
+
+    <!-- Empty states -->
+    <string name="empty_states_empty">Not results found</string>
+    <string name="empty_states_not_connectivity">No network connectivity detected</string>
+    <string name="empty_states_error">Something were wrong</string>
 
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>

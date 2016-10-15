@@ -40,9 +40,11 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.EndlessRecyclerViewScrollListener;
@@ -104,11 +106,6 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             AccountInfo account = (AccountInfo) view.getTag();
             mFragment.onAvatarClick(account);
         }
-    }
-
-    @ProguardIgnored
-    public static class Model {
-        public boolean hasData = true;
     }
 
     private static class ChangesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -197,16 +194,18 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mAdapter.clear();
             mAdapter.addAll(result);
             mAdapter.notifyDataSetChanged();
-            mModel.hasData = result != null && !result.isEmpty();
-            mBinding.setModel(mModel);
+            mEmptyState.state = result != null && !result.isEmpty()
+                    ? EmptyState.NORMAL_STATE : EmptyState.EMPTY_STATE;
+            mBinding.setEmpty(mEmptyState);
             showProgress(false);
         }
 
         @Override
         public void onError(Throwable error) {
             // Hide your progress indicator and show that there was an error.
-            mModel.hasData = mAdapter.mData.size() == 0;
-            mBinding.setModel(mModel);
+            mEmptyState.state = ExceptionHelper.hasConnectivity(error)
+                    ? EmptyState.ERROR_STATE : EmptyState.NOT_CONNECTIVITY_STATE;
+            mBinding.setEmpty(mEmptyState);
             ((BaseActivity) getActivity()).handleException(TAG, error);
             showProgress(false);
         }
@@ -227,10 +226,24 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         return false;
     };
 
+    @ProguardIgnored
+    public static class EmptyEventHandlers extends EmptyState.EventHandlers {
+        private ChangeListFragment mFragment;
+
+        EmptyEventHandlers(ChangeListFragment fragment) {
+            mFragment = fragment;
+        }
+
+        public void onRetry(View v) {
+            mFragment.getChangesLoader().restart(mFragment.mItemsToFetch, 0);
+        }
+    }
+
     private Handler mUiHandler;
     private ChangesFragmentBinding mBinding;
-    private final Model mModel = new Model();
+    private final EmptyState mEmptyState = new EmptyState();
     private boolean mIsTwoPanel;
+    private int mItemsToFetch;
 
     // In case is inside a viewpager, it will call setMenuVisibility to false
     // in those fragments invisible to the user
@@ -246,6 +259,10 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     abstract void fetchNewItems();
 
     abstract void fetchMoreItems();
+
+    int getItemsToFetch() {
+        return mItemsToFetch;
+    }
 
     boolean hasMoreItems(int size, int expected) {
         return size < expected;
@@ -306,7 +323,8 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.changes_fragment, container, false);
-        mBinding.setModel(mModel);
+        mBinding.setEmpty(mEmptyState);
+        mBinding.setEmptyHandlers(new EmptyEventHandlers(this));
         startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
@@ -330,7 +348,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
         mIsTwoPanel = getResources().getBoolean(R.bool.config_is_two_pane);
         if (mAdapter == null) {
-            int itemsToFetch = Preferences.getAccountFetchedItems(
+            mItemsToFetch = Preferences.getAccountFetchedItems(
                     getContext(), Preferences.getAccount(getContext()));
 
             // Configure the adapter
@@ -364,7 +382,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mChangesLoader = loaderManager
                     .create(this::fetchChanges, mLoaderObserver)
-                    .start(itemsToFetch, 0);
+                    .start(mItemsToFetch, 0);
         }
     }
 

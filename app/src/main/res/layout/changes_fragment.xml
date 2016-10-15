@@ -15,11 +15,14 @@
      limitations under the License.
  -->
 <layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="android.view.View" />
-        <variable name="model" type="com.ruesga.rview.fragments.ChangeListFragment.Model" />
+        <import type="com.ruesga.rview.model.EmptyState" />
+        <variable name="empty" type="com.ruesga.rview.model.EmptyState" />
+        <variable name="emptyHandlers" type="com.ruesga.rview.model.EmptyState.EventHandlers" />
     </data>
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -34,17 +37,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical"
-                android:visibility="@{model.hasData ? View.VISIBLE : View.GONE}">
+                android:visibility="@{empty.state != EmptyState.NORMAL_STATE ? View.VISIBLE : View.GONE}">
             </android.support.v7.widget.RecyclerView>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:gravity="center_horizontal"
-                android:visibility="@{!model.hasData ? View.VISIBLE : View.GONE}"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/secondary_text_light"
-                android:text="@string/chooser_no_data"/>
+
+            <include
+                android:id="@+id/empty_state"
+                layout="@layout/empty_state"
+                app:model="@{empty}"
+                app:handlers="@{emptyHandlers}"/>
+
         </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </layout>

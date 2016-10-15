@@ -96,4 +96,8 @@ public class ExceptionHelper {
         return 0;
     }
 
+    public static boolean hasConnectivity(Throwable cause) {
+        return !(isException(cause, NoConnectivityException.class));
+    }
+
 }

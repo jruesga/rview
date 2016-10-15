@@ -84,11 +84,13 @@ import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
@@ -156,7 +158,6 @@ public class ChangeDetailsFragment extends Fragment {
 
     @ProguardIgnored
     public static class Model {
-        public boolean hasData = true;
         boolean isLocked = false;
         boolean isAuthenticated = false;
         public ListModel filesListModel = new ListModel(R.string.change_details_header_files);
@@ -497,8 +498,10 @@ public class ChangeDetailsFragment extends Fragment {
                     updateAuthenticatedAndOwnerStatus();
 
                     ChangeInfo change = null;
-                    mModel.hasData = result != null;
-                    if (mModel.hasData) {
+                    mEmptyState.state = result != null
+                            ? EmptyState.NORMAL_STATE : EmptyState.EMPTY_STATE;
+                    mBinding.setEmpty(mEmptyState);
+                    if (result != null) {
                         change = result.mChange;
                         if (mCurrentRevision == null
                                 || !change.revisions.containsKey(mCurrentRevision)) {
@@ -527,6 +530,9 @@ public class ChangeDetailsFragment extends Fragment {
 
                 @Override
                 public void onError(Throwable error) {
+                    mEmptyState.state = ExceptionHelper.hasConnectivity(error)
+                            ? EmptyState.ERROR_STATE : EmptyState.NOT_CONNECTIVITY_STATE;
+                    mBinding.setEmpty(mEmptyState);
                     ((BaseActivity) getActivity()).handleException(TAG, error);
                     showProgress(false, null);
                 }
@@ -711,6 +717,18 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    @ProguardIgnored
+    public static class EmptyEventHandlers extends EmptyState.EventHandlers {
+        private ChangeDetailsFragment mFragment;
+
+        EmptyEventHandlers(ChangeDetailsFragment fragment) {
+            mFragment = fragment;
+        }
+
+        public void onRetry(View v) {
+            mFragment.forceRefresh();
+        }
+    }
 
     private final OnAccountChipClickedListener mOnAccountChipClickedListener
             = this::performAccountClicked;
@@ -725,6 +743,7 @@ public class ChangeDetailsFragment extends Fragment {
 
     private EventHandlers mEventHandlers;
     private final Model mModel = new Model();
+    private final EmptyState mEmptyState = new EmptyState();
     private String mCurrentRevision;
     private DataResponse mResponse;
     private final List<RevisionInfo> mAllRevisions = new ArrayList<>();
@@ -773,6 +792,8 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.change_details_fragment, container, false);
         mBinding.setModel(mModel);
+        mBinding.setEmpty(mEmptyState);
+        mBinding.setEmptyHandlers(new EmptyEventHandlers(this));
         startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
