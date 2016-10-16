@@ -17,7 +17,6 @@ package com.ruesga.rview.misc;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.TypedValue;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
@@ -104,7 +103,7 @@ public class ModelHelper {
         // Gravatar icons
         if (account.email != null) {
             urls.add("https://www.gravatar.com/avatar/"
-                    + computeGravatarHash(account.email) + ".png?s=" + ((int)maxSize) + "&d=404");
+                    + computeGravatarHash(account.email) + ".png?s=" + maxSize + "&d=404");
         }
 
         return urls;

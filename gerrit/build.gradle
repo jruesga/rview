@@ -30,7 +30,7 @@ dependencies {
     compile "com.squareup.okhttp3:logging-interceptor:${libraries.okhttp3}"
     compile "com.squareup.okio:okio:${libraries.okio}"
     //compile "com.burgstaller:okhttp-digest:${libraries.okhttp_digest}@aar"
-    compile 'com.github.jruesga:okhttp-digest:2c51ebafcb@aar'
+    compile "com.github.jruesga:okhttp-digest:${libraries.okhttp_digest}@aar"
     compile "io.reactivex:rxjava:${libraries.rxjava}"
     compile "org.antlr:antlr-runtime:${libraries.antlrv3}"
 

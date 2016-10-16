@@ -28,7 +28,6 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;

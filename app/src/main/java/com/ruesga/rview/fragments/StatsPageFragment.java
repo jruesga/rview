@@ -34,7 +34,6 @@ import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Stats;
-import com.ruesga.rview.widget.Top5StatsView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,9 +85,7 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
         public void onNext(List<Stats> stats) {
             mBinding.mergedStatusChart.update(stats);
             mBinding.activityChart.update(stats);
-            mBinding.top5List.listenTo(item -> {
-                    openCrossItem(item);
-                }).update(stats);
+            mBinding.top5List.listenTo(item -> openCrossItem(item)).update(stats);
             mBinding.setLoading(false);
             mBinding.setEmpty(stats == null || stats.isEmpty());
         }

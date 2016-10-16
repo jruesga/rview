@@ -1692,6 +1692,7 @@ public class ChangeDetailsFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings("Convert2streamapi")
     private void updateMessageComments(
             DataResponse response, Map<String, List<CommentInfo>> comments) {
         final Map<String, LinkedHashMap<String, List<CommentInfo>>> mwc =

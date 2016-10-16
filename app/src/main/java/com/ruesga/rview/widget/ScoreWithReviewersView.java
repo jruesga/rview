@@ -18,7 +18,6 @@ package com.ruesga.rview.widget;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;

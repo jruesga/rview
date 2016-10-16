@@ -29,8 +29,6 @@ import android.widget.TextView;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 
-import org.w3c.dom.Text;
-
 @ProguardIgnored
 @SuppressWarnings("unused")
 public class BindingAdapters {
