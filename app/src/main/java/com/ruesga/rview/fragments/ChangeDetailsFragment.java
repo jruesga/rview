@@ -313,6 +313,10 @@ public class ChangeDetailsFragment extends Fragment {
             commitMessage.file = Constants.COMMIT_MESSAGE;
             commitMessage.info = new FileInfo();
             commitMessage.info.status =  FileStatus.A;
+            commitMessage.inlineComments = inlineComments.containsKey(
+                    Constants.COMMIT_MESSAGE) ? inlineComments.get(Constants.COMMIT_MESSAGE) : 0;
+            commitMessage.draftComments = draftComments.containsKey(
+                    Constants.COMMIT_MESSAGE) ? draftComments.get(Constants.COMMIT_MESSAGE) : 0;
             commitMessage.hasGraph = false;
             mFiles.add(commitMessage);
 
