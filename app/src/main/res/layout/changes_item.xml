@@ -65,7 +65,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@{model.status.equals(ChangeStatus.MERGED) ? @drawable/ic_merged : model.status.equals(ChangeStatus.ABANDONED) ? @drawable/ic_abandoned : model.status.equals(ChangeStatus.DRAFT) ? @drawable/ic_draft : null}"
+                    app:bindDrawable="@{model.status.equals(ChangeStatus.MERGED) ? @drawable/ic_merged : model.status.equals(ChangeStatus.ABANDONED) ? @drawable/ic_abandoned : model.status.equals(ChangeStatus.DRAFT) ? @drawable/ic_draft : null}"
                     android:tint="?attr/colorPrimaryDark"
                     android:contentDescription="@null"/>
                 <com.ruesga.rview.widget.StyleableTextView
