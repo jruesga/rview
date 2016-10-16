@@ -409,10 +409,11 @@ public class DiffView extends FrameLayout {
                 TextPaint paint = new TextPaint();
                 paint.setTextSize(res.getDimension(R.dimen.diff_line_text_size));
                 float padding = res.getDimension(R.dimen.diff_line_text_padding);
+                float margin = res.getDimension(R.dimen.diff_line_separator_width) * 2;
 
                 for (AbstractModel model : mModel) {
                     if (model instanceof DiffInfoModel) {
-                        measureDiffInfoModel((DiffInfoModel) model, wrap, paint, padding);
+                        measureDiffInfoModel((DiffInfoModel) model, wrap, paint, padding, margin);
                     }
                 }
 
@@ -457,7 +458,7 @@ public class DiffView extends FrameLayout {
         }
 
         private void measureDiffInfoModel(
-                DiffInfoModel diff, boolean wrap, TextPaint paint, float padding) {
+                DiffInfoModel diff, boolean wrap, TextPaint paint, float padding, float margin) {
             if (wrap) {
                 mDiffViewMeasurement.lineWidth = MATCH_PARENT;
             } else {
@@ -466,20 +467,20 @@ public class DiffView extends FrameLayout {
                     CharSequence line = diff.lineA != null ? diff.lineA : diff.lineB;
                     mDiffViewMeasurement.lineWidth = Math.max(
                             mDiffViewMeasurement.lineWidth,
-                            paint.measureText(String.valueOf(line)) + padding);
+                            paint.measureText(String.valueOf(line)) + padding + margin);
                 } else {
                     // Lines are displayed in A and B and both have the same size
                     if (diff.lineA != null) {
                         String lineA = String.valueOf(diff.lineA);
                         mDiffViewMeasurement.lineWidth = Math.max(
                                 mDiffViewMeasurement.lineWidth,
-                                paint.measureText(lineA) + padding);
+                                paint.measureText(lineA) + padding + margin);
                     }
                     if (diff.lineB != null) {
                         String lineB = String.valueOf(diff.lineB);
                         mDiffViewMeasurement.lineWidth = Math.max(
                                 mDiffViewMeasurement.lineWidth,
-                                paint.measureText(lineB) + padding);
+                                paint.measureText(lineB) + padding + margin);
                     }
                 }
             }
