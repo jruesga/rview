@@ -108,7 +108,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
     protected void setupActivity() {
