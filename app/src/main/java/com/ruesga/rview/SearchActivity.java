@@ -15,17 +15,24 @@
  */
 package com.ruesga.rview;
 
+import android.animation.Animator;
+import android.annotation.TargetApi;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateInterpolator;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -81,6 +88,22 @@ public class SearchActivity extends AppCompatActivity {
         mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[mCurrentOption]));
 
         configureSearchHint();
+
+        enterReveal();
+    }
+
+    @Override
+    public void onBackPressed() {
+        exitReveal();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (AndroidHelper.isLollipopOrGreater()) {
+            overridePendingTransition(0, 0);
+        }
     }
 
     @Override
@@ -212,5 +235,58 @@ public class SearchActivity extends AppCompatActivity {
         }
         ta.recycle();
         return icons;
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void enterReveal() {
+        if (AndroidHelper.isLollipopOrGreater()) {
+            final View v = mBinding.searchView;
+            ViewCompat.postOnAnimation(v, () -> {
+                int cx = v.getMeasuredWidth();
+                int cy = v.getMeasuredHeight() / 2;
+                int r = v.getWidth() / 2;
+                Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, r);
+                anim.setInterpolator(new AccelerateInterpolator());
+                anim.setDuration(250L);
+                anim.start();
+            });
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void exitReveal() {
+        if (AndroidHelper.isLollipopOrGreater()) {
+            final View v = mBinding.toolbar;
+            ViewCompat.postOnAnimation(v, () -> {
+                int cx = v.getMeasuredWidth();
+                int cy = v.getMeasuredHeight() / 2;
+                int r = v.getWidth() / 2;
+                Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, r, 0);
+                anim.setInterpolator(new AccelerateInterpolator());
+                anim.setDuration(250L);
+                anim.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mBinding.searchView.setVisibility(View.INVISIBLE);
+                        finish();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+                anim.start();
+            });
+        } else {
+            finish();
+        }
     }
 }
