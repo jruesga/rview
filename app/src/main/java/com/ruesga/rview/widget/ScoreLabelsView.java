@@ -20,6 +20,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -31,6 +32,8 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ScoreItemBinding;
 import com.ruesga.rview.gerrit.model.LabelInfo;
+import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.BitmapUtils;
 
 import org.apmem.tools.layouts.FlowLayout;
 
@@ -107,7 +110,14 @@ public class ScoreLabelsView extends FlowLayout {
             Model model = mScores.get(label);
             model.visible = true;
             ScoreItemBinding binding = mBindings.get(i);
-            ViewCompat.setBackgroundTintList(binding.scoreLayout, model.color);
+
+            if (!AndroidHelper.isLollipopOrGreater()) {
+                Drawable dw = ContextCompat.getDrawable(getContext(), R.drawable.bg_tag);
+                binding.scoreLayout.setBackground(BitmapUtils.tintDrawable(
+                        getResources(), dw, model.color.getDefaultColor()));
+            } else {
+                ViewCompat.setBackgroundTintList(binding.scoreLayout, model.color);
+            }
             binding.setModel(model);
             i++;
         }

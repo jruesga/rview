@@ -15,11 +15,15 @@
  */
 package com.ruesga.rview.misc;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
@@ -29,7 +33,7 @@ import java.io.IOException;
 
 public class BitmapUtils {
 
-    public static Bitmap convertToBitmap (Drawable dw) {
+    public static Bitmap convertToBitmap(Drawable dw) {
         Bitmap bitmap;
 
         if (dw instanceof BitmapDrawable) {
@@ -54,7 +58,19 @@ public class BitmapUtils {
         return bitmap;
     }
 
+    public static Drawable tintDrawable(Resources res, Drawable src, int color) {
+        return new BitmapDrawable(res, tintBitmap(convertToBitmap(src), color));
+    }
 
+    public static Bitmap tintBitmap(Bitmap src, int color) {
+        Paint paint = new Paint();
+        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
+        Bitmap dst = Bitmap.createBitmap(
+                src.getWidth(), src.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(dst);
+        canvas.drawBitmap(src, 0, 0, paint);
+        return dst;
+    }
 
     public static int[] decodeBitmapSize(File file) {
         // First decode with inJustDecodeBounds=true to check dimensions

@@ -35,6 +35,8 @@
             android:background="@drawable/bg_tag"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@android:color/white"
+            android:paddingRight="8dp"
+            android:paddingLeft="8dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             app:score="@{score}"

@@ -37,6 +37,8 @@
         android:paddingBottom="2dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
         android:visibility="@{model.visible ? View.VISIBLE : View.GONE}"
         tools:ignore="RtlSymmetry">
         <com.ruesga.rview.widget.StyleableTextView
