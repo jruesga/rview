@@ -60,7 +60,7 @@
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:minHeight">20dp</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="font">condensed</item>
+        <item name="font">boldCondensed</item>
         <item name="allCaps">true</item>
     </style>
 
