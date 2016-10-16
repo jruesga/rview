@@ -91,4 +91,9 @@ public class BindingAdapters {
         // Remove line breaks
         v.setText(text.replaceAll("\r\n", " ").replaceAll("\r", " ").replaceAll("\n", " "));
     }
+
+    @BindingAdapter("bindNull")
+    public static void bindNull(View v, Object o) {
+        v.setVisibility(o == null ? View.GONE : View.VISIBLE);
+    }
 }

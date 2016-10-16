@@ -145,6 +145,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
+                app:bindNull="@{model.registeredOn}"
                 android:orientation="horizontal">
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="@dimen/label_min_width"
@@ -161,7 +162,6 @@
                     app:prettyDateTime="@{model.registeredOn}"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
-                    android:visibility="@{model == null ? View.GONE : View.VISIBLE}"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
