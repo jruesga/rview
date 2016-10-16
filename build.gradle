@@ -33,7 +33,8 @@ ext {
         prettytime                  : '4.0.1.Final',
         flowlayout                  : '1.10',
         floatingsearchview          : '0b237ad5bb',
-        androidsvg                  : 'd4ec6d8d13'
+        androidsvg                  : 'd4ec6d8d13',
+        aboutlibraries              : '5.8.1'
     ]
 
     testLibraries = [

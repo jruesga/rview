@@ -51,6 +51,10 @@
     <string name="menu_search">Search</string>
     <string name="menu_options">Options</string>
     <string name="menu_diff_options">Diff options</string>
+    <string name="menu_info_category">Information</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_privacy">Privacy policy</string>
+    <string name="menu_about">About</string>
 
     <!-- Exceptions -->
     <string name="exception_browser_not_found">No browser detected. Can\'t launch <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
@@ -65,6 +69,7 @@
     <string name="exception_request_error">Request error</string>
     <string name="exception_operation_failed">Operation failed</string>
     <string name="exception_cannot_handle_link">Cannot handle link: <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
+    <string name="exception_cannot_share_link">No activity found to share link with</string>
 
     <!-- Formats -->
     <string name="committer_format"><xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e, <xliff:g id="commit_date" example="2 days ago">%3$s</xliff:g></string>
@@ -322,7 +327,15 @@
     <string name="empty_states_not_connectivity">No network connectivity detected</string>
     <string name="empty_states_error">Something were wrong</string>
 
+    <!-- Share -->
+    <string name="share_app_title">Rview</string>
+    <string name="share_app_text">Check out Rview, a Gerrit client app for Android.\n\n<xliff:g id="link">%1$s</xliff:g></string>
+
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>
+
+    <!-- Links -->
+    <string name="link_play_store" translatable="false">https://play.google.com/store/apps/details?id=<xliff:g id="package_name" example="com.ruesga.rview">%1$s</xliff:g></string>
+    <string name="link_privacy" translatable="false">https://github.com/jruesga/rview/blob/master/Privacy.md</string>
 
 </resources>

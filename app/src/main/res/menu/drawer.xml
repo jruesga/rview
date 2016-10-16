@@ -101,4 +101,24 @@
             </menu>
         </item>
     </group>
+    <group
+        android:id="@+id/category_info"
+        android:checkableBehavior="none">
+        <item android:title="@string/menu_info_category">
+            <menu>
+                <item
+                    android:id="@+id/menu_share"
+                    android:icon="@drawable/ic_share"
+                    android:title="@string/menu_share"/>
+                <item
+                    android:id="@+id/menu_privacy"
+                    android:icon="@drawable/ic_privacy"
+                    android:title="@string/menu_privacy"/>
+                <item
+                    android:id="@+id/menu_about"
+                    android:icon="@drawable/ic_info_outline"
+                    android:title="@string/menu_about"/>
+            </menu>
+        </item>
+    </group>
 </menu>

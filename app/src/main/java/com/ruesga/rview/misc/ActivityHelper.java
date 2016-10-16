@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
@@ -22,6 +23,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.Fragment;
@@ -84,12 +86,26 @@ public class ActivityHelper {
         }
     }
 
-    public static void shareTextPlain(Context ctx, String text, String title) {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, text);
-        intent.setType("text/plain");
-        ctx.startActivity(Intent.createChooser(intent, title));
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @SuppressWarnings("deprecation")
+    public static void share(Context ctx, String action, String title, String text) {
+        try {
+            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_SUBJECT, title);
+            intent.putExtra(Intent.EXTRA_TEXT, text);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            } else {
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            }
+            ctx.startActivity(Intent.createChooser(intent, action));
+
+        } catch (ActivityNotFoundException ex) {
+            // Fallback to default browser
+            String msg = ctx.getString(R.string.exception_cannot_share_link);
+            Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static void downloadUri(Context context, Uri uri, @Nullable String mimeType) {

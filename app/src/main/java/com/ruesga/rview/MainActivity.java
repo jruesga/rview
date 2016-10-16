@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -35,6 +37,9 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.aboutlibraries.util.Colors;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
@@ -354,6 +359,7 @@ public class MainActivity extends ChangeListBaseActivity {
         menu.setGroupVisible(R.id.category_my_menu, !show && auth);
         menu.setGroupVisible(R.id.category_my_account, show);
         menu.setGroupVisible(R.id.category_other_accounts, show);
+        menu.setGroupVisible(R.id.category_info, show);
         menu.findItem(R.id.menu_account_stats).setVisible(show && auth);
         mModel.isAccountExpanded = show;
         mHeaderDrawerBinding.setModel(mModel);
@@ -410,6 +416,30 @@ public class MainActivity extends ChangeListBaseActivity {
             case R.id.menu_add_account:
                 Intent i = new Intent(this, SetupAccountActivity.class);
                 startActivityForResult(i, REQUEST_WIZARD);
+                break;
+            case R.id.menu_share:
+                String action = getString(R.string.action_share);
+                String title = getString(R.string.share_app_title);
+                final String deepLink = getString(R.string.link_play_store, getPackageName());
+                String text = getString(R.string.share_app_text, deepLink);
+                ActivityHelper.share(this, action, title, text);
+                break;
+            case R.id.menu_privacy:
+                final String link = getString(R.string.link_privacy);
+                ActivityHelper.openUriInCustomTabs(this, link);
+                break;
+            case R.id.menu_about:
+                LibsBuilder builder = new LibsBuilder()
+                        .withAboutAppName(getString(R.string.app_name))
+                        .withActivityColor(
+                                new Colors(
+                                    ContextCompat.getColor(this, R.color.primaryDark),
+                                    ContextCompat.getColor(this, R.color.primaryDark)))
+                        .withAboutIconShown(true)
+                        .withActivityTitle(getString(R.string.menu_about))
+                        .withAboutVersionShown(true)
+                        .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR);
+                builder.start(this);
                 break;
             default:
                 // Other accounts group?

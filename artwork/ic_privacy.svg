@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+    <path
+        d="M 12.08013154,21.943822432 C 20.761866152,18.599582824 21.979966671,5.9756319873 20.097447686,4.1817021317 19.8316803,3.9380820278 19.52161835,3.7166092061 19.145114553,3.5172836666 L 5.9674816617,16.694916557 c 1.3952787765,2.259022782 3.3885341725,4.207983612 6.1126498783,5.248905875 z"
+        style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.6644184589;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1" />
+    <path
+        d="M 4.0437386235,4.1850607689 C 2.7591962577,5.4253085705 2.9142272331,11.759431271 5.9705521723,16.698275195 L 19.148185064,3.5206423038 C 15.449588941,1.5273869084 6.6128233552,1.7488597301 4.0437386235,4.1850607689 Z"
+        style="fill:none;stroke:#000000;stroke-width:0.6644184589;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1" />
+</svg>

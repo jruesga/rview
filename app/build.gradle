@@ -47,6 +47,7 @@ dependencies {
     compile "org.apmem.tools:layouts:${libraries.flowlayout}"
     compile "com.github.jruesga:floatingsearchview:${libraries.floatingsearchview}"
     compile "com.github.BigBadaboom:androidsvg:${libraries.androidsvg}"
+    compile ("com.mikepenz:aboutlibraries:${libraries.aboutlibraries}") { transitive = true }
 }
 
 android {

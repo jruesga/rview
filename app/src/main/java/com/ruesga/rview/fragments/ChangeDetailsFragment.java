@@ -1398,8 +1398,9 @@ public class ChangeDetailsFragment extends Fragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         Uri uri = api.getChangeUri(String.valueOf(mLegacyChangeId));
 
-        ActivityHelper.shareTextPlain(
-                getContext(), uri.toString(), getString(R.string.action_share));
+        String action = getString(R.string.action_share);
+        String title = getString(R.string.change_details_title, mLegacyChangeId);
+        ActivityHelper.share(getContext(), action, title, uri.toString());
     }
 
     private void performShowAddReviewerDialog(View v) {

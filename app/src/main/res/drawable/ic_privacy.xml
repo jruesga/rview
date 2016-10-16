@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M12.08,21.944C20.762,18.6 21.98,5.976 20.097,4.182 19.832,3.938 19.522,3.717 19.145,3.517L5.967,16.695c1.395,2.259 3.389,4.208 6.113,5.249z"
+        android:strokeLineCap="round"
+        android:fillAlpha="1"
+        android:strokeColor="#000000"
+        android:fillColor="#000000"
+        android:strokeWidth="0.6644184589"
+        android:strokeLineJoin="round"
+        android:strokeAlpha="1"/>
+    <path
+        android:pathData="M4.044,4.185C2.759,5.425 2.914,11.759 5.971,16.698L19.148,3.521C15.45,1.527 6.613,1.749 4.044,4.185Z"
+        android:strokeLineCap="round"
+        android:strokeColor="#000000"
+        android:fillColor="#00000000"
+        android:strokeWidth="0.6644184589"
+        android:strokeLineJoin="round"
+        android:strokeAlpha="1"/>
+</vector>
