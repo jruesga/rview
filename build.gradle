@@ -32,7 +32,7 @@ ext {
         picasso2_okhttp3_downloader : '1.1.0',
         prettytime                  : '4.0.1.Final',
         flowlayout                  : '1.10',
-        floatingsearchview          : 'fcd0666ac4',
+        floatingsearchview          : '0b237ad5bb',
         androidsvg                  : 'd4ec6d8d13'
     ]
 
