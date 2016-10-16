@@ -329,6 +329,11 @@ public class Formatter {
         view.setText(txt);
     }
 
+    @BindingAdapter("file")
+    public static void toFile(TextView view, String path) {
+        view.setText(path.startsWith("/") ? path.substring(1) : path);
+    }
+
     @BindingAdapter({"changeStatus", "currentRevision"})
     public static void toChangeStatus(TextView view, ChangeInfo change, boolean currentRevision) {
         if (change == null) {

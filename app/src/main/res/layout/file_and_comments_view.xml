@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorSecondary"
-            android:text="@{file}"
+            app:file="@{file}"
             app:font="bold"
             android:textSize="11sp"
             tools:ignore="Deprecated,SmallSp"/>
