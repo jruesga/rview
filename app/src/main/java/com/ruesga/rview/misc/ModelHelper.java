@@ -17,6 +17,7 @@ package com.ruesga.rview.misc;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.TypedValue;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
@@ -26,6 +27,7 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.gerrit.model.ReviewInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
@@ -72,19 +74,25 @@ public class ModelHelper {
         List<String> urls = new ArrayList<>();
 
         // Gerrit avatars
-        float maxSize = context.getResources().getDimension(R.dimen.max_avatar_size);
+        int maxSize = (int) context.getResources().getDimension(R.dimen.max_avatar_size);
         if (account.avatars != null && account.avatars.length > 0) {
-            int count = account.avatars.length - 1;
-            boolean hasAvatarUrl = false;
-            for (int i = count; i >= 0; i--) {
-                if (account.avatars[i].height < maxSize) {
-                    urls.add(account.avatars[i].url);
-                    hasAvatarUrl = true;
-                    break;
+            GerritApi api =  ModelHelper.getGerritApi(context);
+            if (api != null && api.supportsFeature(Features.AVATARS)) {
+                String url = api.getAvatarUri(String.valueOf(account.accountId), maxSize).toString();
+                urls.add(url);
+            } else {
+                int count = account.avatars.length - 1;
+                boolean hasAvatarUrl = false;
+                for (int i = count; i >= 0; i--) {
+                    if (account.avatars[i].height < maxSize) {
+                        urls.add(account.avatars[i].url);
+                        hasAvatarUrl = true;
+                        break;
+                    }
                 }
-            }
-            if (hasAvatarUrl) {
-                urls.add(account.avatars[0].url);
+                if (hasAvatarUrl) {
+                    urls.add(account.avatars[0].url);
+                }
             }
         }
 

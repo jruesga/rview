@@ -76,6 +76,11 @@ public interface GerritApi {
     Uri getRevisionUri(@NonNull String changeId, @NonNull String revisionNumber);
 
     /**
+     * Return the uri of an user avatar
+     */
+    Uri getAvatarUri(String accountId, int size);
+
+    /**
      * Return the uri for download a complete change's revision
      */
     Uri getDownloadRevisionUri(

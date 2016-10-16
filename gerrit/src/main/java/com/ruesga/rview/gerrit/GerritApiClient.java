@@ -236,6 +236,12 @@ public class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Uri getAvatarUri(String accountId, int size) {
+        return Uri.parse(String.format(Locale.US, "%saccounts/%s/avatar?s=%d",
+                toUnauthenticatedEndpoint(mEndPoint), accountId, size));
+    }
+
+    @Override
     public ApiVersionMediator getApiVersionMediator() {
         return mMediator;
     }

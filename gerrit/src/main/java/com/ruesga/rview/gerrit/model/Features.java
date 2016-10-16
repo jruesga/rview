@@ -21,5 +21,7 @@ public enum Features {
     @Since(2.12)
     BLAME,
     @Since(2.12)
-    ACCOUNT_DETAILS
+    ACCOUNT_DETAILS,
+    @Since(2.12)
+    AVATARS
 }
