@@ -11,6 +11,7 @@
   {"name":"Dirty Unicorns", "url":"http://gerrit.dirtyunicorns.com/"},
   {"name":"Eclipse", "url":"https://git.eclipse.org/r/"},
   {"name":"Gerrit", "url":"https://gerrit-review.googlesource.com/"},
+  {"name":"GerritHub", "url":"https://gerrithub.io/"},
   {"name":"Kitware", "url":"http://review.source.kitware.com/"},
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/"},
   {"name":"MediaWiki", "url":"https://gerrit.wikimedia.org/r/"},
