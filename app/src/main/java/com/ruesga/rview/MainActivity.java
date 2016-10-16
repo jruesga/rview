@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview;
 
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -429,6 +428,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 ActivityHelper.openUriInCustomTabs(this, link);
                 break;
             case R.id.menu_about:
+                String[] libraries = getResources().getStringArray(R.array.libraries_ids);
                 LibsBuilder builder = new LibsBuilder()
                         .withAboutAppName(getString(R.string.app_name))
                         .withActivityColor(
@@ -438,6 +438,8 @@ public class MainActivity extends ChangeListBaseActivity {
                         .withAboutIconShown(true)
                         .withActivityTitle(getString(R.string.menu_about))
                         .withAboutVersionShown(true)
+                        .withLibraries(libraries)
+                        .withFields(R.string.class.getFields())
                         .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR);
                 builder.start(this);
                 break;

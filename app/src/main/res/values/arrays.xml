@@ -118,4 +118,34 @@
         <item>@drawable/ic_custom_search</item>
         <item>4</item>
     </integer-array>
+
+
+    <string-array name="libraries_ids" translatable="false">
+        <item>crashlytics</item>
+        <item>support_v4</item>
+        <item>appcompat_v7</item>
+        <item>cardview_v7</item>
+        <item>preference_v14</item>
+        <item>design</item>
+        <item>customtabs</item>
+        <item>support_annotations</item>
+        <item>gson</item>
+        <item>rxjava</item>
+        <item>rxandroid</item>
+        <item>rxloader</item>
+        <item>commons-io</item>
+        <item>smoothprogressbar</item>
+        <item>picasso</item>
+        <item>picasso2_okhttp3_downloader</item>
+        <item>prettytime</item>
+        <item>layouts</item>
+        <item>floatingsearchview</item>
+        <item>androidsvg</item>
+        <item>aboutlibraries</item>
+        <item>retrofit</item>
+        <item>okhttp</item>
+        <item>okio</item>
+        <item>okhttp_digest</item>
+        <item>antlr_runtime</item>
+    </string-array>
 </resources>
