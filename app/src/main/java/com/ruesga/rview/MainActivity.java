@@ -348,14 +348,13 @@ public class MainActivity extends ChangeListBaseActivity {
     }
 
     private void performShowAccount(boolean show) {
+        final boolean auth = mAccount != null && mAccount.hasAuthenticatedAccessMode();
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
-        menu.setGroupVisible(R.id.category_my_menu, !show &&
-                (mAccount != null && mAccount.hasAuthenticatedAccessMode()));
+        menu.setGroupVisible(R.id.category_my_menu, !show && auth);
         menu.setGroupVisible(R.id.category_my_account, show);
         menu.setGroupVisible(R.id.category_other_accounts, show);
-        menu.findItem(R.id.menu_account_stats).setVisible(
-                mAccount != null && mAccount.hasAuthenticatedAccessMode());
+        menu.findItem(R.id.menu_account_stats).setVisible(show && auth);
         mModel.isAccountExpanded = show;
         mHeaderDrawerBinding.setModel(mModel);
 
