@@ -601,7 +601,11 @@ public class ChangeDetailsFragment extends Fragment {
             = new RxLoaderObserver<ChangeMessageInfo[]>() {
         @Override
         public void onNext(ChangeMessageInfo[] messages) {
-            // TODO Fetch comments
+            // We don't fetch messages's comments from this observer, but this
+            // only happens from topic change, which implies a partial refresh
+            // and the possibility that we are out-of-sync is low, compared to
+            // the effort of fetching messages and comments (a user refresh
+            // will fix the out-of-sync problem).
             mResponse.mChange.messages = messages;
             mModel.msgListModel.visible = messages != null && messages.length > 0;
             mMessageAdapter.update(messages, mResponse.mMessagesWithComments);
