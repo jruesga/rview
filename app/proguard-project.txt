@@ -11,6 +11,10 @@
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable,*Annotation*
 
+-keepclassmembers class com.ruesga.rview.fragments.** {
+   public static *** newFragment(...);
+}
+
 
 ##---------------Begin: proguard configuration for RxJava  ----------
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
