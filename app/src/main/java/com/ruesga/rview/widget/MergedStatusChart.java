@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.widget;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -28,6 +29,7 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
@@ -59,6 +61,9 @@ public class MergedStatusChart extends View {
 
     private float mLabelPadding;
     private float mLabelHeight;
+
+    private ValueAnimator mAnimator;
+    private float mAnimationDelta = 0f;
 
     public MergedStatusChart(Context context) {
         this(context, null);
@@ -141,28 +146,56 @@ public class MergedStatusChart extends View {
     }
 
     @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (mAnimator != null && mAnimator.isRunning()) {
+            mAnimator.cancel();
+        }
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawRect(mOpenRect, mOpenPaint);
-        canvas.drawRect(mMergedRect, mMergedPaint);
-        canvas.drawRect(mAbandonedRect, mAbandonedPaint);
+        // Bars
+        canvas.drawRect(
+                mOpenRect.left,
+                mOpenRect.top,
+                Math.min(mViewArea.width() * mAnimationDelta, mOpenRect.right),
+                mOpenRect.bottom,
+                mOpenPaint);
+        canvas.drawRect(
+                mMergedRect.left,
+                mMergedRect.top,
+                Math.min(mViewArea.width() * mAnimationDelta, mMergedRect.right),
+                mMergedRect.bottom,
+                mMergedPaint);
+        canvas.drawRect(
+                mAbandonedRect.left,
+                mAbandonedRect.top,
+                Math.min(mViewArea.width() * mAnimationDelta, mAbandonedRect.right),
+                mAbandonedRect.bottom,
+                mAbandonedPaint);
 
-        canvas.drawText(
-                String.valueOf(mOpen),
-                mOpenRect.left + mLabelPadding,
-                mOpenRect.top + (mOpenRect.height() / 2) + (mLabelHeight / 2),
-                mLabelPaint);
-        canvas.drawText(
-                String.valueOf(mMerged),
-                mOpenRect.left + mLabelPadding,
-                mMergedRect.top + (mMergedRect.height() / 2) + (mLabelHeight / 2),
-                mLabelPaint);
-        canvas.drawText(
-                String.valueOf(mAbandoned),
-                mOpenRect.left + mLabelPadding,
-                mAbandonedRect.top + (mAbandonedRect.height() / 2) + (mLabelHeight / 2),
-                mLabelPaint);
+        // Number of items as text
+        if (mAnimationDelta > .9f) {
+            canvas.drawText(
+                    String.valueOf(mOpen),
+                    mOpenRect.left + mLabelPadding,
+                    mOpenRect.top + (mOpenRect.height() / 2) + (mLabelHeight / 2),
+                    mLabelPaint);
+            canvas.drawText(
+                    String.valueOf(mMerged),
+                    mOpenRect.left + mLabelPadding,
+                    mMergedRect.top + (mMergedRect.height() / 2) + (mLabelHeight / 2),
+                    mLabelPaint);
+            canvas.drawText(
+                    String.valueOf(mAbandoned),
+                    mOpenRect.left + mLabelPadding,
+                    mAbandonedRect.top + (mAbandonedRect.height() / 2) + (mLabelHeight / 2),
+                    mLabelPaint);
+        }
     }
 
     public void update(List<Stats> stats) {
@@ -184,7 +217,20 @@ public class MergedStatusChart extends View {
             mTotal = total;
             computeDrawObjects();
         }
-        ViewCompat.postInvalidateOnAnimation(this);
+
+        // Animate the chart
+        if (mAnimator != null && mAnimator.isRunning()) {
+            mAnimator.cancel();
+        }
+        mAnimationDelta = 0f;
+        mAnimator = ValueAnimator.ofFloat(0f, 1f);
+        mAnimator.setInterpolator(new AccelerateInterpolator());
+        mAnimator.setDuration(350L);
+        mAnimator.addUpdateListener(animation -> {
+            mAnimationDelta = animation.getAnimatedFraction();
+            ViewCompat.postInvalidateOnAnimation(this);
+        });
+        mAnimator.start();
     }
 
     @Override

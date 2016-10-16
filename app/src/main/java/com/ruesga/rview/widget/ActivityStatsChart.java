@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.widget;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -33,6 +34,7 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.model.Stats;
@@ -64,7 +66,7 @@ public class ActivityStatsChart extends View {
         @Override
         protected void onPostExecute(Void v) {
             // Refresh the view
-            ViewCompat.postInvalidateOnAnimation(ActivityStatsChart.this);
+            animateChart();
         }
 
         @SuppressLint("UseSparseArrays")
@@ -153,6 +155,9 @@ public class ActivityStatsChart extends View {
     private final DecimalFormat mYTicksFormmater = new DecimalFormat("#0", symbols);
     private final DecimalFormat mYTicksDecFormmater = new DecimalFormat("#0.00", symbols);
 
+    private ValueAnimator mAnimator;
+    private float mAnimationDelta = 0f;
+
     private AggregateStatsTask mTask;
 
     public ActivityStatsChart(Context context) {
@@ -227,6 +232,10 @@ public class ActivityStatsChart extends View {
         if (mTask != null) {
             mTask.cancel(true);
         }
+
+        if (mAnimator != null && mAnimator.isRunning()) {
+            mAnimator.cancel();
+        }
     }
 
     public void update(List<Stats> stats) {
@@ -286,6 +295,7 @@ public class ActivityStatsChart extends View {
     private void fillPointFromValue(int pos, float value, float min, float max) {
         mPoint.x = mViewArea.left + ((mViewArea.width() / (mData.length - 1)) * pos);
         mPoint.y = mViewArea.bottom - (((value - min) * mViewArea.height()) / (max - min));
+        mPoint.y = Math.max(mViewArea.bottom - (mViewArea.height() * mAnimationDelta), mPoint.y);
     }
 
     @Override
@@ -331,5 +341,22 @@ public class ActivityStatsChart extends View {
         synchronized (mLock) {
             computeDrawObjects();
         }
+    }
+
+    private void animateChart() {
+        // Animate the chart
+        if (mAnimator != null && mAnimator.isRunning()) {
+            mAnimator.cancel();
+        }
+        mAnimationDelta = 0f;
+        mAnimator = ValueAnimator.ofFloat(0f, 1f);
+        mAnimator.setInterpolator(new AccelerateInterpolator());
+        mAnimator.setDuration(350L);
+        mAnimator.addUpdateListener(animation -> {
+            mAnimationDelta = animation.getAnimatedFraction();
+            computeDrawObjects();
+            ViewCompat.postInvalidateOnAnimation(this);
+        });
+        mAnimator.start();
     }
 }
