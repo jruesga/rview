@@ -18,7 +18,7 @@ package com.ruesga.rview.gerrit.model;
 import com.google.gson.annotations.Since;
 
 public enum Features {
-    @Since(2.12)
+    @Since(2.13)
     BLAME,
     @Since(2.12)
     ACCOUNT_DETAILS,
