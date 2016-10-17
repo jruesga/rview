@@ -34,7 +34,10 @@ ext {
         flowlayout                  : '1.10',
         floatingsearchview          : '0b237ad5bb',
         androidsvg                  : 'd4ec6d8d13',
-        aboutlibraries              : '5.8.1'
+        aboutlibraries              : '5.8.1',
+        craslytics                  : '2.6.5',
+        craslytics_core             : '2.3.14',
+        craslytics_answers          : '1.3.10'
     ]
 
     testLibraries = [
