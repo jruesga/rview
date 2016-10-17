@@ -65,7 +65,7 @@ public class GerritApiClient implements GerritApi {
     private final ApiVersionMediator mMediator = new ApiVersionMediator() {
         @Override
         public WhitespaceType resolveWhiteSpaceType(WhitespaceType type) {
-            if (mServerVersion.getVersion() < 2.12) {
+            if (mServerVersion.getVersion() < 2.13) {
                 return null;
             }
             return type;
@@ -73,7 +73,7 @@ public class GerritApiClient implements GerritApi {
 
         @Override
         public IgnoreWhitespaceType resolveIgnoreWhiteSpaceType(IgnoreWhitespaceType type) {
-            if (mServerVersion.getVersion() >= 2.12) {
+            if (mServerVersion.getVersion() >= 2.13) {
                 return null;
             }
             return type;
