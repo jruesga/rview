@@ -97,7 +97,6 @@
     <string name="account_wizard_repository_page_url">URL</string>
     <string name="account_wizard_account_page_title">Account</string>
     <string name="account_wizard_account_page_message">Choose the way you want to access the &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; repository.</string>
-    <string name="account_wizard_account_page_anonymous_access">Read-only access</string>
     <string name="account_wizard_account_page_authenticated_access">Authenticated access</string>
     <string name="account_wizard_account_page_authenticated_access_hint">If you don\'t know your username or password, click <xliff:g id="link" example="here">%1$s</xliff:g> to obtain or generate a new one. If you don\'t have an account yet, you can sign-in <xliff:g id="link" example="here">%2$s</xliff:g>. Use the help menu to obtain more information related to account authentication.</string>
     <string name="account_wizard_account_page_help">

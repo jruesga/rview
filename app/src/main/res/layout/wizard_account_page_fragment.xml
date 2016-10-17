@@ -73,7 +73,7 @@
                             android:layout_weight="1"
                             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                             android:textColor="@android:color/secondary_text_light"
-                            android:text="@{model.authenticatedAccess ? @string/account_wizard_account_page_authenticated_access : @string/account_wizard_account_page_anonymous_access}"/>
+                            android:text="@string/account_wizard_account_page_authenticated_access"/>
 
                         <android.support.v7.widget.SwitchCompat
                             android:id="@+id/access_mode_switcher"
