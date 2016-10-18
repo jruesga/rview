@@ -10,6 +10,7 @@
   {"name":"CyanogenMod", "url":"https://review.cyanogenmod.org/"},
   {"name":"Dirty Unicorns", "url":"http://gerrit.dirtyunicorns.com/"},
   {"name":"Eclipse", "url":"https://git.eclipse.org/r/"},
+  {"name":"Fuchsia", "url":"https://fuchsia-review.googlesource.com/"},
   {"name":"Gerrit", "url":"https://gerrit-review.googlesource.com/"},
   {"name":"GerritHub", "url":"https://gerrithub.io/"},
   {"name":"Kitware", "url":"http://review.source.kitware.com/"},
