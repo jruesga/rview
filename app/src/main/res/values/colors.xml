@@ -26,6 +26,7 @@
     <color name="unscored">#cecece</color>
     <color name="primaryBackgroundColor">#e0e0e0</color>
     <color name="selectedItem">#e3e8f7</color>
+    <color name="translucentStatusBarColor">@android:color/transparent</color>
 
     <color name="diffLineBackgroundColor">#f5f5f5</color>
     <color name="diffAddedBackgroundColor">#cce2cd</color>

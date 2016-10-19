@@ -24,50 +24,41 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:onClick="@{handlers::onDismissByOutsideTouch}"
+        android:background="@color/translucentStatusBarColor"
+        android:hapticFeedbackEnabled="false">
 
-        <View
-            android:id="@+id/overlay"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:onClick="@{handlers::onDismissByOutsideTouch}"
-            android:hapticFeedbackEnabled="false"/>
+            android:layout_height="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="-5dp"
+            android:layout_marginStart="-5dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_gravity="top"
+            android:theme="@style/ThemeOverlay.AppCompat.Light"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimaryDark">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            <com.arlib.floatingsearchview.FloatingSearchView
+                android:id="@+id/search_view"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:minHeight="?attr/actionBarSize"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="2dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_gravity="top"
-                android:theme="@style/ThemeOverlay.AppCompat.Light"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+                android:layout_height="match_parent"
+                app:floatingSearch_searchBarTextSize="12sp"
+                app:floatingSearch_dimBackground="false"
+                app:floatingSearch_showSearchKey="true"
+                app:floatingSearch_leftActionMode="customIcon"
+                app:floatingSearch_showVoiceInput="true"
+                app:floatingSearch_menu="@menu/more_options"
+                app:floatingSearch_searchSuggestionTextSize="10sp"
+                app:floatingSearch_close_search_on_keyboard_dismiss="true"
+                app:floatingSearch_dismissOnOutsideTouch="true" />
 
-                <com.arlib.floatingsearchview.FloatingSearchView
-                    android:id="@+id/search_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:floatingSearch_searchBarTextSize="12sp"
-                    app:floatingSearch_dimBackground="false"
-                    app:floatingSearch_showSearchKey="true"
-                    app:floatingSearch_leftActionMode="customIcon"
-                    app:floatingSearch_showVoiceInput="true"
-                    app:floatingSearch_menu="@menu/more_options"
-                    app:floatingSearch_searchSuggestionTextSize="10sp"
-                    app:floatingSearch_close_search_on_keyboard_dismiss="true"
-                    app:floatingSearch_dismissOnOutsideTouch="true"/>
-
-            </android.support.v7.widget.Toolbar>
-
-        </FrameLayout>
+        </android.support.v7.widget.Toolbar>
 
     </FrameLayout>
 </layout>

@@ -37,6 +37,7 @@ import android.view.animation.AccelerateInterpolator;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
+import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.SearchActivityBinding;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
@@ -51,6 +52,8 @@ import java.util.Arrays;
 
 public class SearchActivity extends AppCompatActivity {
 
+    @SuppressWarnings("UnusedParameters")
+    @ProguardIgnored
     public static class EventHandlers {
         private SearchActivity mActivity;
 
