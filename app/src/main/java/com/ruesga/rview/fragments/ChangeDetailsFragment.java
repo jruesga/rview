@@ -141,7 +141,7 @@ public class ChangeDetailsFragment extends Fragment {
     }};
 
     private static final Pattern COMMENTS_PATTERN
-            = Pattern.compile("^(\\(\\d+ comment(s)?\\))$", Pattern.MULTILINE);
+            = Pattern.compile("(^|\\s)(\\(\\d+ (inline )?comment(s)?\\))$", Pattern.MULTILINE);
 
     private static final int DIFF_REQUEST_CODE = 99;
 
