@@ -44,19 +44,25 @@ public class PicassoHelper {
 
     private static final String TAG = "Networking";
 
+    private static Picasso sPicasso;
+
     public static Picasso getPicassoClient(Context context) {
-        final File cacheDir = CacheHelper.getAccountCacheDir(context);
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(chain -> {
-                    Response originalResponse = chain.proceed(chain.request());
-                    return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();
-                })
-                .cache(new Cache(cacheDir, CacheHelper.MAX_DISK_CACHE))
-                .build();
-        OkHttp3Downloader downloader = new OkHttp3Downloader(client);
-        return new Picasso.Builder(context)
-                .downloader(downloader)
-                .build();
+        if (sPicasso == null) {
+            final File cacheDir = CacheHelper.getAccountCacheDir(context);
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addNetworkInterceptor(chain -> {
+                        Response originalResponse = chain.proceed(chain.request());
+                        return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();
+                    })
+                    .cache(new Cache(cacheDir, CacheHelper.MAX_DISK_CACHE))
+                    .build();
+            OkHttp3Downloader downloader = new OkHttp3Downloader(client);
+            sPicasso = new Picasso.Builder(context.getApplicationContext())
+                    .defaultBitmapConfig(Bitmap.Config.ARGB_8888)
+                    .downloader(downloader)
+                    .build();
+        }
+        return sPicasso;
     }
 
     public static Drawable getDefaultAvatar(Context context, @ColorRes int color) {

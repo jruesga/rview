@@ -413,13 +413,15 @@ public class ChangeDetailsFragment extends Fragment {
         private boolean[] mFolded;
         private final boolean mIsAuthenticated;
         private final boolean mIsFolded;
+        private final Picasso mPicasso;
 
-        MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers,
+        MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
                 boolean isAuthenticated, boolean isFolded) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
             mIsAuthenticated = isAuthenticated;
             mIsFolded = isFolded;
+            mPicasso = picasso;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -470,7 +472,7 @@ public class ChangeDetailsFragment extends Fragment {
             }
             Map<String, List<CommentInfo>> comments = mMessagesWithComments.get(message.id);
 
-            PicassoHelper.bindAvatar(context, PicassoHelper.getPicassoClient(context),
+            PicassoHelper.bindAvatar(context, mPicasso,
                     message.author, holder.mBinding.avatar,
                     PicassoHelper.getDefaultAvatar(context, R.color.primaryDark));
             holder.mBinding.setIsAuthenticated(mIsAuthenticated);
@@ -870,8 +872,8 @@ public class ChangeDetailsFragment extends Fragment {
             mBinding.fileInfo.list.setNestedScrollingEnabled(false);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
-            mMessageAdapter = new MessageAdapter(
-                    this, mEventHandlers, mModel.isAuthenticated, isMessagesFolded);
+            mMessageAdapter = new MessageAdapter(this, mEventHandlers, mPicasso,
+                    mModel.isAuthenticated, isMessagesFolded);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(
