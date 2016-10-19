@@ -51,6 +51,18 @@ import java.util.Arrays;
 
 public class SearchActivity extends AppCompatActivity {
 
+    public static class EventHandlers {
+        private SearchActivity mActivity;
+
+        public EventHandlers(SearchActivity activity) {
+            mActivity = activity;
+        }
+
+        public void onDismissByOutsideTouch(View v) {
+            mActivity.exitReveal();
+        }
+    }
+
     private SearchActivityBinding mBinding;
     private int mCurrentOption;
     private int[] mIcons;
@@ -61,6 +73,7 @@ public class SearchActivity extends AppCompatActivity {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.search_activity);
+        mBinding.setHandlers(new EventHandlers(this));
 
         mIcons = loadSearchIcons();
 
