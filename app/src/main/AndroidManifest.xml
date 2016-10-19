@@ -51,7 +51,8 @@
         <activity
             android:name=".ChangeDetailsActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:exported="false" />
         <activity-alias
             android:name=".ExternalChangeDetailsActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
@@ -69,8 +70,7 @@
             android:name=".TabFragmentActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:parentActivityName=".MainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
 
         <activity
             android:name=".DiffViewerActivity"
