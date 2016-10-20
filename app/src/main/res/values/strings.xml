@@ -116,9 +116,9 @@
         account. The Gerrit service will present some instructions to include this new generated
         cookie in a file called .gitcookies to login though the git tool. You can localize the
         information to introduce in the account authentication fields in the instruction presented,
-        by localizing the expression git-<b>&lt;username&gt;</b>.gmail.com=<b>&lt;password&gt;</b>.
-        Just copy and paste these <i>&lt;username&gt;</i> and <i>&lt;password&gt;</i> values
-        into the account authentication fields.\n\n</string>
+        by localizing the expression <b>git-&lt;username&gt;.gmail.com</b>=<b>&lt;password&gt;</b>.
+        Just copy and paste these <i>git-&lt;username&gt;.gmail.com</i> and <i>&lt;password&gt;</i>
+        values into the account authentication fields.\n\n</string>
     <string name="account_wizard_account_page_password_hint_here">here</string>
     <string name="account_wizard_account_page_username">Username</string>
     <string name="account_wizard_account_page_password">Password</string>
