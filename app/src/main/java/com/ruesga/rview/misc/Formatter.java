@@ -272,8 +272,19 @@ public class Formatter {
             return;
         }
 
-        // FIXME: Map to string resources
-        view.setText(submitType.toString().replace("_", " "));
+        if (submitType.equals(SubmitType.FAST_FORWARD_ONLY)) {
+            view.setText(R.string.submit_type_fast_forward_only);
+        } else if (submitType.equals(SubmitType.MERGE_IF_NECESSARY)) {
+            view.setText(R.string.submit_type_merge_if_necessary);
+        } else if (submitType.equals(SubmitType.MERGE_ALWAYS)) {
+            view.setText(R.string.submit_type_merge_always);
+        } else if (submitType.equals(SubmitType.CHERRY_PICK)) {
+            view.setText(R.string.submit_type_cherry_pick);
+        } else if (submitType.equals(SubmitType.REBASE_IF_NECESSARY)) {
+            view.setText(R.string.submit_type_rebase_if_necessary);
+        } else {
+            view.setText(null);
+        }
     }
 
     @BindingAdapter("fileTypeDrawable")

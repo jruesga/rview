@@ -219,6 +219,13 @@
     <string name="change_statuses_not_mergeable">Not mergeable</string>
     <string name="change_statuses_needs_label">Needs <xliff:g id="label" example="Code-Review">%1$s</xliff:g></string>
 
+    <!-- Submit type -->
+    <string name="submit_type_fast_forward_only">Fast forward only</string>
+    <string name="submit_type_merge_if_necessary">Merge if necessary</string>
+    <string name="submit_type_merge_always">Merge always</string>
+    <string name="submit_type_cherry_pick">Cherry-Pick</string>
+    <string name="submit_type_rebase_if_necessary">Rebase if necessary</string>
+
     <!-- Related changes -->
     <string name="related_changes">Related changes</string>
     <string name="conflicts_with">Conflicts with</string>

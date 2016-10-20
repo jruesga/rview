@@ -333,6 +333,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     app:submitType="@{submitType}"
+                    app:allCaps="true"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="12sp" />
