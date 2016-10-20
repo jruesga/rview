@@ -710,12 +710,12 @@ public class MainActivity extends ChangeListBaseActivity {
             CustomFilter filter = mCustomFilters.get(menuId - MY_FILTERS_GROUP_BASE_ID);
             mCustomFilters.remove(filter);
             Preferences.setAccountCustomFilters(this, mAccount, mCustomFilters);
-            updateAccountCustomFilters();
 
             if (mCustomFilters.isEmpty()) {
                 int defaultMenu = Preferences.getAccountHomePageId(this, mAccount);
                 performSelectItem(defaultMenu, false);
             }
+            updateAccountCustomFilters();
         }
     }
 
