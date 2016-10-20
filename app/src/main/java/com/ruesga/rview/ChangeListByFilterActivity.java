@@ -52,6 +52,7 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
         super.onCreate(savedInstanceState);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
+        setResult(RESULT_CANCELED);
 
         // Check we have valid arguments
         if (getIntent() == null) {
@@ -195,6 +196,8 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
                 getSupportActionBar().setTitle(newValue);
             }
             invalidateOptionsMenu();
+
+            setResult(RESULT_OK);
         });
         fragment.show(getSupportFragmentManager(), EditDialogFragment.TAG);
     }

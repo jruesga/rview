@@ -50,6 +50,8 @@ import java.util.Arrays;
 
 public class ActivityHelper {
 
+    public static final int LIST_RESULT_CODE = 100;
+
     public static void openUriInCustomTabs(Activity activity, String uri) {
         openUriInCustomTabs(activity, Uri.parse(uri));
     }
@@ -149,12 +151,12 @@ public class ActivityHelper {
     }
 
     public static void openChangeListByFilterActivity(
-            Context context, String title, ChangeQuery filter, boolean dirty) {
-        Intent intent = new Intent(context, ChangeListByFilterActivity.class);
+            Activity activity, String title, ChangeQuery filter, boolean dirty) {
+        Intent intent = new Intent(activity, ChangeListByFilterActivity.class);
         intent.putExtra(Constants.EXTRA_TITLE, title);
         intent.putExtra(Constants.EXTRA_FILTER, filter.toString());
         intent.putExtra(Constants.EXTRA_DIRTY, dirty);
-        context.startActivity(intent);
+        activity.startActivityForResult(intent, LIST_RESULT_CODE);
     }
 
     public static void openRelatedChangesActivity(

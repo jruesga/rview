@@ -17,6 +17,7 @@ package com.ruesga.rview;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
@@ -106,6 +107,14 @@ public class SearchActivity extends AppCompatActivity {
         configureSearchHint();
 
         enterReveal();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ActivityHelper.LIST_RESULT_CODE && resultCode == RESULT_OK) {
+            // Directly finish this activity. The search data was used
+            finish();
+        }
     }
 
     @Override

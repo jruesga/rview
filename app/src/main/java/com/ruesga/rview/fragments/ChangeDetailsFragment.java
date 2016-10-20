@@ -1482,7 +1482,7 @@ public class ChangeDetailsFragment extends Fragment {
                 filter = new ChangeQuery().topic(((TextView) v).getText().toString());
                 break;
         }
-        ActivityHelper.openChangeListByFilterActivity(getContext(), title, filter, false);
+        ActivityHelper.openChangeListByFilterActivity(getActivity(), title, filter, false);
     }
 
     private void performAction(View v) {
