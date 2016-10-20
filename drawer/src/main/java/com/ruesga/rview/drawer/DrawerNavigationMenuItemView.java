@@ -39,11 +39,16 @@ import android.widget.ImageView;
 @SuppressWarnings({"deprecation", "unused"})
 public class DrawerNavigationMenuItemView extends ForegroundLinearLayout implements MenuView.ItemView {
 
+    public interface OnMenuButtonClickListener {
+        void onMenuButtonClick(int menuItemId);
+    }
+
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
 
     private final int mIconSize;
 
     private final ImageView mIcon;
+    private final ImageView mButton;
     private final CheckedTextView mTextView;
     private final CheckedTextView mSubTextView;
 
@@ -52,6 +57,8 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout impleme
     private MenuItemImpl mItemData;
 
     private ColorStateList mIconTintList;
+
+    private OnMenuButtonClickListener mOnMenuButtonClickListener;
 
     public DrawerNavigationMenuItemView(Context context) {
         this(context, null);
@@ -68,10 +75,20 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout impleme
         mIconSize = context.getResources().getDimensionPixelSize(
                 R.dimen.drawer_navigation_icon_size);
         mIcon = (ImageView) findViewById(R.id.drawer_menu_item_icon);
+        mButton = (ImageView) findViewById(R.id.drawer_menu_item_button);
         mTextView = (CheckedTextView) findViewById(R.id.drawer_menu_item_text);
         mTextView.setDuplicateParentStateEnabled(true);
         mSubTextView = (CheckedTextView) findViewById(R.id.drawer_menu_item_subtext);
         mSubTextView.setDuplicateParentStateEnabled(true);
+
+        mButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnMenuButtonClickListener != null) {
+                    mOnMenuButtonClickListener.onMenuButtonClick(mItemData.getItemId());
+                }
+            }
+        });
     }
 
     @Override
@@ -90,6 +107,10 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout impleme
         setTitle(itemData.getTitle());
         setIcon(itemData.getIcon());
         setActionView(itemData.getActionView());
+    }
+
+    public void setOnMenuButtonClickListener(OnMenuButtonClickListener listener) {
+        mOnMenuButtonClickListener = listener;
     }
 
     public void recycle() {
@@ -130,17 +151,33 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout impleme
     public void setTitle(CharSequence title) {
         String s1 = null;
         String s2 = null;
+        String s3 = null;
         if (!TextUtils.isEmpty(title)) {
             s1 = title.toString();
-            if (s1.contains(DrawerNavigationView.SUBTITLE_SEPARATOR)) {
-                String[] s = s1.split(DrawerNavigationView.SUBTITLE_SEPARATOR);
+            if (s1.contains(DrawerNavigationView.SEPARATOR)) {
+                String[] s = s1.split(DrawerNavigationView.SEPARATOR);
                 s1 = s[0];
                 s2 = s[1];
+                if (s.length >= 3) {
+                    s3 = s[2];
+                }
             }
         }
         mTextView.setText(s1);
         mSubTextView.setText(s2);
         mSubTextView.setVisibility(TextUtils.isEmpty(s2) ? View.GONE : View.VISIBLE);
+
+        int id = 0;
+        if (!TextUtils.isEmpty(s3)) {
+            final Context ctx = getContext();
+            id = ctx.getResources().getIdentifier(s3, "drawable", ctx.getPackageName());
+        }
+        if (id > 0) {
+            mButton.setImageResource(id);
+            mButton.setVisibility(View.VISIBLE);
+        } else {
+            mButton.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -152,6 +189,7 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout impleme
     public void setChecked(boolean checked) {
         refreshDrawableState();
         mIcon.setSelected(checked);
+        mButton.setSelected(checked);
         mTextView.setChecked(checked);
         mSubTextView.setChecked(checked);
     }

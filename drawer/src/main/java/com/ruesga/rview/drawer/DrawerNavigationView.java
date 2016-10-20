@@ -45,6 +45,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.ruesga.rview.drawer.DrawerNavigationMenuItemView.OnMenuButtonClickListener;
+
 /**
  * Represents a standard navigation menu for application. The menu contents can be populated
  * by a menu resource file.
@@ -72,7 +74,7 @@ import android.view.View;
 @SuppressWarnings({"unused", "JavaDoc", "deprecation"})
 public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
 
-    public static final String SUBTITLE_SEPARATOR = "\u0001";
+    public static final String SEPARATOR = "\u0001";
 
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
     private static final int[] DISABLED_STATE_SET = {-android.R.attr.state_enabled};
@@ -204,6 +206,10 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
     public void setDrawerNavigationItemSelectedListener(
             OnDrawerNavigationItemSelectedListener listener) {
         mListener = listener;
+    }
+
+    public void setOnMenuButtonClickListener(OnMenuButtonClickListener listener) {
+        mPresenter.setOnMenuButtonClickListener(listener);
     }
 
     @Override

@@ -44,6 +44,7 @@ public class Constants {
     public static final String EXTRA_FRAGMENT_ARGS = "fragment_args";
     public static final String EXTRA_FRAGMENT_EXTRA = "fragment_extra";
     public static final String EXTRA_DATA_CHANGED = "data_changed";
+    public static final String EXTRA_DIRTY = "dirty";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
 
@@ -90,5 +91,6 @@ public class Constants {
     public static final String PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES
             = "account_highlight_trailing_whitespaces";
     public static final String PREF_ACCOUNT_SEARCH_MODE = "account_search_mode";
+    public static final String PREF_ACCOUNT_CUSTOM_FILTERS = "account_custom_filters";
 
 }

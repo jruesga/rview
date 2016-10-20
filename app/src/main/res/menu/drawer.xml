@@ -73,6 +73,16 @@
         </item>
     </group>
     <group
+        android:id="@+id/category_my_filters"
+        android:checkableBehavior="all">
+        <item android:title="@string/menu_my_filters_category">
+            <menu
+                android:id="@+id/category_my_filters_group">
+                <!-- Custom filters goes here -->
+            </menu>
+        </item>
+    </group>
+    <group
         android:id="@+id/category_my_account"
         android:checkableBehavior="none">
         <item

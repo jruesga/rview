@@ -57,6 +57,7 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
 
@@ -70,7 +71,8 @@ public class MainActivity extends ChangeListBaseActivity {
     private static final int MESSAGE_NAVIGATE_TO = 0;
     private static final int MESSAGE_DELETE_ACCOUNT = 1;
 
-    private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 100;
+    private static final int MY_FILTERS_GROUP_BASE_ID = 1000;
+    private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 2000;
 
     @ProguardIgnored
     public static class Model implements Parcelable {
@@ -170,6 +172,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
     private Account mAccount;
     private List<Account> mAccounts;
+    private List<CustomFilter> mCustomFilters;
 
     private Handler mUiHandler;
 
@@ -230,6 +233,13 @@ public class MainActivity extends ChangeListBaseActivity {
             requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
                     ? defaultMenu : mModel.currentNavigationItemId, true);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        updateAccountCustomFilters();
     }
 
     @Override
@@ -336,7 +346,7 @@ public class MainActivity extends ChangeListBaseActivity {
         mHeaderDrawerBinding = DataBindingUtil.inflate(LayoutInflater.from(this),
                 R.layout.navigation_header, mBinding.drawerNavigationView, false);
         mBinding.drawerNavigationView.addHeaderView(mHeaderDrawerBinding.getRoot());
-        performShowAccount(mModel.isAccountExpanded);
+        mBinding.drawerNavigationView.setOnMenuButtonClickListener(this::performDeleteCustomFilter);
 
         // Listen for click events and select the current one
         mBinding.drawerNavigationView.setDrawerNavigationItemSelectedListener(item -> {
@@ -347,8 +357,10 @@ public class MainActivity extends ChangeListBaseActivity {
         // Update the accounts and current account information
         if (mAccount != null) {
             updateCurrentAccountDrawerInfo();
+            updateAccountCustomFilters();
             updateAccountsDrawerInfo();
         }
+        performShowAccount(mModel.isAccountExpanded);
     }
 
     private void performShowAccount(boolean show) {
@@ -356,6 +368,8 @@ public class MainActivity extends ChangeListBaseActivity {
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
         menu.setGroupVisible(R.id.category_my_menu, !show && auth);
+        menu.setGroupVisible(R.id.category_my_filters,
+                !show && mCustomFilters != null && !mCustomFilters.isEmpty());
         menu.setGroupVisible(R.id.category_my_account, show);
         menu.setGroupVisible(R.id.category_other_accounts, show);
         menu.setGroupVisible(R.id.category_info, show);
@@ -444,8 +458,8 @@ public class MainActivity extends ChangeListBaseActivity {
                 builder.start(this);
                 break;
             default:
-                // Other accounts group?
                 if (item.getGroupId() == R.id.category_other_accounts) {
+                    // Other accounts ground action
                     int accountIndex = item.getItemId() - OTHER_ACCOUNTS_GROUP_BASE_ID;
                     Account account = mAccounts.get(accountIndex);
                     if (account != null) {
@@ -473,16 +487,48 @@ public class MainActivity extends ChangeListBaseActivity {
                 // Is a filter menu?
                 mModel.filterQuery = getQueryFilterExpressionFromMenuItemId(item.getItemId());
                 if (mModel.filterQuery != null) {
-                    mModel.filterName = item.getTitle().toString();
+                    mModel.filterName = item.getTitle().toString()
+                            .split(DrawerNavigationView.SEPARATOR)[0];
                     openFilterFragment(mModel.filterName, mModel.filterQuery);
                 }
                 break;
         }
     }
 
+    private void updateAccountCustomFilters() {
+        // Remove all custom filters and re-add them
+        final DrawerNavigationMenu menu =
+                (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
+        int myFiltersGroupIndex = menu.findGroupIndex(R.id.category_my_filters);
+        MenuItem group = menu.getItem(myFiltersGroupIndex);
+        SubMenu myFiltersSubMenu = group.getSubMenu();
+        int count = myFiltersSubMenu.size() - 1;
+        for (int i = count; i >= 0; i--) {
+            ((DrawerNavigationSubMenu)myFiltersSubMenu).removeItemAt(i);
+        }
+
+        mCustomFilters = Preferences.getAccountCustomFilters(this, mAccount);
+        if (mCustomFilters != null) {
+            int i = 0;
+            for (CustomFilter filter : mCustomFilters) {
+                int id = MY_FILTERS_GROUP_BASE_ID + i;
+                String title = filter.mName
+                        + DrawerNavigationView.SEPARATOR
+                        + filter.mQuery.toString()
+                        + DrawerNavigationView.SEPARATOR
+                        + "ic_close";
+                MenuItem item = myFiltersSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
+                item.setIcon(R.drawable.ic_filter);
+                item.setCheckable(true);
+                i++;
+            }
+        }
+    }
+
     private void updateAccountsDrawerInfo() {
         // Remove all accounts and re-add them
-        final DrawerNavigationMenu menu = (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
+        final DrawerNavigationMenu menu =
+                (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
         int otherAccountGroupIndex = menu.findGroupIndex(R.id.category_other_accounts);
         MenuItem group = menu.getItem(otherAccountGroupIndex);
         SubMenu otherAccountsSubMenu = group.getSubMenu();
@@ -500,7 +546,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
             int id = OTHER_ACCOUNTS_GROUP_BASE_ID + i;
             String title = account.getAccountDisplayName()
-                    + DrawerNavigationView.SUBTITLE_SEPARATOR
+                    + DrawerNavigationView.SEPARATOR
                     + account.getRepositoryDisplayName();
             MenuItem item = otherAccountsSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
             item.setIcon(R.drawable.ic_account_circle);
@@ -534,6 +580,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
         // Refresh the ui
         updateCurrentAccountDrawerInfo();
+        updateAccountCustomFilters();
         updateAccountsDrawerInfo();
         performShowAccount(false);
 
@@ -658,6 +705,20 @@ public class MainActivity extends ChangeListBaseActivity {
         tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
     }
 
+    private void performDeleteCustomFilter(int menuId) {
+        if (mCustomFilters != null) {
+            CustomFilter filter = mCustomFilters.get(menuId - MY_FILTERS_GROUP_BASE_ID);
+            mCustomFilters.remove(filter);
+            Preferences.setAccountCustomFilters(this, mAccount, mCustomFilters);
+            updateAccountCustomFilters();
+
+            if (mCustomFilters.isEmpty()) {
+                int defaultMenu = Preferences.getAccountHomePageId(this, mAccount);
+                performSelectItem(defaultMenu, false);
+            }
+        }
+    }
+
     private boolean launchAddAccountIfNeeded() {
         if (mAccount == null) {
             Intent i = new Intent(this, SetupAccountActivity.class);
@@ -668,9 +729,17 @@ public class MainActivity extends ChangeListBaseActivity {
     }
 
     private String getQueryFilterExpressionFromMenuItemId(int itemId) {
+        // Custom filters
+        if (mCustomFilters != null &&
+                itemId >= MY_FILTERS_GROUP_BASE_ID && itemId <= OTHER_ACCOUNTS_GROUP_BASE_ID) {
+            int filterIndex = itemId - MY_FILTERS_GROUP_BASE_ID;
+            CustomFilter customFilter = mCustomFilters.get(filterIndex);
+            return customFilter.mQuery.toString();
+        }
+
+        // Predefined filters
         String[] names = getResources().getStringArray(R.array.query_filters_ids_names);
         String[] filters = getResources().getStringArray(R.array.query_filters_values);
-
         int count = names.length;
         for (int i = 0; i < count; i++) {
             int id = getResources().getIdentifier(names[i], "id", getPackageName());
@@ -678,6 +747,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 return filters[i];
             }
         }
+
         return null;
     }
 

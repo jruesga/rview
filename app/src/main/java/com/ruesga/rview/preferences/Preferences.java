@@ -25,6 +25,7 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.CustomFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import static com.ruesga.rview.preferences.Constants.DEFAULT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DOWNLOAD_FORMAT;
@@ -55,7 +57,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_IS_FIRST_RUN;
 
 public class Preferences {
 
-    public static String getPreferencesName(Context context) {
+    private static String getPreferencesName(Context context) {
         return context.getPackageName();
     }
 
@@ -301,5 +303,72 @@ public class Preferences {
     public static boolean isAccountInlineCommentInMessages(Context context, Account account) {
         return account == null || getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES, true);
+    }
+
+    public static List<CustomFilter> getAccountCustomFilters(Context context, Account account) {
+        if (account == null) {
+            return null;
+        }
+
+        Set<String> set = getAccountPreferences(context, account)
+                .getStringSet(PREF_ACCOUNT_CUSTOM_FILTERS, null);
+        if (set == null) {
+            return null;
+        }
+
+        List<CustomFilter> filters = new ArrayList<>(set.size());
+        for (String s : set) {
+            filters.add(SerializationManager.getInstance().fromJson(s, CustomFilter.class));
+        }
+        Collections.sort(filters);
+        return filters;
+    }
+
+    public static void setAccountCustomFilters(
+            Context context, Account account, List<CustomFilter> filters) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        if (filters == null || filters.isEmpty()) {
+            editor.remove(PREF_ACCOUNT_CUSTOM_FILTERS);
+        } else {
+            Set<String> set = new HashSet<>();
+            for (CustomFilter cf : filters) {
+                set.add(SerializationManager.getInstance().toJson(cf));
+            }
+            editor.putStringSet(PREF_ACCOUNT_CUSTOM_FILTERS, set);
+        }
+        editor.apply();
+    }
+
+    public static void saveAccountCustomFilter(
+            Context context, Account account, CustomFilter filter) {
+        if (account == null) {
+            return;
+        }
+
+        Set<String> set = getAccountPreferences(context, account)
+                .getStringSet(PREF_ACCOUNT_CUSTOM_FILTERS, null);
+        if (set == null) {
+            set = new HashSet<>();
+        } else {
+            // https://android-review.googlesource.com/#/c/134312/
+            set = new HashSet<>(set);
+        }
+
+        // Remove and readd the custom filter
+        for (String s : set) {
+            CustomFilter cf = SerializationManager.getInstance().fromJson(s, CustomFilter.class);
+            if (cf.compareTo(filter) == 0) {
+                set.remove(s);
+            }
+        }
+        set.add(SerializationManager.getInstance().toJson(filter));
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putStringSet(PREF_ACCOUNT_CUSTOM_FILTERS, set);
+        editor.apply();
     }
 }

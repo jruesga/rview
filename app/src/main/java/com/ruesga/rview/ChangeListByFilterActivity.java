@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,10 +23,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
+import com.ruesga.rview.fragments.EditDialogFragment;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.preferences.Preferences;
 
 public class ChangeListByFilterActivity extends ChangeListBaseActivity {
 
@@ -34,6 +44,8 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
     private final String EXTRA_SELECTED_ITEM = "selected_item";
 
     private ContentBinding mBinding;
+    private ChangeQuery mQuery;
+    private boolean mDirty;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,8 +63,15 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
             finish();
             return;
         }
+        mQuery = ChangeQuery.parse(filter);
+        if (mQuery == null) {
+            finish();
+            return;
+        }
+
+        mDirty = getIntent().getBooleanExtra(Constants.EXTRA_DIRTY, false);
         String title = getIntent().getStringExtra(Constants.EXTRA_TITLE);
-        if (TextUtils.isEmpty(title)) {
+        if (mDirty || TextUtils.isEmpty(title)) {
             title = getString(R.string.filter_unnamed);
         }
 
@@ -61,6 +80,15 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
             getSupportActionBar().setSubtitle(filter);
+
+            // Configure the diff_options menu
+            if (mDirty) {
+                configureOptionsTitle(getString(R.string.menu_filter_options));
+                configureOptionsMenu(R.menu.filter_options_menu, item -> {
+                    performSaveCustomFilter(getOptionsMenu());
+                    return false;
+                });
+            }
         }
 
         if (savedInstanceState != null) {
@@ -83,6 +111,24 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
         } else {
             openChangeListByFilterFragment(filter);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (mDirty) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.filter_options, menu);
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_filter_options) {
+            openOptionsDrawer();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void openChangeListByFilterFragment(String filter) {
@@ -121,5 +167,24 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
     @Override
     public ContentBinding getContentBinding() {
         return mBinding;
+    }
+
+    private void performSaveCustomFilter(View v) {
+        closeOptionsDrawer();
+
+        EditDialogFragment fragment = EditDialogFragment.newInstance(
+                getString(R.string.custom_filter_title),
+                null,
+                getString(R.string.action_save),
+                getString(R.string.custom_filter_hint),
+                false,
+                v);
+        fragment.setOnEditChanged(newValue -> {
+            final Context ctx = ChangeListByFilterActivity.this;
+            CustomFilter cf = new CustomFilter(newValue, mQuery);
+            Account account = Preferences.getAccount(ctx);
+            Preferences.saveAccountCustomFilter(ctx, account, cf);
+        });
+        fragment.show(getSupportFragmentManager(), EditDialogFragment.TAG);
     }
 }

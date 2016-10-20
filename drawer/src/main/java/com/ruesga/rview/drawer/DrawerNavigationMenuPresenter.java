@@ -44,6 +44,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ruesga.rview.drawer.DrawerNavigationMenuItemView.OnMenuButtonClickListener;
+
 import java.util.ArrayList;
 
 @SuppressWarnings({"unused", "WeakerAccess"})
@@ -67,6 +69,8 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
     private ColorStateList mTextColor;
     private ColorStateList mIconTintList;
     private Drawable mItemBackground;
+
+    private OnMenuButtonClickListener mOnMenuButtonClickListener;
 
     /**
      * Padding to be inserted at the top of the list to avoid the first menu item
@@ -126,6 +130,10 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         if (mCallback != null) {
             mCallback.onCloseMenu(menu, allMenusAreClosing);
         }
+    }
+
+    public void setOnMenuButtonClickListener(OnMenuButtonClickListener listener) {
+        mOnMenuButtonClickListener = listener;
     }
 
     @Override
@@ -272,9 +280,11 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
     private static class NormalViewHolder extends ViewHolder {
 
         public NormalViewHolder(LayoutInflater inflater, ViewGroup parent,
-                View.OnClickListener listener) {
+                View.OnClickListener listener,
+                OnMenuButtonClickListener buttonListener) {
             super(inflater.inflate(R.layout.drawer_navigation_item, parent, false));
             itemView.setOnClickListener(listener);
+            ((DrawerNavigationMenuItemView)itemView).setOnMenuButtonClickListener(buttonListener);
         }
 
     }
@@ -375,7 +385,8 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType) {
                 case VIEW_TYPE_NORMAL:
-                    return new NormalViewHolder(mLayoutInflater, parent, mOnClickListener);
+                    return new NormalViewHolder(mLayoutInflater, parent,
+                            mOnClickListener, mOnMenuButtonClickListener);
                 case VIEW_TYPE_SUBHEADER:
                     return new SubheaderViewHolder(mLayoutInflater, parent);
                 case VIEW_TYPE_SEPARATOR:

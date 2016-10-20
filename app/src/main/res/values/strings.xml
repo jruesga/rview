@@ -42,6 +42,7 @@
     <string name="menu_draft">Draft</string>
     <string name="menu_starred">Starred</string>
     <string name="menu_watched">Watched</string>
+    <string name="menu_my_filters_category">My filters</string>
     <string name="menu_account_settings">Account settings</string>
     <string name="menu_account_stats">Account stats</string>
     <string name="menu_delete_account">Delete account</string>
@@ -51,6 +52,7 @@
     <string name="menu_search">Search</string>
     <string name="menu_options">Options</string>
     <string name="menu_diff_options">Diff options</string>
+    <string name="menu_filter_options">Filter options</string>
     <string name="menu_info_category">Information</string>
     <string name="menu_share">Share</string>
     <string name="menu_privacy">Privacy policy</string>
@@ -264,7 +266,11 @@
     <string name="diff_viewer_image_dimensions_label">Dimensions</string>
     <string name="diff_viewer_image_dimensions"><xliff:g id="width">%1$d</xliff:g> x <xliff:g id="height">%2$d</xliff:g></string>
 
-    <!-- Diff options -->
+    <!-- Save custom filter dialog -->
+    <string name="custom_filter_title">Custom filter</string>
+    <string name="custom_filter_hint">Filter name</string>
+
+    <!-- Options -->
     <string name="options_base">Base</string>
     <string name="options_actions">Actions</string>
     <string name="options_base_left">Left</string>
@@ -279,6 +285,7 @@
     <string name="options_highlight">Highlight</string>
     <string name="options_highlight_tabs">Tabs</string>
     <string name="options_highlight_trailing_whitespaces">Trailing whitespaces</string>
+    <string name="options_save_filter">Save</string>
 
     <!-- Search dialog -->
     <string name="search_by_change">Change</string>

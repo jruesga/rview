@@ -149,10 +149,11 @@ public class ActivityHelper {
     }
 
     public static void openChangeListByFilterActivity(
-            Context context, String title, ChangeQuery filter) {
+            Context context, String title, ChangeQuery filter, boolean dirty) {
         Intent intent = new Intent(context, ChangeListByFilterActivity.class);
         intent.putExtra(Constants.EXTRA_TITLE, title);
         intent.putExtra(Constants.EXTRA_FILTER, filter.toString());
+        intent.putExtra(Constants.EXTRA_DIRTY, dirty);
         context.startActivity(intent);
     }
 
