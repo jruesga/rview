@@ -33,7 +33,6 @@ import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
-import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.gerrit.model.CommitInfo;
@@ -59,7 +58,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 @ProguardIgnored
@@ -434,11 +432,6 @@ public class Formatter {
     public static void toReviewerKind(ImageView view, Boolean isGroup) {
         view.setImageResource(isGroup != null && isGroup
                 ? R.drawable.ic_group : R.drawable.ic_person);
-    }
-
-    @BindingAdapter("bindEmptyActions")
-    public static void bindEmptyActions(View v, Map<String, ActionInfo> actions) {
-        v.setVisibility(actions == null || actions.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
     @BindingAdapter("accountEmails")

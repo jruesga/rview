@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
 
+import java.util.Map;
+
 @ProguardIgnored
 @SuppressWarnings("unused")
 public class BindingAdapters {
@@ -93,5 +95,10 @@ public class BindingAdapters {
     @BindingAdapter("bindNull")
     public static void bindNull(View v, Object o) {
         v.setVisibility(o == null ? View.GONE : View.VISIBLE);
+    }
+
+    @BindingAdapter("bindEmptyMap")
+    public static void bindEmptyMap(View v, Map<?, ?> o) {
+        v.setVisibility(o == null || o.isEmpty() ? View.GONE : View.VISIBLE);
     }
 }

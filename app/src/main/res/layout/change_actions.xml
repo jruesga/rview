@@ -36,7 +36,7 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         android:orientation="horizontal"
-        app:bindEmptyActions="@{actions}"
+        app:bindEmptyMap="@{actions}"
         android:background="@android:color/transparent"
         android:gravity="end">
 
