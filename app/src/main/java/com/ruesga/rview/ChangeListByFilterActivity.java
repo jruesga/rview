@@ -131,6 +131,11 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     private void openChangeListByFilterFragment(String filter) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
         Fragment fragment = ChangeListByFilterFragment.newInstance(filter);
@@ -184,6 +189,12 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
             CustomFilter cf = new CustomFilter(newValue, mQuery);
             Account account = Preferences.getAccount(ctx);
             Preferences.saveAccountCustomFilter(ctx, account, cf);
+
+            mDirty = false;
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(newValue);
+            }
+            invalidateOptionsMenu();
         });
         fragment.show(getSupportFragmentManager(), EditDialogFragment.TAG);
     }

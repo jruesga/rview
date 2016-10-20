@@ -523,6 +523,9 @@ public class MainActivity extends ChangeListBaseActivity {
                 i++;
             }
         }
+
+        menu.setGroupVisible(R.id.category_my_filters,
+                !mModel.isAccountExpanded && mCustomFilters != null && !mCustomFilters.isEmpty());
     }
 
     private void updateAccountsDrawerInfo() {
@@ -711,9 +714,9 @@ public class MainActivity extends ChangeListBaseActivity {
             mCustomFilters.remove(filter);
             Preferences.setAccountCustomFilters(this, mAccount, mCustomFilters);
 
-            if (mCustomFilters.isEmpty()) {
+            if (mModel.currentNavigationItemId == menuId) {
                 int defaultMenu = Preferences.getAccountHomePageId(this, mAccount);
-                performSelectItem(defaultMenu, false);
+                requestNavigateTo(defaultMenu, true);
             }
             updateAccountCustomFilters();
         }
