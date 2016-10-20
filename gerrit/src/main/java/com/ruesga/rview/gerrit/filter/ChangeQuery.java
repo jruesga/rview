@@ -333,9 +333,14 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
 
                 case QueryLexer.AND:
                 case QueryLexer.OR:
-                    addField(tree.getChild(0), query);
+                    int childType = tree.getChild(0).getType();
+                    if (childType == QueryLexer.NOT) {
+                        query.negate(toChangeQuery(tree.getChild(0).getChild(0)));
+                    } else {
+                        addField(tree.getChild(0), query);
+                    }
                     for (int i = 1; i < tree.getChildCount(); i++) {
-                        int childType = tree.getChild(i).getType();
+                        childType = tree.getChild(i).getType();
                         if (childType == QueryLexer.FIELD_NAME) {
                             if (tree.getType() == QueryLexer.AND) {
                                 query.and(toChangeQuery(tree.getChild(i)));

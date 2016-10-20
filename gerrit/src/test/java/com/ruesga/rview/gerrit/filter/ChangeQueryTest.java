@@ -72,6 +72,16 @@ public class ChangeQueryTest {
                         .and(new ChangeQuery().ownerSelf()
                                 .or(new ChangeQuery().reviewerSelf()))
                         .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.WEEKS, 4))));
+
+        testParseQuery("status:open AND -(topic:\"translations\")",
+                new ChangeQuery().status(StatusType.OPEN).and(
+                        new ChangeQuery().negate(
+                            new ChangeQuery().topic("translations"))));
+        testParseQuery("status:open AND -(topic:\"translations\" AND owner:\"aa\")",
+                new ChangeQuery().status(StatusType.OPEN).and(
+                        new ChangeQuery().negate(
+                                new ChangeQuery().topic("translations").and(
+                                        new ChangeQuery().owner("aa")))));
     }
 
     private void testParseQuery(String expression, ChangeQuery expectedResult) {

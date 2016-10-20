@@ -24,7 +24,12 @@ public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
         if (query.queries().size() == 0) {
             throw new IllegalArgumentException("Empty query");
         }
-        add("AND (" + query + ")");
+        int size = query.queries().size();
+        if (size > 1) {
+            add("AND (" + query + ")");
+        } else {
+            add("AND " + query);
+        }
         //noinspection unchecked
         return (T)this;
     }
@@ -36,7 +41,12 @@ public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
         if (query.queries().size() == 0) {
             throw new IllegalArgumentException("Empty query");
         }
-        add("OR (" + query + ")");
+        int size = query.queries().size();
+        if (size > 1) {
+            add("OR (" + query + ")");
+        } else {
+            add("OR " + query);
+        }
         //noinspection unchecked
         return (T)this;
     }
