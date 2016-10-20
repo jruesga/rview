@@ -324,6 +324,7 @@ public class Preferences {
         return filters;
     }
 
+    @SuppressWarnings("Convert2streamapi")
     public static void setAccountCustomFilters(
             Context context, Account account, List<CustomFilter> filters) {
         if (account == null) {

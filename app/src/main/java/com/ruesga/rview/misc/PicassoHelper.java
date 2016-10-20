@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -44,6 +45,7 @@ public class PicassoHelper {
 
     private static final String TAG = "Networking";
 
+    @SuppressLint("StaticFieldLeak")
     private static Picasso sPicasso;
 
     public static Picasso getPicassoClient(Context context) {

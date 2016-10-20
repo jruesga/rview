@@ -81,12 +81,9 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout impleme
         mSubTextView = (CheckedTextView) findViewById(R.id.drawer_menu_item_subtext);
         mSubTextView.setDuplicateParentStateEnabled(true);
 
-        mButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mOnMenuButtonClickListener != null) {
-                    mOnMenuButtonClickListener.onMenuButtonClick(mItemData.getItemId());
-                }
+        mButton.setOnClickListener(v -> {
+            if (mOnMenuButtonClickListener != null) {
+                mOnMenuButtonClickListener.onMenuButtonClick(mItemData.getItemId());
             }
         });
     }
