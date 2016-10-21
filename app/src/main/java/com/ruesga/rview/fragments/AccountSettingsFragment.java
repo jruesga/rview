@@ -26,6 +26,8 @@ import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.CustomFilter;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
 import java.util.ArrayList;
@@ -86,6 +88,14 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
                 names.add(namesArray[i]);
                 titles.add(titlesArray[i]);
                 i++;
+            }
+        }
+
+        List<CustomFilter> filters = Preferences.getAccountCustomFilters(getContext(), account);
+        if (filters != null) {
+            for (CustomFilter filter : filters) {
+                names.add(Constants.CUSTOM_FILTER_PREFIX + filter.mId);
+                titles.add(filter.mName);
             }
         }
 

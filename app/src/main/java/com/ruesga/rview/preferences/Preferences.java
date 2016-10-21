@@ -32,11 +32,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.ruesga.rview.preferences.Constants.DEFAULT_ANONYMOUS_HOME;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_AUTHENTICATED_HOME;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
@@ -170,8 +172,27 @@ public class Preferences {
             return context.getResources().getIdentifier(Constants.DEFAULT_ANONYMOUS_HOME,
                     "id", context.getPackageName());
         }
-        return context.getResources().getIdentifier(
-                getAccountHomePage(context, account), "id", context.getPackageName());
+
+        String homePage = getAccountHomePage(context, account);
+        if (homePage.startsWith(Constants.CUSTOM_FILTER_PREFIX)) {
+            String id = homePage.substring(Constants.CUSTOM_FILTER_PREFIX.length());
+            List<CustomFilter> filters = Preferences.getAccountCustomFilters(context, account);
+            if (filters != null) {
+                int i = 0;
+                for (CustomFilter filter : filters) {
+                    if (filter.mId.equals(id)) {
+                        return MY_FILTERS_GROUP_BASE_ID + i;
+                    }
+                    i++;
+                }
+            }
+        }
+        int resId = context.getResources().getIdentifier(homePage, "id", context.getPackageName());
+        if (resId == 0) {
+            return context.getResources().getIdentifier(getDefaultHomePageForAccount(account),
+                    "id", context.getPackageName());
+        }
+        return resId;
     }
 
     public static int getAccountFetchedItems(Context context, Account account) {
@@ -316,11 +337,21 @@ public class Preferences {
             return null;
         }
 
+        boolean save = false;
         List<CustomFilter> filters = new ArrayList<>(set.size());
         for (String s : set) {
-            filters.add(SerializationManager.getInstance().fromJson(s, CustomFilter.class));
+            CustomFilter cf = SerializationManager.getInstance().fromJson(s, CustomFilter.class);
+            if (cf.mId == null) {
+                cf.mId = UUID.randomUUID().toString();
+                save = true;
+            }
+            filters.add(cf);
         }
         Collections.sort(filters);
+
+        if (save) {
+            setAccountCustomFilters(context, account, filters);
+        }
         return filters;
     }
 
@@ -362,7 +393,7 @@ public class Preferences {
         // Remove and readd the custom filter
         for (String s : set) {
             CustomFilter cf = SerializationManager.getInstance().fromJson(s, CustomFilter.class);
-            if (cf.compareTo(filter) == 0) {
+            if (cf.equals(filter)) {
                 set.remove(s);
             }
         }

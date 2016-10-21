@@ -23,16 +23,21 @@ import com.google.gson.annotations.SerializedName;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.misc.SerializationManager;
 
+import java.util.UUID;
+
 public class CustomFilter implements Parcelable, Comparable<CustomFilter> {
+    @SerializedName("id") public String mId;
     @SerializedName("name") public String mName;
     @SerializedName("query") public ChangeQuery mQuery;
 
     public CustomFilter(String name, ChangeQuery query) {
+        this.mId = UUID.randomUUID().toString();
         this.mName = name;
         this.mQuery = query;
     }
 
     protected CustomFilter(Parcel in) {
+        mId = in.readString();
         mName = in.readString();
         mQuery = SerializationManager.getInstance().fromJson(in.readString(), ChangeQuery.class);
     }
@@ -56,13 +61,18 @@ public class CustomFilter implements Parcelable, Comparable<CustomFilter> {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mId);
         parcel.writeString(mName);
         parcel.writeString(SerializationManager.getInstance().toJson(mQuery));
     }
 
     @Override
     public int compareTo(@NonNull CustomFilter repository) {
-        return mName.compareTo(repository.mName);
+        int ret = mName.compareTo(repository.mName);
+        if (ret == 0) {
+            ret = mId.compareTo(repository.mId);
+        }
+        return ret;
     }
 
     @Override
@@ -72,12 +82,12 @@ public class CustomFilter implements Parcelable, Comparable<CustomFilter> {
 
         CustomFilter that = (CustomFilter) o;
 
-        return mName != null ? mName.equals(that.mName) : that.mName == null;
+        return mId != null ? mId.equals(that.mId) : that.mId == null;
 
     }
 
     @Override
     public int hashCode() {
-        return mName != null ? mName.hashCode() : 0;
+        return mId != null ? mId.hashCode() : 0;
     }
 }

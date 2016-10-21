@@ -58,10 +58,14 @@ import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
+
+import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
+import static com.ruesga.rview.preferences.Constants.OTHER_ACCOUNTS_GROUP_BASE_ID;
 
 public class MainActivity extends ChangeListBaseActivity {
 
@@ -70,9 +74,6 @@ public class MainActivity extends ChangeListBaseActivity {
 
     private static final int MESSAGE_NAVIGATE_TO = 0;
     private static final int MESSAGE_DELETE_ACCOUNT = 1;
-
-    private static final int MY_FILTERS_GROUP_BASE_ID = 1000;
-    private static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 2000;
 
     @ProguardIgnored
     public static class Model implements Parcelable {
@@ -489,7 +490,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 if (mModel.filterQuery != null) {
                     mModel.filterName = item.getTitle().toString()
                             .split(DrawerNavigationView.SEPARATOR)[0];
-                    openFilterFragment(mModel.filterName, mModel.filterQuery);
+                    openFilterFragment(item.getItemId(), mModel.filterName, mModel.filterQuery);
                 }
                 break;
         }
@@ -685,7 +686,7 @@ public class MainActivity extends ChangeListBaseActivity {
         tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
     }
 
-    private void openFilterFragment(CharSequence title, String filter) {
+    private void openFilterFragment(int id, CharSequence title, String filter) {
         // Setup the title and tabs
         invalidateTabs();
         if (getSupportActionBar() != null) {
@@ -706,6 +707,10 @@ public class MainActivity extends ChangeListBaseActivity {
         }
         Fragment newFragment = ChangeListByFilterFragment.newInstance(filter, true);
         tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
+
+        // Select the drawer item
+        mBinding.drawerNavigationView.setCheckedItem(id);
+        mModel.currentNavigationItemId = id;
     }
 
     private void performDeleteCustomFilter(int menuId) {
