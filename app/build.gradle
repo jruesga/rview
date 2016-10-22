@@ -65,16 +65,18 @@ android {
 
     signingConfigs {
         release {
-            def Properties releaseProps = new Properties()
-            releaseProps.load(new FileInputStream(rootProject.file('release.properties')))
+            if (rootProject.file('release.properties').exists()) {
+                def Properties releaseProps = new Properties()
+                releaseProps.load(new FileInputStream(rootProject.file('release.properties')))
 
-            def Properties ksProps = new Properties()
-            ksProps.load(new FileInputStream(new File((String) releaseProps['signing.config'])))
-            storeFile file(ksProps['keystore'])
-            keyAlias ksProps['alias']
-            storePassword ksProps['storePass']
-            keyPassword ksProps['pass']
-            storeType ksProps['storeType']
+                def Properties ksProps = new Properties()
+                ksProps.load(new FileInputStream(new File((String) releaseProps['signing.config'])))
+                storeFile file(ksProps['keystore'])
+                keyAlias ksProps['alias']
+                storePassword ksProps['storePass']
+                keyPassword ksProps['pass']
+                storeType ksProps['storeType']
+            }
         }
     }
 
