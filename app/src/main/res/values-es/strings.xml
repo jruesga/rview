@@ -1,0 +1,305 @@
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Actions -->
+    <string name="action_previous">"Anterior"</string>
+    <string name="action_next">"Siguiente"</string>
+    <string name="action_done">"Hecho"</string>
+    <string name="action_delete">"Eliminar"</string>
+    <string name="action_cancel">"Cancelar"</string>
+    <string name="action_let_start">"¡Comencemos!"</string>
+    <string name="action_share">"Compartir"</string>
+    <string name="action_add">"Añadir"</string>
+    <string name="action_change">"Cambio"</string>
+    <string name="action_save">"Guardar"</string>
+    <string name="action_retry">"Reintentar"</string>
+
+    <!-- Menu options -->
+    <string name="menu_all_changes_category">"Todos los cambios"</string>
+    <string name="menu_open">"Abiertos"</string>
+    <string name="menu_merged">"Merged"</string>
+    <string name="menu_abandoned">"Abandonados"</string>
+    <string name="menu_my_menu_category">"Mi menú"</string>
+    <string name="menu_dashboard">"Dashboard"</string>
+    <string name="menu_drafts">"Borradores"</string>
+    <string name="menu_draft">"Borrador"</string>
+    <string name="menu_starred">"Destacados"</string>
+    <string name="menu_watched">"Seguidos"</string>
+    <string name="menu_my_filters_category">"Mis filtros"</string>
+    <string name="menu_account_settings">"Configuración de la cuenta"</string>
+    <string name="menu_account_stats">"Estadísticas de la cuenta"</string>
+    <string name="menu_delete_account">"Eliminar cuenta"</string>
+    <string name="menu_other_accounts_category">"Otras cuentas"</string>
+    <string name="menu_add_account">"Añadir cuenta"</string>
+    <string name="menu_help">"Ayuda"</string>
+    <string name="menu_search">"Buscar"</string>
+    <string name="menu_options">"Opciones"</string>
+    <string name="menu_diff_options">"Opciones de diff"</string>
+    <string name="menu_filter_options">"Opciones de filtrado"</string>
+    <string name="menu_info_category">"Información"</string>
+    <string name="menu_share">"Compartir"</string>
+    <string name="menu_privacy">"Política de privacidad"</string>
+    <string name="menu_about">"Acerca de"</string>
+
+    <!-- Exceptions -->
+    <string name="exception_browser_not_found">"No se detectó navegador. No se puede iniciar <xliff:g example="http://example.com\" id="url\">%1$s</xliff:g>"</string>
+    <string name="exception_unsupported_server_version">"Servidor gerrit no compatible"</string>
+    <string name="exception_invalid_endpoint">"La dirección no es un servidor gerrit"</string>
+    <string name="exception_no_network_available">"No se ha detectado conexión de red"</string>
+    <string name="exception_invalid_user_password">"Usuario o contraseña inválidos"</string>
+    <string name="exception_invalid_request">"Solicitud inválida"</string>
+    <string name="exception_insufficient_permissions">"Privilegios insuficientes"</string>
+    <string name="exception_not_found">"No se ha encontrado la solicitud"</string>
+    <string name="exception_bad_request">"Solicitud Incorrecta"</string>
+    <string name="exception_request_error">"Error de Solicitud"</string>
+    <string name="exception_operation_failed">"Fallo en la operación"</string>
+    <string name="exception_cannot_handle_link">"Error con el enlace: <xliff:g id="url" example="http://example.com">%1$s</xliff:g>"</string>
+    <string name="exception_cannot_share_link">"Error al compartir el enlace"</string>
+
+    <!-- Accounts -->
+    <string name="account_deletion_title">"Eliminar cuenta"</string>
+    <string name="account_deletion_message">"Esta acción eliminará la cuenta y toda su información asociada."</string>
+    <string name="account_deletion_confirm_message">"Cuenta eliminada"</string>
+    <string name="account_exists">"La cuenta existe"</string>
+
+    <!-- Account wizard -->
+    <!-- TRANSLATORS: The word 'Rviewer' is inferred from app name. DO NOT TRANSLATE IT! -->
+    <string name="account_wizard_welcome_page_title">"Bienvenido \u0022Rviewer\u0022"</string>
+    <string name="account_wizard_welcome_page_message">"Sabemos que tienes ganas de empezar a revisar cambios, pero primero hay que configurar una cuenta de Gerrit. \n\nSólo tomará unos segundos!"</string>
+    <string name="account_wizard_account_setup_page_title">"Configuración de cuenta"</string>
+    <string name="account_wizard_account_setup_page_message">"Este asistente te guiará en la configuración de una nueva cuenta de Gerrit. \n\nTardarás unos pocos segundos."</string>
+    <string name="account_wizard_repository_page_title">"Repositorio"</string>
+    <string name="account_wizard_repository_page_message1">"Por favor, introduce el nombre y la ubicación del repositorio Gerrit."</string>
+    <string name="account_wizard_repository_page_message2">"O puedes elegir entre algunos repositorios <xliff:g example="predefined\" id="link\">%1$s</xliff:g>."</string>
+    <string name="account_wizard_repository_page_message2_predefined">"predefinidos"</string>
+    <string name="account_wizard_repository_page_name">"Nombre"</string>
+    <string name="account_wizard_repository_page_url">"URL"</string>
+    <string name="account_wizard_account_page_title">"Cuenta"</string>
+    <string name="account_wizard_account_page_message">"Elige la forma que deseas acceder al repositorio <b><xliff:g example="CyanogenMod\" id="repository_name\">%1$s</xliff:g></b>."</string>
+    <string name="account_wizard_account_page_authenticated_access">"Acceso con cuenta"</string>
+    <string name="account_wizard_account_page_authenticated_access_hint">"Si no conoces tu nombre de usuario o contraseña, haz clic <xliff:g example="aquí\" id="link\">%1$s</xliff:g> para obtener o generar las credenciales. Si no tienes una cuenta, puedes iniciar sesión <xliff:g example="aquí\" id="link\">%2$s</xliff:g>. Utiliza el menú de ayuda para más información."</string>
+    <string name="account_wizard_account_page_password_hint_here">"aquí"</string>
+    <string name="account_wizard_account_page_username">"Nombre de Usuario"</string>
+    <string name="account_wizard_account_page_password">"Contraseña"</string>
+    <string name="account_wizard_confirmation_page_title">"¡Bien hecho!"</string>
+    <!-- TRANSLATORS: The word 'Rviewing' is inferred from app name. DO NOT TRANSLATE IT! -->
+    <string name="account_wizard_confirmation_page_message">"¡Estupendo! Tu cuenta ya está lista y puedes empezar a revisar cambios en <b><xliff:g example="CyanogenMod\" id="repository_name\">%1$s</xliff:g></b>. <br /><br /><b>Feliz \u0022Rviewing\u0022!</b>"</string>
+    <string name="account_wizard_account_ready_page_title">"Cuenta configurada"</string>
+    <string name="account_wizard_account_ready_page_message">"Tu cuenta ya está lista y puedes empezar a revisar cambios en <b><xliff:g example="CyanogenMod\" id="repository_name\">%1$s</xliff:g></b>."</string>
+    <string name="account_wizard_repositories_chooser_title">"Elegir un repositorio"</string>
+
+    <!-- Changes -->
+    <string name="change_merge_conflict">"Conflicto de merge"</string>
+
+    <!-- Filters -->
+    <string name="filter_unnamed">"Sin nombre"</string>
+
+    <!-- Change Details -->
+    <string name="change_details_title">"Cambio #<xliff:g example="157838\" id="changeId\">%1$d</xliff:g>"</string>
+    <string name="change_details_header_change_details">"Detalles del cambio"</string>
+    <string name="change_details_header_patchset_details">"Detalles del Patch Set"</string>
+    <string name="change_details_header_patchsets">"Patch Set (<xliff:g example="1\" id="current_patch_set\">%1$d</xliff:g>/<xliff:g example="2\" id="total_patch_sets\">%2$d</xliff:g>)"</string>
+    <string name="change_details_header_files">"Archivos"</string>
+    <string name="change_details_header_messages">"Mensajes"</string>
+    <string name="change_details_id">"Id."</string>
+    <string name="change_details_status">"Estado"</string>
+    <string name="change_details_owner">"Propietario"</string>
+    <string name="change_details_reviewers">"Revisores"</string>
+    <string name="change_details_add_reviewer">"Añadir revisor"</string>
+    <string name="change_details_add_me_as_reviewer">"Añadirme"</string>
+    <string name="change_details_project">"Proyecto"</string>
+    <string name="change_details_branch">"Branch"</string>
+    <string name="change_details_topic">"Tema"</string>
+    <string name="change_details_strategy">"Estrategia"</string>
+    <string name="change_details_created">"Creado"</string>
+    <string name="change_details_updated">"Actualizado"</string>
+    <string name="change_details_author">"Autor"</string>
+    <string name="change_details_committer">"Committer"</string>
+    <string name="change_details_commit">"Commit"</string>
+    <string name="change_details_parents">"Parent(s)"</string>
+    <string name="change_details_change_id">"Change-Id"</string>
+    <string name="change_details_related_changes">"Cambios relacionados"</string>
+    <string name="change_details_download_patchset">"Descargar"</string>
+    <string name="change_details_view_patchset">"Ver"</string>
+    <string name="change_details_review">"Revisar"</string>
+    <string name="change_details_review_hint">"Comenta en este cambio"</string>
+    <string name="change_details_comment_line_number">"L<xliff:g example="1\" id="line_number\">%1$d</xliff:g>:"</string>
+    <string name="change_details_comment_file">"Archivo:"</string>
+
+    <!-- Actions -->
+    <string name="change_action_cherrypick">"Cherry-Pick"</string>
+    <string name="change_action_rebase">"Rebase"</string>
+    <string name="change_action_abandon">"Abandonar"</string>
+    <string name="change_action_restore">"Restaurar"</string>
+    <string name="change_action_revert">"Revertir"</string>
+    <string name="change_action_publish_draft">"Publicar"</string>
+    <string name="change_action_delete_change">"Eliminar"</string>
+    <string name="change_action_follow_up">"Seguir"</string>
+    <string name="change_action_submit">"Enviar"</string>
+    <string name="change_action_comment">"Comentario"</string>
+    <string name="change_action_download">"Descargar"</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_outgoing">"Salientes"</string>
+    <string name="dashboard_incoming">"Entrantes"</string>
+    <string name="dashboard_recently_closed">"Cerrados"</string>
+
+    <!-- Account Settings -->
+    <string name="account_settings_title">"Ajustes"</string>
+    <string name="account_settings_display_category">"Visualizacion"</string>
+    <string name="account_settings_home_page">"Página de Inicio"</string>
+    <string name="account_settings_display_format">"Formato de visualización"</string>
+    <string name="account_settings_display_format_name">"Nombre"</string>
+    <string name="account_settings_display_format_email">"Correo electrónico"</string>
+    <string name="account_settings_display_format_username">"Nombre de usuario"</string>
+    <string name="account_settings_highlight_unreviewed">"Resaltar cambios sin revisar"</string>
+    <string name="account_settings_messages_folded">"Comprimir comentarios"</string>
+    <string name="account_settings_inline_comment_in_messages">"Mostrar comentarios inline en los mensajes"</string>
+    <string name="account_settings_external_category">"Visores externos"</string>
+    <string name="account_settings_use_custom_tabs">"Usar custom tabs"</string>
+    <string name="account_settings_download_format">"Formato de descarga"</string>
+
+    <!-- File statuses -->
+    <string name="file_status_renamed">"Renombrado"</string>
+    <string name="file_status_copied">"Copiado"</string>
+    <string name="file_status_rewritten">"Reescrito"</string>
+
+    <!-- Change statuses -->
+    <string name="change_statuses_submitted">"Enviado"</string>
+    <string name="change_statuses_not_current">"No actual"</string>
+    <string name="change_statuses_ready_to_submit">"Listo para enviar"</string>
+    <string name="change_statuses_not_mergeable">"No se puede hacer merge"</string>
+    <string name="change_statuses_needs_label">"Necesita <xliff:g example="Code-Review\" id="label\">%1$s</xliff:g>
+"</string>
+
+    <!-- Submit type -->
+    <string name="submit_type_fast_forward_only">"Sólo fastforward"</string>
+    <string name="submit_type_merge_if_necessary">"Merge en caso necesario"</string>
+    <string name="submit_type_merge_always">"Siempre merge"</string>
+    <string name="submit_type_cherry_pick">"Cherry-Pick"</string>
+    <string name="submit_type_rebase_if_necessary">"Rebase si necesario"</string>
+
+    <!-- Related changes -->
+    <string name="related_changes">"Cambios relacionados"</string>
+    <string name="conflicts_with">"Tiene conflictos con"</string>
+    <string name="same_topic">"Mismo tema"</string>
+    <string name="submitted_together">"Enviados juntos"</string>
+    <string name="cherry_picks">"Cherry picks"</string>
+
+    <!-- Add reviewer dialog -->
+    <string name="add_reviewer_label">"Reviewer"</string>
+
+    <!-- Delete draft change -->
+    <string name="delete_draft_change_title">"Eliminar borrador"</string>
+    <string name="delete_draft_change_confirm">"Eliminar el borrador?"</string>
+
+    <!-- Actions dialog -->
+    <string name="actions_message_hint">"Mensaje del commit"</string>
+    <string name="actions_branch_hint">"Branch"</string>
+    <string name="actions_base_hint">"Asunto, número de cambio, o dejar en blanco"</string>
+    <string name="actions_confirm_submit">"Se enviará el patchset"</string>
+
+    <!-- Change topic dialog -->
+    <string name="change_topic_title">"Cambia el tema"</string>
+    <string name="change_topic_hint">"Nombre del tema"</string>
+
+    <!-- Drafts -->
+    <string name="draft_title">"Borrador"</string>
+    <string name="draft_hint">"Comentario del borrador"</string>
+    <string name="draft_reply_done" translatable="false">"Hecho"</string>
+
+    <!-- Diff viewer -->
+    <string name="diff_viewer_no_diffs">"Ninguna diferencia"</string>
+    <string name="diff_viewer_binary_file">"Archivo binario. Diferencias no disponibles."</string>
+    <string name="diff_viewer_preview_not_available">"Previsualización de la imagen\nno disponible"</string>
+    <string name="diff_viewer_image_size_label">"Tamaño"</string>
+    <string name="diff_viewer_image_dimensions_label">"Dimensiones"</string>
+
+    <!-- Save custom filter dialog -->
+    <string name="custom_filter_title">"Filtro personalizado"</string>
+    <string name="custom_filter_hint">"Nombre del filtro"</string>
+
+    <!-- Options -->
+    <string name="options_base">"Base"</string>
+    <string name="options_actions">"Acciones"</string>
+    <string name="options_base_left">"Izquierda"</string>
+    <string name="options_base_right">"Derecha"</string>
+    <string name="options_diff_mode">"Modo de diferencias"</string>
+    <string name="options_diff_mode_unified">"Unified"</string>
+    <string name="options_diff_mode_side_by_side">"Side by side"</string>
+    <string name="options_diff_mode_image">"Imagen"</string>
+    <string name="options_wrap_mode">"Wrap mode"</string>
+    <string name="options_wrap_mode_on">"Wrap lines"</string>
+    <string name="options_wrap_mode_off">"Unwrap lines"</string>
+    <string name="options_highlight">"Resaltar"</string>
+    <string name="options_highlight_tabs">"Pestañas"</string>
+    <string name="options_highlight_trailing_whitespaces">"Trailing whitespaces"</string>
+    <string name="options_save_filter">"Guardar"</string>
+
+    <!-- Search dialog -->
+    <string name="search_by_change">"Cambio"</string>
+    <string name="search_by_change_hint">"Escriba el id de un cambio"</string>
+    <string name="search_by_commit">"Confirmar"</string>
+    <string name="search_by_commit_hint">"Escriba el hash de un commit"</string>
+    <string name="search_by_user">"Usuario"</string>
+    <string name="search_by_user_hint">"Escriba un usuario o correo electrónico"</string>
+    <string name="search_by_commit_message">"Mensaje del commit"</string>
+    <string name="search_by_commit_message_hint">"Escriba una palabra o frase"</string>
+    <string name="search_by_custom">"Búsqueda personalizada"</string>
+    <string name="search_by_custom_hint">"Escriba su consulta personalizada"</string>
+    <string name="search_not_a_valid_change">"No es el id válido de ningún cambio"</string>
+    <string name="search_not_a_valid_commit">"No es el id válido de ningún commit"</string>
+    <string name="search_not_a_valid_custom_query">"No es una consulta válida de Gerrit"</string>
+
+    <!-- Stats -->
+    <string name="stats_info_title">"Información"</string>
+    <string name="stats_changes_title">"Cambios"</string>
+    <string name="stats_page_details_title">"Detalles"</string>
+    <string name="stats_page_stats_title">"Estadísticas"</string>
+    <string name="stats_page_stats_merged_status_title">"Abiertos vs Merged vs Abandonados"</string>
+    <string name="stats_page_stats_activity_title">"Actividad"</string>
+    <string name="stats_page_stats_top_5">"Top 5"</string>
+    <string name="stats_page_stats_empty">"No hay estadísticas disponibles"</string>
+    <string name="stats_page_stats_computed_last_30_days">"(Últimos 30 días)"</string>
+
+    <!-- Account stats -->
+    <string name="account_details">"Cuenta"</string>
+    <string name="account_details_id">"ID de la cuenta."</string>
+    <string name="account_details_username">"Nombre de Usuario"</string>
+    <string name="account_details_name">"Nombre"</string>
+    <string name="account_details_emails">"Correos electrónicos"</string>
+    <string name="account_details_registered_on">"Registrado"</string>
+
+    <!-- Project stats -->
+    <string name="project_details_name">"Nombre"</string>
+    <string name="project_details_parent">"Parent"</string>
+    <string name="project_details_description">"Descripción"</string>
+    <string name="project_details_status">"Estado"</string>
+    <string name="project_details_status_active">"Activo"</string>
+    <string name="project_details_status_read_only">"Sólo lectura"</string>
+    <string name="project_details_status_hidden">"Oculto"</string>
+
+    <!-- Notifications -->
+    <string name="notification_file_download_title">"Descarga completada"</string>
+    <string name="notification_file_download_text_success">"El archivo <xliff:g id="height\">%1$s</xliff:g> se ha descargado correctamente"</string>
+    <string name="notification_file_download_text_failure">"La descarga del archivo <xliff:g id="height\">%1$s</xliff:g> ha fallado"</string>
+
+    <!-- Empty states -->
+    <string name="empty_states_empty">"No se han encontrado resultados"</string>
+    <string name="empty_states_not_connectivity">"No se ha detectado conexión de red"</string>
+    <string name="empty_states_error">"Algo estaba mal"</string>
+
+</resources>
