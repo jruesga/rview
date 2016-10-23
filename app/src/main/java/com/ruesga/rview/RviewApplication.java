@@ -17,6 +17,7 @@ package com.ruesga.rview;
 
 import android.app.Application;
 import android.os.StrictMode;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
@@ -27,6 +28,9 @@ import io.fabric.sdk.android.Fabric;
 import io.fabric.sdk.android.Kit;
 
 public class RviewApplication extends Application {
+
+    private static final String TAG = "RviewApplication";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -44,15 +48,20 @@ public class RviewApplication extends Application {
         }
 
         // Install a hook to Crashlytics and Answers (only in production releases)
-        CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
-        Crashlytics crashlytics = new Crashlytics.Builder().core(core).build();
-        Answers answers = new Answers();
-        Kit[] kits = BuildConfig.DEBUG ? new Kit[]{crashlytics} : new Kit[]{crashlytics, answers};
-        final Fabric fabric = new Fabric.Builder(this)
-                .kits(kits)
-                .debuggable(BuildConfig.DEBUG)
-                .build();
-        Fabric.with(fabric);
+        try {
+            CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
+            Crashlytics crashlytics = new Crashlytics.Builder().core(core).build();
+            Answers answers = new Answers();
+            Kit[] kits = BuildConfig.DEBUG ? new Kit[]{crashlytics} : new Kit[]{crashlytics, answers};
+            final Fabric fabric = new Fabric.Builder(this)
+                    .kits(kits)
+                    .debuggable(BuildConfig.DEBUG)
+                    .build();
+            Fabric.with(fabric);
+        } catch (Throwable ex) {
+            // Ignore any fabric exception by miss-configuration
+            Log.e(TAG, "Cannot configure Fabric", ex);
+        }
 
         // Initialize application resources
         Formatter.refreshCachedPreferences(getApplicationContext());
