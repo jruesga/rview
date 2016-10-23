@@ -77,12 +77,17 @@ android {
                 keyPassword ksProps['pass']
                 storeType ksProps['storeType']
             }
+
+            return void;
         }
     }
 
     buildTypes {
         debug {
             debuggable true
+            ext.enableCrashlytics = false
+
+            return void;
         }
         release {
             debuggable false
@@ -91,11 +96,16 @@ android {
             shrinkResources false
             minifyEnabled true
             useProguard true
-
             proguardFiles getDefaultProguardFile('proguard-android.txt'), file('proguard-project.txt')
 
             //noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.release
+
+            // IMP! Enable your Crashlytics api key in a file called fabric.properties
+            // and add the value apiKey=<your key> in this project folder
+            ext.enableCrashlytics = project.file('fabric.properties').exists()
+
+            return void;
         }
     }
 
