@@ -19,7 +19,7 @@ import java.util.Comparator;
 import java.util.Map;
 
 public class ValueComparator<T1, T2 extends Comparable<T2>> implements Comparator<T1> {
-    Map<T1, T2> base;
+    private Map<T1, T2> base;
     public ValueComparator(Map<T1, T2> base) {
         this.base = base;
     }

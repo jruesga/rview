@@ -54,7 +54,11 @@ public class Top5StatsView extends LinearLayout {
 
         @Override
         public int compareTo(@NonNull Value o) {
-            return count.compareTo(o.count);
+            int ret = count.compareTo(o.count);
+            if (ret != 0) {
+                return ret;
+            }
+            return item.compareTo(o.item);
         }
     }
 
