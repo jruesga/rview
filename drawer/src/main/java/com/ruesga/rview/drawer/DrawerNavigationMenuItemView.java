@@ -248,14 +248,18 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
 
     @Override
     public void onMiniDrawerNavigationOpenStatusChanged(float offset) {
+        final boolean noSubtitle = TextUtils.isEmpty(mSubTextView.getText());
+
         mButton.setAlpha(offset);
         mTextView.setAlpha(offset);
-        mSubTextView.setAlpha(offset);
+        if (noSubtitle) {
+            mSubTextView.setAlpha(offset);
+        }
         mActionArea.setAlpha(offset);
 
         mButton.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
         mTextView.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
-        mSubTextView.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+        mSubTextView.setVisibility(noSubtitle || offset == 0f ? View.GONE : View.VISIBLE);
         mActionArea.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
     }
 }
