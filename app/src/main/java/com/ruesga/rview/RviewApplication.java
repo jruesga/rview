@@ -48,19 +48,19 @@ public class RviewApplication extends Application {
         }
 
         // Install a hook to Crashlytics and Answers (only in production releases)
-        try {
-            CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
-            Crashlytics crashlytics = new Crashlytics.Builder().core(core).build();
-            Answers answers = new Answers();
-            Kit[] kits = BuildConfig.DEBUG ? new Kit[]{crashlytics} : new Kit[]{crashlytics, answers};
-            final Fabric fabric = new Fabric.Builder(this)
-                    .kits(kits)
-                    .debuggable(BuildConfig.DEBUG)
-                    .build();
-            Fabric.with(fabric);
-        } catch (Throwable ex) {
-            // Ignore any fabric exception by miss-configuration
-            Log.e(TAG, "Cannot configure Fabric", ex);
+        if (!BuildConfig.DEBUG) {
+            try {
+                CrashlyticsCore core = new CrashlyticsCore.Builder().build();
+                Crashlytics crashlytics = new Crashlytics.Builder().core(core).build();
+                Answers answers = new Answers();
+                final Fabric fabric = new Fabric.Builder(this)
+                        .kits(new Kit[]{crashlytics, answers})
+                        .build();
+                Fabric.with(fabric);
+            } catch (Throwable ex) {
+                // Ignore any fabric exception by miss-configuration
+                Log.e(TAG, "Cannot configure Fabric", ex);
+            }
         }
 
         // Initialize application resources
