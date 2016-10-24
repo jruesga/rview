@@ -24,16 +24,15 @@
         <variable name="handlers" type="com.ruesga.rview.MainActivity.EventHandlers" />
     </data>
 
-    <FrameLayout
+    <com.ruesga.rview.widget.AccountNavigationHeader
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimaryDark"
         android:elevation="4dp"
-        android:paddingTop="36dp"
+        android:paddingTop="@dimen/drawer_header_margin_top"
         tools:ignore="UnusedAttribute">
 
         <LinearLayout
-            android:id="@+id/account_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -53,6 +52,7 @@
 
             <LinearLayout
                 android:layout_width="0dp"
+                android:id="@+id/account_info"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingLeft="8dp"
@@ -91,6 +91,6 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@null"/>
         </LinearLayout>
-    </FrameLayout>
+    </com.ruesga.rview.widget.AccountNavigationHeader>
 
 </layout>

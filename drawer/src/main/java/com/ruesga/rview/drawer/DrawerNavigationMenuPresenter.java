@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.LayoutRes;
@@ -41,6 +42,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -63,6 +65,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
 
     private NavigationMenuAdapter mAdapter;
     private LayoutInflater mLayoutInflater;
+    private float mMiniDrawerOffset = 1.0f;
 
     private int mTextAppearance;
     private boolean mTextAppearanceSet;
@@ -106,6 +109,13 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             mMenuView.setAdapter(mAdapter);
         }
         return mMenuView;
+    }
+
+    public void notifyMiniDrawerNavigationOpenStatusChanged(float offset) {
+        mMiniDrawerOffset = offset;
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -291,8 +301,28 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
 
     private static class SubheaderViewHolder extends ViewHolder {
 
-        public SubheaderViewHolder(LayoutInflater inflater, ViewGroup parent) {
+        private float mMeasureHeight = -1;
+
+        public SubheaderViewHolder(final RecyclerView.Adapter adapter,
+                LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.drawer_navigation_item_subheader, parent, false));
+            itemView.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                @SuppressWarnings("deprecation")
+                public void onGlobalLayout() {
+                    if (itemView.getMeasuredHeight() > 0) {
+                        mMeasureHeight = itemView.getHeight();
+                        if (Build.VERSION.SDK_INT < 16) {
+                            itemView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            });
         }
 
     }
@@ -388,7 +418,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
                     return new NormalViewHolder(mLayoutInflater, parent,
                             mOnClickListener, mOnMenuButtonClickListener);
                 case VIEW_TYPE_SUBHEADER:
-                    return new SubheaderViewHolder(mLayoutInflater, parent);
+                    return new SubheaderViewHolder(this, mLayoutInflater, parent);
                 case VIEW_TYPE_SEPARATOR:
                     return new SeparatorViewHolder(mLayoutInflater, parent);
                 case VIEW_TYPE_HEADER:
@@ -399,7 +429,9 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
 
         @Override
         @SuppressWarnings("ConstantConditions")
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
+            OnMiniDrawerNavigationOpenStatusChangedListener mMiniDrawerListener = null;
+
             switch (getItemViewType(position)) {
                 case VIEW_TYPE_NORMAL: {
                     DrawerNavigationMenuItemView itemView = (DrawerNavigationMenuItemView) holder.itemView;
@@ -417,9 +449,17 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
                     break;
                 }
                 case VIEW_TYPE_SUBHEADER: {
-                    TextView subHeader = (TextView) holder.itemView;
+                    final TextView subHeader = (TextView) holder.itemView;
                     NavigationMenuTextItem item = (NavigationMenuTextItem) mItems.get(position);
                     subHeader.setText(item.getMenuItem().getTitle());
+                    mMiniDrawerListener = offset -> {
+                        holder.itemView.setAlpha(offset);
+                        float mMeasureHeight = ((SubheaderViewHolder) holder).mMeasureHeight;
+                        if (mMeasureHeight >= 0) {
+                            holder.itemView.getLayoutParams().height =
+                                    (int) (mMeasureHeight * mMiniDrawerOffset);
+                        }
+                    };
                     break;
                 }
                 case VIEW_TYPE_SEPARATOR: {
@@ -434,6 +474,13 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
                 }
             }
 
+            // Update the offset
+            if (holder.itemView instanceof OnMiniDrawerNavigationOpenStatusChangedListener) {
+                ((OnMiniDrawerNavigationOpenStatusChangedListener) holder.itemView)
+                        .onMiniDrawerNavigationOpenStatusChanged(mMiniDrawerOffset);
+            } else if (mMiniDrawerListener != null) {
+                mMiniDrawerListener.onMiniDrawerNavigationOpenStatusChanged(mMiniDrawerOffset);
+            }
         }
 
         @Override

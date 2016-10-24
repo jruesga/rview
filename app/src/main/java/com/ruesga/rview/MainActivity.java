@@ -29,6 +29,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -360,10 +361,38 @@ public class MainActivity extends ChangeListBaseActivity {
             updateAccountCustomFilters();
             updateAccountsDrawerInfo();
         }
-        performShowAccount(mModel.isAccountExpanded);
+        internalPerformShowAccount(mModel.isAccountExpanded);
+
+        if (getMiniDrawerLayout() != null) {
+            mBinding.drawerNavigationView.addMiniDrawerListener(new PanelSlideListener() {
+                @Override
+                public void onPanelSlide(View panel, float slideOffset) {
+                    // Ignore
+                }
+
+                @Override
+                public void onPanelOpened(View panel) {
+                    // Ignore
+                }
+
+                @Override
+                public void onPanelClosed(View panel) {
+                    internalPerformShowAccount(false);
+                }
+            });
+        }
     }
 
     private void performShowAccount(boolean show) {
+        if (getMiniDrawerLayout() != null && !getMiniDrawerLayout().isOpen()) {
+            getMiniDrawerLayout().openPane();
+            return;
+        }
+
+        internalPerformShowAccount(show);
+    }
+
+    private void internalPerformShowAccount(boolean show) {
         final boolean auth = mAccount != null && mAccount.hasAuthenticatedAccessMode();
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
@@ -585,7 +614,7 @@ public class MainActivity extends ChangeListBaseActivity {
         updateCurrentAccountDrawerInfo();
         updateAccountCustomFilters();
         updateAccountsDrawerInfo();
-        performShowAccount(false);
+        internalPerformShowAccount(false);
 
         // And navigate to the default menu
         requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount), true);
@@ -600,7 +629,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 .setNegativeButton(R.string.action_cancel, null)
                 .create();
         dialog.show();
-        performShowAccount(false);
+        internalPerformShowAccount(false);
     }
 
     private void performDeleteAccount() {
@@ -643,7 +672,7 @@ public class MainActivity extends ChangeListBaseActivity {
         if (mAccount != null) {
             Intent i = new Intent(this, AccountSettingsActivity.class);
             startActivityForResult(i, REQUEST_ACCOUNT_SETTINGS);
-            performShowAccount(false);
+            internalPerformShowAccount(false);
         }
     }
 

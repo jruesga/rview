@@ -37,7 +37,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 @SuppressWarnings({"deprecation", "unused"})
-public class DrawerNavigationMenuItemView extends ForegroundLinearLayout implements MenuView.ItemView {
+public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
+        implements MenuView.ItemView, OnMiniDrawerNavigationOpenStatusChangedListener {
 
     public interface OnMenuButtonClickListener {
         void onMenuButtonClick(int menuItemId);
@@ -245,4 +246,16 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout impleme
         mSubTextView.setTextColor(colors);
     }
 
+    @Override
+    public void onMiniDrawerNavigationOpenStatusChanged(float offset) {
+        mButton.setAlpha(offset);
+        mTextView.setAlpha(offset);
+        mSubTextView.setAlpha(offset);
+        mActionArea.setAlpha(offset);
+
+        mButton.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+        mTextView.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+        mSubTextView.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+        mActionArea.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+    }
 }

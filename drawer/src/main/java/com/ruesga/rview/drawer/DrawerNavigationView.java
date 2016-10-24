@@ -35,6 +35,8 @@ import android.support.v4.os.ParcelableCompat;
 import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v4.view.AbsSavedState;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SlidingPaneLayout;
+import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuItemImpl;
@@ -43,9 +45,13 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.ruesga.rview.drawer.DrawerNavigationMenuItemView.OnMenuButtonClickListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a standard navigation menu for application. The menu contents can be populated
@@ -85,7 +91,10 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
     private final DrawerNavigationMenuPresenter mPresenter = new DrawerNavigationMenuPresenter();
 
     private OnDrawerNavigationItemSelectedListener mListener;
+    private List<PanelSlideListener> mMiniDrawerListeners = new ArrayList<>();
     private int mMaxWidth;
+    private final int mMinMiniDrawerWidth;
+    private float mMiniDrawerOffset = 1.0f;
 
     private MenuInflater mMenuInflater;
 
@@ -104,6 +113,9 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
 
         // Create the menu
         mMenu = new DrawerNavigationMenu(context);
+
+        mMinMiniDrawerWidth = getResources().getDimensionPixelSize(
+                R.dimen.drawer_mini_drawer_min_width);
 
         // Custom attributes
         TypedArray a = context.obtainStyledAttributes(attrs,
@@ -233,6 +245,72 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
     @Override
     protected void onInsetsChanged(Rect insets) {
         mPresenter.setPaddingTopDefault(insets.top);
+    }
+
+    public void configureWithMiniDrawer(SlidingPaneLayout panel) {
+        panel.setPanelSlideListener(new PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                notifyMiniDrawerNavigationOpenStatusChanged(slideOffset);
+                for (PanelSlideListener cb : mMiniDrawerListeners) {
+                    cb.onPanelSlide(panel, slideOffset);
+                }
+            }
+
+            @Override
+            public void onPanelOpened(View panel) {
+                notifyMiniDrawerNavigationOpenStatusChanged(1f);
+                for (PanelSlideListener cb : mMiniDrawerListeners) {
+                    cb.onPanelOpened(panel);
+                }
+            }
+
+            @Override
+            public void onPanelClosed(View panel) {
+                notifyMiniDrawerNavigationOpenStatusChanged(0f);
+                for (PanelSlideListener cb : mMiniDrawerListeners) {
+                    cb.onPanelClosed(panel);
+                }
+            }
+        });
+
+        notifyMiniDrawerNavigationOpenStatusChanged(0.0f);
+    }
+
+    public void notifyMiniDrawerNavigationOpenStatusChanged(float offset) {
+        int count = getHeaderCount();
+        for (int i = 0; i < count; i++) {
+            View v = getHeaderView(i);
+            if (v instanceof OnMiniDrawerNavigationOpenStatusChangedListener) {
+                ((OnMiniDrawerNavigationOpenStatusChangedListener) v)
+                        .onMiniDrawerNavigationOpenStatusChanged(offset);
+            }
+        }
+
+        mPresenter.notifyMiniDrawerNavigationOpenStatusChanged(offset);
+        mMiniDrawerOffset = offset;
+    }
+
+    public void addMiniDrawerListener(PanelSlideListener cb) {
+        mMiniDrawerListeners.add(cb);
+    }
+
+    public void removeMiniDrawerListener(PanelSlideListener cb) {
+        mMiniDrawerListeners.remove(cb);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        // In mini drawer mode, only handle events from the drawer region
+        if (mMiniDrawerOffset == 0.0f) {
+            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+                float x = ev.getX();
+                if (x > mMinMiniDrawerWidth) {
+                    return true;
+                }
+            }
+        }
+        return super.onInterceptTouchEvent(ev);
     }
 
     /**

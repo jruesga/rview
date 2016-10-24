@@ -17,5 +17,5 @@
 package com.ruesga.rview.drawer;
 
 public interface OnMiniDrawerNavigationOpenStatusChangedListener {
-    void onMiniDrawerNavigationOpenStatusChanged(int offset);
+    void onMiniDrawerNavigationOpenStatusChanged(float offset);
 }

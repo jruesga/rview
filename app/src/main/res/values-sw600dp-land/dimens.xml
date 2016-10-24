@@ -16,4 +16,5 @@
  -->
 <resources>
     <dimen name="wizard_max_content_width">0dp</dimen>
+    <dimen name="drawer_header_margin_top">0dp</dimen>
 </resources>

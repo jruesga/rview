@@ -78,39 +78,30 @@
                 </android.support.v7.widget.Toolbar>
             </android.support.design.widget.AppBarLayout>
 
-            <FrameLayout
+            <android.support.v4.widget.SlidingPaneLayout
+                android:id="@+id/mini_drawer_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:indeterminate="true"
-                    android:layout_marginTop="-5dp"
-                    app:spb_sections_count="4"
-                    app:spb_color="?attr/colorAccent"
-                    app:spb_speed="1.5"
-                    app:spb_stroke_width="4dp"
-                    app:spb_stroke_separator_length="8dp"
-                    app:spb_reversed="false"
-                    app:spb_mirror_mode="false"
-                    app:spb_progressiveStart_activated="false"
-                    app:spb_progressiveStart_speed="1.5"
-                    app:spb_progressiveStop_speed="3.4"
-                    android:visibility="@{model.isInProgress ? View.VISIBLE : View.INVISIBLE}" />
+                <com.ruesga.rview.drawer.DrawerNavigationView
+                    android:id="@+id/drawer_navigation_view"
+                    android:layout_width="320dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    app:elevation="8dp"
+                    app:theme="@style/AppTheme.DrawerMenu"
+                    android:visibility="@{model.hasMiniDrawer ? View.VISIBLE : View.GONE}"
+                    app:menu="@menu/drawer">
+                </com.ruesga.rview.drawer.DrawerNavigationView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:baselineAligned="false">
-                    <FrameLayout
-                        android:id="@+id/content"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        app:bindLayoutWeight="@{model.useTowPane ? 0.35f : 1f}"
-                        tools:ignore="Suspicious0dp"/>
+                    android:layout_marginStart="@dimen/drawer_mini_drawer_min_width"
+                    android:layout_marginLeft="@dimen/drawer_mini_drawer_min_width"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
 
                     <View
                         android:layout_width="5dp"
@@ -122,26 +113,60 @@
                         tools:ignore="RtlSymmetry"/>
 
                     <FrameLayout
-                        android:id="@+id/details"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        app:bindLayoutWeight="@{model.useTowPane ? 0.65f : 0f}"
-                        android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
-                        tools:ignore="InconsistentLayout"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:baselineAligned="false">
+                            <FrameLayout
+                                android:id="@+id/content"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:bindLayoutWeight="@{model.useTowPane ? 0.35f : 1f}"
+                                tools:ignore="Suspicious0dp"/>
+
+                            <View
+                                android:layout_width="5dp"
+                                android:layout_height="match_parent"
+                                android:paddingLeft="3dp"
+                                android:paddingStart="3dp"
+                                android:background="@drawable/bg_shadow_end"
+                                android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
+                                tools:ignore="RtlSymmetry"/>
+
+                            <FrameLayout
+                                android:id="@+id/details"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:bindLayoutWeight="@{model.useTowPane ? 0.65f : 0f}"
+                                android:visibility="@{model.useTowPane ? View.VISIBLE : View.GONE}"
+                                tools:ignore="InconsistentLayout"/>
+                        </LinearLayout>
+
+                        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:indeterminate="true"
+                            android:layout_marginTop="-5dp"
+                            app:spb_sections_count="4"
+                            app:spb_color="?attr/colorAccent"
+                            app:spb_speed="1.5"
+                            app:spb_stroke_width="4dp"
+                            app:spb_stroke_separator_length="8dp"
+                            app:spb_reversed="false"
+                            app:spb_mirror_mode="false"
+                            app:spb_progressiveStart_activated="false"
+                            app:spb_progressiveStart_speed="1.5"
+                            app:spb_progressiveStop_speed="3.4"
+                            android:visibility="@{model.isInProgress ? View.VISIBLE : View.INVISIBLE}" />
+                    </FrameLayout>
                 </LinearLayout>
-            </FrameLayout>
+
+            </android.support.v4.widget.SlidingPaneLayout>
 
         </android.support.design.widget.CoordinatorLayout>
-
-        <com.ruesga.rview.drawer.DrawerNavigationView
-            android:id="@+id/drawer_navigation_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:maxWidth="320dp"
-            android:layout_gravity="start"
-            app:theme="@style/AppTheme.DrawerMenu"
-            app:menu="@menu/drawer">
-        </com.ruesga.rview.drawer.DrawerNavigationView>
 
         <com.ruesga.rview.drawer.DrawerNavigationView
             android:id="@+id/drawer_options_view"

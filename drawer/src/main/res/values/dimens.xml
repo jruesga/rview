@@ -22,4 +22,5 @@
     <dimen name="drawer_navigation_icon_padding">32dp</dimen>
     <dimen name="drawer_navigation_icon_size">24dp</dimen>
     <dimen name="text_size_body3">11sp</dimen>
+    <dimen name="drawer_mini_drawer_min_width">64dp</dimen>
 </resources>

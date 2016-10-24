@@ -24,8 +24,10 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -59,6 +61,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         public boolean hasTabs = false;
         public boolean hasPages = false;
         public boolean useTowPane = true;
+        public boolean hasMiniDrawer = true;
 
         public Model() {
         }
@@ -101,6 +104,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     private ViewPager mViewPager;
     private boolean mHasStateSaved;
 
+    private SlidingPaneLayout mMiniDrawerLayout;
+
     public abstract DrawerLayout getDrawerLayout();
 
     public abstract ContentBinding getContentBinding();
@@ -112,53 +117,104 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     protected void setupActivity() {
+        mMiniDrawerLayout = (SlidingPaneLayout) getContentBinding().getRoot()
+                .findViewById(R.id.mini_drawer_layout);
+
         setSupportActionBar(getContentBinding().toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
-            if (getDrawerLayout() != null) {
-                ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
-                        this, getDrawerLayout(), getContentBinding().toolbar, 0, 0);
-                getDrawerLayout().addDrawerListener(drawerToggle);
-                drawerToggle.syncState();
+
+            if (mMiniDrawerLayout != null && mModel.useTowPane) {
+                configureMiniDrawer();
             } else {
-                getContentBinding().drawerLayout.setDrawerLockMode(
-                        DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                        getContentBinding().drawerNavigationView);
+                configureFullDrawer();
             }
 
-            // Options is open/closed programatically
+            configureOptionsDrawer();
+        }
+    }
+
+    private void configureMiniDrawer() {
+        if (getDrawerLayout() != null) {
+            mModel.hasMiniDrawer = true;
+
+            ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
+                    this, getDrawerLayout(), getContentBinding().toolbar, 0, 0);
+            getDrawerLayout().addDrawerListener(drawerToggle);
+            drawerToggle.syncState();
             getContentBinding().drawerLayout.setDrawerLockMode(
-                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                    getContentBinding().drawerOptionsView);
-
-            // Listen for options close
-            getContentBinding().drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-                @Override
-                public void onDrawerSlide(View drawerView, float slideOffset) {
-
-                }
-
-                @Override
-                public void onDrawerOpened(View drawerView) {
-
-                }
-
-                @Override
-                public void onDrawerClosed(View drawerView) {
-                    if (getContentBinding().drawerOptionsView == drawerView) {
-                        getContentBinding().drawerLayout.setDrawerLockMode(
-                                DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                                getContentBinding().drawerOptionsView);
-                    }
-                }
-
-                @Override
-                public void onDrawerStateChanged(int newState) {
-
+                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
+            getContentBinding().toolbar.setNavigationOnClickListener(view -> {
+                if (mMiniDrawerLayout.isOpen()) {
+                    mMiniDrawerLayout.closePane();
+                } else {
+                    mMiniDrawerLayout.openPane();
                 }
             });
+            mMiniDrawerLayout.closePane();
+            getContentBinding().drawerNavigationView.configureWithMiniDrawer(mMiniDrawerLayout);
+
+        } else {
+            // Don't use mini drawer
+            mModel.hasMiniDrawer = false;
         }
+        getContentBinding().setModel(mModel);
+    }
+
+    SlidingPaneLayout getMiniDrawerLayout() {
+        return mMiniDrawerLayout;
+    }
+
+    private void configureFullDrawer() {
+        if (getDrawerLayout() != null) {
+            ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
+                    this, getDrawerLayout(), getContentBinding().toolbar, 0, 0);
+            getDrawerLayout().addDrawerListener(drawerToggle);
+            drawerToggle.syncState();
+
+            getContentBinding().drawerLayout.setDrawerLockMode(
+                    DrawerLayout.LOCK_MODE_UNLOCKED,
+                    getContentBinding().drawerNavigationView);
+        } else {
+            getContentBinding().drawerLayout.setDrawerLockMode(
+                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                    getContentBinding().drawerNavigationView);
+        }
+    }
+
+    private void configureOptionsDrawer() {
+        // Options is open/closed programatically
+        getContentBinding().drawerLayout.setDrawerLockMode(
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                getContentBinding().drawerOptionsView);
+
+        // Listen for options close
+        getContentBinding().drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if (getContentBinding().drawerOptionsView == drawerView) {
+                    getContentBinding().drawerLayout.setDrawerLockMode(
+                            DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                            getContentBinding().drawerOptionsView);
+                }
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
     }
 
     public boolean hasStateSaved() {
