@@ -119,6 +119,10 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     protected void setupActivity() {
         mMiniDrawerLayout = (SlidingPaneLayout) getContentBinding().getRoot()
                 .findViewById(R.id.mini_drawer_layout);
+        if (mMiniDrawerLayout != null) {
+            // Disable hardware acceleration to deal with draw glitches
+            mMiniDrawerLayout.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
 
         setSupportActionBar(getContentBinding().toolbar);
         if (getSupportActionBar() != null) {

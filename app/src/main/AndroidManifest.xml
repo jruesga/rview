@@ -31,7 +31,6 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme"
         android:allowBackup="false"
-        android:hardwareAccelerated="false"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
         <activity
