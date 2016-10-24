@@ -24,41 +24,58 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:onClick="@{handlers::onDismissByOutsideTouch}"
-        android:background="@color/translucentStatusBarColor"
-        android:hapticFeedbackEnabled="false">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <View
+            android:id="@+id/background"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimaryDark"
+            android:visibility="gone"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="2dp"
-            android:layout_marginLeft="-5dp"
-            android:layout_marginStart="-5dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginRight="12dp"
-            android:layout_gravity="top"
-            android:theme="@style/ThemeOverlay.AppCompat.Light"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            android:layout_marginBottom="2dp" />
 
-            <com.arlib.floatingsearchview.FloatingSearchView
-                android:id="@+id/search_view"
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="@{handlers::onDismissByOutsideTouch}"
+            android:background="@color/translucentStatusBarColor"
+            android:hapticFeedbackEnabled="false">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:floatingSearch_searchBarTextSize="12sp"
-                app:floatingSearch_dimBackground="false"
-                app:floatingSearch_showSearchKey="true"
-                app:floatingSearch_leftActionMode="customIcon"
-                app:floatingSearch_showVoiceInput="true"
-                app:floatingSearch_menu="@menu/more_options"
-                app:floatingSearch_searchSuggestionTextSize="10sp"
-                app:floatingSearch_close_search_on_keyboard_dismiss="true"
-                app:floatingSearch_dismissOnOutsideTouch="true" />
+                android:layout_height="?attr/actionBarSize"
+                android:minHeight="?attr/actionBarSize"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginLeft="-5dp"
+                android:layout_marginStart="-5dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="top"
+                android:theme="@style/ThemeOverlay.AppCompat.Light"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-        </android.support.v7.widget.Toolbar>
+                <com.arlib.floatingsearchview.FloatingSearchView
+                    android:id="@+id/search_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="3dp"
+                    app:floatingSearch_searchBarTextSize="12sp"
+                    app:floatingSearch_dimBackground="false"
+                    app:floatingSearch_showSearchKey="true"
+                    app:floatingSearch_leftActionMode="customIcon"
+                    app:floatingSearch_showVoiceInput="true"
+                    app:floatingSearch_menu="@menu/more_options"
+                    app:floatingSearch_searchSuggestionTextSize="10sp"
+                    app:floatingSearch_close_search_on_keyboard_dismiss="true"
+                    app:floatingSearch_dismissOnOutsideTouch="true" />
+
+            </android.support.v7.widget.Toolbar>
+
+        </FrameLayout>
 
     </FrameLayout>
 </layout>

@@ -273,6 +273,24 @@ public class SearchActivity extends AppCompatActivity {
                 Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, r);
                 anim.setInterpolator(new AccelerateInterpolator());
                 anim.setDuration(250L);
+                anim.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mBinding.background.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
                 anim.start();
             });
         }
@@ -292,6 +310,7 @@ public class SearchActivity extends AppCompatActivity {
                 anim.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
+                        mBinding.background.setVisibility(View.GONE);
                     }
 
                     @Override
