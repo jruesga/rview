@@ -150,9 +150,9 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
     private void showProgress(boolean show, T result) {
         BaseActivity activity = (BaseActivity) getActivity();
         if (show) {
-            activity.onRefreshStart();
+            activity.onRefreshStart(this);
         } else {
-            activity.onRefreshEnd(result);
+            activity.onRefreshEnd(this, result);
         }
     }
 

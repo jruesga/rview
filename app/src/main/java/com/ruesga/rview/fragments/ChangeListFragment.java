@@ -246,10 +246,6 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     private boolean mIsTwoPanel;
     private int mItemsToFetch;
 
-    // In case is inside a viewpager, it will call setMenuVisibility to false
-    // in those fragments invisible to the user
-    private boolean mIsVisibleToUser = true;
-
     private ChangesAdapter mAdapter;
     private EndlessRecyclerViewScrollListener mEndlessScroller;
 
@@ -336,12 +332,6 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         startLoadersWithValidContext(savedInstanceState);
     }
 
-    @Override
-    public void setMenuVisibility(final boolean visible) {
-        super.setMenuVisibility(visible);
-        mIsVisibleToUser = visible;
-    }
-
     private void startLoadersWithValidContext(Bundle savedState) {
         if (getActivity() == null) {
             return;
@@ -417,12 +407,10 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     private void showProgress(boolean show) {
         if (mEndlessScroller == null || !mEndlessScroller.isLoading()) {
             BaseActivity activity = (BaseActivity) getActivity();
-            if (mIsVisibleToUser) {
-                if (show) {
-                    activity.onRefreshStart();
-                } else {
-                    activity.onRefreshEnd(Collections.unmodifiableList(mAdapter.mData));
-                }
+            if (show) {
+                activity.onRefreshStart(this);
+            } else {
+                activity.onRefreshEnd(this, Collections.unmodifiableList(mAdapter.mData));
             }
         } else if (!show) {
             mEndlessScroller.loadCompleted();

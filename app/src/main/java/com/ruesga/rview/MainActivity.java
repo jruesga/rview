@@ -789,13 +789,20 @@ public class MainActivity extends ChangeListBaseActivity {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> void onRefreshEnd(T result) {
-        super.onRefreshEnd(result);
+    public <T> void onRefreshEnd(Fragment from, T result) {
+        super.onRefreshEnd(from, result);
         if (result == null) {
             return;
         }
 
         if (mIsTwoPane && result instanceof List) {
+            Fragment current = getSupportFragmentManager().findFragmentByTag(
+                    FRAGMENT_TAG_LIST);
+            if (!current.equals(from)) {
+                // This is not the visible fragment. ignore its results
+                return;
+            }
+
             List<ChangeInfo> changes = (List<ChangeInfo>) result;
             if (!changes.isEmpty() && mModel.selectedChangeId == INVALID_ITEM) {
                 onChangeItemPressed(changes.get(0));

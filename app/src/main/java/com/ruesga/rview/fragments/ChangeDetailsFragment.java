@@ -1195,9 +1195,9 @@ public class ChangeDetailsFragment extends Fragment {
     private void showProgress(boolean show, ChangeInfo change) {
         BaseActivity activity = (BaseActivity) getActivity();
         if (show) {
-            activity.onRefreshStart();
+            activity.onRefreshStart(this);
         } else {
-            activity.onRefreshEnd(change);
+            activity.onRefreshEnd(this, change);
         }
         mBinding.refresh.setRefreshing(false);
     }

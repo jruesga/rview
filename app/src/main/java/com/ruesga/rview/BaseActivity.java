@@ -376,12 +376,12 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     @Override
-    public void onRefreshStart() {
+    public void onRefreshStart(Fragment from) {
         changeInProgressStatus(true);
     }
 
     @Override
-    public <T> void onRefreshEnd(T result) {
+    public <T> void onRefreshEnd(Fragment from, T result) {
         changeInProgressStatus(false);
     }
 

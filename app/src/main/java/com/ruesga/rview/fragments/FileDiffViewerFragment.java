@@ -628,9 +628,9 @@ public class FileDiffViewerFragment extends Fragment {
     private void showProgress(boolean show) {
         BaseActivity activity = (BaseActivity) getActivity();
         if (show) {
-            activity.onRefreshStart();
+            activity.onRefreshStart(this);
         } else {
-            activity.onRefreshEnd(null);
+            activity.onRefreshEnd(this, null);
         }
     }
 
