@@ -82,7 +82,8 @@ public class PicassoHelper {
     private static void loadWithFallbackUrls(final Picasso picasso, final ImageView view,
             final Drawable placeholder, final List<String> urls) {
         if (!urls.isEmpty()) {
-            picasso.load(urls.get(0))
+            String nextUrl = urls.remove(0);
+            picasso.load(nextUrl)
                     .placeholder(placeholder)
                     .transform(new CircleTransform())
                     .into(view, new Callback() {
@@ -93,7 +94,6 @@ public class PicassoHelper {
                         @Override
                         public void onError() {
                             // Next url
-                            urls.remove(0);
                             loadWithFallbackUrls(picasso, view, placeholder, urls);
                         }
                     });
