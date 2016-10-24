@@ -945,12 +945,16 @@ public class ChangeDetailsFragment extends Fragment {
                 .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
                 .from(response.mChange.owner);
-        mBinding.changeInfo.reviewers.with(mPicasso)
+        mBinding.changeInfo.reviewers
+                .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnAccountChipRemovedListener)
                 .withRemovableReviewers(true)
                 .from(response.mChange);
-        mBinding.changeInfo.labels.with(mPicasso).from(response.mChange);
+        mBinding.changeInfo.labels
+                .with(mPicasso)
+                .listenOn(mOnAccountChipClickedListener)
+                .from(response.mChange);
         mBinding.changeInfo.setModel(response.mChange);
         mBinding.changeInfo.setSubmitType(response.mSubmitType);
         mBinding.changeInfo.setActions(response.mActions);

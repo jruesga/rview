@@ -26,6 +26,7 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.LabelItemBinding;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.List;
 public class LabelsView extends LinearLayout {
     private List<LabelItemBinding> mBindings = new ArrayList<>();
     private Picasso mPicasso;
+    private OnAccountChipClickedListener mOnAccountChipClickedListener;
 
     public LabelsView(Context context) {
         this(context, null);
@@ -50,6 +52,11 @@ public class LabelsView extends LinearLayout {
 
     public LabelsView with(Picasso picasso) {
         mPicasso = picasso;
+        return this;
+    }
+
+    public LabelsView listenOn(OnAccountChipClickedListener cb) {
+        mOnAccountChipClickedListener = cb;
         return this;
     }
 
@@ -70,7 +77,10 @@ public class LabelsView extends LinearLayout {
         for (int i = 0; i < count; i++) {
             LabelItemBinding binding = mBindings.get(i);
             binding.setLabel(labels.get(i));
-            binding.scores.with(mPicasso).from(change.labels.get(labels.get(i)));
+            binding.scores
+                    .with(mPicasso)
+                    .listenOn(mOnAccountChipClickedListener)
+                    .from(change.labels.get(labels.get(i)));
             binding.getRoot().setVisibility(View.VISIBLE);
         }
         for (int i = count; i < children; i++) {

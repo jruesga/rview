@@ -29,6 +29,7 @@ import com.ruesga.rview.databinding.ScoreWithReviewItemBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.LabelInfo;
+import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ import java.util.TreeMap;
 public class ScoreWithReviewersView extends LinearLayout {
     private List<ScoreWithReviewItemBinding> mBindings = new ArrayList<>();
     private Picasso mPicasso;
+    private OnAccountChipClickedListener mOnAccountChipClickedListener;
 
     public ScoreWithReviewersView(Context context) {
         this(context, null);
@@ -82,7 +84,10 @@ public class ScoreWithReviewersView extends LinearLayout {
             binding.scoreItem.setSupportBackgroundTintList(
                     ContextCompat.getColorStateList(getContext(),
                         value < 0 ? R.color.rejected : R.color.approved));
-            binding.reviewers.with(mPicasso).from(entry.getValue());
+            binding.reviewers
+                    .with(mPicasso)
+                    .listenOn(mOnAccountChipClickedListener)
+                    .from(entry.getValue());
             binding.getRoot().setVisibility(View.VISIBLE);
             n++;
         }
@@ -91,6 +96,11 @@ public class ScoreWithReviewersView extends LinearLayout {
             binding.getRoot().setVisibility(View.GONE);
         }
 
+        return this;
+    }
+
+    public ScoreWithReviewersView listenOn(OnAccountChipClickedListener cb) {
+        mOnAccountChipClickedListener = cb;
         return this;
     }
 
