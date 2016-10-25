@@ -88,7 +88,11 @@ public class ActivityStatsChart extends View {
                 truncateCalendar(c);
                 if (s1.compareTo(c) < 0) {
                     long timestamp = c.getTimeInMillis();
-                    aggregatedStats.put(timestamp, aggregatedStats.get(timestamp) + 1);
+                    if (aggregatedStats.containsKey(timestamp)) {
+                        aggregatedStats.put(timestamp, aggregatedStats.get(timestamp) + 1);
+                    } else {
+                        aggregatedStats.put(timestamp, 1);
+                    }
                 }
             }
 
@@ -109,19 +113,21 @@ public class ActivityStatsChart extends View {
             int i = 0;
             for (Long key : aggregatedStats.keySet()) {
                 data[i] = aggregatedStats.get(key);
-                max = Math.max(max, data[i]);
-                if (min == -1) {
-                    min = data[i];
-                } else {
-                    min = Math.min(min, data[i]);
-                }
                 i++;
+            }
+            for (float v : data) {
+                max = Math.max(max, v);
+                if (min == -1) {
+                    min = v;
+                } else {
+                    min = Math.min(min, v);
+                }
             }
 
             // Swap the data
             synchronized (mLock) {
                 mData = data;
-                mMinVal = min;
+                mMinVal = Math.abs(min);
                 mMaxVal = max;
                 computeDrawObjects();
             }
