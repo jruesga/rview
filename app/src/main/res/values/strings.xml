@@ -338,7 +338,7 @@
     <!-- Empty states -->
     <string name="empty_states_empty">Not results found</string>
     <string name="empty_states_not_connectivity">No network connectivity detected</string>
-    <string name="empty_states_error">Something were wrong</string>
+    <string name="empty_states_error">Something went wrong</string>
 
     <!-- Share -->
     <string name="share_app_title">Rview</string>
