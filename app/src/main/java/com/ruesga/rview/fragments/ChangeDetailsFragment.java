@@ -480,6 +480,7 @@ public class ChangeDetailsFragment extends Fragment {
             holder.mBinding.setModel(message);
             holder.mBinding.comments.from(comments);
             holder.mBinding.setFolded(mFolded[position]);
+            holder.mBinding.setHandlers(mEventHandlers);
             holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
         }
     }
