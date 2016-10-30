@@ -1514,7 +1514,7 @@ public class ChangeDetailsFragment extends Fragment {
 
                 case R.id.abandon:
                     action = getString(R.string.change_action_abandon);
-                    hint = getString(R.string.actions_message_hint);
+                    hint = getString(R.string.change_details_review_hint);
                     performShowRequestMessageDialog(v, action, action, hint, true,
                             newValue -> {
                                 mActionLoader.clear();
@@ -1525,7 +1525,7 @@ public class ChangeDetailsFragment extends Fragment {
 
                 case R.id.restore:
                     action = getString(R.string.change_action_restore);
-                    hint = getString(R.string.actions_message_hint);
+                    hint = getString(R.string.change_details_review_hint);
                     performShowRequestMessageDialog(v, action, action, hint, true,
                             newValue -> {
                                 mActionLoader.clear();
