@@ -23,11 +23,6 @@ dependencies {
     compile "com.android.support:support-v4:${libraries.support}"
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:design:${libraries.support}"
-    compile "io.reactivex:rxjava:${libraries.rxjava}"
-    compile "io.reactivex:rxandroid:${libraries.rxandroid}"
-    compile("me.tatarka.rxloader:rxloader:${libraries.rxloader}") {
-        exclude group: 'io.reactivex', module: 'rxandroid'
-    }
 }
 
 

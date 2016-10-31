@@ -17,10 +17,10 @@
 ext {
     libraries = [
         support                     : '25.0.0',
-        gson                        : '2.7',
+        gson                        : '2.8.0',
         retrofit2                   : '2.1.0',
         okhttp3                     : '3.4.1',
-        okio                        : '1.10.0',
+        okio                        : '1.11.0',
         okhttp_digest               : '2c51ebafcb',
         rxjava                      : '1.1.10',
         rxandroid                   : '1.2.1',
@@ -34,10 +34,10 @@ ext {
         flowlayout                  : '1.10',
         floatingsearchview          : '0b237ad5bb',
         androidsvg                  : 'd4ec6d8d13',
-        aboutlibraries              : '5.8.1',
-        craslytics                  : '2.6.5',
-        craslytics_core             : '2.3.14',
-        craslytics_answers          : '1.3.10'
+        aboutlibraries              : '5.8.5',
+        crashlytics                 : '2.6.5',
+        crashlytics_core            : '2.3.14',
+        crashlytics_answers         : '1.3.10'
     ]
 
     testLibraries = [
@@ -55,7 +55,7 @@ allprojects {
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:2.2.2'
-            classpath 'me.tatarka:gradle-retrolambda:3.3.0'
+            classpath 'me.tatarka:gradle-retrolambda:3.3.1'
             classpath 'io.fabric.tools:gradle:1.22.0'
         }
     }
