@@ -23,6 +23,6 @@
   {"name":"SlimRoms", "url":"https://review.slimroms.org/"},
   {"name":"Tipo3", "url":"https://review.typo3.org/"},
   {"name":"Tizen", "url":"https://review.tizen.org/gerrit/"},
-  {"name":"TWRP", "url":"https://gerrit.twrp.me/"}
+  {"name":"TWRP", "url":"https://gerrit.twrp.me/"},
   {"name":"Unlegacy Android", "url":"http://gerrit.unlegacy-android.cf/"}
 ]
