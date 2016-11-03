@@ -174,6 +174,7 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
             mButton.setImageResource(id);
             mButton.setVisibility(View.VISIBLE);
         } else {
+            mButton.setImageDrawable(null);
             mButton.setVisibility(View.GONE);
         }
     }
@@ -257,7 +258,8 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         }
         mActionArea.setAlpha(offset);
 
-        mButton.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+        mButton.setVisibility(mButton.getDrawable() == null || offset == 0f
+                ? View.GONE : View.VISIBLE);
         mTextView.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
         mSubTextView.setVisibility(noSubtitle || offset == 0f ? View.GONE : View.VISIBLE);
         mActionArea.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
