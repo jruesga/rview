@@ -1593,9 +1593,8 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private ChangeInfo performRebaseChange(GerritApi api, String base) {
-        RebaseInput input = null;
+        RebaseInput input = new RebaseInput();
         if (!TextUtils.isEmpty(base)) {
-            input = new RebaseInput();
             input.base = base;
         }
         return api.rebaseChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
