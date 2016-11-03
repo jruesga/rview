@@ -86,7 +86,7 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLegacyChangeId = getArguments().getInt(Constants.EXTRA_PROJECT_ID);
+        mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         mProjectId = getArguments().getString(Constants.EXTRA_PROJECT_ID);
         mBranch = getArguments().getString(Constants.EXTRA_BRANCH);
     }
