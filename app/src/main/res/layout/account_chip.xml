@@ -33,7 +33,7 @@
         android:onClick="@{handlers::onChipPressed}"
         android:orientation="horizontal">
 
-        <ImageView
+        <com.ruesga.rview.widget.FixedSizeImageView
             android:id="@+id/avatar"
             android:layout_width="20dp"
             android:layout_height="20dp"

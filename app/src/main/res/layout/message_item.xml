@@ -36,7 +36,7 @@
         android:tag="@{index}"
         android:padding="16dp">
 
-        <ImageView
+        <com.ruesga.rview.widget.FixedSizeImageView
             android:id="@+id/avatar"
             android:layout_width="24dp"
             android:layout_height="24dp"

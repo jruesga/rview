@@ -48,7 +48,7 @@
                 android:orientation="vertical"
                 android:layout_gravity="center_horizontal"
                 tools:ignore="RtlSymmetry">
-                <ImageView
+                <com.ruesga.rview.widget.FixedSizeImageView
                     android:id="@+id/avatar"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -63,7 +63,7 @@
                     android:layout_width="1dp"
                     android:layout_height="0dp"
                     android:layout_weight="1"/>
-                <ImageView
+                <com.ruesga.rview.widget.FixedSizeImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center_horizontal"
