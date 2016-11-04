@@ -87,25 +87,9 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
 
     @Override
     public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
-        builder.setTitle(getDialogTitle())
-                .setView(onCreateView(LayoutInflater.from(getContext()), null, savedInstanceState))
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(getDialogActionLabel(),
-                        (dialog, which) -> performNotifyFilterSelected());
-    }
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        ViewDataBinding binding = inflateView(inflater, null, savedInstanceState);
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString("userSelection", mUserSelection);
-        outState.putBoolean("isUserSelection", mIsUserSelection);
-    }
-
-    @Nullable
-    @Override
-    public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        ViewDataBinding binding = inflateView(inflater, container, savedInstanceState);
         getFilterView().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -128,7 +112,19 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
             AndroidHelper.hideSoftKeyboard(getContext(), getDialog().getWindow());
         });
         getFilterView().setAdapter(getAdapter());
-        return binding.getRoot();
+
+        builder.setTitle(getDialogTitle())
+                .setView(binding.getRoot())
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(getDialogActionLabel(),
+                        (dialog, which) -> performNotifyFilterSelected());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("userSelection", mUserSelection);
+        outState.putBoolean("isUserSelection", mIsUserSelection);
     }
 
     @Override
