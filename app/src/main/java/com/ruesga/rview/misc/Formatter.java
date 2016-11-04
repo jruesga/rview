@@ -56,13 +56,16 @@ import org.ocpsoft.prettytime.PrettyTime;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 
 @ProguardIgnored
 @SuppressWarnings("unused")
 public class Formatter {
+    private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
 
@@ -83,8 +86,11 @@ public class Formatter {
             return;
         }
 
-        PrettyTime formatter = new PrettyTime(AndroidHelper.getCurrentLocale(view.getContext()));
-        view.setText(formatter.format(date));
+        Locale locale = AndroidHelper.getCurrentLocale(view.getContext());
+        if (!sPrettyTimeMap.containsKey(locale)) {
+            sPrettyTimeMap.put(locale, new PrettyTime(locale));
+        }
+        view.setText(sPrettyTimeMap.get(locale).format(date));
     }
 
     @BindingAdapter("accountDisplayName")
@@ -245,8 +251,11 @@ public class Formatter {
             return;
         }
 
-        PrettyTime formatter = new PrettyTime(AndroidHelper.getCurrentLocale(view.getContext()));
-        String date = formatter.format(info.date);
+        Locale locale = AndroidHelper.getCurrentLocale(view.getContext());
+        if (!sPrettyTimeMap.containsKey(locale)) {
+            sPrettyTimeMap.put(locale, new PrettyTime(locale));
+        }
+        String date = sPrettyTimeMap.get(locale).format(info.date);
         String txt = view.getContext().getString(
                 R.string.committer_format, info.name, info.email, date);
         view.setText(txt);
