@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.Interceptor;
@@ -65,6 +66,9 @@ public class GerritApiClient implements GerritApi {
     private final ApiVersionMediator mMediator = new ApiVersionMediator() {
         @Override
         public WhitespaceType resolveWhiteSpaceType(WhitespaceType type) {
+            if (type == null) {
+                return null;
+            }
             if (mServerVersion.getVersion() < 2.13) {
                 return null;
             }
@@ -73,8 +77,23 @@ public class GerritApiClient implements GerritApi {
 
         @Override
         public IgnoreWhitespaceType resolveIgnoreWhiteSpaceType(IgnoreWhitespaceType type) {
+            if (type == null) {
+                return null;
+            }
             if (mServerVersion.getVersion() >= 2.13) {
                 return null;
+            }
+            return type;
+        }
+
+        @Override
+        public DraftActionType resolveDraftActionType(DraftActionType type) {
+            if (type == null) {
+                return null;
+            }
+            if (mServerVersion.getVersion() <= 2.11
+                    && type.equals(DraftActionType.PUBLISH_ALL_REVISIONS)) {
+                return DraftActionType.PUBLISH;
             }
             return type;
         }
@@ -837,8 +856,11 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<ReviewInfo> setChangeRevisionReview(@NonNull String changeId,
             @NonNull String revisionId, @NonNull ReviewInput input) {
-        return withVersionRequestCheck(
-                mService.setChangeRevisionReview(changeId, revisionId, input));
+        return withVersionRequestCheck(Observable.fromCallable(() -> {
+            input.drafts = getApiVersionMediator().resolveDraftActionType(input.drafts);
+            return mService.setChangeRevisionReview(
+                    changeId, revisionId, input).toBlocking().first();
+        }));
     }
 
     @Override

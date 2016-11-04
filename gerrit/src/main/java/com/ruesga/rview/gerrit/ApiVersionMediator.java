@@ -15,10 +15,12 @@
  */
 package com.ruesga.rview.gerrit;
 
+import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.IgnoreWhitespaceType;
 import com.ruesga.rview.gerrit.model.WhitespaceType;
 
 public interface ApiVersionMediator {
     WhitespaceType resolveWhiteSpaceType(WhitespaceType type);
     IgnoreWhitespaceType resolveIgnoreWhiteSpaceType(IgnoreWhitespaceType type);
+    DraftActionType resolveDraftActionType(DraftActionType type);
 }
