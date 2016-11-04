@@ -115,7 +115,7 @@ public class ModelHelper {
         }
 
         sAvatarUrlCache.put(account.accountId, urls);
-        return urls;
+        return new ArrayList<>(urls);
     }
 
     public static String getAccountDisplayName(AccountInfo account) {
