@@ -73,7 +73,7 @@ public class ModelHelper {
     }
 
     public static List<String> getAvatarUrl(Context context, AccountInfo account) {
-        String accountKey = account.accountId + getAccountDisplayName(account);
+        String accountKey = account.accountId + "/" + getAccountDisplayName(account);
 
         List<String> urls = sAvatarUrlCache.get(accountKey);
         if (urls != null) {
