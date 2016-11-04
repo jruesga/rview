@@ -38,6 +38,7 @@ import com.ruesga.rview.misc.BitmapUtils;
 import org.apmem.tools.layouts.FlowLayout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -54,11 +55,14 @@ public class ScoreLabelsView extends FlowLayout {
     }
 
     private static final Pattern sShortLabelPattern = Pattern.compile("[A-Z]+");
+    private static final Map<String, String> sShortLabelCache = new HashMap<>();
 
     private final Map<String, Model> mScores = new TreeMap<>();
     private final List<ScoreItemBinding> mBindings = new ArrayList<>();
     private final LayoutInflater mInflater;
     private boolean mIsShortLabels;
+
+    private final ColorStateList mApprovedColor, mRejectedColor, mNoScoreColor;
 
     public ScoreLabelsView(Context context) {
         this(context, null);
@@ -72,6 +76,10 @@ public class ScoreLabelsView extends FlowLayout {
         super(context, attrs, defStyleAttr);
         setOrientation(LinearLayout.HORIZONTAL);
         mInflater = LayoutInflater.from(context);
+
+        mApprovedColor = ContextCompat.getColorStateList(getContext(), R.color.approved);
+        mRejectedColor = ContextCompat.getColorStateList(getContext(), R.color.rejected);
+        mNoScoreColor = ContextCompat.getColorStateList(getContext(), R.color.noscore);
 
         Resources.Theme theme = context.getTheme();
         TypedArray a = theme.obtainStyledAttributes(
@@ -144,27 +152,25 @@ public class ScoreLabelsView extends FlowLayout {
                 final LabelInfo info = scores.get(label);
                 final Model model = new Model();
                 model.label = (mIsShortLabels ? toShortLabel(label) : label) + ": ";
-                final int color;
                 if (info.blocking) {
-                    model.score = getContext().getString(R.string.change_score_blocking);
-                    color = R.color.rejected;
+                    model.score = "\u2717";
+                    model.color = mRejectedColor;
                 } else if (info.rejected != null) {
-                    model.score = getContext().getString(R.string.change_score_rejected);
-                    color = R.color.rejected;
+                    model.score = "-2";
+                    model.color = mRejectedColor;
                 } else if (info.disliked != null) {
-                    model.score = getContext().getString(R.string.change_score_disliked);
-                    color = R.color.rejected;
+                    model.score = "-1";
+                    model.color = mRejectedColor;
                 } else if (info.recommended != null) {
-                    model.score = getContext().getString(R.string.change_score_recommended);
-                    color = R.color.approved;
+                    model.score = "+1";
+                    model.color = mApprovedColor;
                 } else if (info.approved != null) {
-                    model.score = getContext().getString(R.string.change_score_approved);
-                    color = R.color.approved;
+                    model.score = "\u2713";
+                    model.color = mApprovedColor;
                 } else {
-                    model.score = getContext().getString(R.string.change_score_no_score);
-                    color = R.color.noscore;
+                    model.score = " ";
+                    model.color = mNoScoreColor;
                 }
-                model.color = ContextCompat.getColorStateList(getContext(), color);
                 model.visible = true;
                 mScores.put(model.label, model);
             }
@@ -172,11 +178,14 @@ public class ScoreLabelsView extends FlowLayout {
     }
 
     private static String toShortLabel(String label) {
-        Matcher matcher = sShortLabelPattern.matcher(label);
-        StringBuilder sb = new StringBuilder();
-        while (matcher.find()) {
-            sb.append(matcher.group(0));
+        if (!sShortLabelCache.containsKey(label)) {
+            Matcher matcher = sShortLabelPattern.matcher(label);
+            StringBuilder sb = new StringBuilder();
+            while (matcher.find()) {
+                sb.append(matcher.group(0));
+            }
+            sShortLabelCache.put(label, sb.toString());
         }
-        return sb.toString();
+        return sShortLabelCache.get(label);
     }
 }

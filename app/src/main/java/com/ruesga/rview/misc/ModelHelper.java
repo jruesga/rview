@@ -17,6 +17,7 @@ package com.ruesga.rview.misc;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.SparseArray;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
@@ -59,6 +60,8 @@ public class ModelHelper {
     public static final String ACTION_UPDATE_DRAFT = "update_draft";
     public static final String ACTION_DELETE_DRAFT = "delete_draft";
 
+    private static final SparseArray<List<String>> sAvatarUrlCache = new SparseArray<>();
+
     public static GerritApi getGerritApi(Context context) {
         Account account = Preferences.getAccount(context);
         if (account == null) {
@@ -70,7 +73,12 @@ public class ModelHelper {
     }
 
     public static List<String> getAvatarUrl(Context context, AccountInfo account) {
-        List<String> urls = new ArrayList<>();
+        List<String> urls = sAvatarUrlCache.get(account.accountId);
+        if (urls != null) {
+            return new ArrayList<>(urls);
+        }
+
+        urls = new ArrayList<>();
 
         // Gerrit avatars
         int maxSize = (int) context.getResources().getDimension(R.dimen.max_avatar_size);
@@ -106,6 +114,7 @@ public class ModelHelper {
                     + computeGravatarHash(account.email) + ".png?s=" + maxSize + "&d=404");
         }
 
+        sAvatarUrlCache.put(account.accountId, urls);
         return urls;
     }
 
