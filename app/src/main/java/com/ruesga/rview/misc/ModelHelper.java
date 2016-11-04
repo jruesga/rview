@@ -17,7 +17,6 @@ package com.ruesga.rview.misc;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.SparseArray;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
@@ -41,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class ModelHelper {
     public static final String ACTION_UPDATE_DRAFT = "update_draft";
     public static final String ACTION_DELETE_DRAFT = "delete_draft";
 
-    private static final SparseArray<List<String>> sAvatarUrlCache = new SparseArray<>();
+    private static final Map<String, List<String>> sAvatarUrlCache = new HashMap<>();
 
     public static GerritApi getGerritApi(Context context) {
         Account account = Preferences.getAccount(context);
@@ -73,7 +73,9 @@ public class ModelHelper {
     }
 
     public static List<String> getAvatarUrl(Context context, AccountInfo account) {
-        List<String> urls = sAvatarUrlCache.get(account.accountId);
+        String accountKey = account.accountId + getAccountDisplayName(account);
+
+        List<String> urls = sAvatarUrlCache.get(accountKey);
         if (urls != null) {
             return new ArrayList<>(urls);
         }
@@ -114,7 +116,7 @@ public class ModelHelper {
                     + computeGravatarHash(account.email) + ".png?s=" + maxSize + "&d=404");
         }
 
-        sAvatarUrlCache.put(account.accountId, urls);
+        sAvatarUrlCache.put(accountKey, urls);
         return new ArrayList<>(urls);
     }
 
