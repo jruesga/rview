@@ -88,6 +88,14 @@ public class ScoreLabelsView extends FlowLayout {
         a.recycle();
     }
 
+    @Override
+    public boolean isDebugDraw() {
+        // FIXME: super.isDebugDraw() does reflection calls that cause
+        // IllegalArgumentExceptions being thrown, causing scrolling slowness,
+        // thus we avoid it being called here. This should probably be fixed upstream.
+        return false;
+    }
+
     public void setScores(Map<String, LabelInfo> scores) {
         if (scores.size() == 0) {
             mScores.clear();
