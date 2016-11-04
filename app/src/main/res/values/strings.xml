@@ -242,6 +242,7 @@
     <string name="actions_message_hint">Commit message</string>
     <string name="actions_comment_hint">Comment</string>
     <string name="actions_branch_hint">Branch</string>
+    <string name="actions_change_base">Change parent revision</string>
     <string name="actions_base_hint">Subject, change number, or leave empty</string>
     <string name="actions_confirm_submit">Submit this patchset?</string>
 

@@ -24,6 +24,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.BaseAdapter;
@@ -31,7 +32,8 @@ import com.ruesga.rview.databinding.BaseChooserDialogBinding;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.widget.DelayedAutocompleteTextView;
 
-public class BaseChooserDialogFragment extends FilterableDialogFragment {
+public class BaseChooserDialogFragment extends FilterableDialogFragment implements
+        CompoundButton.OnCheckedChangeListener {
 
     public static final String TAG = "BaseChooserDialogFragment";
 
@@ -95,6 +97,12 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment {
     public ViewDataBinding inflateView(LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.base_chooser_dialog, container, true);
+        mBinding.changeBase.setOnCheckedChangeListener(this);
+
+        // initially 'change parent revision' is unchecked
+        mBinding.baseWrapper.setEnabled(false);
+        mBinding.baseWrapper.setHintEnabled(false);
+
         mAdapter = new BaseAdapter(mBinding.getRoot().getContext(),
                 mLegacyChangeId, mProjectId, mBranch);
         return mBinding;
@@ -107,9 +115,18 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment {
     }
 
     @Override
+    public void onCheckedChanged(CompoundButton button, boolean checked) {
+        mBinding.baseWrapper.setEnabled(checked);
+        mBinding.baseWrapper.setHintEnabled(checked);
+    }
+
+    @Override
     public Object transformResult(String result) {
-        if (TextUtils.isEmpty(result)) {
+        if (!mBinding.changeBase.isChecked()) {
             return null;
+        }
+        if (TextUtils.isEmpty(result)) {
+            return "";
         }
 
         try {
