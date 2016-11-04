@@ -1451,10 +1451,8 @@ public class ChangeDetailsFragment extends Fragment {
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
-    private void performConfirmDialog(
-            View v, String title, String message, String action, OnActionConfirmed cb) {
-        ConfirmDialogFragment fragment = ConfirmDialogFragment.newInstance(
-                title, message, action, v);
+    private void performConfirmDialog(View v, String message, OnActionConfirmed cb) {
+        ConfirmDialogFragment fragment = ConfirmDialogFragment.newInstance(message, v);
         fragment.setOnActionConfirmed(cb);
         fragment.show(getChildFragmentManager(), ConfirmDialogFragment.TAG);
     }
@@ -1575,9 +1573,8 @@ public class ChangeDetailsFragment extends Fragment {
                     break;
 
                 case R.id.submit:
-                    action = getString(R.string.change_action_submit);
                     String message = getString(R.string.actions_confirm_submit);
-                    performConfirmDialog(v, action, message, action, () -> {
+                    performConfirmDialog(v, message, () -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
                     });

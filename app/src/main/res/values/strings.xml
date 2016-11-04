@@ -30,6 +30,8 @@
     <string name="action_change">Change</string>
     <string name="action_save">Save</string>
     <string name="action_retry">Retry</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -241,7 +243,7 @@
     <string name="actions_comment_hint">Comment</string>
     <string name="actions_branch_hint">Branch</string>
     <string name="actions_base_hint">Subject, change number, or leave empty</string>
-    <string name="actions_confirm_submit">The patchset will be submitted</string>
+    <string name="actions_confirm_submit">Submit this patchset?</string>
 
     <!-- Change topic dialog -->
     <string name="change_topic_title">Change topic</string>

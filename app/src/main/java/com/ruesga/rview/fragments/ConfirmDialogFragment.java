@@ -20,6 +20,8 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.ruesga.rview.R;
+
 public class ConfirmDialogFragment extends RevealDialogFragment {
 
     public static final String TAG = "ConfirmDialogFragment";
@@ -28,19 +30,14 @@ public class ConfirmDialogFragment extends RevealDialogFragment {
         void onActionConfirmed();
     }
 
-    private static final String EXTRA_TITLE = "title";
     private static final String EXTRA_MESSAGE = "message";
-    private static final String EXTRA_ACTION = "action";
 
     private OnActionConfirmed mCallback;
 
-    public static ConfirmDialogFragment newInstance(
-            String title, String message, String action, View anchor) {
+    public static ConfirmDialogFragment newInstance(String message, View anchor) {
         ConfirmDialogFragment fragment = new ConfirmDialogFragment();
         Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_TITLE, title);
         arguments.putString(EXTRA_MESSAGE, message);
-        arguments.putString(EXTRA_ACTION, action);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
         fragment.setArguments(arguments);
         return fragment;
@@ -55,16 +52,10 @@ public class ConfirmDialogFragment extends RevealDialogFragment {
 
     @Override
     public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
-        String title = getArguments().getString(EXTRA_TITLE);
         String message = getArguments().getString(EXTRA_MESSAGE);
-        String action = getArguments().getString(EXTRA_ACTION);
-        if (TextUtils.isEmpty(action)) {
-            action = getString(android.R.string.ok);
-        }
-        builder.setTitle(title)
-                .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(action, (dialog, which) -> performConfirmAction());
+        builder.setMessage(message)
+                .setNegativeButton(R.string.action_no, null)
+                .setPositiveButton(R.string.action_yes, (dialog, which) -> performConfirmAction());
     }
 
     private void performConfirmAction() {
