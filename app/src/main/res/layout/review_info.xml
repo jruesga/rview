@@ -68,18 +68,19 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="16dp"
-                android:paddingBottom="5dp"
-                android:orientation="horizontal"
-                android:gravity="bottom">
+                android:paddingTop="8dp"
+                android:orientation="horizontal">
 
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/review_comment"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingEnd="8dp"
                     android:background="@android:color/transparent"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
@@ -90,12 +91,13 @@
                     android:hint="@string/change_details_review_hint"/>
 
                 <ImageButton
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     app:srcCompat="@drawable/ic_send"
                     android:tint="?attr/colorAccent"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onReviewPressed}"
+                    android:scaleType="centerInside"
                     tools:ignore="ContentDescription"/>
             </LinearLayout>
         </LinearLayout>
