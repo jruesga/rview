@@ -77,7 +77,7 @@ public class ModelHelper {
 
         List<String> urls = sAvatarUrlCache.get(accountKey);
         if (urls != null) {
-            return new ArrayList<>(urls);
+            return urls;
         }
 
         urls = new ArrayList<>();
@@ -117,7 +117,7 @@ public class ModelHelper {
         }
 
         sAvatarUrlCache.put(accountKey, urls);
-        return new ArrayList<>(urls);
+        return urls;
     }
 
     public static String getAccountDisplayName(AccountInfo account) {
