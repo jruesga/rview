@@ -88,7 +88,8 @@
                     android:scrollbars="vertical"
                     android:inputType="textMultiLine"
                     android:imeOptions="flagNoFullscreen"
-                    android:hint="@string/change_details_review_hint"/>
+                    android:hint="@string/change_details_review_hint"
+                    tools:ignore="RtlSymmetry"/>
 
                 <ImageButton
                     android:layout_width="48dp"

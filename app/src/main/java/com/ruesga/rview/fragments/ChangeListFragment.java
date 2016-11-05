@@ -55,7 +55,6 @@ import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.functions.Function3;
 import me.tatarka.rxloader2.RxLoader2;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
