@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,6 +91,18 @@ public class BindingAdapters {
 
         // Remove line breaks
         v.setText(text.replaceAll("\r\n", " ").replaceAll("\r", " ").replaceAll("\n", " "));
+    }
+
+    @BindingAdapter("bindHtml")
+    @SuppressWarnings("deprecation")
+    public static void bindHtml(TextView v, String text) {
+        if (TextUtils.isEmpty(text)) {
+            v.setText(null);
+            return;
+        }
+
+        // Remove line breaks
+        v.setText(Html.fromHtml(text));
     }
 
     @BindingAdapter("bindNull")

@@ -155,7 +155,7 @@ public class FileDiffViewerFragment extends Fragment {
         public void onNewDraft(View v, boolean left, Integer line) {
             final String baseRevision = mBase == null ? "0" : mBase;
             String rev = left ? baseRevision : mRevision;
-            performShowDraftMessageDialog(v, null,
+            performShowDraftMessageDialog(v, line, left, null,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
@@ -166,7 +166,8 @@ public class FileDiffViewerFragment extends Fragment {
 
         @Override
         public void onReply(View v, String revisionId, String commentId, Integer line) {
-            performShowDraftMessageDialog(v, null,
+            boolean left = !(revisionId.equals(mRevision));
+            performShowDraftMessageDialog(v, line, left, null,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
@@ -187,7 +188,8 @@ public class FileDiffViewerFragment extends Fragment {
         @Override
         public void onEditDraft(View v, String revisionId, String draftId,
                 String inReplyTo, Integer line, String msg) {
-            performShowDraftMessageDialog(v, msg,
+            boolean left = !(revisionId.equals(mRevision));
+            performShowDraftMessageDialog(v, line, left, msg,
                     newValue -> {
                         mActionLoader.clear();
                         mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
@@ -556,10 +558,22 @@ public class FileDiffViewerFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private void performShowDraftMessageDialog(
-            View v, String comment, EditDialogFragment.OnEditChanged cb) {
+    private void performShowDraftMessageDialog(View v, Integer line, boolean isLeftSide,
+            String comment, EditDialogFragment.OnEditChanged cb) {
+        final String side = isLeftSide
+                ? getString(R.string.options_base_left)
+                : getString(R.string.options_base_right);
+        final String subtitle;
+        if (line == null) {
+            // File comment
+            subtitle = getString(R.string.draft_file_comment, side);
+        } else {
+            // Line comment
+            subtitle = getString(R.string.draft_line_comment, line, side);
+        }
+
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                getString(R.string.draft_title), comment,
+                getString(R.string.draft_title), subtitle, comment,
                     getString(R.string.action_save), getString(R.string.draft_hint), false, v);
         fragment.setOnEditChanged(cb);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);

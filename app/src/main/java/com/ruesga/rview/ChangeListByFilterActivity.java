@@ -181,6 +181,7 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
                 getString(R.string.custom_filter_title),
                 null,
+                null,
                 getString(R.string.action_save),
                 getString(R.string.custom_filter_hint),
                 false,

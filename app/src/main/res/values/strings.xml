@@ -253,6 +253,8 @@
 
     <!-- Drafts -->
     <string name="draft_title">Draft</string>
+    <string name="draft_line_comment">Line &lt;b&gt;<xliff:g id="line" example="12">%1$d</xliff:g>&lt;/b&gt; in &lt;b&gt;<xliff:g id="side" example="left">%2$s</xliff:g>&lt;/b&gt; side</string>
+    <string name="draft_file_comment">File comment in &lt;b&gt;<xliff:g id="side" example="left">%1$s</xliff:g>&lt;/b&gt; side</string>
     <string name="draft_hint">Draft comment</string>
     <string name="draft_reply_done" translatable="false">Done</string>
 

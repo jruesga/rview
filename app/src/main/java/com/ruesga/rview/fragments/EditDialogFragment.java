@@ -36,6 +36,7 @@ public class EditDialogFragment extends RevealDialogFragment {
     public static final String TAG = "EditDialogFragment";
 
     private static final String EXTRA_TITLE = "title";
+    private static final String EXTRA_SUBTITLE = "subtitle";
     private static final String EXTRA_VALUE = "value";
     private static final String EXTRA_HINT = "hint";
     private static final String EXTRA_ACTION = "action";
@@ -43,6 +44,7 @@ public class EditDialogFragment extends RevealDialogFragment {
 
     @ProguardIgnored
     public static class Model {
+        public String subtitle;
         public String value;
         public String hint;
         boolean allowEmpty;
@@ -68,11 +70,14 @@ public class EditDialogFragment extends RevealDialogFragment {
     };
 
 
-    public static EditDialogFragment newInstance(String title, String value,
+    public static EditDialogFragment newInstance(String title, String subtitle,String value,
                 String action, String hint, boolean allowEmpty, View anchor) {
         EditDialogFragment fragment = new EditDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_TITLE, title);
+        if (!TextUtils.isEmpty(subtitle)) {
+            arguments.putString(EXTRA_SUBTITLE, subtitle);
+        }
         arguments.putString(EXTRA_VALUE, value);
         arguments.putString(EXTRA_ACTION, action);
         arguments.putString(EXTRA_HINT, hint);
@@ -111,6 +116,7 @@ public class EditDialogFragment extends RevealDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mModel.subtitle = getArguments().getString(EXTRA_SUBTITLE);
         mModel.value = getArguments().getString(EXTRA_VALUE);
         mModel.hint = getArguments().getString(EXTRA_HINT);
         mModel.allowEmpty = getArguments().getBoolean(EXTRA_ALLOW_EMPTY, false);
