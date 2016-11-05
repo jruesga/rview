@@ -1433,7 +1433,7 @@ public class ChangeDetailsFragment extends Fragment {
         CherryPickChooserDialogFragment fragment = CherryPickChooserDialogFragment.newInstance(
                 mResponse.mChange.project, mResponse.mChange.branch, message, v);
         fragment.setOnFilterSelectedListener(cb);
-        fragment.show(getChildFragmentManager(), BaseChooserDialogFragment.TAG);
+        fragment.show(getChildFragmentManager(), CherryPickChooserDialogFragment.TAG);
     }
 
     private void performShowRequestMessageDialog(
