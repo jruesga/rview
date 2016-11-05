@@ -1338,6 +1338,7 @@ public class ChangeDetailsFragment extends Fragment {
             if (!TextUtils.isEmpty(message)) {
                 input.message = message;
             }
+            input.omitDuplicateComments = true;
             input.notify = NotifyType.ALL;
 
             mReviewLoader.clear();
