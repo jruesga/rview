@@ -38,12 +38,12 @@ import com.ruesga.rview.preferences.Preferences;
 
 import java.util.List;
 
-import me.tatarka.rxloader.RxLoaderManager;
-import me.tatarka.rxloader.RxLoaderManagerCompat;
-import me.tatarka.rxloader.RxLoaderObserver;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
 
 public class ChangeDetailsActivity extends BaseActivity {
 
@@ -182,14 +182,14 @@ public class ChangeDetailsActivity extends BaseActivity {
     private Observable<ChangeInfo> fetchChangeId(ChangeQuery query) {
         final GerritApi api = ModelHelper.getGerritApi(this);
         return Observable.fromCallable(() -> {
-                    List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).toBlocking().first();
-                    if (changes != null && !changes.isEmpty()) {
-                        return changes.get(0);
-                    }
-                    return null;
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).blockingFirst();
+                if (changes != null && !changes.isEmpty()) {
+                    return changes.get(0);
+                }
+                return null;
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override

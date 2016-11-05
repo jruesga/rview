@@ -54,11 +54,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import me.tatarka.rxloader.RxLoader2;
-import me.tatarka.rxloader.RxLoaderManager;
-import me.tatarka.rxloader.RxLoaderManagerCompat;
-import me.tatarka.rxloader.RxLoaderObserver;
-import rx.Observable;
+import io.reactivex.Observable;
+import io.reactivex.functions.Function3;
+import me.tatarka.rxloader2.RxLoader2;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
 
 public abstract class ChangeListFragment extends Fragment implements SelectableFragment {
 
@@ -279,6 +280,35 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     void notifyNoMoreItems() {
         mBinding.list.removeOnScrollListener(mEndlessScroller);
     }
+
+//    protected Function3<List<ChangeInfo>, List<ChangeInfo>, Integer, List<ChangeInfo>> combineChanges() {
+//        return (oldChanges, newChanges, count) -> {
+//            // Check if we end fetching changes
+//            if (hasMoreItems(newChanges.size(), count)) {
+//                notifyNoMoreItems();
+//            }
+//
+//            List<ChangeInfo> combined = new ArrayList<>(oldChanges);
+//            if (!oldChanges.isEmpty() && oldChanges.get(oldChanges.size() - 1).id == null) {
+//                combined.remove(oldChanges.size() - 1);
+//            }
+//            for (ChangeInfo newChange : newChanges) {
+//                boolean exists = false;
+//                for (ChangeInfo change : combined) {
+//                    if (newChange.id.equals(change.id)) {
+//                        exists = true;
+//                        break;
+//                    }
+//                }
+//
+//                if (!exists) {
+//                    combined.add(newChange);
+//                }
+//            }
+//
+//            return combined;
+//        };
+//    }
 
     List<ChangeInfo> combineChanges(
             List<ChangeInfo> oldChanges, List<ChangeInfo> newChanges, Integer count) {

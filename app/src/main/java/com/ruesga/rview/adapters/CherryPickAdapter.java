@@ -41,7 +41,7 @@ public class CherryPickAdapter extends FilterableAdapter {
     public List<CharSequence> getResults() {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         List<BranchInfo> branches = api.getProjectBranches(
-                mProjectId, null, null, null, null).toBlocking().first();
+                mProjectId, null, null, null, null).blockingFirst();
         List<CharSequence> results = new ArrayList<>(branches.size());
         for (BranchInfo branch : branches) {
             if (branch.ref.startsWith(Constants.REF_HEADS)) {

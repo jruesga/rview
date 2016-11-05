@@ -28,6 +28,7 @@ import com.burgstaller.okhttp.digest.CachingAuthenticator;
 import com.burgstaller.okhttp.digest.Credentials;
 import com.burgstaller.okhttp.digest.DigestAuthenticator;
 import com.google.gson.annotations.Since;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.GroupQuery;
@@ -39,8 +40,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.reactivex.Observable;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -48,9 +51,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
 
 public class GerritApiClient implements GerritApi {
     private static final Map<String, CachingAuthenticator> sAuthCache = new ConcurrentHashMap<>();
@@ -135,7 +136,7 @@ public class GerritApiClient implements GerritApi {
                 GsonHelper.createGerritGsonBuilder(true, mAbstractionLayer).create());
 
         // RxJava adapter
-        RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.create();
+        RxJava2CallAdapterFactory rxAdapter = RxJava2CallAdapterFactory.create();
 
         // Retrofit
         Retrofit retrofit = new Retrofit.Builder()
@@ -182,17 +183,29 @@ public class GerritApiClient implements GerritApi {
             long now = System.currentTimeMillis();
             if (mServerVersion == null ||
                     (now - mLastServerVersionCheck > DateUtils.DAY_IN_MILLIS)) {
-                mServerVersion = getServerVersion().toBlocking().first();
+                mServerVersion = getServerVersion().blockingFirst();
                 mSupportedFeatures = filterByVersion(Arrays.asList(Features.values()));
                 mLastServerVersionCheck = now;
             }
-            return observable.toBlocking().first();
+            return observable.blockingFirst();
+        });
+    }
+
+    private <T> Observable<T> withEmptyObservable(final Observable<T> observable) {
+        return Observable.fromCallable(() -> {
+            try {
+                return observable.blockingFirst();
+            } catch (NoSuchElementException ex) {
+                // RxJava2 doesn't support null observables, so just return an object
+                //noinspection unchecked
+                return (T) Boolean.TRUE;
+            }
         });
     }
 
     private Observable<ServerVersion> andCacheVersion(final Observable<ServerVersion> observable) {
         return Observable.fromCallable(() -> {
-            mServerVersion = observable.toBlocking().first();
+            mServerVersion = observable.blockingFirst();
             return mServerVersion;
         });
     }
@@ -203,7 +216,7 @@ public class GerritApiClient implements GerritApi {
             return null;
         }
         if (mServerVersion == null) {
-            mServerVersion = getServerVersion().toBlocking().first();
+            mServerVersion = getServerVersion().blockingFirst();
         }
         ArrayList<T> filter = new ArrayList<>(o.size());
         for (T t : o) {
@@ -298,7 +311,7 @@ public class GerritApiClient implements GerritApi {
             @Nullable Integer start, @Nullable List<AccountOptions> options) {
         return withVersionRequestCheck(Observable.fromCallable(
                 () -> mService.getAccounts(query, count, start, filterByVersion(options))
-                        .toBlocking().first()));
+                        .blockingFirst()));
     }
 
     @Override
@@ -330,7 +343,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteAccountName(@NonNull String accountId) {
-        return withVersionRequestCheck(mService.deleteAccountName(accountId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteAccountName(accountId)));
     }
 
     @Override
@@ -351,12 +366,16 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> setAccountAsActive(@NonNull String accountId) {
-        return withVersionRequestCheck(mService.setAccountAsActive(accountId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.setAccountAsActive(accountId)));
     }
 
     @Override
     public Observable<Void> setAccountAsInactive(@NonNull String accountId) {
-        return withVersionRequestCheck(mService.setAccountAsInactive(accountId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.setAccountAsInactive(accountId)));
     }
 
     @Override
@@ -372,7 +391,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteHttpPassword(@NonNull String accountId) {
-        return withVersionRequestCheck(mService.deleteHttpPassword(accountId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteHttpPassword(accountId)));
     }
 
     @Override
@@ -399,13 +420,17 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteAccountEmail(@NonNull String accountId, @NonNull String emailId) {
-        return withVersionRequestCheck(mService.deleteAccountEmail(accountId, emailId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteAccountEmail(accountId, emailId)));
     }
 
     @Override
     public Observable<Void> setAccountPreferredEmail(
             @NonNull String accountId, @NonNull String emailId) {
-        return withVersionRequestCheck(mService.setAccountPreferredEmail(accountId, emailId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.setAccountPreferredEmail(accountId, emailId)));
     }
 
     @Override
@@ -426,7 +451,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteAccountSshKey(@NonNull String accountId, int sshKeyId) {
-        return withVersionRequestCheck(mService.deleteAccountSshKey(accountId, sshKeyId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteAccountSshKey(accountId, sshKeyId)));
     }
 
     @Override
@@ -457,7 +484,7 @@ public class GerritApiClient implements GerritApi {
             @NonNull String accountId, @Nullable List<Capability> filter) {
         return withVersionRequestCheck(Observable.fromCallable(
                 () -> mService.getAccountCapabilities(accountId, filterByVersion(filter))
-                        .toBlocking().first()));
+                        .blockingFirst()));
     }
 
     @Override
@@ -532,7 +559,9 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> deleteAccountWatchedProjects(
             @NonNull String accountId, @NonNull List<DeleteProjectWatchInput> input) {
-        return withVersionRequestCheck(mService.deleteAccountWatchedProjects(accountId, input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteAccountWatchedProjects(accountId, input)));
     }
 
     @Override
@@ -543,13 +572,17 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> putDefaultStarOnChange(
             @NonNull String accountId, @NonNull String changeId) {
-        return withVersionRequestCheck(mService.putDefaultStarOnChange(accountId, changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.putDefaultStarOnChange(accountId, changeId)));
     }
 
     @Override
     public Observable<Void> deleteDefaultStarFromChange(
             @NonNull String accountId, @NonNull String changeId) {
-        return withVersionRequestCheck(mService.deleteDefaultStarFromChange(accountId, changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteDefaultStarFromChange(accountId, changeId)));
     }
 
     @Override
@@ -599,7 +632,7 @@ public class GerritApiClient implements GerritApi {
             @Nullable Integer start, @Nullable List<ChangeOptions> options) {
         return withVersionRequestCheck(Observable.fromCallable(
                 () -> mService.getChanges(query, count, start, filterByVersion(options))
-                        .toBlocking().first()));
+                        .blockingFirst()));
     }
 
     @Override
@@ -607,7 +640,7 @@ public class GerritApiClient implements GerritApi {
             @NonNull String changeId, @Nullable List<ChangeOptions> options) {
         return withVersionRequestCheck(Observable.fromCallable(
                 () -> mService.getChange(changeId, filterByVersion(options))
-                        .toBlocking().first()));
+                        .blockingFirst()));
     }
 
     @Override
@@ -615,7 +648,7 @@ public class GerritApiClient implements GerritApi {
             @NonNull String changeId, @Nullable List<ChangeOptions> options) {
         return withVersionRequestCheck(Observable.fromCallable(
                 () -> mService.getChangeDetail(changeId, filterByVersion(options))
-                        .toBlocking().first()));
+                        .blockingFirst()));
     }
 
     @Override
@@ -630,7 +663,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteChangeTopic(@NonNull String changeId) {
-        return withVersionRequestCheck(mService.deleteChangeTopic(changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteChangeTopic(changeId)));
     }
 
     @Override
@@ -677,12 +712,16 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> publishDraftChange(@NonNull String changeId) {
-        return withVersionRequestCheck(mService.publishDraftChange(changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.publishDraftChange(changeId)));
     }
 
     @Override
     public Observable<Void> deleteDraftChange(@NonNull String changeId) {
-        return withVersionRequestCheck(mService.deleteDraftChange(changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteDraftChange(changeId)));
     }
 
     @Override
@@ -692,7 +731,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> indexChange(@NonNull String changeId) {
-        return withVersionRequestCheck(mService.indexChange(changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.indexChange(changeId)));
     }
 
     @Override
@@ -726,30 +767,40 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> setChangeEdit(
             @NonNull String changeId, @NonNull String fileId, @NonNull RequestBody data) {
-        return withVersionRequestCheck(mService.setChangeEdit(changeId, fileId, data));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.setChangeEdit(changeId, fileId, data)));
     }
 
     @Override
     public Observable<Void> restoreChangeEdit(
             @NonNull String changeId, @NonNull RestoreChangeEditInput input) {
-        return withVersionRequestCheck(mService.restoreChangeEdit(changeId, input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.restoreChangeEdit(changeId, input)));
     }
 
     @Override
     public Observable<Void> renameChangeEdit(
             @NonNull String changeId, @NonNull RenameChangeEditInput input) {
-        return withVersionRequestCheck(mService.renameChangeEdit(changeId, input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.renameChangeEdit(changeId, input)));
     }
 
     @Override
     public Observable<Void> newChangeEdit(
             @NonNull String changeId, @NonNull NewChangeEditInput input) {
-        return withVersionRequestCheck(mService.newChangeEdit(changeId, input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.newChangeEdit(changeId, input)));
     }
 
     @Override
     public Observable<Void> deleteChangeEditFile(@NonNull String changeId, @NonNull String fileId) {
-        return withVersionRequestCheck(mService.deleteChangeEditFile(changeId, fileId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteChangeEditFile(changeId, fileId)));
     }
 
     @Override
@@ -772,22 +823,30 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> setChangeEditMessage(
             @NonNull String changeId, @NonNull ChangeEditMessageInput input) {
-        return withVersionRequestCheck(mService.setChangeEditMessage(changeId, input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.setChangeEditMessage(changeId, input)));
     }
 
     @Override
     public Observable<Void> publishChangeEdit(@NonNull String changeId) {
-        return withVersionRequestCheck(mService.publishChangeEdit(changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.publishChangeEdit(changeId)));
     }
 
     @Override
     public Observable<Void> rebaseChangeEdit(@NonNull String changeId) {
-        return withVersionRequestCheck(mService.rebaseChangeEdit(changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.rebaseChangeEdit(changeId)));
     }
 
     @Override
     public Observable<Void> deleteChangeEdit(@NonNull String changeId) {
-        return withVersionRequestCheck(mService.deleteChangeEdit(changeId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteChangeEdit(changeId)));
     }
 
     @Override
@@ -817,7 +876,9 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> deleteChangeReviewer(
             @NonNull String changeId, @NonNull String accountId) {
-        return withVersionRequestCheck(mService.deleteChangeReviewer(changeId, accountId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteChangeReviewer(changeId, accountId)));
     }
 
     @Override
@@ -830,7 +891,8 @@ public class GerritApiClient implements GerritApi {
     public Observable<Void> deleteChangeReviewerVote(@NonNull String changeId,
             @NonNull String accountId, @NonNull String labelId, @NonNull DeleteVoteInput input) {
         return withVersionRequestCheck(
-                mService.deleteChangeReviewerVote(changeId, accountId, labelId, input));
+                withEmptyObservable(
+                    mService.deleteChangeReviewerVote(changeId, accountId, labelId, input)));
     }
 
     @Override
@@ -858,7 +920,7 @@ public class GerritApiClient implements GerritApi {
         return withVersionRequestCheck(Observable.fromCallable(() -> {
             input.drafts = getApiVersionMediator().resolveDraftActionType(input.drafts);
             return mService.setChangeRevisionReview(
-                    changeId, revisionId, input).toBlocking().first();
+                    changeId, revisionId, input).blockingFirst();
         }));
     }
 
@@ -959,7 +1021,8 @@ public class GerritApiClient implements GerritApi {
     public Observable<Void> deleteChangeRevisionDraft(
             @NonNull String changeId, @NonNull String revisionId, @NonNull String draftId) {
         return withVersionRequestCheck(
-                mService.deleteChangeRevisionDraft(changeId, revisionId, draftId));
+                withEmptyObservable(
+                    mService.deleteChangeRevisionDraft(changeId, revisionId, draftId)));
     }
 
     @Override
@@ -1020,14 +1083,16 @@ public class GerritApiClient implements GerritApi {
     public Observable<Void> setChangeRevisionFileAsReviewed(
             @NonNull String changeId, @NonNull String revisionId, @NonNull String fileId) {
         return withVersionRequestCheck(
-                mService.setChangeRevisionFileAsReviewed(changeId, revisionId, fileId));
+                withEmptyObservable(
+                    mService.setChangeRevisionFileAsReviewed(changeId, revisionId, fileId)));
     }
 
     @Override
     public Observable<Void> setChangeRevisionFileAsNotReviewed(
             @NonNull String changeId, @NonNull String revisionId, @NonNull String fileId) {
         return withVersionRequestCheck(
-                mService.setChangeRevisionFileAsNotReviewed(changeId, revisionId, fileId));
+                withEmptyObservable(
+                    mService.setChangeRevisionFileAsNotReviewed(changeId, revisionId, fileId)));
     }
 
     @Override
@@ -1057,7 +1122,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> confirmEmail(@NonNull EmailConfirmationInput input) {
-        return withVersionRequestCheck(mService.confirmEmail(input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.confirmEmail(input)));
     }
 
     @Override
@@ -1067,7 +1134,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> executeServerCachesOperations(CacheOperationInput input) {
-        return withVersionRequestCheck(mService.executeServerCachesOperations(input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.executeServerCachesOperations(input)));
     }
 
     @Override
@@ -1077,7 +1146,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> flushServerCache(@NonNull String cacheId) {
-        return withVersionRequestCheck(mService.flushServerCache(cacheId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.flushServerCache(cacheId)));
     }
 
     @Override
@@ -1102,7 +1173,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteServerTask(@NonNull String taskId) {
-        return withVersionRequestCheck(mService.deleteServerTask(taskId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteServerTask(taskId)));
     }
 
     @Override
@@ -1154,7 +1227,7 @@ public class GerritApiClient implements GerritApi {
         return withVersionRequestCheck(Observable.fromCallable(
                 () -> mService.getGroups(query, count, start, project, user, owned,
                         visibleToAll, verbose, filterByVersion(options))
-                        .toBlocking().first()));
+                        .blockingFirst()));
     }
 
     @Override
@@ -1195,7 +1268,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteGroupDescription(@NonNull String groupId) {
-        return withVersionRequestCheck(mService.deleteGroupDescription(groupId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteGroupDescription(groupId)));
     }
 
     @Override
@@ -1251,13 +1326,17 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteGroupMember(@NonNull String groupId, @NonNull String accountId) {
-        return withVersionRequestCheck(mService.deleteGroupMember(groupId, accountId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteGroupMember(groupId, accountId)));
     }
 
     @Override
     public Observable<Void> deleteGroupMembers(
             @NonNull String groupId, @NonNull MemberInput input) {
-        return withVersionRequestCheck(mService.deleteGroupMembers(groupId, input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteGroupMembers(groupId, input)));
     }
 
     @Override
@@ -1286,13 +1365,17 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> deleteGroupIncludeGroup(
             @NonNull String groupId, @NonNull String includedGroupId) {
-        return withVersionRequestCheck(mService.deleteGroupIncludeGroup(groupId, includedGroupId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteGroupIncludeGroup(groupId, includedGroupId)));
     }
 
     @Override
     public Observable<Void> deleteGroupIncludeGroup(
             @NonNull String groupId, @NonNull IncludeGroupInput input) {
-        return withVersionRequestCheck(mService.deleteGroupIncludeGroup(groupId, input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteGroupIncludeGroup(groupId, input)));
     }
 
 
@@ -1372,7 +1455,9 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> deleteProjectDescription(@NonNull String projectName) {
-        return withVersionRequestCheck(mService.deleteProjectDescription(projectName));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteProjectDescription(projectName)));
     }
 
     @Override
@@ -1458,13 +1543,17 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> deleteProjectBranch(
             @NonNull String projectName, @NonNull String branchId) {
-        return withVersionRequestCheck(mService.deleteProjectBranch(projectName, branchId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteProjectBranch(projectName, branchId)));
     }
 
     @Override
     public Observable<Void> deleteProjectBranches(
             @NonNull String projectName, @NonNull DeleteBranchesInput input) {
-        return withVersionRequestCheck(mService.deleteProjectBranches(projectName, input));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteProjectBranches(projectName, input)));
     }
 
     @Override
@@ -1550,6 +1639,8 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<Void> deleteProjectDashboard(
             @NonNull String projectName, @NonNull String dashboardId) {
-        return withVersionRequestCheck(mService.deleteProjectDashboard(projectName, dashboardId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteProjectDashboard(projectName, dashboardId)));
     }
 }

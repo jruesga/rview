@@ -37,12 +37,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import me.tatarka.rxloader.RxLoaderManager;
-import me.tatarka.rxloader.RxLoaderManagerCompat;
-import me.tatarka.rxloader.RxLoaderObserver;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
 
 public abstract class ListChooserFragment extends WizardChooserFragment {
 
@@ -208,7 +208,9 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         return Observable.fromCallable(getDataProducer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(() -> ((WizardActivity)getActivity()).changeInProgressStatus(true))
-                .doOnTerminate(() -> ((WizardActivity)getActivity()).changeInProgressStatus(false));
+                .doOnSubscribe(disposable ->
+                        ((WizardActivity)getActivity()).changeInProgressStatus(true))
+                .doOnTerminate(() ->
+                        ((WizardActivity)getActivity()).changeInProgressStatus(false));
     }
 }

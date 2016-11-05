@@ -34,11 +34,9 @@ dependencies {
     compile "com.android.support:design:${libraries.support}"
     compile "com.android.support:customtabs:${libraries.support}"
     compile "com.google.code.gson:gson:${libraries.gson}"
-    compile "io.reactivex:rxjava:${libraries.rxjava}"
-    compile "io.reactivex:rxandroid:${libraries.rxandroid}"
-    compile("me.tatarka.rxloader:rxloader:${libraries.rxloader}") {
-        exclude group: 'io.reactivex', module: 'rxandroid'
-    }
+    compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    compile "com.github.jruesga:rxloader:${libraries.rxloader2}"
     compile "org.apache.commons:commons-io:${libraries.commons_io}"
     compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
     compile "com.squareup.picasso:picasso:${libraries.picasso2}"

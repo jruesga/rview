@@ -223,13 +223,13 @@ public class RepositoryPageFragment extends WizardPageFragment {
                 endpoint = "https://" + mModel.url;
                 Log.i(TAG, "Trying to resolve Gerrit repository: " + endpoint);
                 GerritApi client = GerritServiceFactory.getInstance(ctx, endpoint);
-                version = client.getServerVersion().toBlocking().first();
+                version = client.getServerVersion().blockingFirst();
                 mModel.url = endpoint;
             } catch (Exception ex) {
                 endpoint = "http://" + mModel.url;
                 Log.i(TAG, "Trying to resolve Gerrit repository: " + endpoint);
                 GerritApi client = GerritServiceFactory.getInstance(ctx, endpoint);
-                version = client.getServerVersion().toBlocking().first();
+                version = client.getServerVersion().blockingFirst();
                 mModel.url = endpoint;
             }
         } else {
@@ -237,7 +237,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
             endpoint = mModel.url;
             Log.i(TAG, "Trying to resolve Gerrit repository: " + endpoint);
             GerritApi client = GerritServiceFactory.getInstance(ctx, endpoint);
-            version = client.getServerVersion().toBlocking().first();
+            version = client.getServerVersion().blockingFirst();
         }
         Log.i(TAG, "Gerrit repository resolved. Server version " + version);
 

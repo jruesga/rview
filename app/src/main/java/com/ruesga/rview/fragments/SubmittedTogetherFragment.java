@@ -28,9 +28,9 @@ import com.ruesga.rview.preferences.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class SubmittedTogetherFragment extends ChangeListFragment {
 
@@ -56,11 +56,11 @@ public class SubmittedTogetherFragment extends ChangeListFragment {
         return Observable.zip(
                 Observable.just(getCurrentData(start == 0)),
                 Observable.fromCallable(() -> {
-                    ServerVersion version = api.getServerVersion().toBlocking().first();
+                    ServerVersion version = api.getServerVersion().blockingFirst();
                     if (version.getVersion() >= 2.12) {
                         return fetchChanges(api,
                                 api.getChangesSubmittedTogether(
-                                    legacyChangeId, null).toBlocking().first());
+                                    legacyChangeId, null).blockingFirst());
                     }
                     return new ArrayList<>();
                 }),
@@ -91,8 +91,7 @@ public class SubmittedTogetherFragment extends ChangeListFragment {
     private List<ChangeInfo> fetchChanges(GerritApi api, List<ChangeInfo> changes) {
         List<ChangeInfo> c = new ArrayList<>(changes.size());
         for (ChangeInfo change : changes) {
-            c.add(api.getChange(String.valueOf(change.legacyChangeId), OPTIONS)
-                    .toBlocking().first());
+            c.add(api.getChange(String.valueOf(change.legacyChangeId), OPTIONS).blockingFirst());
         }
         return c;
     }

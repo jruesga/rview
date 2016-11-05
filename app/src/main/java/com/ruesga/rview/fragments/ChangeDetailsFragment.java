@@ -109,15 +109,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import me.tatarka.rxloader.RxLoader;
-import me.tatarka.rxloader.RxLoader1;
-import me.tatarka.rxloader.RxLoader2;
-import me.tatarka.rxloader.RxLoaderManager;
-import me.tatarka.rxloader.RxLoaderManagerCompat;
-import me.tatarka.rxloader.RxLoaderObserver;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader;
+import me.tatarka.rxloader2.RxLoader1;
+import me.tatarka.rxloader2.RxLoader2;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
 
 public class ChangeDetailsFragment extends Fragment {
 
@@ -996,12 +996,12 @@ public class ChangeDetailsFragment extends Fragment {
                     Observable.fromCallable(() -> {
                         DataResponse dataResponse = new DataResponse();
                         dataResponse.mChange = api.getChange(
-                                changeId, OPTIONS).toBlocking().first();
+                                changeId, OPTIONS).blockingFirst();
 
                         // Obtain the project configuration
                         if (dataResponse.mChange != null) {
                             dataResponse.mProjectConfig = api.getProjectConfig(
-                                    dataResponse.mChange.project).toBlocking().first();
+                                    dataResponse.mChange.project).blockingFirst();
                         }
 
                         return dataResponse;
@@ -1012,8 +1012,7 @@ public class ChangeDetailsFragment extends Fragment {
                     Observable.fromCallable(() -> {
                         // Do no fetch drafts if the account is not authenticated
                         if (mAccount.hasAuthenticatedAccessMode()) {
-                            return api.getChangeRevisionDrafts(changeId, revision)
-                                    .toBlocking().first();
+                            return api.getChangeRevisionDrafts(changeId, revision).blockingFirst();
                         }
                         return new HashMap<>();
                     }),
@@ -1036,7 +1035,7 @@ public class ChangeDetailsFragment extends Fragment {
                         call = api.deleteDefaultStarFromChange(
                                 GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId));
                     }
-                    call.toBlocking().first();
+                    call.blockingFirst();
                     return starred;
                 })
                 .subscribeOn(Schedulers.io())
@@ -1049,8 +1048,7 @@ public class ChangeDetailsFragment extends Fragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.fromCallable(() ->
                     api.setChangeRevisionReview(
-                        String.valueOf(mLegacyChangeId), mCurrentRevision, input)
-                        .toBlocking().first()
+                        String.valueOf(mLegacyChangeId), mCurrentRevision, input).blockingFirst()
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -1064,11 +1062,9 @@ public class ChangeDetailsFragment extends Fragment {
                     if (!TextUtils.isEmpty(newTopic)) {
                         TopicInput input = new TopicInput();
                         input.topic = newTopic;
-                        api.setChangeTopic(String.valueOf(mLegacyChangeId), input)
-                                .toBlocking().first();
+                        api.setChangeTopic(String.valueOf(mLegacyChangeId), input).blockingFirst();
                     } else {
-                        api.deleteChangeTopic(String.valueOf(mLegacyChangeId))
-                                .toBlocking().first();
+                        api.deleteChangeTopic(String.valueOf(mLegacyChangeId)).blockingFirst();
                     }
                     return newTopic;
                 })
@@ -1084,8 +1080,7 @@ public class ChangeDetailsFragment extends Fragment {
                     ReviewerInput input = new ReviewerInput();
                     input.reviewerId = reviewer;
                     return api.addChangeReviewer(String.valueOf(mLegacyChangeId), input)
-                            .toBlocking()
-                            .first();
+                            .blockingFirst();
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -1098,8 +1093,7 @@ public class ChangeDetailsFragment extends Fragment {
         return Observable.fromCallable(() -> {
                     api.deleteChangeReviewer(
                             String.valueOf(mLegacyChangeId),
-                            String.valueOf(account.accountId))
-                            .toBlocking().first();
+                            String.valueOf(account.accountId)).blockingFirst();
                     return account;
                 })
                 .subscribeOn(Schedulers.io())
@@ -1112,8 +1106,7 @@ public class ChangeDetailsFragment extends Fragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.fromCallable(() -> {
                     final ChangeInfo change = api.getChange(
-                            String.valueOf(mLegacyChangeId), MESSAGES_OPTIONS)
-                                .toBlocking().first();
+                            String.valueOf(mLegacyChangeId), MESSAGES_OPTIONS).blockingFirst();
                     return change.messages;
                 })
                 .subscribeOn(Schedulers.io())
@@ -1128,9 +1121,8 @@ public class ChangeDetailsFragment extends Fragment {
                     // Do no fetch drafts if the account is not authenticated
                     if (mAccount.hasAuthenticatedAccessMode()) {
                         Map<String, List<CommentInfo>> drafts =
-                                api.getChangeRevisionDrafts(
-                                    String.valueOf(mLegacyChangeId), mCurrentRevision)
-                                        .toBlocking().first();
+                                api.getChangeRevisionDrafts(String.valueOf(mLegacyChangeId),
+                                        mCurrentRevision).blockingFirst();
                         Map<String, Integer> draftComments = new HashMap<>();
                         if (drafts != null) {
                             for (String file : drafts.keySet()) {
@@ -1586,13 +1578,13 @@ public class ChangeDetailsFragment extends Fragment {
     private void performSubmitChange(GerritApi api) {
         SubmitInput input = new SubmitInput();
         input.notify = NotifyType.ALL;
-        api.submitChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+        api.submitChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
     private ChangeInfo performRebaseChange(GerritApi api, String base) {
         RebaseInput input = new RebaseInput();
         input.base = base;
-        return api.rebaseChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+        return api.rebaseChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
     private void performAbandonChange(GerritApi api, String msg) {
@@ -1601,7 +1593,7 @@ public class ChangeDetailsFragment extends Fragment {
         if (!TextUtils.isEmpty(msg)) {
             input.message = msg;
         }
-        api.abandonChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+        api.abandonChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
     private void performRestoreChange(GerritApi api, String msg) {
@@ -1609,7 +1601,7 @@ public class ChangeDetailsFragment extends Fragment {
         if (!TextUtils.isEmpty(msg)) {
             input.message = msg;
         }
-        api.restoreChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+        api.restoreChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
     private ChangeInfo performRevertChange(GerritApi api, String msg) {
@@ -1618,16 +1610,16 @@ public class ChangeDetailsFragment extends Fragment {
         if (!TextUtils.isEmpty(msg)) {
             input.message = msg;
         }
-        return api.revertChange(String.valueOf(mLegacyChangeId), input).toBlocking().first();
+        return api.revertChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
     private void performPublishDraft(GerritApi api) {
         api.publishChangeDraftRevision(String.valueOf(mLegacyChangeId), mCurrentRevision)
-                .toBlocking().first();
+                .blockingFirst();
     }
 
     private void performDeleteChange(GerritApi api) {
-        api.deleteDraftChange(String.valueOf(mLegacyChangeId)).toBlocking().first();
+        api.deleteDraftChange(String.valueOf(mLegacyChangeId)).blockingFirst();
     }
 
     private ChangeInfo performFollowUp(GerritApi api, String subject) {
@@ -1640,7 +1632,7 @@ public class ChangeDetailsFragment extends Fragment {
             change.topic = mResponse.mChange.topic;
         }
         change.subject = subject;
-        return api.createChange(change).toBlocking().first();
+        return api.createChange(change).blockingFirst();
     }
 
     private ChangeInfo performCherryPickChange(GerritApi api, String branch, String msg) {
@@ -1648,7 +1640,7 @@ public class ChangeDetailsFragment extends Fragment {
         CherryPickInput input = new CherryPickInput();
         input.destination = branch;
         input.message = msg;
-        return api.cherryPickChangeRevision(changeId, mCurrentRevision, input).toBlocking().first();
+        return api.cherryPickChangeRevision(changeId, mCurrentRevision, input).blockingFirst();
     }
 
     private void performMessageClick(int position) {
@@ -1681,7 +1673,7 @@ public class ChangeDetailsFragment extends Fragment {
             try {
                 Map<String, List<CommentInfo>> comments = api.getChangeRevisionComments(
                         String.valueOf(response.mChange.legacyChangeId),
-                        String.valueOf(rev)).toBlocking().first();
+                        String.valueOf(rev)).blockingFirst();
                 if (comments == null) {
                     continue;
                 }

@@ -39,14 +39,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import me.tatarka.rxloader.RxLoader;
-import me.tatarka.rxloader.RxLoaderManager;
-import me.tatarka.rxloader.RxLoaderManagerCompat;
-import me.tatarka.rxloader.RxLoaderObserver;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
 
 public abstract class StatsPageFragment<T> extends Fragment implements SelectableFragment {
 
@@ -167,48 +168,45 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.fromCallable(() -> {
-                    ChangeQuery query = getStatsQuery();
-                    List<ChangeInfo> changes = new ArrayList<>();
-                    List<ChangeInfo> tmp;
-                    int start = 0;
-                    do {
-                        tmp = api.getChanges(query, MAX_CHANGES, start, OPTIONS)
-                                .toBlocking().first();
-                        changes.addAll(tmp);
-                        start += MAX_CHANGES;
-                    } while (tmp.size() == MAX_CHANGES);
-                    return changes;
-                })
-                .flatMap(new Func1<List<ChangeInfo>, Observable<List<Stats>>>() {
-                    @Override
-                    public Observable<List<Stats>> call(List<ChangeInfo> changes) {
-                        ArrayList<Stats> stats = new ArrayList<>(changes.size());
-                        for (ChangeInfo change : changes) {
-                            final Stats s = new Stats();
-                            if (change.status.equals(ChangeStatus.NEW)
-                                    || change.status.equals(ChangeStatus.DRAFT)
-                                    || change.status.equals(ChangeStatus.SUBMITTED)) {
-                                s.mStatus = ChangeStatus.NEW;
-                            } else {
-                                s.mStatus = change.status;
-                            }
-                            if (s.mStatus.equals(ChangeStatus.NEW)) {
-                                s.mDate = change.created;
-                            } else {
-                                s.mDate = change.updated;
-                            }
-                            s.mDescription = getDescription(change);
-                            s.mCrossDescription = getCrossDescription(change);
-                            s.mCrossItem = getSerializedCrossItem(change);
-                            stats.add(s);
-                        }
-
-                        Collections.sort(stats, (o1, o2) -> o1.mDate.compareTo(o2.mDate));
-                        return Observable.just(stats);
+                ChangeQuery query = getStatsQuery();
+                List<ChangeInfo> changes = new ArrayList<>();
+                List<ChangeInfo> tmp;
+                int start = 0;
+                do {
+                    tmp = api.getChanges(query, MAX_CHANGES, start, OPTIONS)
+                            .blockingFirst();
+                    changes.addAll(tmp);
+                    start += MAX_CHANGES;
+                } while (tmp.size() == MAX_CHANGES);
+                return changes;
+            })
+            .flatMap((Function<List<ChangeInfo>, ObservableSource<List<Stats>>>) changes -> {
+                ArrayList<Stats> stats = new ArrayList<>(changes.size());
+                for (ChangeInfo change : changes) {
+                    final Stats s = new Stats();
+                    if (change.status.equals(ChangeStatus.NEW)
+                            || change.status.equals(ChangeStatus.DRAFT)
+                            || change.status.equals(ChangeStatus.SUBMITTED)) {
+                        s.mStatus = ChangeStatus.NEW;
+                    } else {
+                        s.mStatus = change.status;
                     }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                    if (s.mStatus.equals(ChangeStatus.NEW)) {
+                        s.mDate = change.created;
+                    } else {
+                        s.mDate = change.updated;
+                    }
+                    s.mDescription = getDescription(change);
+                    s.mCrossDescription = getCrossDescription(change);
+                    s.mCrossItem = getSerializedCrossItem(change);
+                    stats.add(s);
+                }
+
+                Collections.sort(stats, (o1, o2) -> o1.mDate.compareTo(o2.mDate));
+                return Observable.just(stats);
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 
     private void performRequestStats() {

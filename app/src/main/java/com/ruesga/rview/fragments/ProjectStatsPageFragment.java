@@ -35,7 +35,7 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 public class ProjectStatsPageFragment extends StatsPageFragment<ProjectInfo> {
 

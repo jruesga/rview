@@ -29,9 +29,9 @@ import com.ruesga.rview.preferences.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class RevisionRelatedChangesFragment extends ChangeListFragment {
 
@@ -60,7 +60,7 @@ public class RevisionRelatedChangesFragment extends ChangeListFragment {
                 Observable.just(getCurrentData(start == 0)),
                 Observable.fromCallable(() -> fetchChanges(api,
                         api.getChangeRevisionRelatedChanges(
-                                legacyChangeId, revisionId).toBlocking().first().changes)),
+                                legacyChangeId, revisionId).blockingFirst().changes)),
                 Observable.just(0),
                 this::combineChanges
             )
@@ -89,10 +89,10 @@ public class RevisionRelatedChangesFragment extends ChangeListFragment {
         for (RelatedChangeAndCommitInfo r : related) {
             if (r.changeNumber != null) {
                 c.add(api.getChange(String.valueOf(r.changeNumber), OPTIONS)
-                        .toBlocking().first());
+                        .blockingFirst());
             } else {
                 ChangeQuery query = new ChangeQuery().commit(r.commit.commit);
-                List<ChangeInfo> changes = api.getChanges(query, 1, 0, OPTIONS).toBlocking().first();
+                List<ChangeInfo> changes = api.getChanges(query, 1, 0, OPTIONS).blockingFirst();
                 if (changes != null && !changes.isEmpty()) {
                     c.add(changes.get(0));
                 }

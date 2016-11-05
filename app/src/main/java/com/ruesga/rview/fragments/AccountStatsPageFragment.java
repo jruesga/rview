@@ -44,7 +44,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInfo> {
 
@@ -116,8 +116,8 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
                 // If something went wrong just fallback to the cached information.
                 if (api.supportsFeature(Features.ACCOUNT_DETAILS)) {
                     try {
-                        mCachedAccount = api.getAccountDetails(String.valueOf(mAccountId))
-                                .toBlocking().first();
+                        mCachedAccount = api.getAccountDetails(
+                                String.valueOf(mAccountId)).blockingFirst();
                     } catch (Exception ex) {
                         // Ignore
                     }
@@ -129,7 +129,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
                         mCachedAccount.secondaryEmails == null) {
                     try {
                         List<EmailInfo> emails = api.getAccountEmails(GerritApi.SELF_ACCOUNT)
-                                .toBlocking().first();
+                                .blockingFirst();
                         if (emails != null) {
                             List<String> secondaryEmails = new ArrayList<>();
                             for (EmailInfo email : emails) {

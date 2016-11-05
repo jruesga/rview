@@ -53,13 +53,13 @@ import com.ruesga.rview.wizard.databinding.ActivityWizardBinding;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-import me.tatarka.rxloader.RxLoader;
-import me.tatarka.rxloader.RxLoaderManager;
-import me.tatarka.rxloader.RxLoaderManagerCompat;
-import me.tatarka.rxloader.RxLoaderObserver;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
@@ -586,7 +586,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         return Observable.fromCallable(call)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(() -> changeInProgressStatus(true))
+                .doOnSubscribe(disposable -> changeInProgressStatus(true))
                 .doOnTerminate(() -> changeInProgressStatus(false));
     }
 

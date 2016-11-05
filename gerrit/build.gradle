@@ -23,7 +23,9 @@ def testLibraries = rootProject.ext.testLibraries;
 dependencies {
     compile "com.android.support:support-annotations:${libraries.support}"
     compile "com.google.code.gson:gson:${libraries.gson}"
-    compile "com.squareup.retrofit2:retrofit:${libraries.retrofit2}"
+    compile("com.squareup.retrofit2:retrofit:${libraries.retrofit2}") {
+        exclude group: 'io.reactivex', module: 'rxjava'
+    }
     compile "com.squareup.retrofit2:converter-gson:${libraries.retrofit2}"
     compile "com.squareup.retrofit2:adapter-rxjava:${libraries.retrofit2}"
     compile "com.squareup.okhttp3:okhttp:${libraries.okhttp3}"
@@ -31,7 +33,8 @@ dependencies {
     compile "com.squareup.okio:okio:${libraries.okio}"
     //compile "com.burgstaller:okhttp-digest:${libraries.okhttp_digest}@aar"
     compile "com.github.jruesga:okhttp-digest:${libraries.okhttp_digest}@aar"
-    compile "io.reactivex:rxjava:${libraries.rxjava}"
+    compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    compile "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:${libraries.retrofit2_rxjava2_adapter}"
     compile "org.antlr:antlr-runtime:${libraries.antlrv3}"
 
     testCompile "junit:junit:${testLibraries.junit}"

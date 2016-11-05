@@ -48,7 +48,7 @@ public class BaseAdapter extends FilterableAdapter {
                 .and(new ChangeQuery().branch(mBranch))
                 .and(new ChangeQuery().is(IsType.OPEN))
                 .negate(new ChangeQuery().age(TimeUnit.DAYS, 90));
-        List<ChangeInfo> changes = api.getChanges(query, 1000, 0, null).toBlocking().first();
+        List<ChangeInfo> changes = api.getChanges(query, 1000, 0, null).blockingFirst();
         List<CharSequence> results = new ArrayList<>(changes.size());
         for (ChangeInfo change : changes) {
             // Exclude current base

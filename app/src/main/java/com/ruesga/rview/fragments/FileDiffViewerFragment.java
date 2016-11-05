@@ -68,15 +68,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import me.tatarka.rxloader.RxLoader;
-import me.tatarka.rxloader.RxLoader2;
-import me.tatarka.rxloader.RxLoaderManager;
-import me.tatarka.rxloader.RxLoaderManagerCompat;
-import me.tatarka.rxloader.RxLoaderObserver;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader;
+import me.tatarka.rxloader2.RxLoader2;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
 import okhttp3.ResponseBody;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class FileDiffViewerFragment extends Fragment {
 
@@ -370,7 +370,7 @@ public class FileDiffViewerFragment extends Fragment {
                                         WhitespaceType.IGNORE_NONE,
                                         IgnoreWhitespaceType.NONE,
                                         ContextType.ALL)
-                                        .toBlocking().first();
+                                        .blockingFirst();
                             }
 
                             DiffInfo diff = new DiffInfo();
@@ -385,7 +385,7 @@ public class FileDiffViewerFragment extends Fragment {
                             if (!isBinary && mBase != null) {
                                 return api.getChangeRevisionComments(
                                         String.valueOf(mChange.legacyChangeId), baseRevision)
-                                        .toBlocking().first();
+                                        .blockingFirst();
                             }
                             return new HashMap<>();
                         }),
@@ -396,7 +396,7 @@ public class FileDiffViewerFragment extends Fragment {
                             if (!isBinary) {
                                 return api.getChangeRevisionComments(
                                         String.valueOf(mChange.legacyChangeId), mRevisionId)
-                                        .toBlocking().first();
+                                        .blockingFirst();
                             }
                             return new HashMap<>();
                         }),
@@ -408,7 +408,7 @@ public class FileDiffViewerFragment extends Fragment {
                             if (!isBinary && mBase != null && mAccount.hasAuthenticatedAccessMode()) {
                                 return api.getChangeRevisionDrafts(
                                         String.valueOf(mChange.legacyChangeId), baseRevision)
-                                        .toBlocking().first();
+                                        .blockingFirst();
                             }
                             return new HashMap<>();
                         }),
@@ -420,7 +420,7 @@ public class FileDiffViewerFragment extends Fragment {
                             if (!isBinary && mAccount.hasAuthenticatedAccessMode()) {
                                 return api.getChangeRevisionDrafts(
                                         String.valueOf(mChange.legacyChangeId), mRevisionId)
-                                        .toBlocking().first();
+                                        .blockingFirst();
                             }
                             return new HashMap<>();
                         }),
@@ -439,7 +439,7 @@ public class FileDiffViewerFragment extends Fragment {
         return Observable.fromCallable(() -> {
                     api.setChangeRevisionFileAsReviewed(
                                 String.valueOf(mChange.legacyChangeId), mRevisionId, mFile
-                            ).toBlocking().first();
+                            ).blockingFirst();
                     return true;
                 })
                 .subscribeOn(Schedulers.io())
@@ -579,7 +579,7 @@ public class FileDiffViewerFragment extends Fragment {
         input.path = mFile;
         input.side = side;
         CommentInfo comment = api.createChangeRevisionDraft(
-                String.valueOf(mChange.legacyChangeId), rev, input).toBlocking().first();
+                String.valueOf(mChange.legacyChangeId), rev, input).blockingFirst();
 
         if (getParentFragment() != null && getParentFragment() instanceof OnDiffCompleteListener) {
             ((OnDiffCompleteListener) getParentFragment()).onNewDraftCreated(revision, comment.id);
@@ -604,7 +604,7 @@ public class FileDiffViewerFragment extends Fragment {
         input.path = mFile;
         input.side = side;
         CommentInfo comment = api.updateChangeRevisionDraft(
-                String.valueOf(mChange.legacyChangeId), rev, draftId, input).toBlocking().first();
+                String.valueOf(mChange.legacyChangeId), rev, draftId, input).blockingFirst();
 
         if (getParentFragment() != null && getParentFragment() instanceof OnDiffCompleteListener) {
             ((OnDiffCompleteListener) getParentFragment()).onDraftUpdated(revision, draftId);
@@ -616,9 +616,8 @@ public class FileDiffViewerFragment extends Fragment {
     private void performDeleteDraft(GerritApi api, String revision, String draftId) {
         int base = Integer.parseInt(revision);
         String rev = base == 0 ? mRevisionId : revision;
-        api.deleteChangeRevisionDraft(
-                String.valueOf(mChange.legacyChangeId), rev, draftId)
-                    .toBlocking().first();
+        api.deleteChangeRevisionDraft(String.valueOf(mChange.legacyChangeId), rev, draftId)
+                .blockingFirst();
 
         if (getParentFragment() != null && getParentFragment() instanceof OnDiffCompleteListener) {
             ((OnDiffCompleteListener) getParentFragment()).onDraftDeleted(revision, draftId);
@@ -711,7 +710,7 @@ public class FileDiffViewerFragment extends Fragment {
                         changeId,
                         revision,
                         mFile)
-                        .toBlocking().first();
+                        .blockingFirst();
                 CacheHelper.writeAccountDiffCacheFile(
                         getContext(),
                         mAccount,
@@ -748,7 +747,7 @@ public class FileDiffViewerFragment extends Fragment {
                 final Context ctx = getActivity();
                 final GerritApi api = ModelHelper.getGerritApi(ctx);
                 ChangeQuery query = new ChangeQuery().commit(parentRevision);
-                List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).toBlocking().first();
+                List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).blockingFirst();
                 ChangeInfo change = changes.size() > 0 ? changes.get(0) : null;
 
                 CacheHelper.writeAccountDiffCacheFile(getContext(),

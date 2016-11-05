@@ -24,8 +24,6 @@ import com.ruesga.rview.exceptions.IllegalQueryExpressionException;
 import com.ruesga.rview.exceptions.OperationFailedException;
 import com.ruesga.rview.gerrit.NoConnectivityException;
 
-import retrofit2.adapter.rxjava.HttpException;
-
 public class ExceptionHelper {
     @SuppressWarnings("SimplifiableIfStatement")
     public static <T extends Throwable> boolean isException(Throwable cause, Class<T> c) {
@@ -48,23 +46,17 @@ public class ExceptionHelper {
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
     public static @StringRes int exceptionToMessage(Context context, String tag, Throwable cause) {
         int message;
-        if (isException(cause, HttpException.class)) {
-            HttpException httpException = (HttpException) getCause(cause, HttpException.class);
-            final int code = httpException.code();
-            switch (code) {
-                case 400: //Bad request
-                    message = R.string.exception_invalid_request;
-                    break;
-                case 403: //Forbidden
-                    message = R.string.exception_insufficient_permissions;
-                    break;
-                case 404: //Not found
-                    message = R.string.exception_not_found;
-                    break;
-                default:
-                    message = R.string.exception_bad_request;
-                    break;
-            }
+        if (isException(cause, retrofit2.adapter.rxjava.HttpException.class)) {
+            retrofit2.adapter.rxjava.HttpException httpException =
+                    (retrofit2.adapter.rxjava.HttpException)
+                            getCause(cause, retrofit2.adapter.rxjava.HttpException.class);
+            message = httpCode2MessageResource(httpException.code());
+
+        } else if (isException(cause, com.jakewharton.retrofit2.adapter.rxjava2.HttpException.class)) {
+            com.jakewharton.retrofit2.adapter.rxjava2.HttpException httpException =
+                    (com.jakewharton.retrofit2.adapter.rxjava2.HttpException)
+                        getCause(cause, com.jakewharton.retrofit2.adapter.rxjava2.HttpException.class);
+            message = httpCode2MessageResource(httpException.code());
 
         } else if (isException(cause, OperationFailedException.class)) {
             message = R.string.exception_operation_failed;
@@ -88,8 +80,24 @@ public class ExceptionHelper {
         return message;
     }
 
+    private static int httpCode2MessageResource(int code) {
+        switch (code) {
+            case 400: //Bad request
+                return R.string.exception_invalid_request;
+            case 403: //Forbidden
+                return R.string.exception_insufficient_permissions;
+            case 404: //Not found
+                return R.string.exception_not_found;
+            case 409: //Conflict
+                return R.string.exception_conflict;
+            default:
+                return R.string.exception_bad_request;
+        }
+    }
+
     public static int exceptionToLevel(Throwable cause) {
         if (isException(cause, NoConnectivityException.class)
+                || isHttpException(cause, 409)
                 || isException(cause, IllegalQueryExpressionException.class)) {
             return 1;
         }
@@ -98,6 +106,23 @@ public class ExceptionHelper {
 
     public static boolean hasConnectivity(Throwable cause) {
         return !(isException(cause, NoConnectivityException.class));
+    }
+
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
+    private static boolean isHttpException(Throwable cause, int httpCode) {
+        if (isException(cause, retrofit2.adapter.rxjava.HttpException.class)) {
+            retrofit2.adapter.rxjava.HttpException httpException =
+                    (retrofit2.adapter.rxjava.HttpException)
+                            getCause(cause, retrofit2.adapter.rxjava.HttpException.class);
+            return httpCode == httpException.code();
+        }
+        if (isException(cause, com.jakewharton.retrofit2.adapter.rxjava2.HttpException.class)) {
+            com.jakewharton.retrofit2.adapter.rxjava2.HttpException httpException =
+                    (com.jakewharton.retrofit2.adapter.rxjava2.HttpException)
+                            getCause(cause, com.jakewharton.retrofit2.adapter.rxjava2.HttpException.class);
+            return httpCode == httpException.code();
+        }
+        return false;
     }
 
 }

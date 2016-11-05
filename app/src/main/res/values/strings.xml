@@ -69,6 +69,7 @@
     <string name="exception_invalid_request">Invalid request</string>
     <string name="exception_insufficient_permissions">Insufficient permissions</string>
     <string name="exception_not_found">Request data not found</string>
+    <string name="exception_conflict">Operation cannot be performed. There is a conflict.</string>
     <string name="exception_bad_request">Bad request</string>
     <string name="exception_request_error">Request error</string>
     <string name="exception_operation_failed">Operation failed</string>

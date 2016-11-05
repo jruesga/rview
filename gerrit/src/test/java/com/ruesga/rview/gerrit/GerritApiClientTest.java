@@ -79,7 +79,7 @@ public class GerritApiClientTest {
         String[] projectNames = {"gerrit", "git-repo"};
         final GerritApiClient client = getGerritClient(ENDPOINT);
         Map<String, ProjectAccessInfo> accesses =
-                client.getAccessRights(projectNames).toBlocking().first();
+                client.getAccessRights(projectNames).blockingFirst();
         assertNotNull(accesses);
         assertEquals(accesses.size(), projectNames.length);
         for (String projectName : projectNames) {
@@ -94,7 +94,7 @@ public class GerritApiClientTest {
         final int count = 5;
         final GerritApiClient client = getGerritClient(ENDPOINT);
         ChangeQuery query = new ChangeQuery().status(StatusType.OPEN);
-        List<ChangeInfo> changes = client.getChanges(query, count, 0, null).toBlocking().first();
+        List<ChangeInfo> changes = client.getChanges(query, count, 0, null).blockingFirst();
         assertNotNull(changes);
         assertEquals(changes.size(), count);
 
@@ -108,7 +108,7 @@ public class GerritApiClientTest {
         final int count = 5;
         final GerritApiClient client = getGerritClient(ENDPOINT);
         ChangeQuery query = new ChangeQuery().status(StatusType.OPEN);
-        List<ChangeInfo> changes = client.getChanges(query, count, 0, null).toBlocking().first();
+        List<ChangeInfo> changes = client.getChanges(query, count, 0, null).blockingFirst();
         assertNotNull(changes);
         assertEquals(changes.size(), count);
     }
@@ -116,7 +116,7 @@ public class GerritApiClientTest {
     @Test
     public void testGetServerVersion() {
         final GerritApiClient client = getGerritClient(ENDPOINT);
-        ServerVersion version = client.getServerVersion().toBlocking().first();
+        ServerVersion version = client.getServerVersion().blockingFirst();
         assertNotNull(version);
         assertTrue(version.getVersion() >= GerritApi.API_VERSION);
     }
@@ -124,7 +124,7 @@ public class GerritApiClientTest {
     @Test
     public void testGetServerInfo() {
         final GerritApiClient client = getGerritClient(ENDPOINT);
-        ServerInfo info = client.getServerInfo().toBlocking().first();
+        ServerInfo info = client.getServerInfo().blockingFirst();
         assertNotNull(info);
         assertTrue(info.gerrit.docUrl.equals(ENDPOINT + "Documentation/"));
     }

@@ -311,7 +311,7 @@ public class AccountPageFragment extends WizardPageFragment {
         Context ctx = getActivity().getApplicationContext();
         Authorization authorization = new Authorization(mModel.username, mModel.password);
         GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
-        mModel.accountInfo = client.getAccount(GerritApi.SELF_ACCOUNT).toBlocking().first();
+        mModel.accountInfo = client.getAccount(GerritApi.SELF_ACCOUNT).blockingFirst();
         return mModel.accountInfo != null;
     }
 
@@ -320,7 +320,7 @@ public class AccountPageFragment extends WizardPageFragment {
             Context ctx = getActivity().getApplicationContext();
             Authorization authorization = new Authorization(mModel.username, mModel.password);
             GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
-            ServerInfo serverInfo = client.getServerInfo().toBlocking().first();
+            ServerInfo serverInfo = client.getServerInfo().blockingFirst();
             return serverInfo.user.anonymousCowardName;
         } catch (Exception ex) {
             Log.w(TAG, "Gerrit repository doesn't provided server configuration.");

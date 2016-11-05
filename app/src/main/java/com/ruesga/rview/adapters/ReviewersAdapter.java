@@ -182,8 +182,7 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
         @SuppressWarnings("ConstantConditions")
         private List<SuggestedReviewerInfo> fetchSuggestedReviewers(String query) {
             return mGerritApi.getChangeSuggestedReviewers(mLegacyChangeId, query, MAX_RESULTS)
-                    .toBlocking()
-                    .first();
+                    .blockingFirst();
         }
 
         private void removeSelfFromReviewers(List<SuggestedReviewerInfo> reviewers) {
