@@ -281,35 +281,6 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         mBinding.list.removeOnScrollListener(mEndlessScroller);
     }
 
-//    protected Function3<List<ChangeInfo>, List<ChangeInfo>, Integer, List<ChangeInfo>> combineChanges() {
-//        return (oldChanges, newChanges, count) -> {
-//            // Check if we end fetching changes
-//            if (hasMoreItems(newChanges.size(), count)) {
-//                notifyNoMoreItems();
-//            }
-//
-//            List<ChangeInfo> combined = new ArrayList<>(oldChanges);
-//            if (!oldChanges.isEmpty() && oldChanges.get(oldChanges.size() - 1).id == null) {
-//                combined.remove(oldChanges.size() - 1);
-//            }
-//            for (ChangeInfo newChange : newChanges) {
-//                boolean exists = false;
-//                for (ChangeInfo change : combined) {
-//                    if (newChange.id.equals(change.id)) {
-//                        exists = true;
-//                        break;
-//                    }
-//                }
-//
-//                if (!exists) {
-//                    combined.add(newChange);
-//                }
-//            }
-//
-//            return combined;
-//        };
-//    }
-
     List<ChangeInfo> combineChanges(
             List<ChangeInfo> oldChanges, List<ChangeInfo> newChanges, Integer count) {
         // Check if we end fetching changes
