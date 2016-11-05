@@ -320,6 +320,10 @@ public class FileDiffViewerFragment extends Fragment {
                 mChange = SerializationManager.getInstance().fromJson(
                         new String(CacheHelper.readAccountDiffCacheFile(
                                 getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
+                if (mChange == null) {
+                    Log.e(TAG, "Change cached data is null. Exiting...");
+                    getActivity().finish();
+                }
 
             } catch (IOException ex) {
                 Log.e(TAG, "Failed to load change cached data", ex);
