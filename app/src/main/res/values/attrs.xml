@@ -47,5 +47,9 @@
         <attr name="charLineColor" format="color"/>
         <attr name="charLineTextColor" format="color"/>
     </declare-styleable>
+    <declare-styleable name="ExpandableViewLayout">
+        <attr name="maxHeight" format="dimension"/>
+        <attr name="expanded" format="boolean"/>
+    </declare-styleable>
 
 </resources>

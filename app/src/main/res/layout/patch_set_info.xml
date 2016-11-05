@@ -94,16 +94,38 @@
                 app:highlightUnreviewed="@{change.reviewed}"
                 android:textSize="16sp" />
 
-            <com.ruesga.rview.widget.RegExLinkifyTextView
+            <com.ruesga.rview.widget.ExpandableViewLayout
+                android:id="@+id/commitMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:commitMessage="@{model.commit}"
-                app:regexpLinkify="@{config}"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?android:attr/textColorSecondary"
-                android:textIsSelectable="true"
-                android:textSize="12sp" />
+                android:scrollbars="none"
+                app:expanded="false"
+                app:maxHeight="240dp">
+                <com.ruesga.rview.widget.RegExLinkifyTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:commitMessage="@{model.commit}"
+                    app:regexpLinkify="@{config}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textIsSelectable="true"
+                    android:textSize="12sp" />
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="16dp"
+                    android:background="@drawable/bg_expandable_edge_shadow"
+                    android:layout_gravity="bottom">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center_horizontal|bottom"
+                        app:srcCompat="@drawable/ic_chevron_down"
+                        tools:ignore="ContentDescription"/>
+                </FrameLayout>
+            </com.ruesga.rview.widget.ExpandableViewLayout>
 
             <View
                 android:layout_width="match_parent"
