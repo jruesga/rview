@@ -53,6 +53,8 @@ public class ReviewLabelsView extends LinearLayout {
     private LinearLayout mLabelsLayout;
     private LinearLayout mScoresLayout;
 
+    private final Object mLock = new Object();
+
     private ScoresView.OnScoreChanged mScoreChangedListener = new ScoresView.OnScoreChanged() {
         @Override
         public void onScoreChanged(ScoresView view, int newScore) {
@@ -90,10 +92,12 @@ public class ReviewLabelsView extends LinearLayout {
     }
 
     public ReviewLabelsView from(ChangeInfo change, Map<String, Integer> review) {
-        mLabels.clear();
-        mLabels.addAll(ModelHelper.sortPermittedLabels(change.permittedLabels));
-        updateLabels();
-        updateScores(change, review);
+        synchronized (mLock) {
+            mLabels.clear();
+            mLabels.addAll(ModelHelper.sortPermittedLabels(change.permittedLabels));
+            updateLabels();
+            updateScores(change, review);
+        }
         return this;
     }
 
@@ -103,17 +107,19 @@ public class ReviewLabelsView extends LinearLayout {
     }
 
     public Map<String, Integer> getReview(boolean onlyReviewed) {
-        int children = mScoresLayout.getChildCount();
-        Map<String, Integer> review = new LinkedHashMap<>(children);
-        for (int i = 0; i < children; i++) {
-            ScoresView view = mScoresViews.get(i);
-            String label = mLabels.get(i);
-            int score = view.getValue();
-            if (!onlyReviewed || score != 0) {
-                review.put(label, score);
+        synchronized (mLock) {
+            int children = mScoresLayout.getChildCount();
+            Map<String, Integer> review = new LinkedHashMap<>(children);
+            for (int i = 0; i < children; i++) {
+                ScoresView view = mScoresViews.get(i);
+                String label = mLabels.get(i);
+                int score = view.getValue();
+                if (!onlyReviewed || score != 0) {
+                    review.put(label, score);
+                }
             }
+            return review;
         }
-        return review;
     }
 
     private void updateLabels() {
