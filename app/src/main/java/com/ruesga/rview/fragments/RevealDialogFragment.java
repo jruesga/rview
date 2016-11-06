@@ -36,7 +36,11 @@ public abstract class RevealDialogFragment extends DialogFragment {
 
     public static final String EXTRA_ANCHOR = "anchor";
 
+    private static final String EXTRA_DO_REVEAL = "do_reveal";
+
     private Rect mAnchorRect;
+
+    private boolean mDoReveal;
 
     public RevealDialogFragment() {
     }
@@ -50,6 +54,11 @@ public abstract class RevealDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAnchorRect = getArguments().getParcelable(EXTRA_ANCHOR);
+
+        mDoReveal = true;
+        if (savedInstanceState != null) {
+            mDoReveal = savedInstanceState.getBoolean(EXTRA_DO_REVEAL, true);
+        }
     }
 
     @NonNull
@@ -65,9 +74,17 @@ public abstract class RevealDialogFragment extends DialogFragment {
         return dialog;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Dialog was revealed previously? Don't do it again
+        outState.putBoolean(EXTRA_DO_REVEAL, mDoReveal);
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void performEnterRevealTransition() {
-        if (getDialog() == null || getDialog().getWindow() == null) {
+        if (!mDoReveal || getDialog() == null || getDialog().getWindow() == null) {
             return;
         }
 
@@ -95,6 +112,7 @@ public abstract class RevealDialogFragment extends DialogFragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 onDialogReveled();
+                mDoReveal = false;
             }
 
             @Override
