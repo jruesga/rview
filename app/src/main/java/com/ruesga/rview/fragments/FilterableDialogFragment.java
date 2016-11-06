@@ -86,7 +86,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
 
     @Override
     public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
+        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
         ViewDataBinding binding = inflateView(inflater, null, savedInstanceState);
 
         getFilterView().addTextChangedListener(new TextWatcher() {

@@ -104,7 +104,8 @@ public class CherryPickChooserDialogFragment extends FilterableDialogFragment {
     @Override
     public ViewDataBinding inflateView(LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.cherry_pick_chooser_dialog, container, true);
+        mBinding = DataBindingUtil.inflate(
+                inflater, R.layout.cherry_pick_chooser_dialog, container, true);
         mBinding.message.setText(mMessage);
         mIsValidated = !mMessage.isEmpty();
         mBinding.message.addTextChangedListener(new TextWatcher() {

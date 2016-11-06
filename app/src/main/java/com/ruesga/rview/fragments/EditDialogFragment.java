@@ -24,7 +24,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.ruesga.rview.R;
@@ -107,8 +106,14 @@ public class EditDialogFragment extends RevealDialogFragment {
         if (TextUtils.isEmpty(action)) {
             action = getString(R.string.action_change);
         }
+
+        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.edit_dialog, null, true);
+        mBinding.edit.addTextChangedListener(mTextWatcher);
+        mBinding.setModel(mModel);
+
         builder.setTitle(title)
-                .setView(onCreateView(LayoutInflater.from(getContext()), null, savedInstanceState))
+                .setView(mBinding.getRoot())
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(action, (dialog, which) -> performEditChanged());
     }
@@ -121,14 +126,6 @@ public class EditDialogFragment extends RevealDialogFragment {
         mModel.hint = getArguments().getString(EXTRA_HINT);
         mModel.allowEmpty = getArguments().getBoolean(EXTRA_ALLOW_EMPTY, false);
         mOriginalValue = mModel.value == null ? "" : mModel.value;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedState) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.edit_dialog, container, true);
-        mBinding.edit.addTextChangedListener(mTextWatcher);
-        mBinding.setModel(mModel);
-        return mBinding.getRoot();
     }
 
     @Override

@@ -85,7 +85,7 @@ public class TagEditDialogFragment extends RevealDialogFragment {
             action = getString(R.string.action_save);
         }
 
-        LayoutInflater inflater = LayoutInflater.from(getContext());
+        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
         mBinding = DataBindingUtil.inflate(inflater, R.layout.tag_edit_dialog, null, true);
         mBinding.tags.setTags(mModel.tags.toArray(new Tag[mModel.tags.size()]));
         mBinding.setModel(mModel);

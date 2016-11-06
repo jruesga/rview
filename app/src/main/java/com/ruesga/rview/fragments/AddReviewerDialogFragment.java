@@ -92,22 +92,8 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
 
     @Override
     public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
-        builder.setTitle(R.string.change_details_add_reviewer)
-                .setView(onCreateView(LayoutInflater.from(getContext()), null, savedInstanceState))
-                .setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_account_circle))
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.action_add, (dialog, which) -> performAddReviewer());
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedState) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.add_reviewer_dialog, container, true);
+        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.add_reviewer_dialog, null, true);
         mBinding.reviewer.addTextChangedListener(mTextWatcher);
         mBinding.reviewer.setOnItemClickListener((parent, view, position, id) -> {
             SuggestedReviewerInfo reviewer =
@@ -121,7 +107,18 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
         ReviewersAdapter adapter = new ReviewersAdapter(
                 mBinding.getRoot().getContext(), mLegacyChangeId);
         mBinding.reviewer.setAdapter(adapter);
-        return mBinding.getRoot();
+
+        builder.setTitle(R.string.change_details_add_reviewer)
+                .setView(mBinding.getRoot())
+                .setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_account_circle))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.action_add, (dialog, which) -> performAddReviewer());
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
     }
 
     @Override
