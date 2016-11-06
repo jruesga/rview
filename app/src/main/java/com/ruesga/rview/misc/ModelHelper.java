@@ -76,7 +76,7 @@ public class ModelHelper {
         String accountKey = account.accountId + "/" + getAccountDisplayName(account);
 
         List<String> urls = sAvatarUrlCache.get(accountKey);
-        if (urls != null) {
+        if (urls != null && !urls.isEmpty()) {
             return urls;
         }
 
