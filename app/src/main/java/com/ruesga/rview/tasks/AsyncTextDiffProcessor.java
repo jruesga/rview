@@ -59,13 +59,14 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     private final Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
     private final boolean mHighlightTabs;
     private final boolean mHighlightTrailingWhitespaces;
+    private final boolean mHighlightIntralineDiffs;
     private final OnTextDiffProcessEndedListener mCallback;
 
     public AsyncTextDiffProcessor(Context context, int mode, DiffInfo diff,
             Pair<List<CommentInfo>, List<CommentInfo>> comments,
             Pair<List<CommentInfo>, List<CommentInfo>> drafts,
             boolean highlightTabs, boolean highlightTrailingWhitespaces,
-            OnTextDiffProcessEndedListener cb) {
+            boolean highlightIntralineDiffs, OnTextDiffProcessEndedListener cb) {
         mContext = context;
         mMode = mode;
         mIsBinary = diff.binary;
@@ -74,6 +75,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         mDrafts = drafts;
         mHighlightTabs = highlightTabs;
         mHighlightTrailingWhitespaces = highlightTrailingWhitespaces;
+        mHighlightIntralineDiffs = highlightIntralineDiffs;
         mCallback = cb;
     }
 
@@ -148,16 +150,18 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         m.lineNumberA = String.valueOf(++lineNumberA);
                         if (diff.editA != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                            int s2 = 0;
-                            for (ArrayList<Integer> intra : diff.editA) {
-                                int s1 = s2 + intra.get(0);
-                                s2 = s1 + intra.get(1);
-                                int l = posA + line.length();
-                                if ((s1 >= posA && s1 <= l) || (s2 >= posA && s2 <= l)
-                                        || (s1 <= posA && s2 >= l)) {
-                                    span.setSpan(new BackgroundColorSpan(deletedFgColor),
-                                            Math.max(posA, s1) - posA, Math.min(l, s2) - posA,
-                                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            if (mHighlightIntralineDiffs) {
+                                int s2 = 0;
+                                for (ArrayList<Integer> intra : diff.editA) {
+                                    int s1 = s2 + intra.get(0);
+                                    s2 = s1 + intra.get(1);
+                                    int l = posA + line.length();
+                                    if ((s1 >= posA && s1 <= l) || (s2 >= posA && s2 <= l)
+                                            || (s1 <= posA && s2 >= l)) {
+                                        span.setSpan(new BackgroundColorSpan(deletedFgColor),
+                                                Math.max(posA, s1) - posA, Math.min(l, s2) - posA,
+                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                    }
                                 }
                             }
                             m.lineA = span;
@@ -174,16 +178,18 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         m.lineNumberB = String.valueOf(++lineNumberB);
                         if (diff.editB != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                            int s2 = 0;
-                            for (ArrayList<Integer> intra : diff.editB) {
-                                int s1 = s2 + intra.get(0);
-                                s2 = s1 + intra.get(1);
-                                int l = posB + line.length();
-                                if ((s1 >= posB && s1 <= l) || (s2 >= posB && s2 <= l)
-                                        || (s1 <= posB && s2 >= l)) {
-                                    span.setSpan(new BackgroundColorSpan(addedFgColor),
-                                            Math.max(posB, s1) - posB, Math.min(l, s2) - posB,
-                                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            if (mHighlightIntralineDiffs) {
+                                int s2 = 0;
+                                for (ArrayList<Integer> intra : diff.editB) {
+                                    int s1 = s2 + intra.get(0);
+                                    s2 = s1 + intra.get(1);
+                                    int l = posB + line.length();
+                                    if ((s1 >= posB && s1 <= l) || (s2 >= posB && s2 <= l)
+                                            || (s1 <= posB && s2 >= l)) {
+                                        span.setSpan(new BackgroundColorSpan(addedFgColor),
+                                                Math.max(posB, s1) - posB, Math.min(l, s2) - posB,
+                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                    }
                                 }
                             }
                             m.lineB = span;
@@ -242,16 +248,18 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         m.lineNumberA = String.valueOf(++lineNumberA);
                         if (diff.editA != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                            int s2 = 0;
-                            for (ArrayList<Integer> intra : diff.editA) {
-                                int s1 = s2 + intra.get(0);
-                                s2 = s1 + intra.get(1);
-                                int l = pos + line.length();
-                                if ((s1 >= pos && s1 <= l) || (s2 >= pos && s2 <= l)
-                                        || (s1 <= pos && s2 >= l)) {
-                                    span.setSpan(new BackgroundColorSpan(deletedFgColor),
-                                            Math.max(pos, s1) - pos, Math.min(l, s2) - pos,
-                                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            if (mHighlightIntralineDiffs) {
+                                int s2 = 0;
+                                for (ArrayList<Integer> intra : diff.editA) {
+                                    int s1 = s2 + intra.get(0);
+                                    s2 = s1 + intra.get(1);
+                                    int l = pos + line.length();
+                                    if ((s1 >= pos && s1 <= l) || (s2 >= pos && s2 <= l)
+                                            || (s1 <= pos && s2 >= l)) {
+                                        span.setSpan(new BackgroundColorSpan(deletedFgColor),
+                                                Math.max(pos, s1) - pos, Math.min(l, s2) - pos,
+                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                    }
                                 }
                             }
                             m.lineA = span;
@@ -273,16 +281,18 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         m.lineNumberB = String.valueOf(++lineNumberB);
                         if (diff.editB != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
-                            int s2 = 0;
-                            for (ArrayList<Integer> intra : diff.editB) {
-                                int s1 = s2 + intra.get(0);
-                                s2 = s1 + intra.get(1);
-                                int l = pos + line.length();
-                                if ((s1 >= pos && s1 <= l) || (s2 >= pos && s2 <= l)
-                                        || (s1 <= pos && s2 >= l)) {
-                                    span.setSpan(new BackgroundColorSpan(addedFgColor),
-                                            Math.max(pos, s1) - pos, Math.min(l, s2) - pos,
-                                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            if (mHighlightIntralineDiffs) {
+                                int s2 = 0;
+                                for (ArrayList<Integer> intra : diff.editB) {
+                                    int s1 = s2 + intra.get(0);
+                                    s2 = s1 + intra.get(1);
+                                    int l = pos + line.length();
+                                    if ((s1 >= pos && s1 <= l) || (s2 >= pos && s2 <= l)
+                                            || (s1 <= pos && s2 >= l)) {
+                                        span.setSpan(new BackgroundColorSpan(addedFgColor),
+                                                Math.max(pos, s1) - pos, Math.min(l, s2) - pos,
+                                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                    }
                                 }
                             }
                             m.lineB = span;

@@ -95,6 +95,8 @@ public class Constants {
     public static final String PREF_ACCOUNT_HIGHLIGHT_TABS = "account_highlight_tabs";
     public static final String PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES
             = "account_highlight_trailing_whitespaces";
+    public static final String PREF_ACCOUNT_HIGHLIGHT_INTRALINE_DIFFS
+            = "account_highlight_intraline_diffs";
     public static final String PREF_ACCOUNT_SEARCH_MODE = "account_search_mode";
     public static final String PREF_ACCOUNT_CUSTOM_FILTERS = "account_custom_filters";
 

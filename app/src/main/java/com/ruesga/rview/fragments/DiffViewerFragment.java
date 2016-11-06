@@ -164,7 +164,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
             final FileDiffViewerFragment fragment = FileDiffViewerFragment.newInstance(
                     mRevisionId, mFile, base, revision, mMode, mWrap,
-                    mHighlightTabs, mHighlightTrailingWhitespaces);
+                    mHighlightTabs, mHighlightTrailingWhitespaces, mHighlightIntralineDiffs);
             mFragment = new WeakReference<>(fragment);
             return fragment;
         }
@@ -210,6 +210,11 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                         mHighlightTrailingWhitespaces = !mHighlightTrailingWhitespaces;
                         Preferences.setAccountHighlightTrailingWhitespaces(
                                 getContext(), mAccount, mHighlightTrailingWhitespaces);
+                        break;
+                    case R.id.highlight_intraline_diffs:
+                        mHighlightIntralineDiffs = !mHighlightIntralineDiffs;
+                        Preferences.setAccountHighlightIntralineDiffs(
+                                getContext(), mAccount, mHighlightIntralineDiffs);
                         break;
                 }
             }
@@ -285,6 +290,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     private boolean mWrap;
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
+    private boolean mHighlightIntralineDiffs;
 
     private boolean mIsBinary = false;
     private boolean mHasImagePreview = false;
@@ -359,6 +365,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             mHighlightTabs = Preferences.isAccountHighlightTabs(getContext(), mAccount);
             mHighlightTrailingWhitespaces =
                     Preferences.isAccountHighlightTrailingWhitespaces(getContext(), mAccount);
+            mHighlightIntralineDiffs =
+                    Preferences.isAccountHighlightIntralineDiffs(getContext(), mAccount);
 
             // Configure the pages adapter
             BaseActivity activity = ((BaseActivity) getActivity());
@@ -491,6 +499,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         menu.findItem(R.id.highlight_tabs).setIcon(mHighlightTabs ? checkMark : uncheckMark);
         menu.findItem(R.id.highlight_trailing_whitespaces).setIcon(
                 mHighlightTrailingWhitespaces ? checkMark : uncheckMark);
+        menu.findItem(R.id.highlight_intraline_diffs).setIcon(
+                mHighlightIntralineDiffs ? checkMark : uncheckMark);
 
         // Open drawer
         activity.openOptionsDrawer();

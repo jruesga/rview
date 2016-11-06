@@ -46,6 +46,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DOWNLOAD_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_INTRALINE_DIFFS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TABS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED;
@@ -296,6 +297,21 @@ public class Preferences {
         editor.apply();
     }
 
+    public static boolean isAccountHighlightIntralineDiffs(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_HIGHLIGHT_INTRALINE_DIFFS, true);
+    }
+
+    public static void setAccountHighlightIntralineDiffs(
+            Context context, Account account, boolean highlight) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putBoolean(PREF_ACCOUNT_HIGHLIGHT_INTRALINE_DIFFS, highlight);
+        editor.apply();
+    }
 
 
     public static int getAccountSearchMode(Context context, Account account) {

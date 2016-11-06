@@ -291,6 +291,7 @@
     <string name="options_highlight">Highlight</string>
     <string name="options_highlight_tabs">Tabs</string>
     <string name="options_highlight_trailing_whitespaces">Trailing whitespaces</string>
+    <string name="options_highlight_intraline_diffs">Intraline diffs</string>
     <string name="options_save_filter">Save</string>
 
     <!-- Search dialog -->

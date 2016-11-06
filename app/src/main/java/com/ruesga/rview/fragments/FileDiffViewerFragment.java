@@ -230,10 +230,11 @@ public class FileDiffViewerFragment extends Fragment {
     private boolean mWrap;
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
+    private boolean mHighlightIntralineDiffs;
 
     public static FileDiffViewerFragment newInstance(String revisionId, String file,
-            int base, int revision, int mode, boolean wrap,
-            boolean highlightTabs, boolean mHighlightTrailingWhitespaces) {
+            int base, int revision, int mode, boolean wrap, boolean highlightTabs,
+            boolean highlightTrailingWhitespaces, boolean highlightIntralineDiffs) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
@@ -243,7 +244,8 @@ public class FileDiffViewerFragment extends Fragment {
         arguments.putInt("mode", mode);
         arguments.putBoolean("wrap", wrap);
         arguments.putBoolean("highlight_tabs", highlightTabs);
-        arguments.putBoolean("highlight_trailing_whitespaces", mHighlightTrailingWhitespaces);
+        arguments.putBoolean("highlight_trailing_whitespaces", highlightTrailingWhitespaces);
+        arguments.putBoolean("highlight_intraline_diffs", highlightIntralineDiffs);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -269,6 +271,7 @@ public class FileDiffViewerFragment extends Fragment {
                     .canEdit(mAccount.hasAuthenticatedAccessMode())
                     .highlightTabs(mHighlightTabs)
                     .highlightTrailingWhitespaces(mHighlightTrailingWhitespaces)
+                    .highlightIntralineDiffs(mHighlightIntralineDiffs)
                     .update();
             },
             250L);
@@ -291,6 +294,7 @@ public class FileDiffViewerFragment extends Fragment {
         mWrap = getArguments().getBoolean("wrap");
         mHighlightTabs = getArguments().getBoolean("highlight_tabs");
         mHighlightTrailingWhitespaces = getArguments().getBoolean("highlight_trailing_whitespaces");
+        mHighlightIntralineDiffs = getArguments().getBoolean("highlight_intraline_diffs");
     }
 
     @Nullable

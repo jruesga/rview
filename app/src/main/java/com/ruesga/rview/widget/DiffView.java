@@ -536,6 +536,7 @@ public class DiffView extends FrameLayout {
 
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
+    private boolean mHighlightIntralineDiffs;
     private boolean mCanEdit;
     private int mDiffMode = UNIFIED_MODE;
     private DiffInfo mDiffInfo;
@@ -592,6 +593,7 @@ public class DiffView extends FrameLayout {
         SavedState savedState = new SavedState(super.onSaveInstanceState());
         savedState.mHighlightTabs = mHighlightTabs;
         savedState.mHighlightTrailingWhitespaces = mHighlightTrailingWhitespaces;
+        savedState.mHighlightIntralineDiffs = mHighlightIntralineDiffs;
         savedState.mCanEdit = mCanEdit;
         savedState.mDiffMode = mDiffMode;
         savedState.mDrafts = SerializationManager.getInstance().toJson(mDrafts);
@@ -611,6 +613,7 @@ public class DiffView extends FrameLayout {
 
         mHighlightTabs = savedState.mHighlightTabs;
         mHighlightTrailingWhitespaces = savedState.mHighlightTrailingWhitespaces;
+        mHighlightIntralineDiffs = savedState.mHighlightIntralineDiffs;
         mCanEdit = savedState.mCanEdit;
         mDiffMode = savedState.mDiffMode;
         Type type = new TypeToken<Pair<List<CommentInfo>, List<CommentInfo>>>(){}.getType();
@@ -657,6 +660,11 @@ public class DiffView extends FrameLayout {
         return this;
     }
 
+    public DiffView highlightIntralineDiffs(boolean highlight) {
+        mHighlightIntralineDiffs = highlight;
+        return this;
+    }
+
     public DiffView wrap(boolean wrap) {
         if (isWrapMode() != wrap) {
             mTmpLayoutManager = wrap
@@ -687,7 +695,8 @@ public class DiffView extends FrameLayout {
 
         if (mDiffMode != IMAGE_MODE) {
             mTextDiffTask = new AsyncTextDiffProcessor(getContext(), mDiffMode, mDiffInfo, mComments,
-                    mDrafts, mHighlightTabs, mHighlightTrailingWhitespaces, mTextProcessorListener);
+                    mDrafts, mHighlightTabs, mHighlightTrailingWhitespaces,
+                    mHighlightIntralineDiffs, mTextProcessorListener);
             mTextDiffTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             mImageDiffTask = new AsyncImageDiffProcessor(getContext(),
@@ -717,6 +726,7 @@ public class DiffView extends FrameLayout {
     static class SavedState extends BaseSavedState {
         boolean mHighlightTabs;
         boolean mHighlightTrailingWhitespaces;
+        boolean mHighlightIntralineDiffs;
         boolean mCanEdit;
         int mDiffMode;
         String mDrafts;
@@ -729,6 +739,7 @@ public class DiffView extends FrameLayout {
             super(in);
             mHighlightTabs = in.readInt() == 1;
             mHighlightTrailingWhitespaces = in.readInt() == 1;
+            mHighlightIntralineDiffs = in.readInt() == 1;
             mCanEdit = in.readInt() == 1;
             mDiffMode = in.readInt();
             mDrafts = in.readString();
@@ -739,6 +750,7 @@ public class DiffView extends FrameLayout {
             super.writeToParcel(out, flags);
             out.writeInt(mHighlightTabs ? 1 : 0);
             out.writeInt(mHighlightTrailingWhitespaces ? 1 : 0);
+            out.writeInt(mHighlightIntralineDiffs ? 1 : 0);
             out.writeInt(mCanEdit ? 1 : 0);
             out.writeInt(mDiffMode);
             out.writeString(mDrafts);
