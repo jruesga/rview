@@ -23,6 +23,7 @@
         <import type="android.view.View" />
         <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
         <import type="com.ruesga.rview.misc.ModelHelper" />
+        <import type="com.ruesga.rview.gerrit.model.Features" />
 
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="isLocked" type="java.lang.Boolean" />
@@ -35,6 +36,7 @@
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="actions" type="java.util.Map&lt;String, com.ruesga.rview.gerrit.model.ActionInfo&gt;" />
         <variable name="submitType" type="com.ruesga.rview.gerrit.model.SubmitType" />
+        <variable name="tags" type="java.util.List&lt;String&gt;" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
@@ -383,6 +385,49 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                app:bindToFeature="@{Features.CHANGE_STAR_LABELS}"
+                android:orientation="horizontal">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_details_tags"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <com.ruesga.rview.widget.TagEditTextView
+                    android:id="@+id/tags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_gravity="center_vertical"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="12sp"
+                    app:bindEmptyList="@{tags}"
+                    app:readonly="true"
+                    app:chipBackgroundColor="@color/noscore"
+                    app:chipTextColor="@android:color/white"/>
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    app:srcCompat="@drawable/ic_edit"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:tint="@color/accent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onTagsEditPressed}"
+                    android:layout_gravity="center_vertical"
+                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; isOwner &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
+                    tools:ignore="ContentDescription"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

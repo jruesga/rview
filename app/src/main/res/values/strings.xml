@@ -157,6 +157,8 @@
     <string name="change_details_strategy">Strategy</string>
     <string name="change_details_created">Created</string>
     <string name="change_details_updated">Updated</string>
+    <string name="change_details_tags">Tags</string>
+    <string name="change_details_tag">Tag</string>
     <string name="change_details_author">Author</string>
     <string name="change_details_committer">Committer</string>
     <string name="change_details_commit">Commit</string>
@@ -250,6 +252,9 @@
     <!-- Change topic dialog -->
     <string name="change_topic_title">Change topic</string>
     <string name="change_topic_hint">Topic name</string>
+
+    <!-- Star labels dialog -->
+    <string name="change_star_labels_title">Tags</string>
 
     <!-- Drafts -->
     <string name="draft_title">Draft</string>
@@ -347,6 +352,7 @@
 
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>
+    <string name="tag_labels_hint">Type a label tag</string>
 
     <!-- Links -->
     <string name="link_play_store" translatable="false">https://play.google.com/store/apps/details?id=<xliff:g id="package_name" example="com.ruesga.rview">%1$s</xliff:g></string>

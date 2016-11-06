@@ -51,5 +51,11 @@
         <attr name="maxHeight" format="dimension"/>
         <attr name="expanded" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="TagEditTextView">
+        <attr name="readonly" format="boolean"/>
+        <attr name="supportUserTags" format="boolean"/>
+        <attr name="chipBackgroundColor" format="color"/>
+        <attr name="chipTextColor" format="color"/>
+    </declare-styleable>
 
 </resources>

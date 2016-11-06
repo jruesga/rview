@@ -29,7 +29,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
+import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.model.Features;
 
+import java.util.List;
 import java.util.Map;
 
 @ProguardIgnored
@@ -110,8 +113,20 @@ public class BindingAdapters {
         v.setVisibility(o == null ? View.GONE : View.VISIBLE);
     }
 
+    @BindingAdapter("bindEmptyList")
+    public static void bindEmptyList(View v, List<?> o) {
+        v.setVisibility(o == null || o.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
     @BindingAdapter("bindEmptyMap")
     public static void bindEmptyMap(View v, Map<?, ?> o) {
         v.setVisibility(o == null || o.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    @BindingAdapter("bindToFeature")
+    public static void bindToFeature(View v, Features feature) {
+        GerritApi api = ModelHelper.getGerritApi(v.getContext());
+        boolean supported = api != null && api.supportsFeature(feature);
+        v.setVisibility(supported ? View.VISIBLE : View.GONE);
     }
 }
