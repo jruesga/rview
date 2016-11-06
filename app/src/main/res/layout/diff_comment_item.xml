@@ -62,7 +62,7 @@
                 android:textColor="?attr/colorPrimaryDark"
                 android:textSize="@dimen/diff_line_text_size"
                 android:gravity="end"
-                android:textStyle="bold"/>
+                app:font="monospace"/>
         </FrameLayout>
 
         <View
@@ -95,7 +95,7 @@
                 android:textColor="?attr/colorPrimaryDark"
                 android:textSize="@dimen/diff_line_text_size"
                 android:gravity="end"
-                android:textStyle="bold"/>
+                app:font="monospace"/>
         </FrameLayout>
 
         <View

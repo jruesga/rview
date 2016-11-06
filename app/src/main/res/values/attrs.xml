@@ -23,6 +23,8 @@
             <enum name="italic" value="3"/>
             <enum name="condensed" value="4"/>
             <enum name="boldCondensed" value="5"/>
+            <enum name="monospace" value="6"/>
+            <enum name="boldMonospace" value="7"/>
         </attr>
         <attr name="allCaps" format="boolean"/>
     </declare-styleable>

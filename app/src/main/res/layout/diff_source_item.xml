@@ -64,7 +64,7 @@
                 android:textColor="?attr/colorPrimaryDark"
                 android:textSize="@dimen/diff_line_text_size"
                 android:gravity="end"
-                android:textStyle="bold"
+                app:font="monospace"
                 android:text="@{model.lineNumberA}"/>
         </FrameLayout>
 
@@ -100,7 +100,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textSize="@dimen/diff_line_text_size"
                 android:gravity="end"
-                android:textStyle="bold"
+                app:font="monospace"
                 android:text="@{model.lineNumberB}"/>
         </FrameLayout>
 
@@ -126,6 +126,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="@dimen/diff_line_text_size"
+                app:font="monospace"
                 android:gravity="center_horizontal"
                 android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
                 android:text='@{model.lineNumberA != null &amp;&amp; model.lineNumberB != null ? " " : model.lineNumberA != null ? "-" : "+"}'/>
@@ -137,6 +138,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
+                app:font="monospace"
                 android:paddingTop="@dimen/diff_line_text_padding"
                 android:paddingBottom="@dimen/diff_line_text_padding"
                 android:paddingLeft="2dp"
@@ -182,7 +184,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textSize="@dimen/diff_line_text_size"
                 android:gravity="end"
-                android:textStyle="bold"
+                app:font="monospace"
                 android:text="@{model.lineNumberB}"/>
         </FrameLayout>
 
@@ -219,6 +221,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
+                app:font="monospace"
                 android:paddingTop="@dimen/diff_line_text_padding"
                 android:paddingBottom="@dimen/diff_line_text_padding"
                 android:paddingLeft="2dp"

@@ -13,6 +13,8 @@ public class TypefaceCache {
     public static final int TF_ITALIC = 3;
     public static final int TF_CONDENSED = 4;
     public static final int TF_BOLD_CONDENSED = 5;
+    public static final int TF_MONOSPACE = 6;
+    public static final int TF_BOLD_MONOSPACE = 7;
 
     private static final String[] FONT_FILENAMES = new String[] {
         "fonts/Roboto-Regular.ttf",
@@ -20,7 +22,9 @@ public class TypefaceCache {
         "fonts/Roboto-Bold.ttf",
         "fonts/Roboto-Italic.ttf",
         "fonts/Roboto-Condensed-Regular.ttf",
-        "fonts/Roboto-Condensed-Bold.ttf"
+        "fonts/Roboto-Condensed-Bold.ttf",
+        "fonts/Roboto-Mono-Regular.ttf",
+        "fonts/Roboto-Mono-Bold.ttf"
     };
 
     private static final String[] FONT_FAMILIES = new String[] {
@@ -29,13 +33,17 @@ public class TypefaceCache {
         "sans-serif",
         "sans-serif",
         "sans-serif-condensed",
-        "sans-serif-condensed"
+        "sans-serif-condensed",
+        "serif-monospace",
+        "serif-monospace"
     };
     private static final int[] FONT_STYLES = new int[] {
         Typeface.NORMAL,
         Typeface.NORMAL,
         Typeface.BOLD,
         Typeface.ITALIC,
+        Typeface.NORMAL,
+        Typeface.BOLD,
         Typeface.NORMAL,
         Typeface.BOLD
     };
@@ -48,6 +56,7 @@ public class TypefaceCache {
                 switch (typeface) {
                     case TF_REGULAR: typeface = TF_BOLD; break;
                     case TF_CONDENSED: typeface = TF_BOLD_CONDENSED; break;
+                    case TF_MONOSPACE: typeface = TF_BOLD_MONOSPACE; break;
                 }
                 break;
             case Typeface.ITALIC:
@@ -60,13 +69,13 @@ public class TypefaceCache {
     }
 
     public static Typeface getTypeface(Context context, int typeface) {
-        if (typeface < TF_REGULAR || typeface > TF_BOLD_CONDENSED) {
+        if (typeface < TF_REGULAR || typeface > TF_BOLD_MONOSPACE) {
             return null;
         }
 
         Typeface tf = sTypefaces.get(typeface);
         if (tf == null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && typeface < TF_MONOSPACE) {
                 // L has all typefaces we need, use system fonts
                 tf = Typeface.create(FONT_FAMILIES[typeface], FONT_STYLES[typeface]);
             } else {

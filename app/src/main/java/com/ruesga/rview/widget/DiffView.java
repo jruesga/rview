@@ -46,6 +46,7 @@ import com.ruesga.rview.databinding.DiffViewBinding;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.misc.TypefaceCache;
 import com.ruesga.rview.tasks.AsyncImageDiffProcessor;
 import com.ruesga.rview.tasks.AsyncImageDiffProcessor.OnImageDiffProcessEndedListener;
 import com.ruesga.rview.tasks.AsyncTextDiffProcessor;
@@ -408,6 +409,7 @@ public class DiffView extends FrameLayout {
                 final Resources res = getResources();
                 TextPaint paint = new TextPaint();
                 paint.setTextSize(res.getDimension(R.dimen.diff_line_text_size));
+                paint.setTypeface(TypefaceCache.getTypeface(getContext(), TypefaceCache.TF_MONOSPACE));
                 float padding = res.getDimension(R.dimen.diff_line_text_padding);
                 float margin = res.getDimension(R.dimen.diff_line_separator_width) * 2;
 
