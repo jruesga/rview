@@ -25,6 +25,7 @@
         <variable name="canEdit" type="java.lang.Boolean" />
         <variable name="wrap" type="java.lang.Boolean" />
         <variable name="mode" type="java.lang.Integer" />
+        <variable name="textSizeFactor" type="java.lang.Float" />
         <variable name="model" type="com.ruesga.rview.widget.DiffView.CommentModel" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
         <variable name="handlers" type="com.ruesga.rview.widget.DiffView.EventHandlers" />
@@ -60,7 +61,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="end"
                 app:font="monospace"/>
         </FrameLayout>
@@ -93,7 +94,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="end"
                 app:font="monospace"/>
         </FrameLayout>
@@ -118,7 +119,7 @@
                 android:padding="3dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="center_horizontal"
                 android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"/>
 
@@ -151,7 +152,7 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:textSize="12sp"
+                            android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                             android:ellipsize="none"
                             android:textIsSelectable="true"
                             android:textStyle="bold"
@@ -166,7 +167,7 @@
                             android:textColor="?android:attr/textColorSecondary"
                             android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
-                            android:textSize="12sp"
+                            android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:textIsSelectable="true"
@@ -181,7 +182,7 @@
                         android:textColor="?android:attr/textColorSecondary"
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
-                        android:textSize="12sp"
+                        android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                         android:ellipsize="none"
                         android:textIsSelectable="true"
                         android:text="@{model.commentA.message}"
@@ -229,7 +230,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="end"
                 android:textStyle="bold"/>
         </FrameLayout>
@@ -255,7 +256,7 @@
                 android:padding="3dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="12sp"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="center_horizontal"
                 android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"/>
 
@@ -288,7 +289,7 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?android:attr/textColorPrimary"
-                            android:textSize="12sp"
+                            android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                             android:ellipsize="none"
                             android:textIsSelectable="true"
                             android:textStyle="bold"
@@ -303,7 +304,7 @@
                             android:textColor="?android:attr/textColorSecondary"
                             android:layout_marginStart="8dp"
                             android:layout_marginLeft="8dp"
-                            android:textSize="12sp"
+                            android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:textIsSelectable="true"
@@ -318,7 +319,7 @@
                         android:textColor="?android:attr/textColorSecondary"
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
-                        android:textSize="12sp"
+                        android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                         android:ellipsize="none"
                         android:textIsSelectable="true"
                         android:text="@{model.commentB.message}"

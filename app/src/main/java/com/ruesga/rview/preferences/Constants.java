@@ -75,6 +75,10 @@ public class Constants {
     public static final int MY_FILTERS_GROUP_BASE_ID = 1000;
     public static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 2000;
 
+    public static final float DEFAULT_TEXT_SIZE_SMALLER = 0.8f;
+    public static final float DEFAULT_TEXT_SIZE_NORMAL = 1.f;
+    public static final float DEFAULT_TEXT_SIZE_BIGGER = 1.2f;
+
     // --- Preference keys
     public static final String PREF_IS_FIRST_RUN = "first_run";
     public static final String PREF_ACCOUNT = "account";
@@ -89,6 +93,7 @@ public class Constants {
     public static final String PREF_ACCOUNT_DOWNLOAD_FORMAT = "account_download_format";
     public static final String PREF_ACCOUNT_DIFF_MODE = "account_diff_mode";
     public static final String PREF_ACCOUNT_WRAP_MODE = "account_wrap_mode";
+    public static final String PREF_ACCOUNT_TEXT_SIZE_FACTOR = "account_text_size_factor";
     public static final String PREF_ACCOUNT_MESSAGES_FOLDED = "account_messages_folded";
     public static final String PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES
             = "account_inline_comment_in_messages";

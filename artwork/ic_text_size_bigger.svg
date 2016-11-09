@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+    <path d="m 2.5,4 0,3 5,0 0,12 3,0 0,-12 5,0 0,-3 z" />
+    <path d="m 13.763999939,10.960629463 7.622000217,0 0,2.204724312 -7.622000217,0 z" />
+    <path d="m 16.503937053,8.3150071272 2.204999924,0 0,7.6219999998 -2.204999924,0 z" />
+</svg>

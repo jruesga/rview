@@ -25,6 +25,7 @@
         <import type="com.ruesga.rview.widget.DiffView" />
         <variable name="wrap" type="java.lang.Boolean" />
         <variable name="mode" type="java.lang.Integer" />
+        <variable name="textSizeFactor" type="java.lang.Float" />
         <variable name="model" type="com.ruesga.rview.widget.DiffView.DiffInfoModel" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
         <variable name="handlers" type="com.ruesga.rview.widget.DiffView.EventHandlers" />
@@ -62,7 +63,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:padding="@dimen/diff_line_text_padding"
                 android:textColor="?attr/colorPrimaryDark"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="end"
                 app:font="monospace"
                 android:text="@{model.lineNumberA}"/>
@@ -98,7 +99,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
                 android:padding="@dimen/diff_line_text_padding"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="end"
                 app:font="monospace"
                 android:text="@{model.lineNumberB}"/>
@@ -125,7 +126,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 app:font="monospace"
                 android:gravity="center_horizontal"
                 android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
@@ -143,7 +144,7 @@
                 android:paddingBottom="@dimen/diff_line_text_padding"
                 android:paddingLeft="2dp"
                 android:paddingStart="2dp"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:ellipsize="none"
                 android:textIsSelectable="true"
                 android:maxLines="@{wrap != null &amp;&amp; wrap ? Integer.MAX_VALUE : 1}"
@@ -182,7 +183,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
                 android:padding="@dimen/diff_line_text_padding"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="end"
                 app:font="monospace"
                 android:text="@{model.lineNumberB}"/>
@@ -210,7 +211,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:gravity="center_horizontal"
                 android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"/>
 
@@ -226,7 +227,7 @@
                 android:paddingBottom="@dimen/diff_line_text_padding"
                 android:paddingLeft="2dp"
                 android:paddingStart="2dp"
-                android:textSize="@dimen/diff_line_text_size"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                 android:ellipsize="none"
                 android:textIsSelectable="true"
                 android:maxLines="@{wrap != null &amp;&amp; wrap ? Integer.MAX_VALUE : 1}"

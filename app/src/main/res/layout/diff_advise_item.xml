@@ -20,6 +20,7 @@
     <data>
         <variable name="wrap" type="java.lang.Boolean" />
         <variable name="advise" type="java.lang.String" />
+        <variable name="textSizeFactor" type="java.lang.Float" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
     </data>
 
@@ -34,7 +35,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="12sp"
+            android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
             android:ellipsize="none"
             android:textStyle="bold"
             android:padding="5dp"

@@ -163,7 +163,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             int revision = mChange.revisions.get(mRevisionId).number;
 
             final FileDiffViewerFragment fragment = FileDiffViewerFragment.newInstance(
-                    mRevisionId, mFile, base, revision, mMode, mWrap,
+                    mRevisionId, mFile, base, revision, mMode, mWrap, mTextSizeFactor,
                     mHighlightTabs, mHighlightTrailingWhitespaces, mHighlightIntralineDiffs);
             mFragment = new WeakReference<>(fragment);
             return fragment;
@@ -201,6 +201,21 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                     case R.id.wrap_mode_off:
                         mWrap = false;
                         Preferences.setAccountWrapMode(getContext(), mAccount, mWrap);
+                        break;
+                    case R.id.text_size_smaller:
+                        mTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_SMALLER;
+                        Preferences.setAccountTextSizeFactor(
+                                getContext(), mAccount, mTextSizeFactor);
+                        break;
+                    case R.id.text_size_normal:
+                        mTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_NORMAL;
+                        Preferences.setAccountTextSizeFactor(
+                                getContext(), mAccount, mTextSizeFactor);
+                        break;
+                    case R.id.text_size_bigger:
+                        mTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_BIGGER;
+                        Preferences.setAccountTextSizeFactor(
+                                getContext(), mAccount, mTextSizeFactor);
                         break;
                     case R.id.highlight_tabs:
                         mHighlightTabs = !mHighlightTabs;
@@ -288,6 +303,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private int mMode = -1;
     private boolean mWrap;
+    private float mTextSizeFactor;
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
     private boolean mHighlightIntralineDiffs;
@@ -362,6 +378,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                         ? DiffView.SIDE_BY_SIDE_MODE : DiffView.UNIFIED_MODE;
             }
             mWrap = Preferences.getAccountWrapMode(getContext(), mAccount);
+            mTextSizeFactor = Preferences.getAccountTextSizeFactor(getContext(), mAccount);
             mHighlightTabs = Preferences.isAccountHighlightTabs(getContext(), mAccount);
             mHighlightTrailingWhitespaces =
                     Preferences.isAccountHighlightTrailingWhitespaces(getContext(), mAccount);
@@ -495,6 +512,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         menu.findItem(R.id.wrap_mode).setVisible(mMode != DiffView.IMAGE_MODE);
         menu.findItem(R.id.wrap_mode_on).setChecked(mWrap);
         menu.findItem(R.id.wrap_mode_off).setChecked(!mWrap);
+        menu.findItem(R.id.text_size_smaller).setChecked(
+                mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_SMALLER);
+        menu.findItem(R.id.text_size_normal).setChecked(
+                mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_NORMAL);
+        menu.findItem(R.id.text_size_bigger).setChecked(
+                mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_BIGGER);
         menu.findItem(R.id.highlight).setVisible(mMode != DiffView.IMAGE_MODE);
         menu.findItem(R.id.highlight_tabs).setIcon(mHighlightTabs ? checkMark : uncheckMark);
         menu.findItem(R.id.highlight_trailing_whitespaces).setIcon(

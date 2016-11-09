@@ -217,13 +217,15 @@ public class FileDiffViewerFragment extends Fragment {
 
     private int mMode;
     private boolean mWrap;
+    private float mTextSizeFactor;
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
     private boolean mHighlightIntralineDiffs;
 
     public static FileDiffViewerFragment newInstance(String revisionId, String file,
-            int base, int revision, int mode, boolean wrap, boolean highlightTabs,
-            boolean highlightTrailingWhitespaces, boolean highlightIntralineDiffs) {
+            int base, int revision, int mode, boolean wrap, float textSizeFactor,
+            boolean highlightTabs, boolean highlightTrailingWhitespaces,
+            boolean highlightIntralineDiffs) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
@@ -232,6 +234,7 @@ public class FileDiffViewerFragment extends Fragment {
         arguments.putInt(Constants.EXTRA_REVISION, revision);
         arguments.putInt("mode", mode);
         arguments.putBoolean("wrap", wrap);
+        arguments.putFloat("textSizeFactor", textSizeFactor);
         arguments.putBoolean("highlight_tabs", highlightTabs);
         arguments.putBoolean("highlight_trailing_whitespaces", highlightTrailingWhitespaces);
         arguments.putBoolean("highlight_intraline_diffs", highlightIntralineDiffs);
@@ -255,6 +258,7 @@ public class FileDiffViewerFragment extends Fragment {
                     .withComments(mResponse.comments)
                     .withDrafts(mResponse.draftComments)
                     .mode(mMode)
+                    .textSizeFactor(mTextSizeFactor)
                     .wrap(mWrap)
                     .listenOn(mCommentListener)
                     .canEdit(mAccount.hasAuthenticatedAccessMode())
@@ -281,6 +285,7 @@ public class FileDiffViewerFragment extends Fragment {
         mRevision = String.valueOf(getArguments().getInt(Constants.EXTRA_REVISION));
         mMode = getArguments().getInt("mode");
         mWrap = getArguments().getBoolean("wrap");
+        mTextSizeFactor = getArguments().getFloat("textSizeFactor");
         mHighlightTabs = getArguments().getBoolean("highlight_tabs");
         mHighlightTrailingWhitespaces = getArguments().getBoolean("highlight_trailing_whitespaces");
         mHighlightIntralineDiffs = getArguments().getBoolean("highlight_intraline_diffs");

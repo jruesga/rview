@@ -56,6 +56,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_FOLDE
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_WRAP_MODE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TEXT_SIZE_FACTOR;
 import static com.ruesga.rview.preferences.Constants.PREF_IS_FIRST_RUN;
 
 public class Preferences {
@@ -262,6 +263,26 @@ public class Preferences {
 
         Editor editor = getAccountPreferences(context, account).edit();
         editor.putBoolean(PREF_ACCOUNT_WRAP_MODE, wrap);
+        editor.apply();
+    }
+
+    public static float getAccountTextSizeFactor(Context context, Account account) {
+        if (account == null) {
+            return Constants.DEFAULT_TEXT_SIZE_NORMAL;
+        }
+
+        return getAccountPreferences(context, account).getFloat(
+                PREF_ACCOUNT_TEXT_SIZE_FACTOR, Constants.DEFAULT_TEXT_SIZE_NORMAL);
+    }
+
+    public static void setAccountTextSizeFactor(
+            Context context, Account account, float textSizeFactor) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putFloat(PREF_ACCOUNT_TEXT_SIZE_FACTOR, textSizeFactor);
         editor.apply();
     }
 

@@ -47,6 +47,7 @@ import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.TypefaceCache;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.tasks.AsyncImageDiffProcessor;
 import com.ruesga.rview.tasks.AsyncImageDiffProcessor.OnImageDiffProcessEndedListener;
 import com.ruesga.rview.tasks.AsyncTextDiffProcessor;
@@ -326,6 +327,7 @@ public class DiffView extends FrameLayout {
                 }
 
                 holder.mBinding.setWrap(isWrapMode());
+                holder.mBinding.setTextSizeFactor(mTextSizeFactor);
                 holder.mBinding.setMode(mMode);
                 holder.mBinding.setModel(diff);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
@@ -340,6 +342,7 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setWrap(isWrapMode());
                 holder.mBinding.setModel(skip);
                 holder.mBinding.setHandlers(mEventHandlers);
+                holder.mBinding.setTextSizeFactor(mTextSizeFactor);
                 holder.mBinding.setIndex(position);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
                 holder.mBinding.executePendingBindings();
@@ -349,6 +352,7 @@ public class DiffView extends FrameLayout {
                 CommentModel comment = (CommentModel) model;
                 holder.mBinding.setCanEdit(mCanEdit);
                 holder.mBinding.setWrap(isWrapMode());
+                holder.mBinding.setTextSizeFactor(mTextSizeFactor);
                 holder.mBinding.setMode(mMode);
                 holder.mBinding.setModel(comment);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
@@ -366,6 +370,7 @@ public class DiffView extends FrameLayout {
                 AdviseModel advise = (AdviseModel) model;
                 holder.mBinding.setWrap(isWrapMode());
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
+                holder.mBinding.setTextSizeFactor(mTextSizeFactor);
                 holder.mBinding.setAdvise(advise.msg);
                 holder.mBinding.executePendingBindings();
 
@@ -410,7 +415,7 @@ public class DiffView extends FrameLayout {
             if (!mModel.isEmpty()) {
                 final Resources res = getResources();
                 TextPaint paint = new TextPaint();
-                paint.setTextSize(res.getDimension(R.dimen.diff_line_text_size));
+                paint.setTextSize(res.getDimension(R.dimen.diff_line_text_size_normal) * mTextSizeFactor);
                 paint.setTypeface(TypefaceCache.getTypeface(getContext(), TypefaceCache.TF_MONOSPACE));
                 float padding = res.getDimension(R.dimen.diff_line_text_padding);
                 float margin = res.getDimension(R.dimen.diff_line_separator_width) * 2;
@@ -539,6 +544,7 @@ public class DiffView extends FrameLayout {
     private boolean mHighlightIntralineDiffs;
     private boolean mCanEdit;
     private int mDiffMode = UNIFIED_MODE;
+    private float mTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_NORMAL;
     private DiffInfo mDiffInfo;
     private Pair<List<CommentInfo>, List<CommentInfo>> mComments;
     private Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
@@ -673,6 +679,11 @@ public class DiffView extends FrameLayout {
         } else {
             mTmpLayoutManager = mLayoutManager;
         }
+        return this;
+    }
+
+    public DiffView textSizeFactor(float textSizeFactor) {
+        mTextSizeFactor = textSizeFactor;
         return this;
     }
 

@@ -68,6 +68,7 @@ public class Formatter {
     private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
+    private static float sTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_NORMAL;
 
     private static int sQuoteColor = -1;
     private static int sQuoteWidth = -1;
@@ -77,6 +78,7 @@ public class Formatter {
         Account account = Preferences.getAccount(context);
         sDisplayFormat = Preferences.getAccountDisplayFormat(context, account);
         sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, account);
+        sTextSizeFactor = Preferences.getAccountTextSizeFactor(context, account);
     }
 
     @BindingAdapter("prettyDateTime")
@@ -513,5 +515,16 @@ public class Formatter {
         } else if (state.state == EmptyState.ERROR_STATE) {
             v.setText(R.string.empty_states_error);
         }
+    }
+
+    @BindingAdapter("diffTextSize")
+    public static void toDiffTextSize(TextView v, float textSizeFormat) {
+        v.post(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("jrc: " + v.getTextSize() + "; " + textSizeFormat);
+                v.setTextSize(v.getTextSize());
+            }
+        });
     }
 }

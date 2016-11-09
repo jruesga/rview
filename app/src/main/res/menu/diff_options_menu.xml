@@ -59,6 +59,30 @@
     <group
         android:checkableBehavior="none">
         <item
+            android:id="@+id/text_size"
+            android:title="@string/options_text_size">
+            <menu>
+                <item
+                    android:id="@+id/text_size_smaller"
+                    android:title="@string/options_text_size_smaller"
+                    android:icon="@drawable/ic_text_size_smaller"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/text_size_normal"
+                    android:title="@string/options_text_size_normal"
+                    android:icon="@drawable/ic_text_size_normal"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/text_size_bigger"
+                    android:title="@string/options_text_size_bigger"
+                    android:icon="@drawable/ic_text_size_bigger"
+                    android:checkable="true"/>
+            </menu>
+        </item>
+    </group>
+    <group
+        android:checkableBehavior="none">
+        <item
             android:id="@+id/highlight"
             android:title="@string/options_highlight">
             <menu>
