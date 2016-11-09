@@ -43,8 +43,6 @@ import okhttp3.Response;
 
 public class PicassoHelper {
 
-    private static final String TAG = "Networking";
-
     @SuppressLint("StaticFieldLeak")
     private static Picasso sPicasso;
 
@@ -82,20 +80,27 @@ public class PicassoHelper {
     private static void loadWithFallbackUrls(final Picasso picasso, final ImageView view,
             final Drawable placeholder, final List<String> urls) {
         if (!urls.isEmpty()) {
-            final String nextUrl = urls.remove(0);
+            final String nextUrl = urls.get(0);
             picasso.load(nextUrl)
                     .placeholder(placeholder)
                     .transform(new CircleTransform())
                     .into(view, new Callback() {
                         @Override
                         public void onSuccess() {
-                            urls.clear();
-                            urls.add(nextUrl);
+                            synchronized (urls) {
+                                urls.clear();
+                                urls.add(nextUrl);
+                            }
                         }
 
                         @Override
                         public void onError() {
                             // Next url
+                            synchronized (urls) {
+                                if (urls.contains(nextUrl)) {
+                                    urls.remove(nextUrl);
+                                }
+                            }
                             loadWithFallbackUrls(picasso, view, placeholder, urls);
                         }
                     });
