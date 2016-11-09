@@ -516,15 +516,4 @@ public class Formatter {
             v.setText(R.string.empty_states_error);
         }
     }
-
-    @BindingAdapter("diffTextSize")
-    public static void toDiffTextSize(TextView v, float textSizeFormat) {
-        v.post(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("jrc: " + v.getTextSize() + "; " + textSizeFormat);
-                v.setTextSize(v.getTextSize());
-            }
-        });
-    }
 }
