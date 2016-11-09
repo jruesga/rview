@@ -27,10 +27,7 @@
     <dimen name="pager_controller_text_size">11sp</dimen>
     <dimen name="pager_controller_chevron_size">20dp</dimen>
     <dimen name="diff_line_text_padding">3dp</dimen>
-    <dimen name="diff_line_text_size_smaller">10sp</dimen>
-    <dimen name="diff_line_text_size_normal">12sp</dimen>
     <dimen name="diff_line_text_size">12sp</dimen>
-    <dimen name="diff_line_text_size_bigger">14sp</dimen>
     <dimen name="diff_line_number_min_width">20dp</dimen>
     <dimen name="diff_line_separator_width">1dp</dimen>
     <dimen name="diff_line_indicator_width">16dp</dimen>

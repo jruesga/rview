@@ -415,7 +415,7 @@ public class DiffView extends FrameLayout {
             if (!mModel.isEmpty()) {
                 final Resources res = getResources();
                 TextPaint paint = new TextPaint();
-                paint.setTextSize(res.getDimension(R.dimen.diff_line_text_size_normal) * mTextSizeFactor);
+                paint.setTextSize(res.getDimension(R.dimen.diff_line_text_size) * mTextSizeFactor);
                 paint.setTypeface(TypefaceCache.getTypeface(getContext(), TypefaceCache.TF_MONOSPACE));
                 float padding = res.getDimension(R.dimen.diff_line_text_padding);
                 float margin = res.getDimension(R.dimen.diff_line_separator_width) * 2;
