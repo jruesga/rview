@@ -547,6 +547,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         int count = comments.size();
         for (int i = 0; i < count; i++) {
             CommentInfo comment = comments.get(i);
+            boolean isLeft = comment.patchSet == 0 || isA;
+
             if (comment.line == null && comment.range == null) {
                 // File comment
                 if (mMode == DiffView.UNIFIED_MODE) {
@@ -557,12 +559,12 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     int pos = findNextPositionWithoutComment(model, -1);
                     model.add(pos == -1 ? 0 : pos, commentModel);
                 } else {
-                    int reusablePos = findReusableCommentView(model, -1, isA);
+                    int reusablePos = findReusableCommentView(model, -1, isLeft);
                     if (reusablePos != -1) {
                         DiffView.CommentModel commentModel =
                                 (DiffView.CommentModel) model.get(reusablePos);
                         commentModel.isDraft = isDraft;
-                        if (isA) {
+                        if (isLeft) {
                             commentModel.commentA = comment;
                         } else {
                             commentModel.commentB = comment;
@@ -570,7 +572,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     } else {
                         DiffView.CommentModel commentModel = new DiffView.CommentModel();
                         commentModel.isDraft = isDraft;
-                        if (isA) {
+                        if (isLeft) {
                             commentModel.commentA = comment;
                         } else {
                             commentModel.commentB = comment;
@@ -588,7 +590,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                 continue;
             }
 
-            int pos = findLineInModel(model, isA, comment.line);
+            int pos = findLineInModel(model, isLeft, comment.line);
             if (pos != -1) {
                 if (mMode == DiffView.UNIFIED_MODE) {
                     DiffInfoModel diff = (DiffInfoModel) model.get(findDiffForComment(model, pos));
@@ -603,7 +605,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         model.add(pos + 1, commentModel);
                     }
                 } else {
-                    int reusablePos = findReusableCommentView(model, pos, isA);
+                    int reusablePos = findReusableCommentView(model, pos, isLeft);
                     if (reusablePos != -1) {
                         DiffInfoModel diff = (DiffInfoModel) model.get(
                                 findDiffForComment(model, reusablePos));
@@ -611,7 +613,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                                 (DiffView.CommentModel) model.get(reusablePos);
                         commentModel.diff = diff;
                         commentModel.isDraft = isDraft;
-                        if (isA) {
+                        if (isLeft) {
                             commentModel.commentA = comment;
                         } else {
                             commentModel.commentB = comment;
@@ -622,7 +624,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         DiffView.CommentModel commentModel = new DiffView.CommentModel();
                         commentModel.diff = diff;
                         commentModel.isDraft = isDraft;
-                        if (isA) {
+                        if (isLeft) {
                             commentModel.commentA = comment;
                         } else {
                             commentModel.commentB = comment;
