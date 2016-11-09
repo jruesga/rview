@@ -152,7 +152,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     if (diff.a != null && i < diff.a.length) {
                         String line = diff.a[i];
                         m.a = ++lineNumberA;
-                        m.lineNumberA = String.valueOf(m.lineA);
+                        m.lineNumberA = String.valueOf(m.a);
                         if (diff.editA != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                             if (mHighlightIntralineDiffs) {
@@ -180,7 +180,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
 
                     if (diff.b != null && i < diff.b.length) {
                         String line = diff.b[i];
-                        m.b = ++lineNumberA;
+                        m.b = ++lineNumberB;
                         m.lineNumberB = String.valueOf(m.b);
                         if (diff.editB != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
