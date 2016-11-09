@@ -741,6 +741,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                                     R.plurals.skipped_lines,
                                         skip.skippedLines.length, skip.skippedLines.length);
                         }
+
+                        // Recompute model counters
+                        count = model.size();
                         break;
                     }
                 }
