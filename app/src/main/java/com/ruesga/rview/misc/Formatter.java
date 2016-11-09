@@ -68,7 +68,6 @@ public class Formatter {
     private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
-    private static float sTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_NORMAL;
 
     private static int sQuoteColor = -1;
     private static int sQuoteWidth = -1;
@@ -78,7 +77,6 @@ public class Formatter {
         Account account = Preferences.getAccount(context);
         sDisplayFormat = Preferences.getAccountDisplayFormat(context, account);
         sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, account);
-        sTextSizeFactor = Preferences.getAccountTextSizeFactor(context, account);
     }
 
     @BindingAdapter("prettyDateTime")
