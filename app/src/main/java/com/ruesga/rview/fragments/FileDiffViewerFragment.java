@@ -123,18 +123,8 @@ public class FileDiffViewerFragment extends Fragment {
         @Override
         public void onNext(Object value) {
             // Force refresh
-            mForceRefresh = true;
-
-            // Some servers could need a bit of delay to index the drafts. Just let the server
-            // to process the changes before refresh the data
-            mHandler.postDelayed(() -> {
-                if (getActivity() == null) {
-                    return;
-                }
-
-                mLoader.clear();
-                mLoader.restart();
-            }, 500L);
+            mDraftsLoader.clear();
+            mDraftsLoader.restart();
         }
 
         @Override
@@ -213,6 +203,7 @@ public class FileDiffViewerFragment extends Fragment {
     private RxLoader<FileDiffResponse> mLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
     private RxLoader<Boolean> mReviewedLoader;
+    private RxLoader<FileDiffResponse> mDraftsLoader;
 
     private ChangeInfo mChange;
 
@@ -223,8 +214,6 @@ public class FileDiffViewerFragment extends Fragment {
     private String mRevision;
 
     private Account mAccount;
-
-    private boolean mForceRefresh;
 
     private int mMode;
     private boolean mWrap;
@@ -337,12 +326,13 @@ public class FileDiffViewerFragment extends Fragment {
             }
 
             // Fetch or join current loader
-            mForceRefresh = false;
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mActionLoader = loaderManager.create(
                     "file-diff-action" + hashCode(), this::doAction, mActionObserver);
             mReviewedLoader = loaderManager.create(
                     "file-reviewed" + hashCode(), performReviewedStatus(), mReviewedObserver);
+            mDraftsLoader = loaderManager.create(
+                    "file-drafts" + hashCode(), fetchDrafts(), mObserver);
             mLoader = loaderManager.create(
                     "file-diff-" + hashCode(), fetchDiffs(), mObserver).start();
         }
@@ -443,6 +433,40 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
+    private Observable<FileDiffResponse> fetchDrafts() {
+        // Generate ids
+        final String baseRevision = mBase == null ? "0" : mBase;
+        final boolean isBinary = !mFile.equals(Constants.COMMIT_MESSAGE)
+                && mChange.revisions.get(mRevisionId).files.get(mFile).binary;
+
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.zip(
+                    Observable.fromCallable(() -> {
+                        // Do no fetch drafts if the account is not authenticated
+                        if (!isBinary && mBase != null && mAccount.hasAuthenticatedAccessMode()) {
+                            return api.getChangeRevisionDrafts(
+                                    String.valueOf(mChange.legacyChangeId), baseRevision)
+                                    .blockingFirst();
+                        }
+                        return new HashMap<>();
+                    }),
+                    Observable.fromCallable(() -> {
+                        // Do no fetch drafts if the account is not authenticated
+                        if (!isBinary && mAccount.hasAuthenticatedAccessMode()) {
+                            return api.getChangeRevisionDrafts(
+                                    String.valueOf(mChange.legacyChangeId), mRevisionId)
+                                    .blockingFirst();
+                        }
+                        return new HashMap<>();
+                    }),
+                    this::combineDrafts
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private Observable<Boolean> performReviewedStatus() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -492,7 +516,7 @@ public class FileDiffViewerFragment extends Fragment {
                     mRevision + "_" + CacheHelper.CACHE_DRAFT_JSON,
                     SerializationManager.getInstance().toJson(draftsB).getBytes());
         } catch (IOException ex) {
-            Log.e(TAG, "Failed to load diff cached data", ex);
+            Log.e(TAG, "Failed to save diff cached data", ex);
         }
 
         // We do need to download the file content
@@ -520,6 +544,33 @@ public class FileDiffViewerFragment extends Fragment {
         }
 
         return response;
+    }
+
+    private FileDiffResponse combineDrafts(
+            Map<String, List<CommentInfo>> draftsA, Map<String, List<CommentInfo>> draftsB) {
+
+        int base = mBase == null ? 0 : Integer.parseInt(mBase);
+        int revision = Integer.parseInt(mRevision);
+
+        mResponse.draftComments = new Pair<>(
+                setRevisionAndSort(draftsA, base, base),
+                setRevisionAndSort(draftsB, revision, base));
+
+        // Cache the fetched data
+        try {
+            final String baseRevision = mBase == null ? "0" : mBase;
+
+            CacheHelper.writeAccountDiffCacheFile(getContext(),
+                    baseRevision + "_" + CacheHelper.CACHE_DRAFT_JSON,
+                    SerializationManager.getInstance().toJson(draftsA).getBytes());
+            CacheHelper.writeAccountDiffCacheFile(getContext(),
+                    mRevision + "_" + CacheHelper.CACHE_DRAFT_JSON,
+                    SerializationManager.getInstance().toJson(draftsB).getBytes());
+        } catch (IOException ex) {
+            Log.e(TAG, "Failed to save drafts cached data", ex);
+        }
+
+        return mResponse;
     }
 
     private List<CommentInfo> setRevisionAndSort(Map<String, List<CommentInfo>> comments,
@@ -658,7 +709,7 @@ public class FileDiffViewerFragment extends Fragment {
     @SuppressWarnings("unchecked")
     private <T> Observable<T> withCached(Observable<T> call, Type type, String name) {
         try {
-            if (!mForceRefresh && CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
+            if (CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
                 T o = SerializationManager.getInstance().fromJson(
                         new String(CacheHelper.readAccountDiffCacheFile(
                                 getContext(), name)), type);
