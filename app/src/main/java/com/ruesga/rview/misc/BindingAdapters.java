@@ -19,6 +19,7 @@ import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.TextUtils;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.Features;
@@ -121,6 +123,13 @@ public class BindingAdapters {
     @BindingAdapter("bindEmptyMap")
     public static void bindEmptyMap(View v, Map<?, ?> o) {
         v.setVisibility(o == null || o.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    @BindingAdapter("bindBackgroundTint")
+    public static void bindBackgroundTint(View v, int color) {
+        final Drawable dw = v.getBackground();
+        DrawableCompat.setTint(dw, color);
+        v.setBackground(dw);
     }
 
     @BindingAdapter("bindToFeature")

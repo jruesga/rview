@@ -22,6 +22,7 @@
         <import type="android.view.View" />
         <import type="android.view.ViewGroup.LayoutParams" />
         <import type="com.ruesga.rview.widget.DiffView" />
+        <import type="com.ruesga.rview.gerrit.model.SideType" />
         <variable name="canEdit" type="java.lang.Boolean" />
         <variable name="wrap" type="java.lang.Boolean" />
         <variable name="mode" type="java.lang.Integer" />
@@ -146,6 +147,24 @@
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
                         android:orientation="horizontal">
+
+                        <com.ruesga.rview.widget.StyleableTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                            android:ellipsize="none"
+                            android:textIsSelectable="true"
+                            android:textStyle="bold"
+                            android:gravity="center_vertical"
+                            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
+                            android:layout_marginEnd="3dp"
+                            android:layout_marginRight="3dp"
+                            android:text="@{model.commentA.side.equals(SideType.PARENT) ? @string/options_base_left : @string/options_base_right}"
+                            app:allCaps="true"
+                            android:background="@drawable/bg_tag"
+                            app:bindBackgroundTint="@{@color/unscored}" />
 
                         <com.ruesga.rview.widget.StyleableTextView
                             android:layout_width="wrap_content"
