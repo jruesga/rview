@@ -97,6 +97,10 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             model = processUnifiedDiffs();
         }
         if (!model.isEmpty()) {
+            // Process hidden lines (show lines with non-visible comments)
+            processHiddenLines(model);
+
+            // Add a decorator line
             model.add(new DiffView.DecoratorModel());
         }
         return model;
@@ -147,7 +151,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
 
                     if (diff.a != null && i < diff.a.length) {
                         String line = diff.a[i];
-                        m.lineNumberA = String.valueOf(++lineNumberA);
+                        m.a = ++lineNumberA;
+                        m.lineNumberA = String.valueOf(m.lineA);
                         if (diff.editA != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                             if (mHighlightIntralineDiffs) {
@@ -175,7 +180,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
 
                     if (diff.b != null && i < diff.b.length) {
                         String line = diff.b[i];
-                        m.lineNumberB = String.valueOf(++lineNumberB);
+                        m.b = ++lineNumberA;
+                        m.lineNumberB = String.valueOf(m.b);
                         if (diff.editB != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                             if (mHighlightIntralineDiffs) {
@@ -245,7 +251,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     int pos = 0;
                     for (String line : diff.a) {
                         DiffInfoModel m = new DiffInfoModel();
-                        m.lineNumberA = String.valueOf(++lineNumberA);
+                        m.a = ++lineNumberA;
+                        m.lineNumberA = String.valueOf(m.a);
                         if (diff.editA != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                             if (mHighlightIntralineDiffs) {
@@ -278,7 +285,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     int pos = 0;
                     for (String line : diff.b) {
                         DiffInfoModel m = new DiffInfoModel();
-                        m.lineNumberB = String.valueOf(++lineNumberB);
+                        m.b = ++lineNumberB;
+                        m.lineNumberB = String.valueOf(m.b);
                         if (diff.editB != null) {
                             Spannable span = spannableFactory.newSpannable(prepareTabs(line));
                             if (mHighlightIntralineDiffs) {
@@ -359,10 +367,11 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                             R.plurals.skipped_lines, skippedLines, skippedLines);
                     skip.skippedLines = new DiffInfoModel[skippedLines];
                     for (int k = i - skippedLines, l = 0; k < i; k++, l++) {
-                        // TODO Handle comments in skipped lines
                         DiffInfoModel m = new DiffInfoModel();
-                        m.lineNumberA = String.valueOf(startA + l);
-                        m.lineNumberB = String.valueOf(startB + l);
+                        m.a = startA + l;
+                        m.b = startB + l;
+                        m.lineNumberA = String.valueOf(m.a);
+                        m.lineNumberB = String.valueOf(m.b);
                         if (mMode == DiffView.SIDE_BY_SIDE_MODE) {
                             m.lineA = m.lineB = processHighlights(diff.ab[k]);
                         } else {
@@ -380,8 +389,10 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
 
             String line = diff.ab[i];
             DiffInfoModel m = new DiffInfoModel();
-            m.lineNumberA = String.valueOf(++lineNumberA);
-            m.lineNumberB = String.valueOf(++lineNumberB);
+            m.a = ++lineNumberA;
+            m.b = ++lineNumberB;
+            m.lineNumberA = String.valueOf(m.a);
+            m.lineNumberB = String.valueOf(m.b);
             m.lineA = m.lineB = prepareTabs(line);
             m.colorA = m.colorB = noColor;
             processHighlights(m);
@@ -501,7 +512,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     private List<DiffView.AbstractModel> processComments(List<DiffView.AbstractModel> model) {
         if (mComments != null) {
             // Comments on A
-            if (mComments.second != null) {
+            if (mComments.first != null) {
                 addCommentsToModel(model, mComments.first, true, false);
             }
 
@@ -516,7 +527,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     private List<DiffView.AbstractModel> processDrafts(List<DiffView.AbstractModel> model) {
         if (mDrafts != null) {
             // Comments on A
-            if (mDrafts.second != null) {
+            if (mDrafts.first != null) {
                 addCommentsToModel(model, mDrafts.first, true, true);
             }
 
@@ -634,11 +645,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             DiffView.AbstractModel m = model.get(i);
             if (m instanceof DiffInfoModel) {
                 DiffInfoModel diff = (DiffInfoModel) m;
-                if (isA && diff.lineNumberA != null
-                        && Integer.valueOf(diff.lineNumberA) == line) {
+                if (isA && diff.a == line) {
                     return i;
-                } else if (!isA && diff.lineNumberB != null
-                        && Integer.valueOf(diff.lineNumberB) == line) {
+                } else if (!isA && diff.b == line) {
                     return i;
                 }
             }
@@ -681,5 +690,89 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             }
         }
         return -1;
+    }
+
+    private void processHiddenLines(List<DiffView.AbstractModel> model) {
+        int count = model.size();
+        for (int i = 0; i < count; i++) {
+            DiffView.AbstractModel line = model.get(i);
+            if (line instanceof DiffView.SkipLineModel) {
+                DiffView.SkipLineModel skip = (DiffView.SkipLineModel) line;
+
+                int c = skip.skippedLines.length;
+                for (int j = 0; j < c; j++) {
+                    if (hasCommentOrDraftInSkippedLine(skip.skippedLines[j])) {
+                        // Add the needed skipped lines
+                        int n = 0;
+                        int from = Math.max(0, j - SKIPPED_LINES + 1);
+                        for (int m = from; m <= j; m++, n++) {
+                            model.add(i + n + 1, skip.skippedLines[m]);
+                        }
+                        int to = Math.min(skip.skippedLines.length - 1, j + SKIPPED_LINES);
+                        for (int m = j + 1; m <= to; m++, n++) {
+                            model.add(i + n + 1, skip.skippedLines[m]);
+                        }
+
+                        // Add the new skip marker
+                        int next = to + 1;
+                        if (next < skip.skippedLines.length) {
+                            int length = skip.skippedLines.length - next;
+                            DiffInfoModel[] copy = new DiffInfoModel[length];
+                            DiffView.SkipLineModel newSkip = new DiffView.SkipLineModel();
+                            System.arraycopy(skip.skippedLines, next, copy, 0, length);
+                            newSkip.skippedLines = copy;
+                            newSkip.msg = mContext.getResources().getQuantityString(
+                                    R.plurals.skipped_lines,
+                                    newSkip.skippedLines.length, newSkip.skippedLines.length);
+                            model.add(i + n + 1, newSkip);
+                        }
+
+                        // Remove or update the previous marker
+                        if (from == 0) {
+                            model.remove(i);
+                        } else {
+                            // Update the marker
+                            DiffInfoModel[] copy = new DiffInfoModel[from];
+                            System.arraycopy(skip.skippedLines, 0, copy, 0, from);
+                            skip.skippedLines = copy;
+                            skip.msg = mContext.getResources().getQuantityString(
+                                    R.plurals.skipped_lines,
+                                        skip.skippedLines.length, skip.skippedLines.length);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    private boolean hasCommentOrDraftInSkippedLine(DiffInfoModel diff) {
+        if (mComments != null && mComments.first != null
+                && hasComment(diff.a, mComments.first)) {
+            return true;
+        }
+        if (mComments != null && mComments.second != null
+                && hasComment(diff.b, mComments.second)) {
+            return true;
+        }
+        if (mDrafts != null && mDrafts.first != null
+                && hasComment(diff.a, mDrafts.first)) {
+            return true;
+        }
+        if (mDrafts != null && mDrafts.second != null
+                && hasComment(diff.b, mDrafts.second)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasComment(int diffLine, List<CommentInfo> comments) {
+        for (CommentInfo c : comments) {
+            if (c.line != null && c.line == diffLine) {
+                return true;
+            }
+        }
+        return false;
     }
 }

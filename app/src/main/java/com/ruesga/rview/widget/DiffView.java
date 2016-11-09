@@ -195,6 +195,8 @@ public class DiffView extends FrameLayout {
 
     @ProguardIgnored
     public static class DiffInfoModel extends AbstractModel {
+        public int a = -1;
+        public int b = -1;
         public String lineNumberA;
         public String lineNumberB;
         public int colorA;
@@ -489,13 +491,11 @@ public class DiffView extends FrameLayout {
 
             if (diff.lineNumberA != null) {
                 mDiffViewMeasurement.lineNumWidth = Math.max(
-                        mDiffViewMeasurement.lineNumWidth,
-                        paint.measureText(String.valueOf(diff.lineNumberA)));
+                        mDiffViewMeasurement.lineNumWidth, paint.measureText(diff.lineNumberA));
             }
             if (diff.lineNumberB != null) {
                 mDiffViewMeasurement.lineNumWidth = Math.max(
-                        mDiffViewMeasurement.lineNumWidth,
-                        paint.measureText(String.valueOf(diff.lineNumberB)));
+                        mDiffViewMeasurement.lineNumWidth, paint.measureText(diff.lineNumberB));
             }
         }
     }
