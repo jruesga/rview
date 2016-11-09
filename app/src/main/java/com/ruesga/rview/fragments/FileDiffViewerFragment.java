@@ -494,11 +494,11 @@ public class FileDiffViewerFragment extends Fragment {
         FileDiffResponse response = new FileDiffResponse();
         response.diff = diff;
         response.comments = new Pair<>(
-                setRevisionAndSort(commentsA, base, base),
-                setRevisionAndSort(commentsB, revision, base));
+                mapCommentsToList(commentsA, base == 0 ? commentsB : null, base, base),
+                mapCommentsToList(commentsB, null, revision, base));
         response.draftComments = new Pair<>(
-                setRevisionAndSort(draftsA, base, base),
-                setRevisionAndSort(draftsB, revision, base));
+                mapCommentsToList(draftsA, base == 0 ? draftsB : null, base, base),
+                mapCommentsToList(draftsB, null, revision, base));
 
         // Cache the fetched data
         try {
@@ -558,8 +558,8 @@ public class FileDiffViewerFragment extends Fragment {
         int revision = Integer.parseInt(mRevision);
 
         mResponse.draftComments = new Pair<>(
-                setRevisionAndSort(draftsA, base, base),
-                setRevisionAndSort(draftsB, revision, base));
+                mapCommentsToList(draftsA, base == 0 ? draftsB : null, base, base),
+                mapCommentsToList(draftsB, null, revision, base));
 
         // Cache the fetched data
         try {
@@ -578,16 +578,30 @@ public class FileDiffViewerFragment extends Fragment {
         return mResponse;
     }
 
-    private List<CommentInfo> setRevisionAndSort(Map<String, List<CommentInfo>> comments,
-            int base, int parentBase) {
+    private List<CommentInfo> mapCommentsToList(Map<String, List<CommentInfo>> comments,
+            Map<String, List<CommentInfo>> otherSideComments, int base, int parentBase) {
         List<CommentInfo> commentList = comments != null ? comments.get(mFile) : null;
+        List<CommentInfo> otherCommentList =
+                otherSideComments != null ? otherSideComments.get(mFile) : null;
         if (commentList == null) {
-            return null;
+            commentList = new ArrayList<>();
         }
 
-        List<CommentInfo> copy = new ArrayList<>(commentList);
-        for (CommentInfo comment : copy) {
+        List<CommentInfo> copy = new ArrayList<>();
+        for (CommentInfo comment : commentList) {
+            if (otherCommentList == null && SideType.PARENT.equals(comment.side)) {
+                continue;
+            }
             comment.patchSet = SideType.PARENT.equals(comment.side) ? parentBase : base;
+            copy.add(comment);
+        }
+        if (base == 0 && otherCommentList != null) {
+            for (CommentInfo comment : otherCommentList) {
+                if (SideType.PARENT.equals(comment.side)) {
+                    comment.patchSet = SideType.PARENT.equals(comment.side) ? parentBase : base;
+                    copy.add(comment);
+                }
+            }
         }
         Collections.sort(copy,
                 (CommentInfo lhs, CommentInfo rhs) -> lhs.updated.compareTo(rhs.updated));
