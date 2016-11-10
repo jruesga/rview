@@ -24,8 +24,11 @@ dependencies {
     compile project(':gerrit')
     compile project(':wizard')
     compile project(':drawer')
+    //https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
     compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") { transitive = true; }
+    //https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
     compile("com.crashlytics.sdk.android:crashlytics-core:${libraries.crashlytics_core}@aar") { transitive = true; }
+    //https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/answers/maven-metadata.xml
     compile("com.crashlytics.sdk.android:answers:${libraries.crashlytics_answers}@aar") { transitive = true; }
     compile "com.android.support:support-v4:${libraries.support}"
     compile "com.android.support:appcompat-v7:${libraries.support}"
