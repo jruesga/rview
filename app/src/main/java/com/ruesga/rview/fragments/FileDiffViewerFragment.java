@@ -76,6 +76,7 @@ import me.tatarka.rxloader2.RxLoader2;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 import okhttp3.ResponseBody;
 
 public class FileDiffViewerFragment extends Fragment {
@@ -363,7 +364,7 @@ public class FileDiffViewerFragment extends Fragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
                 withCached(
-                        Observable.fromCallable(() -> {
+                        SafeObservable.fromCallable(() -> {
                             if (!isBinary) {
                                 return api.getChangeRevisionFileDiff(
                                         String.valueOf(mChange.legacyChangeId),
@@ -386,7 +387,7 @@ public class FileDiffViewerFragment extends Fragment {
                         diffCacheId + CacheHelper.CACHE_DIFF_JSON
                 ),
                 withCached(
-                        Observable.fromCallable(() -> {
+                        SafeObservable.fromCallable(() -> {
                             if (!isBinary && mBase != null) {
                                 return api.getChangeRevisionComments(
                                         String.valueOf(mChange.legacyChangeId), baseRevision)
@@ -397,7 +398,7 @@ public class FileDiffViewerFragment extends Fragment {
                         commentType,
                         baseRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON),
                 withCached(
-                        Observable.fromCallable(() -> {
+                        SafeObservable.fromCallable(() -> {
                             if (!isBinary) {
                                 return api.getChangeRevisionComments(
                                         String.valueOf(mChange.legacyChangeId), mRevisionId)
@@ -408,7 +409,7 @@ public class FileDiffViewerFragment extends Fragment {
                         commentType,
                         mRevision + "_" + CacheHelper.CACHE_COMMENTS_JSON),
                 withCached(
-                        Observable.fromCallable(() -> {
+                        SafeObservable.fromCallable(() -> {
                             // Do no fetch drafts if the account is not authenticated
                             if (!isBinary && mBase != null && mAccount.hasAuthenticatedAccessMode()) {
                                 return api.getChangeRevisionDrafts(
@@ -420,7 +421,7 @@ public class FileDiffViewerFragment extends Fragment {
                         commentType,
                         baseRevision + "_" + CacheHelper.CACHE_DRAFT_JSON),
                 withCached(
-                        Observable.fromCallable(() -> {
+                        SafeObservable.fromCallable(() -> {
                             // Do no fetch drafts if the account is not authenticated
                             if (!isBinary && mAccount.hasAuthenticatedAccessMode()) {
                                 return api.getChangeRevisionDrafts(
@@ -447,7 +448,7 @@ public class FileDiffViewerFragment extends Fragment {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
-                    Observable.fromCallable(() -> {
+                    SafeObservable.fromCallable(() -> {
                         // Do no fetch drafts if the account is not authenticated
                         if (!isBinary && mBase != null && mAccount.hasAuthenticatedAccessMode()) {
                             return api.getChangeRevisionDrafts(
@@ -456,7 +457,7 @@ public class FileDiffViewerFragment extends Fragment {
                         }
                         return new HashMap<>();
                     }),
-                    Observable.fromCallable(() -> {
+                    SafeObservable.fromCallable(() -> {
                         // Do no fetch drafts if the account is not authenticated
                         if (!isBinary && mAccount.hasAuthenticatedAccessMode()) {
                             return api.getChangeRevisionDrafts(
@@ -475,7 +476,7 @@ public class FileDiffViewerFragment extends Fragment {
     private Observable<Boolean> performReviewedStatus() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     api.setChangeRevisionFileAsReviewed(
                                 String.valueOf(mChange.legacyChangeId), mRevisionId, mFile
                             ).blockingFirst();
@@ -619,7 +620,7 @@ public class FileDiffViewerFragment extends Fragment {
     private Observable<Object> doAction(final String action, final String[] params) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     switch (action) {
                         case ModelHelper.ACTION_CREATE_DRAFT:
                             Integer line = params[2] == null ? null : Integer.valueOf(params[2]);

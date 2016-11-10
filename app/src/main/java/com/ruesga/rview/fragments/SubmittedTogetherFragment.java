@@ -31,6 +31,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class SubmittedTogetherFragment extends ChangeListFragment {
 
@@ -55,7 +56,7 @@ public class SubmittedTogetherFragment extends ChangeListFragment {
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
                 Observable.just(getCurrentData(start == 0)),
-                Observable.fromCallable(() -> {
+                SafeObservable.fromCallable(() -> {
                     ServerVersion version = api.getServerVersion().blockingFirst();
                     if (version.getVersion() >= 2.12) {
                         return fetchChanges(api,

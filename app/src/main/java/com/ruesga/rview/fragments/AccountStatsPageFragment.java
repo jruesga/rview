@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInfo> {
 
@@ -110,7 +111,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     public Observable<AccountDetailInfo> fetchDetails() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                 // Some prior versions doesn't support the details entry point
                 // and some other servers doesn't allow to access this information
                 // If something went wrong just fallback to the cached information.

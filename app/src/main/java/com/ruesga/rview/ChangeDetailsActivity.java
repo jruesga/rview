@@ -44,6 +44,7 @@ import io.reactivex.schedulers.Schedulers;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class ChangeDetailsActivity extends BaseActivity {
 
@@ -181,7 +182,7 @@ public class ChangeDetailsActivity extends BaseActivity {
     @SuppressWarnings("ConstantConditions")
     private Observable<ChangeInfo> fetchChangeId(ChangeQuery query) {
         final GerritApi api = ModelHelper.getGerritApi(this);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                 List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).blockingFirst();
                 if (changes != null && !changes.isEmpty()) {
                     return changes.get(0);

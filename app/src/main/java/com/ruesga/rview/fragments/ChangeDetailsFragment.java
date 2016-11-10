@@ -122,6 +122,7 @@ import me.tatarka.rxloader2.RxLoader2;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class ChangeDetailsFragment extends Fragment {
 
@@ -1036,7 +1037,7 @@ public class ChangeDetailsFragment extends Fragment {
         final String revision = mCurrentRevision == null
                 ? GerritApi.CURRENT_REVISION : mCurrentRevision;
         return Observable.zip(
-                    Observable.fromCallable(() -> {
+                    SafeObservable.fromCallable(() -> {
                         DataResponse dataResponse = new DataResponse();
                         dataResponse.mChange = api.getChange(
                                 changeId, OPTIONS).blockingFirst();
@@ -1052,14 +1053,14 @@ public class ChangeDetailsFragment extends Fragment {
                     api.getChangeRevisionSubmitType(changeId, revision),
                     api.getChangeRevisionActions(changeId, revision),
                     api.getChangeRevisionComments(changeId, revision),
-                    Observable.fromCallable(() -> {
+                    SafeObservable.fromCallable(() -> {
                         // Do no fetch drafts if the account is not authenticated
                         if (mAccount.hasAuthenticatedAccessMode()) {
                             return api.getChangeRevisionDrafts(changeId, revision).blockingFirst();
                         }
                         return new HashMap<>();
                     }),
-                    Observable.fromCallable(() -> {
+                    SafeObservable.fromCallable(() -> {
                         // Do no fetch drafts if the account is not authenticated
                         if (api.supportsFeature(Features.CHANGE_STAR_LABELS)
                                 && mAccount.hasAuthenticatedAccessMode()) {
@@ -1078,7 +1079,7 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<Boolean> changeStarred(final Boolean starred) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     Observable<Void> call;
                     if (starred) {
                         call = api.putDefaultStarOnChange(
@@ -1098,7 +1099,7 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<ReviewInfo> reviewChange(final ReviewInput input) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() ->
+        return SafeObservable.fromCallable(() ->
                     api.setChangeRevisionReview(
                         String.valueOf(mLegacyChangeId), mCurrentRevision, input).blockingFirst()
                 )
@@ -1110,7 +1111,7 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<String> changeTopic(final String newTopic) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     if (!TextUtils.isEmpty(newTopic)) {
                         TopicInput input = new TopicInput();
                         input.topic = newTopic;
@@ -1128,7 +1129,7 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<AddReviewerResultInfo> addReviewer(final String reviewer) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     ReviewerInput input = new ReviewerInput();
                     input.reviewerId = reviewer;
                     return api.addChangeReviewer(String.valueOf(mLegacyChangeId), input)
@@ -1142,7 +1143,7 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<AccountInfo> removeReviewer(final AccountInfo account) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     api.deleteChangeReviewer(
                             String.valueOf(mLegacyChangeId),
                             String.valueOf(account.accountId)).blockingFirst();
@@ -1156,7 +1157,7 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<ChangeMessageInfo[]> fetchMessages() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     final ChangeInfo change = api.getChange(
                             String.valueOf(mLegacyChangeId), MESSAGES_OPTIONS).blockingFirst();
                     return change.messages;
@@ -1169,7 +1170,7 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<Map<String, Integer>> fetchDrafts() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     // Do no fetch drafts if the account is not authenticated
                     if (mAccount.hasAuthenticatedAccessMode()) {
                         Map<String, List<CommentInfo>> drafts =
@@ -1193,7 +1194,7 @@ public class ChangeDetailsFragment extends Fragment {
     private Observable<Object> doAction(final String action, final String[] params) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                     switch (action) {
                         case ModelHelper.ACTION_CHERRY_PICK:
                             return performCherryPickChange(api, params[0], params[1]);
@@ -1239,7 +1240,7 @@ public class ChangeDetailsFragment extends Fragment {
             return Observable.just(mResponse.mTags);
         }
 
-        return Observable.fromCallable(() ->
+        return SafeObservable.fromCallable(() ->
                 api.updateStarLabelsFromChange(
                         GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId), input)
                             .blockingFirst())

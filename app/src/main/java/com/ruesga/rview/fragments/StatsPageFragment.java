@@ -48,6 +48,7 @@ import me.tatarka.rxloader2.RxLoader;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public abstract class StatsPageFragment<T> extends Fragment implements SelectableFragment {
 
@@ -167,7 +168,7 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
     private Observable<List<Stats>> internalFetchStats() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromCallable(() -> {
                 ChangeQuery query = getStatsQuery();
                 List<ChangeInfo> changes = new ArrayList<>();
                 List<ChangeInfo> tmp;

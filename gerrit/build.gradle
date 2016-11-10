@@ -34,6 +34,8 @@ dependencies {
     //compile "com.burgstaller:okhttp-digest:${libraries.okhttp_digest}@aar"
     compile "com.github.jruesga:okhttp-digest:${libraries.okhttp_digest}@aar"
     compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    compile "com.github.jruesga:rxloader:${libraries.rxloader2}"
     compile "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:${libraries.retrofit2_rxjava2_adapter}"
     compile "org.antlr:antlr-runtime:${libraries.antlrv3}"
 

@@ -60,6 +60,7 @@ import me.tatarka.rxloader2.RxLoader;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
@@ -583,7 +584,7 @@ public abstract class WizardActivity extends AppCompatActivity {
     }
 
     private Observable<Boolean> actionObserver(Callable<Boolean> call) {
-        return Observable.fromCallable(call)
+        return SafeObservable.fromCallable(call)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> changeInProgressStatus(true))

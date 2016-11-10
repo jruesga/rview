@@ -43,6 +43,7 @@ import io.reactivex.schedulers.Schedulers;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public abstract class ListChooserFragment extends WizardChooserFragment {
 
@@ -205,7 +206,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     }
 
     private Observable<List<ItemModel>> refreshItems() {
-        return Observable.fromCallable(getDataProducer())
+        return SafeObservable.fromCallable(getDataProducer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable ->
