@@ -494,11 +494,11 @@ public class FileDiffViewerFragment extends Fragment {
         FileDiffResponse response = new FileDiffResponse();
         response.diff = diff;
         response.comments = new Pair<>(
-                mapCommentsToList(commentsA, base == 0 ? commentsB : null, base, base),
-                mapCommentsToList(commentsB, null, revision, base));
+                mapCommentsToList(commentsA, base == 0 ? commentsB : null, base, base, true),
+                mapCommentsToList(commentsB, null, revision, base, false));
         response.draftComments = new Pair<>(
-                mapCommentsToList(draftsA, base == 0 ? draftsB : null, base, base),
-                mapCommentsToList(draftsB, null, revision, base));
+                mapCommentsToList(draftsA, base == 0 ? draftsB : null, base, base, true),
+                mapCommentsToList(draftsB, null, revision, base, false));
 
         // Cache the fetched data
         try {
@@ -558,8 +558,8 @@ public class FileDiffViewerFragment extends Fragment {
         int revision = Integer.parseInt(mRevision);
 
         mResponse.draftComments = new Pair<>(
-                mapCommentsToList(draftsA, base == 0 ? draftsB : null, base, base),
-                mapCommentsToList(draftsB, null, revision, base));
+                mapCommentsToList(draftsA, base == 0 ? draftsB : null, base, base, true),
+                mapCommentsToList(draftsB, null, revision, base, false));
 
         // Cache the fetched data
         try {
@@ -579,7 +579,8 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     private List<CommentInfo> mapCommentsToList(Map<String, List<CommentInfo>> comments,
-            Map<String, List<CommentInfo>> otherSideComments, int base, int parentBase) {
+            Map<String, List<CommentInfo>> otherSideComments, int base,
+            int parentBase, boolean isA) {
         List<CommentInfo> commentList = comments != null ? comments.get(mFile) : null;
         List<CommentInfo> otherCommentList =
                 otherSideComments != null ? otherSideComments.get(mFile) : null;
@@ -589,6 +590,12 @@ public class FileDiffViewerFragment extends Fragment {
 
         List<CommentInfo> copy = new ArrayList<>();
         for (CommentInfo comment : commentList) {
+            if (comment.side == null && base != parentBase && !isA) {
+                comment.side = SideType.REVISION;
+            } else if (SideType.REVISION.equals(comment.side) && isA) {
+                comment.side = null;
+            }
+
             if (otherCommentList == null && SideType.PARENT.equals(comment.side)) {
                 continue;
             }

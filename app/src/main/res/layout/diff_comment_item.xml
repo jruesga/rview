@@ -161,7 +161,7 @@
                             android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
                             android:layout_marginEnd="3dp"
                             android:layout_marginRight="3dp"
-                            android:text="@{model.commentA.side.equals(SideType.PARENT) ? @string/options_base_left : @string/options_base_right}"
+                            android:text="@{(model.commentA.side == null || model.commentA.side.equals(SideType.PARENT)) ? @string/options_base_left : @string/options_base_right}"
                             app:allCaps="true"
                             android:background="@drawable/bg_tag"
                             app:bindBackgroundTint="@{@color/unscored}" />
