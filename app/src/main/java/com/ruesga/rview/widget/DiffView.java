@@ -126,6 +126,16 @@ public class DiffView extends FrameLayout {
             int position = (int) v.getTag();
             mView.onSkipLinePressed(position);
         }
+
+        public void onSkipLineUpPressed(View v) {
+            int position = (int) v.getTag();
+            mView.onSkipUpLinePressed(position);
+        }
+
+        public void onSkipLineDownPressed(View v) {
+            int position = (int) v.getTag();
+            mView.onSkipDownLinePressed(position);
+        }
     }
 
     public interface OnCommentListener {
@@ -282,7 +292,47 @@ public class DiffView extends FrameLayout {
                     mDiffAdapter.mModel.add(position, m.skippedLines[i]);
                 }
             }
-            computeViewChildMeasuresIfNeeded();
+            mDiffAdapter.notifyDataSetChanged();
+        }
+
+        private void showSkippedUpLinesAt(int position) {
+            AbstractModel model = mDiffAdapter.mModel.get(position);
+            if (model instanceof SkipLineModel) {
+                SkipLineModel m = (SkipLineModel) model;
+                for (int i = 0; i < AsyncTextDiffProcessor.SKIPPED_LINES; i++, position++) {
+                    mDiffAdapter.mModel.add(position, m.skippedLines[i]);
+                }
+
+                // Trim skipped lines array
+                int from = AsyncTextDiffProcessor.SKIPPED_LINES;
+                int length = m.skippedLines.length - from;
+                DiffInfoModel[] copy = new DiffInfoModel[length];
+                System.arraycopy(m.skippedLines, from, copy, 0, copy.length);
+                m.skippedLines = copy;
+                m.msg = getResources().getQuantityString(
+                        R.plurals.skipped_lines, m.skippedLines.length, m.skippedLines.length);
+            }
+            mDiffAdapter.notifyDataSetChanged();
+        }
+
+        private void showSkippedDownLinesAt(int position) {
+            AbstractModel model = mDiffAdapter.mModel.get(position);
+            if (model instanceof SkipLineModel) {
+                SkipLineModel m = (SkipLineModel) model;
+                int count = m.skippedLines.length;
+                int from = m.skippedLines.length - AsyncTextDiffProcessor.SKIPPED_LINES;
+                position++;
+                for (int i = from; i < count; i++, position++) {
+                    mDiffAdapter.mModel.add(position, m.skippedLines[i]);
+                }
+
+                // Trim skipped lines array
+                DiffInfoModel[] copy = new DiffInfoModel[from];
+                System.arraycopy(m.skippedLines, 0, copy, 0, copy.length);
+                m.skippedLines = copy;
+                m.msg = getResources().getQuantityString(
+                        R.plurals.skipped_lines, m.skippedLines.length, m.skippedLines.length);
+            }
             mDiffAdapter.notifyDataSetChanged();
         }
 
@@ -344,6 +394,10 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setHandlers(mEventHandlers);
                 holder.mBinding.setTextSizeFactor(mTextSizeFactor);
                 holder.mBinding.setIndex(position);
+                holder.mBinding.setHasSkipUp(position != 0 &&
+                        (skip.skippedLines.length > AsyncTextDiffProcessor.SKIPPED_LINES * 2));
+                holder.mBinding.setHasSkipDown(position != (getItemCount() - 1) &&
+                        (skip.skippedLines.length > AsyncTextDiffProcessor.SKIPPED_LINES * 2));
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
                 holder.mBinding.executePendingBindings();
 
@@ -732,6 +786,14 @@ public class DiffView extends FrameLayout {
 
     private void onSkipLinePressed(int position) {
         mDiffAdapter.showSkippedLinesAt(position);
+    }
+
+    private void onSkipUpLinePressed(int position) {
+        mDiffAdapter.showSkippedUpLinesAt(position);
+    }
+
+    private void onSkipDownLinePressed(int position) {
+        mDiffAdapter.showSkippedDownLinesAt(position);
     }
 
     static class SavedState extends BaseSavedState {

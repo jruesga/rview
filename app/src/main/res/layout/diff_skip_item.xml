@@ -14,13 +14,17 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:tools="http://schemas.android.com/tools"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View" />
         <variable name="wrap" type="java.lang.Boolean" />
         <variable name="index" type="java.lang.Integer" />
         <variable name="textSizeFactor" type="java.lang.Float" />
+        <variable name="hasSkipUp" type="java.lang.Boolean" />
+        <variable name="hasSkipDown" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.widget.DiffView.SkipLineModel" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
         <variable name="handlers" type="com.ruesga.rview.widget.DiffView.EventHandlers" />
@@ -30,21 +34,62 @@
         android:layout_width="0dp"
         app:wrapLayoutWidth="@{wrap != null &amp;&amp; wrap}"
         android:layout_height="wrap_content"
-        android:onClick="@{handlers::onSkipLinePressed}"
-        android:tag="@{index}"
         android:background="@color/diffSkipBackgroundColor">
-        <com.ruesga.rview.widget.StyleableTextView
+
+        <LinearLayout
             android:layout_width="0dp"
             app:bindLayoutWidth="@{measurement.width}"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorPrimaryDark"
-            android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
-            android:ellipsize="none"
-            android:textStyle="bold"
-            android:padding="5dp"
-            android:maxLines="1"
-            android:gravity="center_horizontal"
-            android:text="@{model.msg}"/>
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimaryDark"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:onClick="@{handlers::onSkipLineUpPressed}"
+                android:tag="@{index}"
+                android:visibility="@{hasSkipUp != null &amp;&amp; hasSkipUp ? View.VISIBLE : View.INVISIBLE}"
+                android:ellipsize="none"
+                android:textStyle="bold"
+                android:padding="5dp"
+                android:maxLines="1"
+                android:gravity="end"
+                android:text="@string/diff_viewer_skip_up"/>
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimaryDark"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:onClick="@{handlers::onSkipLinePressed}"
+                android:tag="@{index}"
+                android:ellipsize="none"
+                android:textStyle="bold"
+                android:padding="5dp"
+                android:maxLines="1"
+                android:text="@{model.msg}"/>
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimaryDark"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:onClick="@{handlers::onSkipLineDownPressed}"
+                android:tag="@{index}"
+                android:visibility="@{hasSkipDown != null &amp;&amp; hasSkipDown ? View.VISIBLE : View.INVISIBLE}"
+                android:ellipsize="none"
+                android:textStyle="bold"
+                android:padding="5dp"
+                android:maxLines="1"
+                android:gravity="start"
+                android:text="@string/diff_viewer_skip_down"/>
+        </LinearLayout>
     </FrameLayout>
 </layout>
