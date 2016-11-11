@@ -35,6 +35,7 @@ import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
+import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.CommitInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
@@ -42,6 +43,7 @@ import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
 import com.ruesga.rview.gerrit.model.ProjectStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
+import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.EmptyState;
@@ -478,11 +480,17 @@ public class Formatter {
     }
 
     @BindingAdapter("commentLine")
-    public static void toCommentLine(TextView v, Integer line) {
-        if (line == null) {
+    public static void toCommentLine(TextView v, CommentInfo comment) {
+        if (comment == null) {
+            v.setText(null);
+        } else if (comment.line == null) {
             v.setText(R.string.change_details_comment_file);
+        } else if (SideType.PARENT.equals(comment.side)) {
+            v.setText(v.getContext().getString(
+                    R.string.change_details_comment_base_line_number, comment.line));
         } else {
-            v.setText(v.getContext().getString(R.string.change_details_comment_line_number, line));
+            v.setText(v.getContext().getString(
+                    R.string.change_details_comment_line_number, comment.line));
         }
     }
 

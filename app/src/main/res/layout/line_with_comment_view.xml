@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorPrimaryDark"
-            app:commentLine="@{model.line}"
+            app:commentLine="@{model}"
             android:textSize="11sp"
             tools:ignore="Deprecated,SmallSp"/>
 
