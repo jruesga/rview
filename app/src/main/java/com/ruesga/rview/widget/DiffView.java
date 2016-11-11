@@ -396,7 +396,8 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setIndex(position);
                 holder.mBinding.setHasSkipUp(position != 0 &&
                         (skip.skippedLines.length > AsyncTextDiffProcessor.SKIPPED_LINES * 2));
-                holder.mBinding.setHasSkipDown(position != (getItemCount() - 1) &&
+                // Last item is the item decorator view
+                holder.mBinding.setHasSkipDown(position != (getItemCount() - 2) &&
                         (skip.skippedLines.length > AsyncTextDiffProcessor.SKIPPED_LINES * 2));
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
                 holder.mBinding.executePendingBindings();
