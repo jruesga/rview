@@ -23,6 +23,9 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.exceptions.IllegalQueryExpressionException;
 import com.ruesga.rview.exceptions.OperationFailedException;
 import com.ruesga.rview.gerrit.NoConnectivityException;
+import com.ruesga.rview.model.EmptyState;
+
+import java.net.ConnectException;
 
 public class ExceptionHelper {
     @SuppressWarnings("SimplifiableIfStatement")
@@ -63,6 +66,9 @@ public class ExceptionHelper {
 
         } else if (isException(cause, NoConnectivityException.class)) {
             message = R.string.exception_no_network_available;
+
+        } else if (isException(cause, ConnectException.class)) {
+            message = R.string.exception_server_cannot_be_reached;
 
         } else if (isException(cause, IllegalQueryExpressionException.class)) {
             message = R.string.exception_invalid_request;
@@ -108,6 +114,10 @@ public class ExceptionHelper {
         return !(isException(cause, NoConnectivityException.class));
     }
 
+    public static boolean hasServerConnectivity(Throwable cause) {
+        return !(isException(cause, ConnectException.class));
+    }
+
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
     private static boolean isHttpException(Throwable cause, int httpCode) {
         if (isException(cause, retrofit2.adapter.rxjava.HttpException.class)) {
@@ -125,4 +135,13 @@ public class ExceptionHelper {
         return false;
     }
 
+    public static int resolveEmptyState(Throwable error) {
+        if (!ExceptionHelper.hasConnectivity(error)) {
+            return EmptyState.NOT_CONNECTIVITY_STATE;
+        }
+        if (!ExceptionHelper.hasServerConnectivity(error)) {
+            return EmptyState.SERVER_CANNOT_BE_REACHED;
+        }
+        return EmptyState.ERROR_STATE;
+    }
 }

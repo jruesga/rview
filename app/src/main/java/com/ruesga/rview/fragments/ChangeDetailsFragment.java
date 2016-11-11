@@ -547,8 +547,7 @@ public class ChangeDetailsFragment extends Fragment {
 
                 @Override
                 public void onError(Throwable error) {
-                    mEmptyState.state = ExceptionHelper.hasConnectivity(error)
-                            ? EmptyState.ERROR_STATE : EmptyState.NOT_CONNECTIVITY_STATE;
+                    mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
                     mBinding.setEmpty(mEmptyState);
                     mChangeLoader.clear();
                     ((BaseActivity) getActivity()).handleException(TAG, error);

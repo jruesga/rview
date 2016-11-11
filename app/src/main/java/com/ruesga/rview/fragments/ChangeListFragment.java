@@ -203,8 +203,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         @Override
         public void onError(Throwable error) {
             // Hide your progress indicator and show that there was an error.
-            mEmptyState.state = ExceptionHelper.hasConnectivity(error)
-                    ? EmptyState.ERROR_STATE : EmptyState.NOT_CONNECTIVITY_STATE;
+            mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
             mBinding.setEmpty(mEmptyState);
             mChangesLoader.clear();
             ((BaseActivity) getActivity()).handleException(TAG, error);

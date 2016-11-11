@@ -496,6 +496,9 @@ public class Formatter {
         } else if (state.state == EmptyState.NOT_CONNECTIVITY_STATE) {
             v.setImageDrawable(ContextCompat.getDrawable(
                     v.getContext(), R.drawable.ic_cloud_off));
+        } else if (state.state == EmptyState.SERVER_CANNOT_BE_REACHED) {
+            v.setImageDrawable(ContextCompat.getDrawable(
+                    v.getContext(), R.drawable.ic_server_network_off));
         } else if (state.state == EmptyState.ERROR_STATE) {
             v.setImageDrawable(ContextCompat.getDrawable(
                     v.getContext(), R.drawable.ic_error_outline));
@@ -510,6 +513,8 @@ public class Formatter {
             v.setText(R.string.empty_states_empty);
         } else if (state.state == EmptyState.NOT_CONNECTIVITY_STATE) {
             v.setText(R.string.empty_states_not_connectivity);
+        } else if (state.state == EmptyState.SERVER_CANNOT_BE_REACHED) {
+            v.setText(R.string.empty_states_server_not_reached);
         } else if (state.state == EmptyState.ERROR_STATE) {
             v.setText(R.string.empty_states_error);
         }
