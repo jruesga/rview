@@ -358,6 +358,7 @@ public class FileDiffViewerFragment extends Fragment {
         final Integer base = mBase == null ? null : Integer.valueOf(mBase);
         final Type commentType = new TypeToken<Map<String, List<CommentInfo>>>(){}.getType();
         final boolean isBinary = !mFile.equals(Constants.COMMIT_MESSAGE)
+                && mChange.revisions.get(mRevisionId).files.get(mFile) != null
                 && mChange.revisions.get(mRevisionId).files.get(mFile).binary;
 
         final Context ctx = getActivity();
@@ -443,6 +444,7 @@ public class FileDiffViewerFragment extends Fragment {
         // Generate ids
         final String baseRevision = mBase == null ? "0" : mBase;
         final boolean isBinary = !mFile.equals(Constants.COMMIT_MESSAGE)
+                && mChange.revisions.get(mRevisionId).files.get(mFile) != null
                 && mChange.revisions.get(mRevisionId).files.get(mFile).binary;
 
         final Context ctx = getActivity();

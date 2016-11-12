@@ -47,6 +47,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
@@ -56,10 +57,13 @@ import com.ruesga.rview.databinding.DiffBaseChooserHeaderBinding;
 import com.ruesga.rview.databinding.DiffViewerFragmentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
 import com.ruesga.rview.fragments.FileDiffViewerFragment.OnDiffCompleteListener;
+import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -72,10 +76,21 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader2;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class DiffViewerFragment extends Fragment implements KeyEventBindable, OnDiffCompleteListener {
 
@@ -242,6 +257,37 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         }
     };
 
+    private final RxLoaderObserver<ArrayList<String>> mFilesObserver
+            = new RxLoaderObserver<ArrayList<String>>() {
+        @Override
+        public void onNext(ArrayList<String> response) {
+            // Refresh the page controller
+            mFiles.clear();
+            mFiles.addAll(new ArrayList<>(response));
+            mCurrentFile = mFiles.indexOf(mFile);
+
+            try {
+                String current = String.valueOf(mChange.revisions.get(mRevisionId).number);
+                String prefix = (mBase == null ? "0" : mBase) + "_" + current + "_";
+                CacheHelper.writeAccountDiffCacheFile(getContext(),
+                        prefix + CacheHelper.CACHE_FILES_JSON,
+                        SerializationManager.getInstance().toJson(mFiles).getBytes());
+            } catch (IOException ex) {
+                Log.e(TAG, "Failed to save files cached data", ex);
+            }
+
+            configurePageController((BaseActivity) getActivity(), true);
+
+            // Refresh the view
+            forceRefresh();
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+        }
+    };
+
     @Override
     public boolean onKeyDown(int keycode, KeyEvent e) {
         switch(keycode) {
@@ -294,10 +340,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     private Handler mHandler;
 
     private ChangeInfo mChange;
-    private final List<String> mFiles = new ArrayList<>();
+    private final ArrayList<String> mFiles = new ArrayList<>();
     private String mRevisionId;
     private String mFile;
     private String mBase;
+
+    private RxLoader2<String, String, ArrayList<String>> mFilesLoader;
 
     private final List<String> mAllRevisions = new ArrayList<>();
 
@@ -317,8 +365,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private Intent mResult;
 
-    public static DiffViewerFragment newInstance(
-            String revisionId, String base, String file) {
+    public static DiffViewerFragment newInstance(String revisionId, String base, String file) {
         DiffViewerFragment fragment = new DiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
@@ -369,7 +416,19 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             mChange = SerializationManager.getInstance().fromJson(
                     new String(CacheHelper.readAccountDiffCacheFile(
                             getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
-            loadFiles();
+
+            // Deserialize the files
+            String current = String.valueOf(mChange.revisions.get(mRevisionId).number);
+            String prefix = (mBase == null ? "0" : mBase) + "_" + current + "_";
+            Type type = new TypeToken<List<String>>(){}.getType();
+            List<String> files = SerializationManager.getInstance().fromJson(
+                    new String(CacheHelper.readAccountDiffCacheFile(
+                            getContext(), prefix + CacheHelper.CACHE_FILES_JSON)), type);
+            mFiles.clear();
+            mFiles.addAll(files);
+            mCurrentFile = mFiles.indexOf(mFile);
+
+            // Load revisions
             loadRevisions();
 
             // Get diff user preferences
@@ -389,13 +448,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
             // Configure the pages adapter
             BaseActivity activity = ((BaseActivity) getActivity());
-            activity.configurePages(mAdapter, position -> {
-                mFile = mFiles.get(position);
-                mCurrentFile = position;
-            });
-            activity.getContentBinding().pagerController.currentPage(mCurrentFile);
-
-
+            configurePageController(activity, false);
 
             // Configure the diff_options menu
             activity.configureOptionsTitle(getString(R.string.menu_diff_options));
@@ -417,6 +470,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             if (mResult != null) {
                 getActivity().setResult(Activity.RESULT_OK, mResult);
             }
+
+            RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mFilesLoader = loaderManager.create(
+                    "files" + hashCode(), this::loadFiles, mFilesObserver);
 
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);
@@ -460,21 +517,6 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         if (mResult != null) {
             outState.putParcelable(Constants.EXTRA_DATA, mResult);
-        }
-    }
-
-    private void loadFiles() {
-        mFiles.clear();
-        // Revisions doesn't include the COMMIT_MSG
-        mFiles.add(Constants.COMMIT_MESSAGE);
-        mCurrentFile = 0;
-        int i = 1;
-        for (String file : mChange.revisions.get(mRevisionId).files.keySet()) {
-            if (file.equals(mFile)) {
-                mCurrentFile = i;
-            }
-            mFiles.add(file);
-            i++;
         }
     }
 
@@ -611,10 +653,11 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             }
 
             // Close the drawer
-            ((BaseActivity) getActivity()).closeOptionsDrawer();
+            BaseActivity activity = (BaseActivity) getActivity();
+            activity.closeOptionsDrawer();
 
-            // Refresh the view
-            forceRefresh();
+            // Refresh files
+            performLoadFiles();
         });
         popupWindow.setModal(true);
         popupWindow.show();
@@ -752,4 +795,60 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
     }
 
+    private void configurePageController(BaseActivity activity, boolean refresh) {
+        activity.invalidatePages();
+        activity.configurePages(mAdapter, position -> {
+            mFile = mFiles.get(position);
+            mCurrentFile = position;
+        });
+        activity.getContentBinding().pagerController.currentPage(mCurrentFile, refresh);
+        if (refresh) {
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<ArrayList<String>> loadFiles(
+            final String revisionId, final String baseRevisionId) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+
+        Type type = new TypeToken<ArrayList<String>>(){}.getType();
+        String current = String.valueOf(mChange.revisions.get(mRevisionId).number);
+        String prefix = (mBase == null ? "0" : mBase) + "_" + current + "_";
+
+        return withCached(
+                    SafeObservable.fromCallable(() -> {
+                        Map<String, FileInfo> files =
+                                api.getChangeRevisionFiles(
+                                    String.valueOf(mChange.legacyChangeId),
+                                    revisionId, baseRevisionId, null, null).blockingFirst();
+                        return new ArrayList<>(files.keySet());
+                    }),
+                    type,
+                    prefix + CacheHelper.CACHE_FILES_JSON
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void performLoadFiles() {
+        mFilesLoader.clear();
+        mFilesLoader.restart(mRevisionId, mBase);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Observable<T> withCached(Observable<T> call, Type type, String name) {
+        try {
+            if (CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
+                T o = SerializationManager.getInstance().fromJson(
+                        new String(CacheHelper.readAccountDiffCacheFile(
+                                getContext(), name)), type);
+                return Observable.just((o));
+            }
+        } catch (IOException ex) {
+            Log.e(TAG, "Failed to load diff cached data: " + name, ex);
+        }
+        return call;
+    }
 }

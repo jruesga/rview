@@ -1391,9 +1391,11 @@ public class ChangeDetailsFragment extends Fragment {
         if (mDiffAgainstRevision != null) {
             base = String.valueOf(mResponse.mChange.revisions.get(mDiffAgainstRevision).number);
         }
+        String current = String.valueOf(mResponse.mChange.revisions.get(mCurrentRevision).number);
 
-        ActivityHelper.openDiffViewerActivity(
-                this, mResponse.mChange, mCurrentRevision, base, file, DIFF_REQUEST_CODE);
+        ArrayList<String> files = new ArrayList<>(mResponse.mFiles.keySet());
+        ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, files,
+                mCurrentRevision, base, current, file, DIFF_REQUEST_CODE);
     }
 
     private void sortRevisions(ChangeInfo change) {

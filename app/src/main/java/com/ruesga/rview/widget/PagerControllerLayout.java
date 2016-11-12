@@ -136,12 +136,23 @@ public class PagerControllerLayout extends FrameLayout {
     }
 
     public void currentPage(int position) {
-        if (mCurrentItem == position) {
+        currentPage(position, false);
+    }
+
+    public void currentPage(int position, boolean force) {
+        if (!force && mCurrentItem == position) {
             return;
         }
 
         if (mAdapter != null && mAdapter.getCount() > 0) {
-            mModel.prev = position == 0 ? null : mAdapter.getPageTitle(position - 1);
+            if (position < 0) {
+                position = 0;
+            }
+            if (position >= mAdapter.getCount() - 1) {
+                position = mAdapter.getCount() - 1;
+            }
+
+            mModel.prev = position <= 0 ? null : mAdapter.getPageTitle(position - 1);
             mModel.next = position >= mAdapter.getCount() - 1 ? null
                     : mAdapter.getPageTitle(position + 1);
             mBinding.setModel(mModel);

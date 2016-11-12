@@ -45,8 +45,10 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ActivityHelper {
 
@@ -200,13 +202,27 @@ public class ActivityHelper {
     }
 
     public static void openDiffViewerActivity(Fragment fragment, ChangeInfo change,
-            String revisionId, String base, String file, int requestCode) {
+          ArrayList<String> files, String revisionId, String base, String current,
+          String file, int requestCode) {
         Intent intent = new Intent(fragment.getContext(), DiffViewerActivity.class);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_BASE, base);
         intent.putExtra(Constants.EXTRA_FILE, file);
-        intent.putExtra(Constants.EXTRA_DATA, SerializationManager.getInstance().toJson(change));
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
+
+        try {
+            CacheHelper.writeAccountDiffCacheFile(fragment.getContext(),
+                    CacheHelper.CACHE_CHANGE_JSON,
+                    SerializationManager.getInstance().toJson(change).getBytes());
+
+            String prefix = (base == null ? "0" : base) + "_" + current + "_";
+            CacheHelper.writeAccountDiffCacheFile(fragment.getContext(),
+                    prefix + CacheHelper.CACHE_FILES_JSON,
+                    SerializationManager.getInstance().toJson(files).getBytes());
+        } catch (IOException ex) {
+            // Ignore
+        }
+
         fragment.startActivityForResult(intent, requestCode);
     }
 

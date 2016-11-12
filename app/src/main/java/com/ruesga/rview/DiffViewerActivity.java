@@ -68,21 +68,21 @@ public class DiffViewerActivity extends BaseActivity {
             return;
         }
         String base = getIntent().getStringExtra(Constants.EXTRA_BASE);
-        String data = getIntent().getStringExtra(Constants.EXTRA_DATA);
-        if (TextUtils.isEmpty(data)) {
-            setResult(RESULT_CANCELED);
-            finish();
-            return;
-        }
 
         // Deserialize the change and cache the information
         ChangeInfo change;
         try {
-            change = SerializationManager.getInstance().fromJson(data, ChangeInfo.class);
-            CacheHelper.writeAccountDiffCacheFile(this,
-                    CacheHelper.CACHE_CHANGE_JSON, data.getBytes());
+            change = SerializationManager.getInstance().fromJson(
+                    new String(CacheHelper.readAccountDiffCacheFile(
+                            this, CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);
+            setResult(RESULT_CANCELED);
+            finish();
+            return;
+        }
+        if (change == null) {
+            Log.e(TAG, "Failed to load change cached data (null)");
             setResult(RESULT_CANCELED);
             finish();
             return;
