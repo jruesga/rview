@@ -67,6 +67,7 @@ public class DiffViewerActivity extends BaseActivity {
             finish();
             return;
         }
+        String base = getIntent().getStringExtra(Constants.EXTRA_BASE);
         String data = getIntent().getStringExtra(Constants.EXTRA_DATA);
         if (TextUtils.isEmpty(data)) {
             setResult(RESULT_CANCELED);
@@ -105,16 +106,16 @@ public class DiffViewerActivity extends BaseActivity {
                 tx.commit();
             }
         } else {
-            createDiffViewFragment(revisionId, file);
+            createDiffViewFragment(revisionId, base, file);
         }
 
         // All configured ok
         setResult(RESULT_OK);
     }
 
-    private void createDiffViewFragment(String revisionId, String file) {
+    private void createDiffViewFragment(String revisionId, String base, String file) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = DiffViewerFragment.newInstance(revisionId, file);
+        Fragment fragment = DiffViewerFragment.newInstance(revisionId, base, file);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG);
         tx.commit();
     }

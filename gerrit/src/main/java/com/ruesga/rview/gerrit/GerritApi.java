@@ -1061,7 +1061,10 @@ public interface GerritApi {
     @GET("changes/{change-id}/revisions/{revision-id}/files/")
     Observable<Map<String, FileInfo>> getChangeRevisionFiles(
             @NonNull @Path("change-id") String changeId,
-            @NonNull @Path("revision-id") String revisionId);
+            @NonNull @Path("revision-id") String revisionId,
+            @Nullable @Query("base") String base,
+            @Nullable @Query("reviewed") Option reviewed,
+            @Nullable @Query("q") String filter);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-content"

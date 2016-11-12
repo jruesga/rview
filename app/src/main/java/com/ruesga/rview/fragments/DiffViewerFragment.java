@@ -317,10 +317,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private Intent mResult;
 
-    public static DiffViewerFragment newInstance(String revisionId, String file) {
+    public static DiffViewerFragment newInstance(
+            String revisionId, String base, String file) {
         DiffViewerFragment fragment = new DiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
+        arguments.putString(Constants.EXTRA_BASE, base);
         arguments.putString(Constants.EXTRA_FILE, file);
         fragment.setArguments(arguments);
         return fragment;
@@ -571,11 +573,22 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         popupWindow.setOnItemClickListener((parent, view, position, id) -> {
             popupWindow.dismiss();
             if (v.getId() == R.id.baseLeft) {
-                try {
-                    mBase = String.valueOf(Integer.parseInt(revisions.get(position)));
-                } catch (NumberFormatException ex) {
-                    // 0 based
+                String base = mBase;
+                if (position == 0) {
                     mBase = null;
+                } else {
+                    mBase = String.valueOf(Integer.parseInt(revisions.get(position)));
+                }
+
+                boolean changed = (base == null && mBase != null) ||
+                        (base != null && mBase == null) ||
+                        (base != null && !base.equals(mBase));
+                if (changed) {
+                    if (mResult == null) {
+                        mResult = new Intent();
+                    }
+                    mResult.putExtra(Constants.EXTRA_BASE, mBase);
+                    getActivity().setResult(Activity.RESULT_OK, mResult);
                 }
             } else {
                 String revisionId = mRevisionId;
@@ -592,7 +605,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                     if (mResult == null) {
                         mResult = new Intent();
                     }
-                    mResult.putExtra(Constants.EXTRA_BASE, mRevisionId);
+                    mResult.putExtra(Constants.EXTRA_REVISION_ID, mRevisionId);
                     getActivity().setResult(Activity.RESULT_OK, mResult);
                 }
             }

@@ -68,7 +68,6 @@ import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileInfo;
-import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
 import com.ruesga.rview.gerrit.model.NotifyType;
 import com.ruesga.rview.gerrit.model.RebaseInput;
@@ -79,6 +78,7 @@ import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
+import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.StarInput;
 import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmitType;
@@ -132,8 +132,8 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.DETAILED_LABELS);
         add(ChangeOptions.ALL_REVISIONS);
-        add(ChangeOptions.ALL_COMMITS);
         add(ChangeOptions.ALL_FILES);
+        add(ChangeOptions.ALL_COMMITS);
         add(ChangeOptions.MESSAGES);
         add(ChangeOptions.REVIEWED);
         add(ChangeOptions.CHANGE_ACTIONS);
@@ -154,9 +154,11 @@ public class ChangeDetailsFragment extends Fragment {
     public static class ListModel {
         @StringRes
         public int header;
+        public String selector;
         public boolean visible;
         private ListModel(int h) {
             header = h;
+            selector = null;
             visible = false;
         }
     }
@@ -180,6 +182,17 @@ public class ChangeDetailsFragment extends Fragment {
 
         public void onPatchSetPressed(View v) {
             mFragment.showPatchSetChooser(v);
+        }
+
+        public void onListHeaderSelectorPressed(View v) {
+            String id = (String) v.getTag();
+            if (!TextUtils.isEmpty(id)) {
+                switch (id) {
+                    case "files":
+                        mFragment.showDiffAgainstChooser(v);
+                        break;
+                }
+            }
         }
 
         public void onStarredPressed(View v) {
@@ -317,23 +330,16 @@ public class ChangeDetailsFragment extends Fragment {
                 return;
             }
 
-            // Always add the commit message which is not part of the revision files
-            FileItemModel commitMessage = new FileItemModel();
-            commitMessage.file = Constants.COMMIT_MESSAGE;
-            commitMessage.info = new FileInfo();
-            commitMessage.info.status =  FileStatus.A;
-            commitMessage.inlineComments = inlineComments.containsKey(
-                    Constants.COMMIT_MESSAGE) ? inlineComments.get(Constants.COMMIT_MESSAGE) : 0;
-            commitMessage.draftComments = draftComments.containsKey(
-                    Constants.COMMIT_MESSAGE) ? draftComments.get(Constants.COMMIT_MESSAGE) : 0;
-            commitMessage.hasGraph = false;
-            mFiles.add(commitMessage);
-
             int added = 0;
             int deleted = 0;
             // Compute the added and deleted from revision instead from the change
             // to be accurate with the current revision info
             for (String key : files.keySet()) {
+                // Do not compute commit message
+                if (key.equals(Constants.COMMIT_MESSAGE)) {
+                    continue;
+                }
+
                 FileInfo info = files.get(key);
                 if (info.linesInserted != null) {
                     added += info.linesInserted;
@@ -497,6 +503,7 @@ public class ChangeDetailsFragment extends Fragment {
     public static class DataResponse {
         ChangeInfo mChange;
         SubmitType mSubmitType;
+        Map<String, FileInfo> mFiles;
         Map<String, ActionInfo> mActions;
         Map<String, Integer> mInlineComments;
         Map<String, Integer> mDraftComments;
@@ -507,61 +514,62 @@ public class ChangeDetailsFragment extends Fragment {
 
     private final RxLoaderObserver<DataResponse> mChangeObserver =
             new RxLoaderObserver<DataResponse>() {
-                @Override
-                public void onNext(DataResponse result) {
-                    mModel.isLocked = false;
-                    updateLocked();
-                    mResponse = result;
-                    updateAuthenticatedAndOwnerStatus();
+        @Override
+        public void onNext(DataResponse result) {
+            mModel.isLocked = false;
+            updateLocked();
+            mResponse = result;
+            updateAuthenticatedAndOwnerStatus();
 
-                    ChangeInfo change = null;
-                    mEmptyState.state = result != null
-                            ? EmptyState.NORMAL_STATE : EmptyState.EMPTY_STATE;
-                    mBinding.setEmpty(mEmptyState);
-                    if (result != null) {
-                        change = result.mChange;
-                        if (mCurrentRevision == null
-                                || !change.revisions.containsKey(mCurrentRevision)) {
-                            mCurrentRevision = change.currentRevision;
-                        }
-
-                        sortRevisions(change);
-                        updatePatchSetInfo(result);
-                        updateChangeInfo(result);
-                        updateReviewInfo(result);
-
-                        Map<String, FileInfo> files = change.revisions.get(mCurrentRevision).files;
-                        mModel.filesListModel.visible = files != null && !files.isEmpty();
-                        mFileAdapter.update(files, result.mInlineComments, result.mDraftComments);
-                        mModel.msgListModel.visible =
-                                change.messages != null && change.messages.length > 0;
-                        mMessageAdapter.update(change.messages, result.mMessagesWithComments);
-                    }
-
-                    // Invalidate the diff cache. we have new data
-                    CacheHelper.removeAccountDiffCacheDir(getContext());
-
-                    mBinding.setModel(mModel);
-                    showProgress(false, change);
+            ChangeInfo change = null;
+            mEmptyState.state = result != null
+                    ? EmptyState.NORMAL_STATE : EmptyState.EMPTY_STATE;
+            mBinding.setEmpty(mEmptyState);
+            if (result != null) {
+                change = result.mChange;
+                if (mCurrentRevision == null
+                        || !change.revisions.containsKey(mCurrentRevision)) {
+                    mCurrentRevision = change.currentRevision;
                 }
 
-                @Override
-                public void onError(Throwable error) {
-                    mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
-                    mBinding.setEmpty(mEmptyState);
-                    mChangeLoader.clear();
-                    ((BaseActivity) getActivity()).handleException(TAG, error);
-                    showProgress(false, null);
-                }
+                sortRevisions(change);
+                updatePatchSetInfo(result);
+                updateChangeInfo(result);
+                updateReviewInfo(result);
 
-                @Override
-                public void onStarted() {
-                    mModel.isLocked = true;
-                    updateLocked();
+                mModel.filesListModel.selector = resolveDiffAgainstSelectorText();
+                mModel.filesListModel.visible = result.mFiles != null && !result.mFiles.isEmpty();
+                mFileAdapter.update(result.mFiles, result.mInlineComments, result.mDraftComments);
+                mModel.msgListModel.visible =
+                        change.messages != null && change.messages.length > 0;
+                mMessageAdapter.update(change.messages, result.mMessagesWithComments);
+            }
 
-                    showProgress(true, null);
-                }
-            };
+            // Invalidate the diff cache. we have new data
+            CacheHelper.removeAccountDiffCacheDir(getContext());
+
+            mBinding.setModel(mModel);
+            mBinding.setHandlers(mEventHandlers);
+            showProgress(false, change);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
+            mBinding.setEmpty(mEmptyState);
+            mChangeLoader.clear();
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+            showProgress(false, null);
+        }
+
+        @Override
+        public void onStarted() {
+            mModel.isLocked = true;
+            updateLocked();
+
+            showProgress(true, null);
+        }
+    };
 
     private final RxLoaderObserver<Boolean> mStarredObserver = new RxLoaderObserver<Boolean>() {
         @Override
@@ -635,9 +643,9 @@ public class ChangeDetailsFragment extends Fragment {
         public void onNext(Map<String, Integer> drafts) {
             mResponse.mDraftComments = drafts;
 
-            Map<String, FileInfo> files = mResponse.mChange.revisions.get(mCurrentRevision).files;
-            mModel.filesListModel.visible = files != null && !files.isEmpty();
-            mFileAdapter.update(files, mResponse.mInlineComments, mResponse.mDraftComments);
+            mModel.filesListModel.visible = mResponse.mFiles != null && !mResponse.mFiles.isEmpty();
+            mFileAdapter.update(
+                    mResponse.mFiles, mResponse.mInlineComments, mResponse.mDraftComments);
         }
 
         @Override
@@ -782,8 +790,10 @@ public class ChangeDetailsFragment extends Fragment {
     private final Model mModel = new Model();
     private final EmptyState mEmptyState = new EmptyState();
     private String mCurrentRevision;
+    private String mDiffAgainstRevision;
     private DataResponse mResponse;
     private final List<RevisionInfo> mAllRevisions = new ArrayList<>();
+    private final List<RevisionInfo> mAllRevisionsWithBase = new ArrayList<>();
 
     private RxLoader1<String, DataResponse> mChangeLoader;
     private RxLoader1<Boolean, Boolean> mStarredLoader;
@@ -820,6 +830,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         if (savedInstanceState != null) {
             mCurrentRevision = savedInstanceState.getString("current_revision", null);
+            mDiffAgainstRevision = savedInstanceState.getString("diff_against_revision", null);
         }
     }
 
@@ -849,21 +860,40 @@ public class ChangeDetailsFragment extends Fragment {
         Map<String, Integer> review = mBinding.reviewInfo.reviewLabels.getReview(false);
         outState.putString("review", SerializationManager.getInstance().toJson(review));
         outState.putString("current_revision", mCurrentRevision);
-
+        outState.putString("diff_against_revision", mDiffAgainstRevision);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == DIFF_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
-                String base = data.getStringExtra(Constants.EXTRA_BASE);
-                if (base != null && !base.equals(mCurrentRevision)) {
+                // Current revision
+                String revisionId = data.getStringExtra(Constants.EXTRA_REVISION_ID);
+                if (revisionId != null && !revisionId.equals(mCurrentRevision)) {
                     // Change to the current revision
-                    mCurrentRevision = base;
+                    mCurrentRevision = revisionId;
                     forceRefresh();
                     return;
                 }
 
+                // Diff against revision
+                String diffAgainst = resolveDiffAgainstRevision(
+                        data.getStringExtra(Constants.EXTRA_BASE));
+                boolean changed = (diffAgainst == null && mDiffAgainstRevision != null) ||
+                        (diffAgainst != null && mDiffAgainstRevision == null) ||
+                        (diffAgainst != null && !diffAgainst.equals(mDiffAgainstRevision));
+                if (changed) {
+                    // Change to the diff against revision revision
+                    if (diffAgainst != null && diffAgainst.equals(mCurrentRevision)) {
+                        mDiffAgainstRevision = null;
+                    } else {
+                        mDiffAgainstRevision = diffAgainst;
+                    }
+                    forceRefresh();
+                    return;
+                }
+
+                // Drafts changed
                 boolean dataChanged = data.getBooleanExtra(Constants.EXTRA_DATA_CHANGED, false);
                 if (dataChanged) {
                     // Refresh drafts comments
@@ -1049,13 +1079,29 @@ public class ChangeDetailsFragment extends Fragment {
 
                         return dataResponse;
                     }),
+                    api.getChangeRevisionFiles(changeId, revision, mDiffAgainstRevision, null, null),
                     api.getChangeRevisionSubmitType(changeId, revision),
                     api.getChangeRevisionActions(changeId, revision),
                     api.getChangeRevisionComments(changeId, revision),
                     SafeObservable.fromCallable(() -> {
+                        if (mDiffAgainstRevision != null) {
+                            return api.getChangeRevisionComments(
+                                    changeId, mDiffAgainstRevision).blockingFirst();
+                        }
+                        return new HashMap<>();
+                    }),
+                    SafeObservable.fromCallable(() -> {
                         // Do no fetch drafts if the account is not authenticated
                         if (mAccount.hasAuthenticatedAccessMode()) {
                             return api.getChangeRevisionDrafts(changeId, revision).blockingFirst();
+                        }
+                        return new HashMap<>();
+                    }),
+                    SafeObservable.fromCallable(() -> {
+                        // Do no fetch drafts if the account is not authenticated
+                        if (mDiffAgainstRevision != null && mAccount.hasAuthenticatedAccessMode()) {
+                            return api.getChangeRevisionDrafts(
+                                    changeId, mDiffAgainstRevision).blockingFirst();
                         }
                         return new HashMap<>();
                     }),
@@ -1278,20 +1324,44 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.refresh.setRefreshing(false);
     }
 
-    private DataResponse combineResponse(DataResponse response, SubmitType submitType,
-                Map<String, ActionInfo> actions, Map<String, List<CommentInfo>> revisionComments,
-                Map<String, List<CommentInfo>> revisionDraftComments, List<String> tags) {
+    private DataResponse combineResponse(DataResponse response, Map<String, FileInfo> files,
+                SubmitType submitType, Map<String, ActionInfo> actions,
+                Map<String, List<CommentInfo>> revisionComments,
+                Map<String, List<CommentInfo>> baseRevisionComments,
+                Map<String, List<CommentInfo>> revisionDraftComments,
+                Map<String, List<CommentInfo>> baseRevisionDraftComments,
+                List<String> tags) {
         // Map inline and draft comments
         Map<String, Integer> inlineComments = new HashMap<>();
         if (revisionComments != null) {
             for (String file : revisionComments.keySet()) {
-                inlineComments.put(file, revisionComments.get(file).size());
+                inlineComments.put(file, computeNumberOfComments(revisionComments.get(file)));
             }
         }
         Map<String, Integer> draftComments = new HashMap<>();
         if (revisionDraftComments != null) {
             for (String file : revisionDraftComments.keySet()) {
-                draftComments.put(file, revisionDraftComments.get(file).size());
+                draftComments.put(file, computeNumberOfComments(revisionDraftComments.get(file)));
+            }
+        }
+
+        // Map inline and draft comments from diff against revision
+        if (baseRevisionComments != null) {
+            for (String file : baseRevisionComments.keySet()) {
+                int count = computeNumberOfComments(baseRevisionComments.get(file));
+                if (inlineComments.containsKey(file)) {
+                    count += inlineComments.get(file);
+                }
+                inlineComments.put(file, count);
+            }
+        }
+        if (baseRevisionDraftComments != null) {
+            for (String file : baseRevisionDraftComments.keySet()) {
+                int count = computeNumberOfComments(baseRevisionDraftComments.get(file));
+                if (draftComments.containsKey(file)) {
+                    count += draftComments.get(file);
+                }
+                draftComments.put(file, count);
             }
         }
 
@@ -1299,6 +1369,7 @@ public class ChangeDetailsFragment extends Fragment {
         fetchNeededRevisionComments(response);
 
         // Join the actions
+        response.mFiles = files;
         response.mActions = actions;
         if (response.mActions == null) {
             response.mActions = response.mChange.actions;
@@ -1315,8 +1386,14 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performOpenFileDiff(String file) {
+        // Resolve base diff
+        String base = null;
+        if (mDiffAgainstRevision != null) {
+            base = String.valueOf(mResponse.mChange.revisions.get(mDiffAgainstRevision).number);
+        }
+
         ActivityHelper.openDiffViewerActivity(
-                this, mResponse.mChange, mCurrentRevision, file, DIFF_REQUEST_CODE);
+                this, mResponse.mChange, mCurrentRevision, base, file, DIFF_REQUEST_CODE);
     }
 
     private void sortRevisions(ChangeInfo change) {
@@ -1335,6 +1412,19 @@ public class ChangeDetailsFragment extends Fragment {
             }
             return 0;
         });
+
+        // All revisions + base - current revision
+        mAllRevisionsWithBase.clear();
+        mAllRevisionsWithBase.addAll(mAllRevisions);
+        int count = mAllRevisionsWithBase.size();
+        for (int i = 0; i < count; i++) {
+            RevisionInfo revision = mAllRevisionsWithBase.get(i);
+            if (revision.commit.commit.equals(mCurrentRevision)) {
+                mAllRevisionsWithBase.remove(i);
+                break;
+            }
+        }
+        mAllRevisionsWithBase.add(new RevisionInfo());
     }
 
     private void showPatchSetChooser(View anchor) {
@@ -1351,6 +1441,32 @@ public class ChangeDetailsFragment extends Fragment {
         popupWindow.setOnItemClickListener((parent, view, position, id) -> {
             popupWindow.dismiss();
             mCurrentRevision = mAllRevisions.get(position).commit.commit;
+            // Restore diff against to base
+            mDiffAgainstRevision = null;
+            forceRefresh();
+        });
+        popupWindow.setModal(true);
+        popupWindow.show();
+    }
+
+    private void showDiffAgainstChooser(View anchor) {
+        if (mModel.isLocked) {
+            return;
+        }
+
+        final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
+        PatchSetsAdapter adapter = new PatchSetsAdapter(
+                getContext(), mAllRevisionsWithBase, mDiffAgainstRevision);
+        popupWindow.setAnchorView(anchor);
+        popupWindow.setAdapter(adapter);
+        popupWindow.setContentWidth(adapter.measureContentWidth());
+        popupWindow.setOnItemClickListener((parent, view, position, id) -> {
+            popupWindow.dismiss();
+            String commit = null;
+            if (mAllRevisionsWithBase.get(position).commit != null) {
+                commit = mAllRevisionsWithBase.get(position).commit.commit;
+            }
+            mDiffAgainstRevision = commit;
             forceRefresh();
         });
         popupWindow.setModal(true);
@@ -1836,5 +1952,46 @@ public class ChangeDetailsFragment extends Fragment {
             }
         }
         return null;
+    }
+
+    private String resolveDiffAgainstSelectorText() {
+        if (mDiffAgainstRevision == null) {
+            return getString(R.string.change_details_diff_against,
+                    getString(R.string.options_base));
+        }
+
+        for (RevisionInfo revision : mAllRevisions) {
+            if (revision.commit.commit.equals(mDiffAgainstRevision)) {
+                return getString(R.string.change_details_diff_against,
+                        getString(R.string.change_details_diff_against_format,
+                                revision.number, revision.commit.commit.substring(0, 10)));
+            }
+        }
+
+        return null;
+    }
+
+    private String resolveDiffAgainstRevision(String base) {
+        if (base == null) {
+            return null;
+        }
+
+        int number = Integer.valueOf(base);
+        for (String rev : mResponse.mChange.revisions.keySet()) {
+            if (mResponse.mChange.revisions.get(rev).number == number) {
+                return rev;
+            }
+        }
+        return null;
+    }
+
+    private int computeNumberOfComments(List<CommentInfo> comments) {
+        int count = 0;
+        for (CommentInfo comment : comments) {
+            if (mDiffAgainstRevision == null || !SideType.PARENT.equals(comment.side)) {
+                count++;
+            }
+        }
+        return count;
     }
 }

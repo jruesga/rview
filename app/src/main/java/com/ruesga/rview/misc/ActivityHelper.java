@@ -200,9 +200,10 @@ public class ActivityHelper {
     }
 
     public static void openDiffViewerActivity(Fragment fragment, ChangeInfo change,
-            String revisionId, String file, int requestCode) {
+            String revisionId, String base, String file, int requestCode) {
         Intent intent = new Intent(fragment.getContext(), DiffViewerActivity.class);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
+        intent.putExtra(Constants.EXTRA_BASE, base);
         intent.putExtra(Constants.EXTRA_FILE, file);
         intent.putExtra(Constants.EXTRA_DATA, SerializationManager.getInstance().toJson(change));
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);

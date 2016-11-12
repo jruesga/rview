@@ -67,7 +67,12 @@ public class PatchSetsAdapter extends BaseAdapter {
         RevisionInfo revision = mRevisions.get(position);
         PatchSetDropdownItemBinding binding = (PatchSetDropdownItemBinding) v.getTag();
         binding.setModel(revision);
-        binding.setIsSelected(revision.commit.commit.equals(mCurrentRevision));
+        String commit = null;
+        if (revision.commit != null) {
+            commit = revision.commit.commit;
+        }
+        binding.setIsSelected((commit == null && mCurrentRevision == null) ||
+                (commit != null && mCurrentRevision != null && commit.equals(mCurrentRevision)));
         binding.executePendingBindings();
 
         return v;

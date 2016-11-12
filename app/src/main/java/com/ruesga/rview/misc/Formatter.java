@@ -436,7 +436,11 @@ public class Formatter {
             view.setText(null);
             return;
         }
-        view.setText(revision.commit.commit.substring(0, 10));
+        if (revision.commit == null) {
+            view.setText(view.getContext().getString(R.string.options_base));
+        } else {
+            view.setText(revision.commit.commit.substring(0, 10));
+        }
     }
 
     @BindingAdapter("reviewerKind")

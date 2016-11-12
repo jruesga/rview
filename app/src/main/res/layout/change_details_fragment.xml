@@ -22,6 +22,7 @@
         <import type="android.view.View" />
         <import type="com.ruesga.rview.model.EmptyState" />
         <variable name="model" type="com.ruesga.rview.fragments.ChangeDetailsFragment.Model" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
         <variable name="empty" type="com.ruesga.rview.model.EmptyState" />
         <variable name="emptyHandlers" type="com.ruesga.rview.model.EmptyState.EventHandlers" />
     </data>
@@ -62,16 +63,20 @@
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
+                        layout="@layout/list_with_header"
                         app:model="@{model.filesListModel}"
-                        layout="@layout/list_with_header" />
+                        app:handlers="@{handlers}"
+                        app:id='@{"files"}' />
                     <include
                         android:id="@+id/message_info"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
+                        layout="@layout/list_with_header"
                         app:model="@{model.msgListModel}"
-                        layout="@layout/list_with_header" />
+                        app:handlers="@{handlers}"
+                        app:id='@{"messages"}' />
                     <include
                         android:id="@+id/review_info"
                         android:layout_width="match_parent"

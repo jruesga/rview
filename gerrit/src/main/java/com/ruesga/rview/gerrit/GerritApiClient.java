@@ -1041,8 +1041,10 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Map<String, FileInfo>> getChangeRevisionFiles(
-            @NonNull String changeId, @NonNull String revisionId) {
-        return withVersionRequestCheck(mService.getChangeRevisionFiles(changeId, revisionId));
+            @NonNull String changeId, @NonNull String revisionId, @Nullable String base,
+            @Nullable Option reviewed, String filter) {
+        return withVersionRequestCheck(mService.getChangeRevisionFiles(
+                changeId, revisionId, base, reviewed, filter));
     }
 
     @Override

@@ -15,11 +15,15 @@
      limitations under the License.
  -->
 <layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <import type="android.view.View" />
+        <variable name="id" type="java.lang.String" />
         <variable name="model" type="com.ruesga.rview.fragments.ChangeDetailsFragment.ListModel" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
     <android.support.v7.widget.CardView
@@ -33,13 +37,46 @@
             android:paddingBottom="16dp"
             android:orientation="vertical">
 
-            <com.ruesga.rview.widget.StyleableTextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                style="@style/HeaderLabel"
-                android:text="@{model.header == 0 ? null : context.getString(model.header)}" />
+                android:background="@android:color/transparent"
+                android:orientation="horizontal">
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    style="@style/HeaderLabel"
+                    android:text="@{model.header == 0 ? null : context.getString(model.header)}" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="3dp"
+                    android:visibility="@{model.selector == null ? View.GONE : View.VISIBLE}"
+                    android:onClick="@{handlers::onListHeaderSelectorPressed}"
+                    android:tag="@{id}"
+                    android:background="?attr/selectableItemBackgroundBorderless">
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:text="@{model.selector}"
+                        android:gravity="center"
+                        android:textSize="12sp"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:srcCompat="@drawable/ic_arrow_drop_down"
+                        tools:ignore="ContentDescription" />
+                </LinearLayout>
+            </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/list"
