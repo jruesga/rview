@@ -407,16 +407,29 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     private void openHttpPasswordUrl() {
+        if (getActivity() != null) {
+            // Activity was disposed. Ignore this event.
+            return;
+        }
         final String url = mModel.repoUrl + GerritApi.HTTP_PASSWORD_URI;
         ActivityHelper.openUriInCustomTabs(getActivity(), url);
     }
 
     private void openSignInUrl() {
+        if (getActivity() != null) {
+            // Activity was disposed. Ignore this event.
+            return;
+        }
         final String url = mModel.repoUrl + GerritApi.LOGIN_URI;
         ActivityHelper.openUriInCustomTabs(getActivity(), url);
     }
 
     private void openHelp() {
+        if (getActivity() != null) {
+            // Activity was disposed. Ignore this event.
+            return;
+        }
+
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle(R.string.menu_help)
                 .setMessage(R.string.account_wizard_account_page_help)
