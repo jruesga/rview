@@ -127,7 +127,10 @@ public class PicassoHelper {
                 source.recycle();
             }
 
-            Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
+            // Some images could return a null config, just fallback to a default format
+            Bitmap.Config config = source.getConfig() != null
+                    ? source.getConfig() : Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = Bitmap.createBitmap(size, size, config);
 
             Canvas canvas = new Canvas(bitmap);
             Paint paint = new Paint();
