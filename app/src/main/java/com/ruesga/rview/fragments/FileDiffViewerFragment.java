@@ -620,6 +620,7 @@ public class FileDiffViewerFragment extends Fragment {
             copy.add(comment);
         }
         if (base == 0 && otherCommentList != null) {
+            //noinspection Convert2streamapi
             for (CommentInfo comment : otherCommentList) {
                 if (SideType.PARENT.equals(comment.side)) {
                     comment.patchSet = SideType.PARENT.equals(comment.side) ? parentBase : base;

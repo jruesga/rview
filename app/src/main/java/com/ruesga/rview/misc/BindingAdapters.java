@@ -29,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.Features;
