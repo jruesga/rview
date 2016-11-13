@@ -189,6 +189,9 @@
     <string name="change_action_comment">Comment</string>
     <string name="change_action_download">Download</string>
 
+    <!-- Revert -->
+    <string name="revert_msg_template">Revert \"<xliff:g id="commit_msg">%1$s</xliff:g>\"\n\nThis reverts commit <xliff:g id="commit_id">%2$s</xliff:g>.</string>
+
     <!-- Dashboard -->
     <string name="dashboard_outgoing">Outgoing</string>
     <string name="dashboard_incoming">Incoming</string>

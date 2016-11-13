@@ -1650,10 +1650,10 @@ public class ChangeDetailsFragment extends Fragment {
         fragment.show(getChildFragmentManager(), CherryPickChooserDialogFragment.TAG);
     }
 
-    private void performShowRequestMessageDialog(
-            View v, String title, String action, String hint, boolean canBeEmpty, OnEditChanged cb) {
+    private void performShowRequestMessageDialog(View v, String title,
+            String action, String hint, String text, boolean canBeEmpty, OnEditChanged cb) {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, null, null, action, hint, canBeEmpty, true, true, v);
+                title, null, text, action, hint, canBeEmpty, true, true, v);
         fragment.setOnEditChanged(cb);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
@@ -1726,7 +1726,7 @@ public class ChangeDetailsFragment extends Fragment {
                 case R.id.abandon:
                     action = getString(R.string.change_action_abandon);
                     hint = getString(R.string.actions_comment_hint);
-                    performShowRequestMessageDialog(v, action, action, hint, true,
+                    performShowRequestMessageDialog(v, action, action, hint, null, true,
                             newValue -> {
                                 mActionLoader.clear();
                                 mActionLoader.restart(
@@ -1737,7 +1737,7 @@ public class ChangeDetailsFragment extends Fragment {
                 case R.id.restore:
                     action = getString(R.string.change_action_restore);
                     hint = getString(R.string.actions_comment_hint);
-                    performShowRequestMessageDialog(v, action, action, hint, true,
+                    performShowRequestMessageDialog(v, action, action, hint, null, true,
                             newValue -> {
                                 mActionLoader.clear();
                                 mActionLoader.restart(
@@ -1745,16 +1745,20 @@ public class ChangeDetailsFragment extends Fragment {
                             });
                     break;
 
-                case R.id.revert:
+                case R.id.revert: {
                     action = getString(R.string.change_action_revert);
                     hint = getString(R.string.actions_message_hint);
-                    performShowRequestMessageDialog(v, action, action, hint, true,
+                    String message = getString(R.string.revert_msg_template,
+                            mResponse.mChange.revisions.get(mCurrentRevision).commit.subject,
+                            mCurrentRevision);
+                    performShowRequestMessageDialog(v, action, action, hint, message, true,
                             newValue -> {
                                 mActionLoader.clear();
                                 mActionLoader.restart(
                                     ModelHelper.ACTION_REVERT, new String[]{newValue});
                             });
                     break;
+                }
 
                 case R.id.publish_draft:
                     mActionLoader.clear();
@@ -1777,7 +1781,7 @@ public class ChangeDetailsFragment extends Fragment {
                 case R.id.follow_up:
                     action = getString(R.string.change_action_follow_up);
                     hint = getString(R.string.actions_message_hint);
-                    performShowRequestMessageDialog(v, action, action, hint, false,
+                    performShowRequestMessageDialog(v, action, action, hint, null, false,
                             newValue -> {
                                 mActionLoader.clear();
                                 mActionLoader.restart(

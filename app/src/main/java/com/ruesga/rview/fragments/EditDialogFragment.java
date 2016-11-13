@@ -114,16 +114,16 @@ public class EditDialogFragment extends RevealDialogFragment {
             action = getString(R.string.action_change);
         }
 
-        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.edit_dialog, null, true);
-        mBinding.edit.addTextChangedListener(mTextWatcher);
-        mBinding.setModel(mModel);
-
         boolean allowSuggestions = getArguments().getBoolean(EXTRA_ALLOW_SUGGESTIONS, false);
         int inputType =
                 (mModel.isMultiLine ? InputType.TYPE_TEXT_FLAG_MULTI_LINE : 0) |
                 (allowSuggestions ? 0 : InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+
+        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.edit_dialog, null, true);
         mBinding.edit.setInputType(inputType);
+        mBinding.edit.addTextChangedListener(mTextWatcher);
+        mBinding.setModel(mModel);
 
         builder.setTitle(title)
                 .setView(mBinding.getRoot())
