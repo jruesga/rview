@@ -139,7 +139,7 @@ public class EditDialogFragment extends RevealDialogFragment {
         mModel.hint = getArguments().getString(EXTRA_HINT);
         mModel.allowEmpty = getArguments().getBoolean(EXTRA_ALLOW_EMPTY, false);
         mModel.isMultiLine = getArguments().getBoolean(EXTRA_USE_MULTI_LINE, false);
-        mOriginalValue = mModel.value == null ? "" : mModel.value;
+        mOriginalValue = "";
     }
 
     @Override

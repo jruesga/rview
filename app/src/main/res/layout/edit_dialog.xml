@@ -35,7 +35,6 @@
             android:layout_marginStart="24dp"
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
             android:orientation="vertical"
             tools:ignore="UselessParent">
 
@@ -44,6 +43,7 @@
                 android:layout_height="wrap_content"
                 app:bindHtml="@{model.subtitle}"
                 app:bindNull="@{model.subtitle}"
+                android:layout_marginTop="16dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="14sp" />
@@ -59,11 +59,13 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="14sp"
-                    android:minLines="@{model.isMultiLine ? 3 : 1}"
+                    android:minLines="@{model.isMultiLine ? 4 : 1}"
                     android:maxLines="@{model.isMultiLine ? 6 : 1}"
+                    android:singleLine="@{!model.isMultiLine}"
                     android:selectAllOnFocus="true"
                     android:text="@={model.value}"
-                    android:hint="@{model.hint}">
+                    android:hint="@{model.hint}"
+                    tools:ignore="Deprecated">
                     <requestFocus />
                 </android.support.design.widget.TextInputEditText>
             </android.support.design.widget.TextInputLayout>
