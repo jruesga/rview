@@ -87,7 +87,7 @@ public class TagEditDialogFragment extends RevealDialogFragment {
 
         LayoutInflater inflater = LayoutInflater.from(builder.getContext());
         mBinding = DataBindingUtil.inflate(inflater, R.layout.tag_edit_dialog, null, true);
-        mBinding.tags.setTags(mModel.tags.toArray(new Tag[mModel.tags.size()]));
+        mBinding.tagsEditor.setTags(mModel.tags.toArray(new Tag[mModel.tags.size()]));
         mBinding.setModel(mModel);
 
         builder.setTitle(title)
@@ -112,8 +112,8 @@ public class TagEditDialogFragment extends RevealDialogFragment {
 
     @Override
     public void onDialogReveled() {
-        mBinding.tags.clearFocus();
-        mBinding.tags.requestFocus();
+        mBinding.tagsEditor.clearFocus();
+        mBinding.tagsEditor.requestFocus();
     }
 
     @Override
@@ -123,9 +123,9 @@ public class TagEditDialogFragment extends RevealDialogFragment {
     }
 
     private void performEditChanged() {
-        mBinding.tags.computeTags(null);
+        mBinding.tagsEditor.computeTags(null);
         if (mCallback != null) {
-            mCallback.onEditChanged(mBinding.tags.getTags());
+            mCallback.onEditChanged(mBinding.tagsEditor.getTags());
         }
     }
 }

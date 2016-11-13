@@ -401,7 +401,7 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="12sp" />
                 <com.ruesga.rview.widget.TagEditTextView
-                    android:id="@+id/tags"
+                    android:id="@+id/tags_labels"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"

@@ -752,7 +752,7 @@ public class ChangeDetailsFragment extends Fragment {
         public void onNext(List<String> value) {
             mResponse.mTags = value;
             mBinding.changeInfo.setTags(mResponse.mTags);
-            mBinding.changeInfo.tags.setTags(createTags(mResponse.mTags));
+            mBinding.changeInfo.tagsLabels.setTags(createTags(mResponse.mTags));
             mBinding.executePendingBindings();
         }
 
@@ -1036,8 +1036,8 @@ public class ChangeDetailsFragment extends Fragment {
                 mCurrentRevision.equals(response.mChange.currentRevision));
 
         mBinding.changeInfo.setTags(response.mTags);
-        mBinding.changeInfo.tags.setTags(createTags(response.mTags));
-        mBinding.changeInfo.tags.setOnTagClickListener(
+        mBinding.changeInfo.tagsLabels.setTags(createTags(response.mTags));
+        mBinding.changeInfo.tagsLabels.setOnTagClickListener(
                 tag -> performApplyTagFilter(tag.toPlainTag().toString()));
     }
 
@@ -1625,7 +1625,7 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performShowChangeTagsDialog(View v) {
-        final Tag[] tags = mBinding.changeInfo.tags.getTags();
+        final Tag[] tags = mBinding.changeInfo.tagsLabels.getTags();
         String title = getString(R.string.change_star_labels_title);
         String action = getString(R.string.action_save);
 

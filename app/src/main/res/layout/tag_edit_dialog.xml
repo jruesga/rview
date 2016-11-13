@@ -37,7 +37,7 @@
             android:layout_marginTop="16dp"
             app:errorEnabled="false">
             <com.ruesga.rview.widget.TagEditTextView
-                android:id="@+id/tags"
+                android:id="@+id/tags_editor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
