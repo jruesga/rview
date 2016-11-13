@@ -673,7 +673,7 @@ public class FileDiffViewerFragment extends Fragment {
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(
                 getString(R.string.draft_title), subtitle, comment,
-                    getString(R.string.action_save), getString(R.string.draft_hint), false, v);
+                    getString(R.string.action_save), getString(R.string.draft_hint), false, true, true, v);
         fragment.setOnEditChanged(cb);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }

@@ -185,6 +185,8 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
                 getString(R.string.action_save),
                 getString(R.string.custom_filter_hint),
                 false,
+                false,
+                false,
                 v);
         fragment.setOnEditChanged(newValue -> {
             final Context ctx = ChangeListByFilterActivity.this;

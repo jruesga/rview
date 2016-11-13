@@ -59,7 +59,8 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="14sp"
-                    android:inputType="textNoSuggestions"
+                    android:minLines="@{model.isMultiLine ? 3 : 1}"
+                    android:maxLines="@{model.isMultiLine ? 6 : 1}"
                     android:selectAllOnFocus="true"
                     android:text="@={model.value}"
                     android:hint="@{model.hint}">

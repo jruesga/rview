@@ -1619,7 +1619,7 @@ public class ChangeDetailsFragment extends Fragment {
         String hint = getString(R.string.change_topic_hint);
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, null, mResponse.mChange.topic, action, hint, true, v);
+                title, null, mResponse.mChange.topic, action, hint, true, true, false, v);
         fragment.setOnEditChanged(this::performChangeTopic);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
@@ -1653,7 +1653,7 @@ public class ChangeDetailsFragment extends Fragment {
     private void performShowRequestMessageDialog(
             View v, String title, String action, String hint, boolean canBeEmpty, OnEditChanged cb) {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, null, null, action, hint, canBeEmpty, v);
+                title, null, null, action, hint, canBeEmpty, true, true, v);
         fragment.setOnEditChanged(cb);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
