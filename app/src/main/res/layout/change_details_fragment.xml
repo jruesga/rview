@@ -63,20 +63,20 @@
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
-                        layout="@layout/list_with_header"
                         app:model="@{model.filesListModel}"
                         app:handlers="@{handlers}"
-                        app:id='@{"files"}' />
+                        app:id='@{"files"}'
+                        layout="@layout/list_with_header" />
                     <include
                         android:id="@+id/message_info"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="4dp"
                         android:layout_marginBottom="4dp"
-                        layout="@layout/list_with_header"
                         app:model="@{model.msgListModel}"
                         app:handlers="@{handlers}"
-                        app:id='@{"messages"}' />
+                        app:id='@{"messages"}'
+                        layout="@layout/list_with_header" />
                     <include
                         android:id="@+id/review_info"
                         android:layout_width="match_parent"
