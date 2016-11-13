@@ -212,7 +212,7 @@
     <string name="account_settings_messages_folded">Fold messages</string>
     <string name="account_settings_inline_comment_in_messages">Display inline comments in messages</string>
     <string name="account_settings_external_category">External viewers</string>
-    <string name="account_settings_use_custom_tabs">Use custom tabs</string>
+    <string name="account_settings_use_custom_tabs">Open links in a Chrome tab</string>
     <string name="account_settings_download_format">Download format</string>
 
     <!-- File statuses -->
