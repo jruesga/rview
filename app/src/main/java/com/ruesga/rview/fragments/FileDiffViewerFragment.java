@@ -360,6 +360,8 @@ public class FileDiffViewerFragment extends Fragment {
         final boolean isBinary = !mFile.equals(Constants.COMMIT_MESSAGE)
                 && mChange.revisions.get(mRevisionId).files.get(mFile) != null
                 && mChange.revisions.get(mRevisionId).files.get(mFile).binary;
+        final boolean isSameBase =
+                (base != null && base == mChange.revisions.get(mRevisionId).number);
 
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -367,17 +369,29 @@ public class FileDiffViewerFragment extends Fragment {
                 withCached(
                         SafeObservable.fromCallable(() -> {
                             if (!isBinary) {
-                                return api.getChangeRevisionFileDiff(
-                                        String.valueOf(mChange.legacyChangeId),
-                                        mRevisionId,
-                                        mFile,
-                                        base,
-                                        Option.INSTANCE,
-                                        null,
-                                        WhitespaceType.IGNORE_NONE,
-                                        IgnoreWhitespaceType.NONE,
-                                        ContextType.ALL)
-                                        .blockingFirst();
+                                boolean rectify = (isSameBase
+                                        && mFile.equals(Constants.COMMIT_MESSAGE));
+
+                                final Integer b = rectify ? null : base;
+                                DiffInfo diff =
+                                        api.getChangeRevisionFileDiff(
+                                            String.valueOf(mChange.legacyChangeId),
+                                            mRevisionId,
+                                            mFile,
+                                            b,
+                                            Option.INSTANCE,
+                                            null,
+                                            WhitespaceType.IGNORE_NONE,
+                                            IgnoreWhitespaceType.NONE,
+                                            ContextType.ALL)
+                                            .blockingFirst();
+                                if (rectify) {
+                                    // Server doesn't return any content diff, so just ensure
+                                    // the return structure has the proper data
+                                    diff.content[0].ab = diff.content[0].b;
+                                    diff.content[0].b = null;
+                                }
+                                return diff;
                             }
 
                             DiffInfo diff = new DiffInfo();

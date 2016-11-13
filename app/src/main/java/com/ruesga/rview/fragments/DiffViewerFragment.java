@@ -76,6 +76,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -833,8 +834,25 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     }
 
     private void performLoadFiles() {
-        mFilesLoader.clear();
-        mFilesLoader.restart(mRevisionId, mBase);
+        // Do not
+        boolean fetch = true;
+        if (mBase != null) {
+            if (mChange.revisions.get(mRevisionId).number == Integer.parseInt(mBase)) {
+                fetch = false;
+            }
+        }
+
+        if (fetch) {
+            mFilesLoader.clear();
+            mFilesLoader.restart(mRevisionId, mBase);
+        } else {
+            // Both have the same files, so use the files of the current revision
+            // Revision doesn't contains the COMMIT_MESSAGE, so just add as well
+            ArrayList<String> files = new ArrayList<>(
+                    mChange.revisions.get(mRevisionId).files.keySet());
+            files.add(0, Constants.COMMIT_MESSAGE);
+            mFilesObserver.onNext(files);
+        }
     }
 
     @SuppressWarnings("unchecked")
