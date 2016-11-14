@@ -108,7 +108,7 @@ public class ReviewLabelsView extends LinearLayout {
 
     public Map<String, Integer> getReview(boolean onlyReviewed) {
         synchronized (mLock) {
-            int children = mScoresLayout.getChildCount();
+            int children = Math.min(mScoresLayout.getChildCount(), mLabels.size());
             Map<String, Integer> review = new LinkedHashMap<>(children);
             for (int i = 0; i < children; i++) {
                 ScoresView view = mScoresViews.get(i);
