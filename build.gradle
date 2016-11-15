@@ -16,7 +16,7 @@
 
 ext {
     libraries = [
-        support                     : '25.0.0',
+        support                     : '25.0.1',
         gson                        : '2.8.0',
         retrofit2                   : '2.1.0',
         retrofit2_rxjava2_adapter   : '1.0.0',
