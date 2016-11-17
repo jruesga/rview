@@ -6,13 +6,12 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.support.v7.text.AllCapsTransformationMethod;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.misc.TypefaceCache;
 
-public class StyleableTextView extends AppCompatTextView {
+public class StyleableTextView extends SelectableCompatTextView {
     private static final int[] TEXT_APPEARANCE_ATTRS = new int[] {
         android.R.attr.textAppearance
     };

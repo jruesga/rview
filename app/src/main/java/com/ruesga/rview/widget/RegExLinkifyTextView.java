@@ -24,7 +24,6 @@ import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.view.SoundEffectConstants;
 import android.view.View;
-import android.widget.TextView;
 
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.StringHelper;
@@ -35,7 +34,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegExLinkifyTextView extends TextView {
+public class RegExLinkifyTextView extends StyleableTextView {
     public static class RegExLink {
         public final Pattern mPattern;
         public final String mLink;
