@@ -29,7 +29,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.MalformedJsonException;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.FileDiffViewerFragmentBinding;
@@ -761,6 +763,8 @@ public class FileDiffViewerFragment extends Fragment {
             }
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load diff cached data: " + name, ex);
+        } catch (JsonParseException ex) {
+            Log.e(TAG, "Failed to parse diff cached data: " + name, ex);
         }
         return call;
     }

@@ -47,6 +47,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
@@ -865,6 +866,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             }
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load diff cached data: " + name, ex);
+        } catch (JsonParseException ex) {
+            Log.e(TAG, "Failed to parse diff cached data: " + name, ex);
         }
         return call;
     }
