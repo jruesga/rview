@@ -400,13 +400,17 @@ public class Formatter {
             deleted = res.getQuantityString(
                     R.plurals.files_deleted, info.linesDeleted, info.linesDeleted);
         }
+        if (added == null && deleted == null) {
+            added = res.getQuantityString(R.plurals.files_added, 0, 0);
+            deleted = res.getQuantityString(R.plurals.files_deleted, 0, 0);
+        }
 
-        String txt = null;
+        String txt;
         if (added != null && deleted != null) {
             txt = res.getString(R.string.added_vs_deleted, added, deleted);
         } else if (added != null) {
             txt = added;
-        } else if (deleted != null) {
+        } else {
             txt = deleted;
         }
         view.setText(txt);
