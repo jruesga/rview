@@ -363,6 +363,12 @@
     <string name="empty_states_server_not_reached">Server is down or not reached</string>
     <string name="empty_states_error">Something went wrong</string>
 
+    <!-- Untrusted connection dialog -->
+    <string name="untrusted_connection_title">Untrusted connection</string>
+    <string name="untrusted_connection_message">The security server connection layer cannot be fully verified and automatically trusted. This is mainly caused by a self-signed certificate, an expired or bad certificate, or because the server or the connection were compromised. Tap on \u0027Trust\u0027 action to grant temporary access <b>ONLY</b> if you really trust the server and its channel.</string>
+    <string name="untrusted_connection_action_trust">Trust</string>
+    <string name="untrusted_connection_action_no_trust">Take me away</string>
+
     <!-- Share -->
     <string name="share_app_title">Rview</string>
     <string name="share_app_text">Check out Rview, a Gerrit client app for Android.\n\n<xliff:g id="link">%1$s</xliff:g></string>

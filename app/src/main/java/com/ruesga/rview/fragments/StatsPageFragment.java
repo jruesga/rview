@@ -59,9 +59,6 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
         add(ChangeOptions.DETAILED_ACCOUNTS);
     }};
 
-    private StatsPageFragmentBinding mBinding;
-    private RxLoader<List<Stats>> mStatsLoader;
-
     private final RxLoaderObserver<T> mDetailsObserver = new RxLoaderObserver<T>() {
         @Override
         public void onNext(T result) {
@@ -98,6 +95,10 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
             mBinding.setLoading(false);
         }
     };
+
+
+    private StatsPageFragmentBinding mBinding;
+    private RxLoader<List<Stats>> mStatsLoader;
 
     @Nullable
     @Override

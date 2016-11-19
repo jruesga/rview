@@ -29,6 +29,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.MenuItem;
@@ -44,11 +45,17 @@ import com.ruesga.rview.fragments.SelectableFragment;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
+import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.EmptyState;
+import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.PagerControllerLayout;
 import com.ruesga.rview.widget.PagerControllerLayout.OnPageSelectionListener;
 import com.ruesga.rview.widget.PagerControllerLayout.PagerControllerAdapter;
 
 import java.util.List;
+
+import javax.net.ssl.SSLException;
 
 public abstract class BaseActivity extends AppCompatActivity implements OnRefreshListener {
 
@@ -104,6 +111,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     private ViewPager mViewPager;
     private boolean mHasStateSaved;
 
+    private AlertDialog mDialog;
+
     private SlidingPaneLayout mMiniDrawerLayout;
 
     public abstract DrawerLayout getDrawerLayout();
@@ -114,6 +123,16 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
     }
 
     protected void setupActivity() {
@@ -361,12 +380,45 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     public void handleException(String tag, Throwable cause) {
+        handleException(tag, cause, null);
+    }
+
+    public void handleException(String tag, Throwable cause,
+            final EmptyState.EventHandlers emptyHandler) {
         int level = ExceptionHelper.exceptionToLevel(cause);
         int res = ExceptionHelper.exceptionToMessage(this, tag, cause);
         if (level == 0) {
             showError(res);
         } else {
             showWarning(res);
+        }
+
+        // Handle SSL exceptions, so we can ask the user for temporary trust the server connection
+        final Account account = Preferences.getAccount(this);
+        if (account != null && emptyHandler != null
+                && ExceptionHelper.isException(cause, SSLException.class)
+                && (account.mRepository == null || !account.mRepository.mTrustAllCertificates)
+                && !ModelHelper.hasTemporaryTrustAllCertificatesAccessRequested(account)) {
+            // Ask the user for temporary access
+            mDialog = new AlertDialog.Builder(this)
+                    .setTitle(R.string.untrusted_connection_title)
+                    .setMessage(R.string.untrusted_connection_message)
+                    .setIcon(R.drawable.ic_warning)
+                    .setPositiveButton(R.string.untrusted_connection_action_trust,
+                            (dialogInterface, i) -> {
+                        ModelHelper.setTemporaryTrustAllCertificatesAccessGrant(account, true);
+                        emptyHandler.onRetry(null);
+                    })
+                    .setNegativeButton(R.string.untrusted_connection_action_no_trust,
+                            (dialogInterface, i) ->
+                                    ModelHelper.setTemporaryTrustAllCertificatesAccessGrant(
+                                            account, false))
+                    .setOnCancelListener(dialogInterface ->
+                            ModelHelper.setTemporaryTrustAllCertificatesAccessGrant(
+                                    account, false))
+                    .setOnDismissListener(dialogInterface -> mDialog = null)
+                    .create();
+            mDialog.show();
         }
     }
 

@@ -205,8 +205,9 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             // Hide your progress indicator and show that there was an error.
             mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
             mBinding.setEmpty(mEmptyState);
+
             mChangesLoader.clear();
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandler);
             showProgress(false);
         }
 
@@ -242,6 +243,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     private Handler mUiHandler;
     private ChangesFragmentBinding mBinding;
     private final EmptyState mEmptyState = new EmptyState();
+    private EmptyEventHandlers mEmptyHandler;
     private boolean mIsTwoPanel;
     private int mItemsToFetch;
 
@@ -311,6 +313,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUiHandler = new Handler(mUiMessenger);
+        mEmptyHandler = new EmptyEventHandlers(this);
     }
 
     @Nullable
@@ -320,7 +323,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.changes_fragment, container, false);
         mBinding.setEmpty(mEmptyState);
-        mBinding.setEmptyHandlers(new EmptyEventHandlers(this));
+        mBinding.setEmptyHandlers(mEmptyHandler);
         startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
@@ -370,9 +373,8 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-            mChangesLoader = loaderManager
-                    .create(this::fetchChanges, mLoaderObserver)
-                    .start(mItemsToFetch, 0);
+            mChangesLoader = loaderManager.create(this::fetchChanges, mLoaderObserver);
+            mChangesLoader.start(mItemsToFetch, 0);
         }
     }
 

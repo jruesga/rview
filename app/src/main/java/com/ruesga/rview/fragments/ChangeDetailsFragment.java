@@ -558,7 +558,7 @@ public class ChangeDetailsFragment extends Fragment {
             mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
             mBinding.setEmpty(mEmptyState);
             mChangeLoader.clear();
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
             showProgress(false, null);
         }
 
@@ -580,7 +580,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -597,7 +597,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -613,7 +613,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -633,7 +633,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -650,7 +650,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -681,7 +681,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -717,7 +717,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -742,7 +742,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -758,7 +758,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         @Override
         public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error);
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
         }
     };
 
@@ -789,6 +789,7 @@ public class ChangeDetailsFragment extends Fragment {
     private EventHandlers mEventHandlers;
     private final Model mModel = new Model();
     private final EmptyState mEmptyState = new EmptyState();
+    private EmptyEventHandlers mEmptyHandlers;
     private String mCurrentRevision;
     private String mDiffAgainstRevision;
     private DataResponse mResponse;
@@ -827,6 +828,7 @@ public class ChangeDetailsFragment extends Fragment {
         mLegacyChangeId = getArguments().getInt(
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mPicasso = PicassoHelper.getPicassoClient(getContext());
+        mEmptyHandlers = new EmptyEventHandlers(this);
 
         if (savedInstanceState != null) {
             mCurrentRevision = savedInstanceState.getString("current_revision", null);
@@ -842,7 +844,7 @@ public class ChangeDetailsFragment extends Fragment {
                 inflater, R.layout.change_details_fragment, container, false);
         mBinding.setModel(mModel);
         mBinding.setEmpty(mEmptyState);
-        mBinding.setEmptyHandlers(new EmptyEventHandlers(this));
+        mBinding.setEmptyHandlers(mEmptyHandlers);
         startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
@@ -956,8 +958,6 @@ public class ChangeDetailsFragment extends Fragment {
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-            mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver)
-                    .start(String.valueOf(mLegacyChangeId));
             mStarredLoader = loaderManager.create("starred", this::changeStarred, mStarredObserver);
             mReviewLoader = loaderManager.create("review", this::reviewChange, mReviewObserver);
             mChangeTopicLoader = loaderManager.create(
@@ -973,6 +973,8 @@ public class ChangeDetailsFragment extends Fragment {
             mDraftsRefreshLoader = loaderManager.create(
                     "drafts_refresh", fetchDrafts(), mDraftsRefreshObserver);
             mTagsLoader = loaderManager.create("tags", this::updateTags, mTagsObserver);
+            mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver);
+            mChangeLoader.start(String.valueOf(mLegacyChangeId));
         }
     }
 

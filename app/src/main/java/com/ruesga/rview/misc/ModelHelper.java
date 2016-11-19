@@ -28,7 +28,6 @@ import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.LabelInfo;
-import com.ruesga.rview.gerrit.model.ReviewInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.model.Account;
@@ -61,17 +60,36 @@ public class ModelHelper {
     public static final String ACTION_DELETE_DRAFT = "delete_draft";
 
     private static final Map<String, List<String>> sAvatarUrlCache = new HashMap<>();
+    private static final Map<String, Boolean> sTemporaryTrustAllCertificates = new HashMap<>();
 
     public static GerritApi getGerritApi(Context context) {
         Account account = Preferences.getAccount(context);
         if (account == null) {
             return null;
         }
+        boolean trustAllCerts = account.mRepository.mTrustAllCertificates;
+        if (isTemporaryTrustAllCertificatesAccessGranted(account)) {
+            trustAllCerts = true;
+        }
         Authorization authorization = new Authorization(
-                account.mAccount.username, account.mToken,
-                account.mRepository.mTrustAllCertificates);
+                account.mAccount.username, account.mToken, trustAllCerts);
         return GerritServiceFactory.getInstance(
                 context.getApplicationContext(), account.mRepository.mUrl, authorization);
+    }
+
+    public static boolean isTemporaryTrustAllCertificatesAccessGranted(Account account) {
+        final String accountKey = account.getAccountHash();
+        return sTemporaryTrustAllCertificates.containsKey(account.getAccountHash()) &&
+                sTemporaryTrustAllCertificates.get(accountKey);
+    }
+
+    public static boolean hasTemporaryTrustAllCertificatesAccessRequested(Account account) {
+        return sTemporaryTrustAllCertificates.containsKey(account.getAccountHash());
+    }
+
+    public static void setTemporaryTrustAllCertificatesAccessGrant(
+            Account account, boolean granted) {
+        sTemporaryTrustAllCertificates.put(account.getAccountHash(), granted);
     }
 
     public static List<String> getAvatarUrl(Context context, AccountInfo account) {
@@ -261,18 +279,6 @@ public class ModelHelper {
 
         change.removableReviewers = newRemovableAccounts.toArray(
                 new AccountInfo[newRemovableAccounts.size()]);
-    }
-
-    public static ReviewerInfo createReviewer(AccountInfo account, ReviewInfo review) {
-        ReviewerInfo reviewer = new ReviewerInfo();
-        reviewer.accountId = account.accountId;
-        reviewer.name = account.name;
-        reviewer.username = account.username;
-        reviewer.email = account.email;
-        reviewer.secondaryEmails = account.secondaryEmails;
-        reviewer.avatars = account.avatars;
-        reviewer.approvals = review.labels;
-        return reviewer;
     }
 
     public static boolean isReviewer(AccountInfo account, ChangeInfo change) {

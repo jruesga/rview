@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.MalformedJsonException;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.FileDiffViewerFragmentBinding;
@@ -341,8 +340,8 @@ public class FileDiffViewerFragment extends Fragment {
                     "file-reviewed" + hashCode(), performReviewedStatus(), mReviewedObserver);
             mDraftsLoader = loaderManager.create(
                     "file-drafts" + hashCode(), fetchDrafts(), mObserver);
-            mLoader = loaderManager.create(
-                    "file-diff-" + hashCode(), fetchDiffs(), mObserver).start();
+            mLoader = loaderManager.create("file-diff-" + hashCode(), fetchDiffs(), mObserver);
+            mLoader.start();
         }
     }
 
