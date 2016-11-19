@@ -75,7 +75,6 @@ public class ActivityStatsChart extends View {
             truncateCalendar(e);
             Calendar s = (Calendar) e.clone();
             s.add(Calendar.DAY_OF_YEAR, (MAX_DAYS - 1) * -1);
-            Calendar s1 = (Calendar) s.clone();
 
             while (s.compareTo(e) <= 0) {
                 aggregatedStats.put(s.getTimeInMillis(), 0);
@@ -86,13 +85,11 @@ public class ActivityStatsChart extends View {
             for (Stats stat : stats) {
                 c.setTimeInMillis(stat.mDate.getTime());
                 truncateCalendar(c);
-                if (s1.compareTo(c) < 0) {
-                    long timestamp = c.getTimeInMillis();
-                    if (aggregatedStats.containsKey(timestamp)) {
-                        aggregatedStats.put(timestamp, aggregatedStats.get(timestamp) + 1);
-                    } else {
-                        aggregatedStats.put(timestamp, 1);
-                    }
+
+                // If the event is not in our map just ignore it
+                long timestamp = c.getTimeInMillis();
+                if (aggregatedStats.containsKey(timestamp)) {
+                    aggregatedStats.put(timestamp, aggregatedStats.get(timestamp) + 1);
                 }
             }
 
