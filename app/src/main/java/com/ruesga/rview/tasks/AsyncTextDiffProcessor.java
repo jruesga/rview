@@ -137,7 +137,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                 int[] p = processUnchangedLines(
                         diff, model, j, lineNumberA, lineNumberB, noColor, noDiffs);
                 lineNumberA = p[0];
-                lineNumberB = p[0];
+                lineNumberB = p[1];
             } else {
                 int posA = 0;
                 int posB = 0;
@@ -245,7 +245,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                 int[] p = processUnchangedLines(
                         diff, model, j, lineNumberA, lineNumberB, noColor, noDiffs);
                 lineNumberA = p[0];
-                lineNumberB = p[0];
+                lineNumberB = p[1];
             } else {
                 if (diff.a != null) {
                     int pos = 0;
