@@ -28,7 +28,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 
-public class OkHttpHelper {
+class OkHttpHelper {
 
     @SuppressLint("TrustAllX509TrustManager")
     private static final X509TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
@@ -52,12 +52,12 @@ public class OkHttpHelper {
 
     private static SSLSocketFactory sSSLSocketFactory;
 
-    public static OkHttpClient.Builder getSafeClientBuilder() {
+    static OkHttpClient.Builder getSafeClientBuilder() {
         return new OkHttpClient.Builder();
     }
 
     @SuppressLint("BadHostnameVerifier")
-    public static OkHttpClient.Builder getUnsafeClientBuilder() {
+    static OkHttpClient.Builder getUnsafeClientBuilder() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         try {
             if (sSSLSocketFactory == null) {

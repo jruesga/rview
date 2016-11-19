@@ -52,6 +52,8 @@ public class SetupAccountActivity extends WizardActivity {
         // Extra all the needed extras
         String repoName = savedState.getString(RepositoryPageFragment.STATE_REPO_NAME);
         String repoUrl = savedState.getString(RepositoryPageFragment.STATE_REPO_URL);
+        boolean repoTrustAllCertificates =
+                savedState.getBoolean(RepositoryPageFragment.STATE_REPO_TRUST_ALL_CERTIFICATES);
         String accountUsername;
         String accountPassword = null;
         boolean authenticatedMode = savedState.getBoolean(
@@ -68,7 +70,7 @@ public class SetupAccountActivity extends WizardActivity {
 
         // Create the account
         Account account = new Account();
-        account.mRepository = new Repository(repoName, repoUrl);
+        account.mRepository = new Repository(repoName, repoUrl, repoTrustAllCertificates);
         account.mAccount = accountInfo;
         if (authenticatedMode) {
             account.mToken = accountPassword;

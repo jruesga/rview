@@ -71,6 +71,7 @@ public class AccountPageFragment extends WizardPageFragment {
     private static final String STATE_ACCOUNT_CONFIRMED = "account.confirmed";
     private static final String STATE_REPO_NAME = "repo.name";
     private static final String STATE_REPO_URL = "repo.url";
+    public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCerticates";
 
     @ProguardIgnored
     @SuppressWarnings("unused")
@@ -81,6 +82,7 @@ public class AccountPageFragment extends WizardPageFragment {
         public AccountInfo accountInfo;
         public boolean authenticatedAccess;
         private String repoUrl;
+        private boolean repoTrustAllCertificates;
         private boolean wasConfirmed;
 
         public String getUsername() {
@@ -199,6 +201,8 @@ public class AccountPageFragment extends WizardPageFragment {
                 R.string.account_wizard_account_page_message,
                 savedState.getString(STATE_REPO_NAME)));
         mModel.repoUrl = savedState.getString(STATE_REPO_URL);
+        mModel.repoTrustAllCertificates =
+                savedState.getBoolean(STATE_REPO_TRUST_ALL_CERTIFICATES, false);
         mModel.authenticatedAccess = savedState.getBoolean(STATE_ACCOUNT_ACCESS_MODE, false);
         mModel.username = savedState.getString(STATE_ACCOUNT_USERNAME);
         mModel.password = savedState.getString(STATE_ACCOUNT_PASSWORD);
@@ -276,12 +280,12 @@ public class AccountPageFragment extends WizardPageFragment {
 
     @Override
     public Callable<Boolean> doForwardAction() {
-        if (mModel.wasConfirmed) {
-            return null;
-        }
-
         // Check if the url passed is a valid Gerrit endpoint
         return () -> {
+            if (mModel.wasConfirmed) {
+                return Boolean.TRUE;
+            }
+
             if (!mModel.authenticatedAccess) {
                 String anonymousCowardName = getAnonymousCowardName();
                 if (anonymousCowardName == null) {
@@ -309,7 +313,8 @@ public class AccountPageFragment extends WizardPageFragment {
 
     private boolean logIn() {
         Context ctx = getActivity().getApplicationContext();
-        Authorization authorization = new Authorization(mModel.username, mModel.password);
+        Authorization authorization = new Authorization(
+                mModel.username, mModel.password, mModel.repoTrustAllCertificates);
         GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
         mModel.accountInfo = client.getAccount(GerritApi.SELF_ACCOUNT).blockingFirst();
         return mModel.accountInfo != null;
@@ -318,7 +323,8 @@ public class AccountPageFragment extends WizardPageFragment {
     private String getAnonymousCowardName() {
         try {
             Context ctx = getActivity().getApplicationContext();
-            Authorization authorization = new Authorization(mModel.username, mModel.password);
+            Authorization authorization = new Authorization(
+                    mModel.username, mModel.password, mModel.repoTrustAllCertificates);
             GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
             ServerInfo serverInfo = client.getServerInfo().blockingFirst();
             return serverInfo.user.anonymousCowardName;

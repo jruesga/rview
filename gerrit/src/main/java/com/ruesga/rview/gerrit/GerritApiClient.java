@@ -105,10 +105,14 @@ public class GerritApiClient implements GerritApi {
         mAbstractionLayer = abstractionLayer;
         mEndPoint = endpoint;
 
+        Authorization auth = authorization;
+        if (auth == null) {
+            auth = new Authorization();
+        }
+
         DispatchingAuthenticator authenticator = null;
-        if (authorization != null && !authorization.isAnonymousUser()) {
-            final Credentials credentials = new Credentials(
-                    authorization.mUsername, authorization.mPassword);
+        if (!auth.isAnonymousUser()) {
+            final Credentials credentials = new Credentials(auth.mUsername, auth.mPassword);
             final BasicAuthenticator basicAuthenticator = new BasicAuthenticator(credentials);
             final DigestAuthenticator digestAuthenticator = new DigestAuthenticator(credentials);
             authenticator = new DispatchingAuthenticator.Builder()
@@ -118,14 +122,15 @@ public class GerritApiClient implements GerritApi {
         }
 
         // OkHttp client
-        OkHttpClient.Builder clientBuilder = OkHttpHelper.getSafeClientBuilder();
+        OkHttpClient.Builder clientBuilder = auth.mTrustAllCertificates
+                ? OkHttpHelper.getUnsafeClientBuilder() : OkHttpHelper.getSafeClientBuilder();
         clientBuilder.followRedirects(true)
                 .readTimeout(60000, java.util.concurrent.TimeUnit.MILLISECONDS)
                 .followSslRedirects(true)
                 .addInterceptor(createConnectivityCheckInterceptor())
                 .addInterceptor(createLoggingInterceptor())
                 .addInterceptor(createHeadersInterceptor());
-        if (authorization != null && !authorization.isAnonymousUser()) {
+        if (!auth.isAnonymousUser()) {
             clientBuilder
                     .authenticator(new CachingAuthenticatorDecorator(authenticator, sAuthCache))
                     .addInterceptor(new AuthenticationCacheInterceptor(sAuthCache));

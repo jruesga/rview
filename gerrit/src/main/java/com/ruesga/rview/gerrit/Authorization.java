@@ -18,15 +18,18 @@ package com.ruesga.rview.gerrit;
 public class Authorization {
     public final String mUsername;
     public final transient String mPassword;
+    public final boolean mTrustAllCertificates;
 
     public Authorization() {
         mUsername = null;
         mPassword = null;
+        mTrustAllCertificates = false;
     }
 
-    public Authorization(String username, String password) {
+    public Authorization(String username, String password, boolean trustAllCertificates) {
         mUsername = username;
         mPassword = password;
+        mTrustAllCertificates = trustAllCertificates;
     }
 
     public boolean isAnonymousUser() {

@@ -101,6 +101,7 @@
     <string name="account_wizard_repository_page_message2_predefined">predefined</string>
     <string name="account_wizard_repository_page_name">Name</string>
     <string name="account_wizard_repository_page_url">URL</string>
+    <string name="account_wizard_repository_page_trust_all_certificates">Trust all certificates</string>
     <string name="account_wizard_account_page_title">Account</string>
     <string name="account_wizard_account_page_message">Choose the way you want to access the &lt;b&gt;<xliff:g id="repository_name" example="CyanogenMod">%1$s</xliff:g>&lt;/b&gt; repository.</string>
     <string name="account_wizard_account_page_authenticated_access">Authenticated access</string>

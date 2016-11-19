@@ -64,6 +64,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
 
     public static final String STATE_REPO_NAME = "repo.name";
     public static final String STATE_REPO_URL = "repo.url";
+    public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCerticates";
     private static final String STATE_REPO_CONFIRMED_URL = "repo.confirmed.url";
 
     @ProguardIgnored
@@ -71,6 +72,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
     public static class Model {
         public String name;
         public String url;
+        public boolean trustAllCertificates;
         public String urlConfirmed;
         public boolean wasConfirmed;
 
@@ -88,6 +90,14 @@ public class RepositoryPageFragment extends WizardPageFragment {
 
         public void setUrl(String url) {
             this.url = url;
+        }
+
+        public boolean getTrustAllCertificates() {
+            return trustAllCertificates;
+        }
+
+        public void setTrustAllCertificates(boolean trustAllCertificates) {
+            this.trustAllCertificates = trustAllCertificates;
         }
     }
 
@@ -113,6 +123,12 @@ public class RepositoryPageFragment extends WizardPageFragment {
                         !mModel.urlConfirmed.isEmpty() && url.equals(mModel.urlConfirmed);
             }
         });
+        mBinding.repositoryTrustAllCertificates.setOnCheckedChangeListener(
+                (compoundButton, fromUser) -> {
+            if (fromUser) {
+                mModel.wasConfirmed = false;
+            }
+        });
         return mBinding.getRoot();
     }
 
@@ -127,6 +143,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
         Bundle bundle = new Bundle();
         bundle.putString(STATE_REPO_NAME, mModel.name);
         bundle.putString(STATE_REPO_URL, mModel.url);
+        bundle.putBoolean(STATE_REPO_TRUST_ALL_CERTIFICATES, mModel.trustAllCertificates);
         bundle.putString(STATE_REPO_CONFIRMED_URL, mModel.urlConfirmed);
         return bundle;
     }
@@ -135,6 +152,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
     public void restoreState(Context context, Bundle savedState) {
         mModel.name = savedState.getString(STATE_REPO_NAME);
         mModel.url = savedState.getString(STATE_REPO_URL);
+        mModel.trustAllCertificates = savedState.getBoolean(STATE_REPO_TRUST_ALL_CERTIFICATES, false);
         mModel.urlConfirmed = savedState.getString(STATE_REPO_CONFIRMED_URL);
         mModel.wasConfirmed = mModel.url != null && mModel.urlConfirmed != null
                 && !mModel.urlConfirmed.isEmpty() && mModel.url.equals(mModel.urlConfirmed);
@@ -189,12 +207,12 @@ public class RepositoryPageFragment extends WizardPageFragment {
 
     @Override
     public Callable<Boolean> doForwardAction() {
-        if (mModel.wasConfirmed) {
-            return null;
-        }
-
         // Check if the url passed is a valid Gerrit endpoint
         return () -> {
+            if (mModel.wasConfirmed) {
+                return Boolean.TRUE;
+            }
+
             try {
                 // Check if the activity is attached
                 if (getActivity() == null) {
@@ -305,6 +323,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
             }
             mModel.name = repository.mName;
             mModel.url = repository.mUrl;
+            mModel.trustAllCertificates = repository.mTrustAllCertificates;
             mModel.urlConfirmed = repository.mUrl;
             mModel.wasConfirmed = true;
             mBinding.setModel(mModel);

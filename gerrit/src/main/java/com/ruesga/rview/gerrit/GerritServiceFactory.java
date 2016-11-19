@@ -22,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -109,29 +110,31 @@ public class GerritServiceFactory {
 
     private final static Map<String, GerritApiClient> sInstances = new HashMap<>();
 
-    public static GerritApiClient getInstance(Context applicationContext, String endpoint) {
-        return getInstance(applicationContext, endpoint, null);
+    public static GerritApiClient getInstance(
+            @NonNull Context applicationContext, @NonNull String endpoint) {
+        return getInstance(applicationContext, endpoint, new Authorization());
     }
 
-    public static GerritApiClient getInstance(Context applicationContext,
-                String endpoint, Authorization authorization) {
+    public static GerritApiClient getInstance(@NonNull Context applicationContext,
+            @NonNull String endpoint, @NonNull Authorization authorization) {
 
         // Ensure we have a correct endpoint to invoke gerrit
         endpoint = sanitizeEndpoint(endpoint);
 
         // Change to authentication endpoint if needed
-        if (authorization != null && !authorization.isAnonymousUser()) {
+        if (!authorization.isAnonymousUser()) {
             endpoint += "a/";
         }
 
         // Create a hash from the endpoint + authorization
         String credentials = "";
-        if (authorization != null && !authorization.isAnonymousUser()) {
+        if (!authorization.isAnonymousUser()) {
             credentials += authorization.mUsername + ":"
                     + (TextUtils.isEmpty(authorization.mPassword) ? "" : authorization.mPassword);
         }
         final String endpointHash = Base64.encodeToString(
-                (endpoint + ":" + credentials).getBytes(), Base64.NO_WRAP);
+                (endpoint + ":" + authorization.mTrustAllCertificates
+                        + ":" + credentials).getBytes(), Base64.NO_WRAP);
 
         // Have a cached instance?
         if (!sInstances.containsKey(endpointHash)) {

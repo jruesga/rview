@@ -58,7 +58,8 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
     @Override
     public Intent toResult(ItemModel item) {
         Intent i = new Intent();
-        i.putExtra(EXTRA_REPOSITORY, new Repository(item.title, item.summary));
+        i.putExtra(EXTRA_REPOSITORY, new Repository(
+                item.title, item.summary, item.trustAllCertificates));
         return i;
     }
 
@@ -70,6 +71,7 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
             ItemModel item = new ItemModel();
             item.title = repo.mName;
             item.summary = repo.mUrl;
+            item.trustAllCertificates = repo.mTrustAllCertificates;
             itemModels.add(item);
         }
         return itemModels;

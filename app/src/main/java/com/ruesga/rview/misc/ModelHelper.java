@@ -67,7 +67,9 @@ public class ModelHelper {
         if (account == null) {
             return null;
         }
-        Authorization authorization = new Authorization(account.mAccount.username, account.mToken);
+        Authorization authorization = new Authorization(
+                account.mAccount.username, account.mToken,
+                account.mRepository.mTrustAllCertificates);
         return GerritServiceFactory.getInstance(
                 context.getApplicationContext(), account.mRepository.mUrl, authorization);
     }

@@ -24,15 +24,18 @@ import com.google.gson.annotations.SerializedName;
 public class Repository implements Parcelable, Comparable<Repository> {
     @SerializedName("name") public String mName;
     @SerializedName("url") public String mUrl;
+    @SerializedName("trustAllCertificates") public boolean mTrustAllCertificates;
 
-    public Repository(String name, String url) {
+    public Repository(String name, String url, boolean trustAllCertificates) {
         this.mName = name;
         this.mUrl = url;
+        mTrustAllCertificates = trustAllCertificates;
     }
 
     protected Repository(Parcel in) {
         mName = in.readString();
         mUrl = in.readString();
+        mTrustAllCertificates = in.readInt() == 1;
     }
 
     public static final Creator<Repository> CREATOR = new Creator<Repository>() {
@@ -56,6 +59,7 @@ public class Repository implements Parcelable, Comparable<Repository> {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(mName);
         parcel.writeString(mUrl);
+        parcel.writeInt(mTrustAllCertificates ? 1 : 0);
     }
 
     @Override

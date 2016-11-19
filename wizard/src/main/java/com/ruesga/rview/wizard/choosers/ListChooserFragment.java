@@ -60,6 +60,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     public static class ItemModel {
         public String title;
         public String summary;
+        public boolean trustAllCertificates;
     }
 
     @ProguardIgnored
