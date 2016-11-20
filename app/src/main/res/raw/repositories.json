@@ -5,6 +5,7 @@
   {"name":"AOSPA", "url":"https://gerrit.aospa.co/"},
   {"name":"Asterisk", "url":"https://gerrit.asterisk.org/"},
   {"name":"Automotive Linux", "url":"https://git.automotivelinux.org/gerrit/"},
+  {"name":"CandyRoms", "url":"https://gerrit.bbqdroid.org/"},
   {"name":"Chromium", "url":"https://chromium-review.googlesource.com/"},
   {"name":"Cloudera", "url":"https://gerrit.cloudera.org/"},
   {"name":"CyanogenMod", "url":"https://review.cyanogenmod.org/"},
