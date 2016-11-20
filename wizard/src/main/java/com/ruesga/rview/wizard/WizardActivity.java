@@ -205,6 +205,25 @@ public abstract class WizardActivity extends AppCompatActivity {
             return;
         }
 
+
+        // Configure the view
+        setupStatusBar();
+        final Resources res = getResources();
+        mMinHeaderHeight = (int) res.getDimension(R.dimen.wizard_min_actionbar_size);
+        mMaxHeaderHeight = (int) res.getDimension(R.dimen.wizard_max_actionbar_size);
+
+        // Bind the views
+        boolean isTablet = res.getBoolean(R.bool.config_isTablet);
+        mIsExtendedHeaderLayoutSupported = !isTablet &&
+                res.getConfiguration().orientation == ORIENTATION_PORTRAIT;
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_wizard);
+        mBinding.setHandlers(new WorkFlowHandlers(this));
+        if (mIsExtendedHeaderLayoutSupported) {
+            mBinding.pageHeader.getLayoutParams().height =
+                    mIsExtendedHeaderLayoutSupported && mPages.get(mCurrentPage).hasExtendedHeader()
+                            ? mMaxHeaderHeight : mMinHeaderHeight;
+        }
+
         // Prepared the back and forward loaders
         //noinspection unchecked
         mLoaders = new Pair[mPages.size()];
@@ -224,24 +243,6 @@ public abstract class WizardActivity extends AppCompatActivity {
             }
             mLoaders[i] = new Pair<>(backLoader, forwardLoader);
             i++;
-        }
-
-        // Configure the view
-        setupStatusBar();
-        final Resources res = getResources();
-        mMinHeaderHeight = (int) res.getDimension(R.dimen.wizard_min_actionbar_size);
-        mMaxHeaderHeight = (int) res.getDimension(R.dimen.wizard_max_actionbar_size);
-        boolean isTablet = res.getBoolean(R.bool.config_isTablet);
-        mIsExtendedHeaderLayoutSupported = !isTablet &&
-                res.getConfiguration().orientation == ORIENTATION_PORTRAIT;
-
-        // Bind the views
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_wizard);
-        mBinding.setHandlers(new WorkFlowHandlers(this));
-        if (mIsExtendedHeaderLayoutSupported) {
-            mBinding.pageHeader.getLayoutParams().height =
-                    mIsExtendedHeaderLayoutSupported && mPages.get(mCurrentPage).hasExtendedHeader()
-                            ? mMaxHeaderHeight : mMinHeaderHeight;
         }
 
         // Navigate and draw page information
