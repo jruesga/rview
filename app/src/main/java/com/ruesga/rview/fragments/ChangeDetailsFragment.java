@@ -1303,8 +1303,12 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void forceRefresh() {
         startLoadersWithValidContext(null);
-        mChangeLoader.clear();
-        mChangeLoader.restart(String.valueOf(mLegacyChangeId));
+
+        // Check that activity was attached before refresh
+        if (mChangeLoader != null) {
+            mChangeLoader.clear();
+            mChangeLoader.restart(String.valueOf(mLegacyChangeId));
+        }
     }
 
     private void performUpdateChangeTags(
