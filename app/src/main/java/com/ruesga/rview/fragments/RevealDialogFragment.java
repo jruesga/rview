@@ -85,10 +85,15 @@ public abstract class RevealDialogFragment extends DialogFragment {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void performEnterRevealTransition() {
         if (!mDoReveal || getDialog() == null || getDialog().getWindow() == null) {
+            mDoReveal = false;
             return;
         }
 
         final View v = getDialog().getWindow().getDecorView();
+        if (!v.isAttachedToWindow()) {
+            mDoReveal = false;
+            return;
+        }
         v.setVisibility(View.VISIBLE);
         Rect dialogRect = computeViewOnScreen(v);
 
@@ -100,7 +105,6 @@ public abstract class RevealDialogFragment extends DialogFragment {
         }
 
         int finalRadius = Math.max(v.getWidth(), v.getHeight()) / 2;
-
         Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, finalRadius);
         anim.setDuration(350);
         anim.setInterpolator(new AccelerateInterpolator());
