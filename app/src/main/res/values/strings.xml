@@ -18,6 +18,9 @@
     <!-- App name -->
     <string name="app_name" translatable="false">Rview</string>
 
+    <!-- This is used to fallback to default locale for prettytime (BCP 47 language tag) -->
+    <string name="bcp47_locale_tag">en-US</string>
+
     <!-- Actions -->
     <string name="action_previous">Previous</string>
     <string name="action_next">Next</string>

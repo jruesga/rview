@@ -67,7 +67,7 @@ import java.util.regex.Matcher;
 @ProguardIgnored
 @SuppressWarnings("unused")
 public class Formatter {
-    private static final Map<Locale, PrettyTime> sPrettyTimeMap = new HashMap<>();
+    private static final Map<String, PrettyTime> sPrettyTimeMap = new HashMap<>();
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
 
@@ -81,18 +81,23 @@ public class Formatter {
         sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, account);
     }
 
+    private static PrettyTime getPrettyTime(Context context) {
+        String localeTag = context.getString(R.string.bcp47_locale_tag);
+        if (!sPrettyTimeMap.containsKey(localeTag)) {
+            final String[] localeInfo = localeTag.split("-");
+            final Locale locale = new Locale(localeInfo[0], localeInfo[1]);
+            sPrettyTimeMap.put(localeTag, new PrettyTime(locale));
+        }
+        return sPrettyTimeMap.get(localeTag);
+    }
+
     @BindingAdapter("prettyDateTime")
     public static void toPrettyDateTime(TextView view, Date date) {
         if (date == null) {
             view.setText(null);
             return;
         }
-
-        Locale locale = AndroidHelper.getCurrentLocale(view.getContext());
-        if (!sPrettyTimeMap.containsKey(locale)) {
-            sPrettyTimeMap.put(locale, new PrettyTime(locale));
-        }
-        view.setText(sPrettyTimeMap.get(locale).format(date));
+        view.setText(getPrettyTime(view.getContext()).format(date));
     }
 
     @BindingAdapter("accountDisplayName")
@@ -253,11 +258,7 @@ public class Formatter {
             return;
         }
 
-        Locale locale = AndroidHelper.getCurrentLocale(view.getContext());
-        if (!sPrettyTimeMap.containsKey(locale)) {
-            sPrettyTimeMap.put(locale, new PrettyTime(locale));
-        }
-        String date = sPrettyTimeMap.get(locale).format(info.date);
+        String date = getPrettyTime(view.getContext()).format(info.date);
         String txt = view.getContext().getString(
                 R.string.committer_format, info.name, info.email, date);
         view.setText(txt);
