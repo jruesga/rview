@@ -1076,6 +1076,7 @@ public class ChangeDetailsFragment extends Fragment {
 
                         // Obtain the project configuration
                         if (dataResponse.mChange != null) {
+                            // Request project config
                             dataResponse.mProjectConfig = api.getProjectConfig(
                                     dataResponse.mChange.project).blockingFirst();
 
@@ -1085,13 +1086,19 @@ public class ChangeDetailsFragment extends Fragment {
                             // Request actions could be a heavy operation in old and complex
                             // changes, so just try to omit it.
                             ChangeStatus status = dataResponse.mChange.status;
-                            if (!mAccount.hasAuthenticatedAccessMode()
-                                    &&!ChangeStatus.MERGED.equals(status)
+                            if (mAccount.hasAuthenticatedAccessMode()
+                                    && !ChangeStatus.MERGED.equals(status)
                                     && !ChangeStatus.ABANDONED.equals(status)) {
                                 dataResponse.mActions = api.getChangeRevisionActions(
                                         changeId, revision).blockingFirst();
                             } else {
+                                // At least a cherry-pick action should be present if user
+                                // is authenticated
                                 dataResponse.mActions = new HashMap<>();
+                                if (mAccount.hasAuthenticatedAccessMode()) {
+                                    dataResponse.mActions.put(
+                                            ModelHelper.ACTION_CHERRY_PICK, new ActionInfo());
+                                }
                             }
                         }
 
