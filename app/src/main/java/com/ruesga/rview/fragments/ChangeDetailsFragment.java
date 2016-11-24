@@ -61,6 +61,7 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.gerrit.model.CherryPickInput;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
@@ -1077,13 +1078,27 @@ public class ChangeDetailsFragment extends Fragment {
                         if (dataResponse.mChange != null) {
                             dataResponse.mProjectConfig = api.getProjectConfig(
                                     dataResponse.mChange.project).blockingFirst();
+
+                            // Only request actions when we don't know which actions
+                            // the change could have for the user. In other case, we
+                            // have some logic to deal with basic actions.
+                            // Request actions could be a heavy operation in old and complex
+                            // changes, so just try to omit it.
+                            ChangeStatus status = dataResponse.mChange.status;
+                            if (!mAccount.hasAuthenticatedAccessMode()
+                                    &&!ChangeStatus.MERGED.equals(status)
+                                    && !ChangeStatus.ABANDONED.equals(status)) {
+                                dataResponse.mActions = api.getChangeRevisionActions(
+                                        changeId, revision).blockingFirst();
+                            } else {
+                                dataResponse.mActions = new HashMap<>();
+                            }
                         }
 
                         return dataResponse;
                     }),
                     api.getChangeRevisionFiles(changeId, revision, mDiffAgainstRevision, null, null),
                     api.getChangeRevisionSubmitType(changeId, revision),
-                    api.getChangeRevisionActions(changeId, revision),
                     api.getChangeRevisionComments(changeId, revision),
                     SafeObservable.fromCallable(() -> {
                         if (mDiffAgainstRevision != null) {
@@ -1330,13 +1345,13 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.refresh.setRefreshing(false);
     }
 
-    private DataResponse combineResponse(DataResponse response, Map<String, FileInfo> files,
-                SubmitType submitType, Map<String, ActionInfo> actions,
-                Map<String, List<CommentInfo>> revisionComments,
-                Map<String, List<CommentInfo>> baseRevisionComments,
-                Map<String, List<CommentInfo>> revisionDraftComments,
-                Map<String, List<CommentInfo>> baseRevisionDraftComments,
-                List<String> tags) {
+    private DataResponse combineResponse(
+            DataResponse response, Map<String, FileInfo> files, SubmitType submitType,
+            Map<String, List<CommentInfo>> revisionComments,
+            Map<String, List<CommentInfo>> baseRevisionComments,
+            Map<String, List<CommentInfo>> revisionDraftComments,
+            Map<String, List<CommentInfo>> baseRevisionDraftComments,
+            List<String> tags) {
         // Map inline and draft comments
         Map<String, Integer> inlineComments = new HashMap<>();
         if (revisionComments != null) {
@@ -1376,7 +1391,6 @@ public class ChangeDetailsFragment extends Fragment {
 
         // Join the actions
         response.mFiles = files;
-        response.mActions = actions;
         if (response.mActions == null) {
             response.mActions = response.mChange.actions;
         } else {
