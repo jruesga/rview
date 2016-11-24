@@ -25,6 +25,7 @@ import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
+import com.ruesga.rview.gerrit.model.AvatarInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.LabelInfo;
@@ -105,22 +106,27 @@ public class ModelHelper {
         // Gerrit avatars
         int maxSize = (int) context.getResources().getDimension(R.dimen.max_avatar_size);
         if (account.avatars != null && account.avatars.length > 0) {
-            GerritApi api =  ModelHelper.getGerritApi(context);
-            if (api != null && api.supportsFeature(Features.AVATARS)) {
-                String url = api.getAvatarUri(String.valueOf(account.accountId), maxSize).toString();
-                urls.add(url);
-            } else {
-                int count = account.avatars.length - 1;
-                boolean hasAvatarUrl = false;
-                for (int i = count; i >= 0; i--) {
-                    if (account.avatars[i].height < maxSize) {
-                        urls.add(account.avatars[i].url);
-                        hasAvatarUrl = true;
-                        break;
+            // Don't use gerrit avatars, if they are gravatar identicons. They are really
+            // ugly and it is preferable to use github or normal gravatar icons,
+            // and normally faster to load
+            if (!isGravatarIdenticon(account.avatars[0])) {
+                GerritApi api = ModelHelper.getGerritApi(context);
+                if (api != null && api.supportsFeature(Features.AVATARS)) {
+                    String url = api.getAvatarUri(String.valueOf(account.accountId), maxSize).toString();
+                    urls.add(url);
+                } else {
+                    int count = account.avatars.length - 1;
+                    boolean hasAvatarUrl = false;
+                    for (int i = count; i >= 0; i--) {
+                        if (account.avatars[i].height < maxSize) {
+                            urls.add(account.avatars[i].url);
+                            hasAvatarUrl = true;
+                            break;
+                        }
                     }
-                }
-                if (hasAvatarUrl) {
-                    urls.add(account.avatars[0].url);
+                    if (hasAvatarUrl) {
+                        urls.add(account.avatars[0].url);
+                    }
                 }
             }
         }
@@ -383,5 +389,9 @@ public class ModelHelper {
             sb.append(Integer.toHexString((v & 0xFF) | 0x100).substring(1, 3));
         }
         return sb.toString();
+    }
+
+    private static boolean isGravatarIdenticon(AvatarInfo avatar) {
+        return avatar.url.contains("gravatar") && avatar.url.contains("identicon");
     }
 }
