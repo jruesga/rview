@@ -71,9 +71,13 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_alignWithParentIfMissing="true"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:gravity="end"
             app:prettyDateTime="@{model.date}"
-            android:textAppearance="@style/TextAppearance.VerySmall" />
+            android:textAppearance="@style/TextAppearance.VerySmall"
+            tools:ignore="Deprecated" />
 
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/folded_message"

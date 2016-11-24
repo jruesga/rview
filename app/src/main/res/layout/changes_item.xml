@@ -102,14 +102,19 @@
                         android:textSize="12sp" />
                     <com.ruesga.rview.widget.StyleableTextView
                         android:id="@+id/updated"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_marginStart="8dp"
                         android:layout_marginLeft="8dp"
+                        android:singleLine="true"
+                        android:maxLines="1"
+                        android:ellipsize="end"
                         app:prettyDateTime="@{model.updated}"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        tools:ignore="Deprecated" />
                 </LinearLayout>
                 <com.ruesga.rview.widget.StyleableTextView
                     android:id="@+id/subject"

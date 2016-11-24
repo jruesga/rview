@@ -180,8 +180,9 @@
                             android:gravity="center_vertical"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?android:attr/textColorSecondary"
                             android:layout_marginStart="8dp"
@@ -189,9 +190,11 @@
                             android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                             android:ellipsize="end"
                             android:maxLines="1"
+                            android:singleLine="true"
                             android:textIsSelectable="true"
                             app:prettyDateTime="@{model.commentA.updated}"
-                            android:gravity="center_vertical"/>
+                            android:gravity="center_vertical"
+                            tools:ignore="Deprecated"/>
                     </LinearLayout>
 
                     <com.ruesga.rview.widget.StyleableTextView
@@ -317,8 +320,9 @@
                             android:gravity="center_vertical"/>
 
                         <com.ruesga.rview.widget.StyleableTextView
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:textColor="?android:attr/textColorSecondary"
                             android:layout_marginStart="8dp"
@@ -326,9 +330,11 @@
                             android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                             android:ellipsize="end"
                             android:maxLines="1"
+                            android:singleLine="true"
                             android:textIsSelectable="true"
                             app:prettyDateTime="@{model.commentB.updated}"
-                            android:gravity="center_vertical"/>
+                            android:gravity="center_vertical"
+                            tools:ignore="Deprecated"/>
                     </LinearLayout>
 
                     <com.ruesga.rview.widget.StyleableTextView
