@@ -30,6 +30,7 @@ import com.ruesga.rview.model.CustomFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -137,7 +138,14 @@ public class Preferences {
 
     public static List<Account>  removeAccount(Context context, @NonNull Account account) {
         List<Account> accounts = getAccounts(context);
-        accounts.remove(account);
+        Iterator<Account> it = accounts.iterator();
+        while(it.hasNext()) {
+            Account acct = it.next();
+            if (acct.getAccountHash().equals(account.getAccountHash())) {
+                it.remove();
+                break;
+            }
+        }
         saveAccounts(context, accounts);
         return accounts;
     }
