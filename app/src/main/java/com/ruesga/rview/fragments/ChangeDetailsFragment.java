@@ -361,10 +361,10 @@ public class ChangeDetailsFragment extends Fragment {
                         inlineComments.containsKey(key) ? inlineComments.get(key) : 0;
                 model.draftComments =
                         draftComments.containsKey(key) ? draftComments.get(key) : 0;
-                model.hasGraph =
-                        (model.info.linesInserted != null && model.info.linesInserted > 0) ||
+                model.hasGraph = !key.equals(Constants.COMMIT_MESSAGE) &&
+                        ((model.info.linesInserted != null && model.info.linesInserted > 0) ||
                                 (model.info.linesDeleted != null && model.info.linesDeleted > 0) ||
-                                model.inlineComments > 0 || model.draftComments > 0;
+                                model.inlineComments > 0 || model.draftComments > 0);
                 mFiles.add(model);
             }
 
