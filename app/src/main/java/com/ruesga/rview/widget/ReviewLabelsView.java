@@ -187,17 +187,19 @@ public class ReviewLabelsView extends LinearLayout {
 
     private List<Integer> computeAllScores(ChangeInfo change) {
         List<Integer> allScores = new ArrayList<>();
-        for (String label : change.permittedLabels.keySet()) {
-            Integer[] scores = change.permittedLabels.get(label);
-            if (scores != null) {
-                for (Integer score : scores) {
-                    if (!allScores.contains(score)) {
-                        allScores.add(score);
+        if (change.permittedLabels != null) {
+            for (String label : change.permittedLabels.keySet()) {
+                Integer[] scores = change.permittedLabels.get(label);
+                if (scores != null) {
+                    for (Integer score : scores) {
+                        if (!allScores.contains(score)) {
+                            allScores.add(score);
+                        }
                     }
                 }
             }
+            Collections.sort(allScores);
         }
-        Collections.sort(allScores);
         return allScores;
     }
 
