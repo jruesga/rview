@@ -77,7 +77,7 @@ subprojects {
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
             android {
                 compileSdkVersion 25
-                buildToolsVersion '25.0.0'
+                buildToolsVersion '25.0.1'
 
                 defaultConfig {
                     minSdkVersion 16
