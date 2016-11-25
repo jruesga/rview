@@ -121,7 +121,7 @@ public abstract class WizardActivity extends AppCompatActivity {
             new RxLoaderObserver<Boolean>() {
                 @Override
                 public void onNext(Boolean result) {
-                    if (result) {
+                    if (result && !mHasStateSaved) {
                         doPerformActionPressed(false);
                     }
                 }
@@ -135,7 +135,7 @@ public abstract class WizardActivity extends AppCompatActivity {
             new RxLoaderObserver<Boolean>() {
                 @Override
                 public void onNext(Boolean result) {
-                    if (result) {
+                    if (result && !mHasStateSaved) {
                         doPerformActionPressed(true);
                     }
                 }
@@ -159,6 +159,7 @@ public abstract class WizardActivity extends AppCompatActivity {
     private WizardPageFragment mCurrentPageFragment;
     private String mCurrentChooserFragmentTag;
     private int mCurrentPage = 0;
+    private boolean mHasStateSaved;
 
     private Animator mHeaderAnimator;
     private boolean mIsHeaderAnimatorRunning;
@@ -267,12 +268,27 @@ public abstract class WizardActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mHasStateSaved = false;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedState) {
+        if (savedState != null) {
+            super.onRestoreInstanceState(savedState);
+        }
+        mHasStateSaved = false;
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_CURRENT_PAGE, mCurrentPage);
         outState.putString(STATE_CURRENT_CHOOSER, mCurrentChooserFragmentTag);
         outState.putBoolean(STATE_IS_IN_PROGRESS, mWorkflow.isInProgress);
         savePagesState(outState);
+        mHasStateSaved = true;
     }
 
     public abstract void setupPages();
