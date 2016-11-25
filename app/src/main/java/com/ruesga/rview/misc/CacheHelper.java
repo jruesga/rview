@@ -32,6 +32,7 @@ public class CacheHelper {
     public static final long MAX_AGE_CACHE = 60 * 60 * 24 * 5L;
     public static final long MAX_DISK_CACHE = 5 * 1024 * 1024L;
 
+    private static final String AVATARS_CACHE_FOLDER = "avatars";
     private static final String DIFF_CACHE_FOLDER = "diff";
 
     public static final String CACHE_CHANGE_JSON = "change.json";
@@ -41,6 +42,14 @@ public class CacheHelper {
     public static final String CACHE_DRAFT_JSON = "drafts.json";
     public static final String CACHE_CONTENT = "content";
     public static final String CACHE_PARENT = "parent";
+
+    public static File getAvatarsCacheDir(Context context) {
+        File cacheDir = new File(context.getCacheDir(), AVATARS_CACHE_FOLDER);
+        if (!cacheDir.exists()) {
+            cacheDir.mkdir();
+        }
+        return cacheDir;
+    }
 
     public static File getAccountCacheDir(Context context) {
         return getAccountCacheDir(context, Preferences.getAccount(context));

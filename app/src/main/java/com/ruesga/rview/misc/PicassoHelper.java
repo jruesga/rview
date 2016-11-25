@@ -48,7 +48,7 @@ public class PicassoHelper {
 
     public static Picasso getPicassoClient(Context context) {
         if (sPicasso == null) {
-            final File cacheDir = CacheHelper.getAccountCacheDir(context);
+            final File cacheDir = CacheHelper.getAvatarsCacheDir(context);
             OkHttpClient client = new OkHttpClient.Builder()
                     .addNetworkInterceptor(chain -> {
                         Response originalResponse = chain.proceed(chain.request());
