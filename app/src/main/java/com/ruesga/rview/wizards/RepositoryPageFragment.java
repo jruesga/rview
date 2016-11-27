@@ -326,7 +326,9 @@ public class RepositoryPageFragment extends WizardPageFragment {
             mModel.trustAllCertificates = repository.mTrustAllCertificates;
             mModel.urlConfirmed = repository.mUrl;
             mModel.wasConfirmed = true;
-            mBinding.setModel(mModel);
+            if (mBinding != null) {
+                mBinding.setModel(mModel);
+            }
         }
     }
 
