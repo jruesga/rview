@@ -124,7 +124,8 @@ public class ModelHelper {
                             break;
                         }
                     }
-                    if (hasAvatarUrl) {
+                    if (!hasAvatarUrl) {
+                        // Use the smallest avatar image
                         urls.add(account.avatars[0].url);
                     }
                 }
