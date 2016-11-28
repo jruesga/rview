@@ -131,9 +131,9 @@ public class ModelHelper {
             }
         }
 
-        // Github identicons
+        // Github avatar/identicons
         if (account.username != null) {
-            urls.add("https://github.com/identicons/" + account.username + ".png");
+            urls.add("https://github.com/" + account.username + ".png?size=" + maxSize);
         }
 
         // Gravatar icons
