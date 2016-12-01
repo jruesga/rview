@@ -413,7 +413,7 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     private void openHttpPasswordUrl() {
-        if (getActivity() != null) {
+        if (getActivity() == null) {
             // Activity was disposed. Ignore this event.
             return;
         }
@@ -422,7 +422,7 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     private void openSignInUrl() {
-        if (getActivity() != null) {
+        if (getActivity() == null) {
             // Activity was disposed. Ignore this event.
             return;
         }
@@ -431,7 +431,7 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     private void openHelp() {
-        if (getActivity() != null) {
+        if (getActivity() == null) {
             // Activity was disposed. Ignore this event.
             return;
         }
