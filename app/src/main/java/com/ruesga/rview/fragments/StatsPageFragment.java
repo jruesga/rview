@@ -123,9 +123,11 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
             return;
         }
 
-        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-        mStatsLoader = loaderManager.create("stats", internalFetchStats(), mStatsObserver);
-        loaderManager.create("details", internalFetchDetails(), mDetailsObserver).start();
+        if (mStatsLoader == null) {
+            RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mStatsLoader = loaderManager.create("stats", internalFetchStats(), mStatsObserver);
+            loaderManager.create("details", internalFetchDetails(), mDetailsObserver).start();
+        }
     }
 
     public abstract View inflateDetails(LayoutInflater inflater, @Nullable ViewGroup container);
