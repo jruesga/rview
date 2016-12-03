@@ -1824,4 +1824,49 @@ public interface GerritApi {
     Observable<Void> deleteProjectDashboard(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Path("dashboard-id") String dashboardId);
+
+
+
+    // ===============================
+    // Other endpoints
+    // ===============================
+
+    // -- Cloud Notifications Plugin --
+    // https://github.com/jruesga/gerrit-cloud-notifications-plugin
+
+    /**
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#list-cloud-notifications"
+     */
+    @GET("accounts/{account-id}/devices/{device-id}/tokens")
+    Observable<List<CloudNotificationInfo>> listCloudNotifications(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("device-id") String deviceId);
+
+    /**
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#get-cloud-notification"
+     */
+    @GET("accounts/{account-id}/devices/{device-id}/tokens/{token}")
+    Observable<CloudNotificationInfo> getCloudNotification(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("device-id") String deviceId,
+            @NonNull @Path("token") String token);
+
+    /**
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#register-cloud-notification"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/devices/{device-id}/tokens")
+    Observable<CloudNotificationInfo> registerCloudNotification(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("device-id") String deviceId,
+            @NonNull @Body CloudNotificationInput input);
+
+    /**
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#unregister-cloud-notification"
+     */
+    @DELETE("accounts/{account-id}/devices/{device-id}/tokens/{token}")
+    Observable<Void> unregisterCloudNotification(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("device-id") String deviceId,
+            @NonNull @Path("token") String token);
 }
