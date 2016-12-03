@@ -1651,4 +1651,39 @@ public class GerritApiClient implements GerritApi {
                 withEmptyObservable(
                         mService.deleteProjectDashboard(projectName, dashboardId)));
     }
+
+    // ===============================
+    // Other endpoints
+    // ===============================
+
+    // -- Cloud Notifications Plugin --
+    // https://github.com/jruesga/gerrit-cloud-notifications-plugin
+
+    @Override
+    public Observable<List<CloudNotificationInfo>> listCloudNotifications(
+            @NonNull String accountId, @NonNull String deviceId) {
+        return withVersionRequestCheck(mService.listCloudNotifications(accountId, deviceId));
+    }
+
+    @Override
+    public Observable<CloudNotificationInfo> getCloudNotification(
+            @NonNull String accountId, @NonNull String deviceId, @NonNull String token) {
+        return withVersionRequestCheck(mService.getCloudNotification(accountId, deviceId, token));
+    }
+
+    @Override
+    public Observable<CloudNotificationInfo> registerCloudNotification(
+            @NonNull String accountId, @NonNull String deviceId,
+            @NonNull CloudNotificationInput input) {
+        return withVersionRequestCheck(mService.registerCloudNotification(
+                accountId, deviceId, input));
+    }
+
+    @Override
+    public Observable<Void> unregisterCloudNotification(
+            @NonNull String accountId, @NonNull String deviceId, @NonNull String token) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                    mService.unregisterCloudNotification(accountId, deviceId, token)));
+    }
 }
