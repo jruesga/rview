@@ -16,6 +16,7 @@
 package com.ruesga.rview.misc;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.ruesga.rview.R;
@@ -68,6 +69,11 @@ public class ModelHelper {
         if (account == null) {
             return null;
         }
+        return getGerritApi(context, account);
+    }
+
+    public static GerritApi getGerritApi(Context context, @NonNull Account account) {
+
         boolean trustAllCerts = account.mRepository.mTrustAllCertificates;
         if (isTemporaryTrustAllCertificatesAccessGranted(account)) {
             trustAllCerts = true;

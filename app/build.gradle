@@ -16,7 +16,6 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'io.fabric'
 
 def libraries = rootProject.ext.libraries;
 
@@ -27,6 +26,7 @@ dependencies {
     compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") { transitive = true; }
     compile("com.crashlytics.sdk.android:crashlytics-core:${libraries.crashlytics_core}@aar") { transitive = true; }
     compile("com.crashlytics.sdk.android:answers:${libraries.crashlytics_answers}@aar") { transitive = true; }
+    compile 'com.google.firebase:firebase-messaging:10.0.0'
     compile "com.android.support:support-v4:${libraries.support}"
     compile "com.android.support:appcompat-v7:${libraries.support}"
     compile "com.android.support:cardview-v7:${libraries.support}"
@@ -80,6 +80,10 @@ android {
         }
     }
 
+    dexOptions {
+        jumboMode = true
+    }
+
     buildTypes {
         debug {
             debuggable true
@@ -109,3 +113,7 @@ android {
 
     return void;
 }
+
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'io.fabric'
+apply plugin: 'com.getkeepsafe.dexcount'

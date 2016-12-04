@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,6 +30,7 @@ import com.ruesga.rview.fragments.AccountSettingsFragment;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.services.DeviceRegistrationService;
 
 public class AccountSettingsActivity extends AppCompatActivity {
 
@@ -69,6 +71,22 @@ public class AccountSettingsActivity extends AppCompatActivity {
             fragment = AccountSettingsFragment.newInstance();
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Register the account to push notifications
+        Account account = Preferences.getAccount(this);
+        if (account != null && account.hasAuthenticatedAccessMode()
+                && account.mSupportNotifications) {
+            // Register device
+            Intent intent = new Intent(this, DeviceRegistrationService.class);
+            intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
+            intent.putExtra(DeviceRegistrationService.EXTRA_ACCOUNT, account.getAccountHash());
+            startService(intent);
+        }
     }
 
     protected void setupToolbar() {

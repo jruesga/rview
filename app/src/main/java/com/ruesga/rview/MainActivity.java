@@ -296,7 +296,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
                 if (!accountExists) {
                     mAccount = newAccount;
-                    mAccounts = Preferences.addAccount(this, mAccount);
+                    mAccounts = Preferences.addOrUpdateAccount(this, mAccount);
                     Preferences.setAccount(this, mAccount);
                     Formatter.refreshCachedPreferences(this);
                     CacheHelper.createAccountCacheDir(this, mAccount);

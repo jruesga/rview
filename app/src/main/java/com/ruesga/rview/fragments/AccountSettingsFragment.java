@@ -19,12 +19,19 @@ import android.os.Bundle;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.Preference.OnPreferenceChangeListener;
+import android.support.v7.preference.Preference.OnPreferenceClickListener;
+import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.ruesga.rview.R;
+import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Constants;
@@ -34,17 +41,48 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
+
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_ADVISE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_CATEGORY;
 
 public class AccountSettingsFragment extends PreferenceFragmentCompat
-        implements OnPreferenceChangeListener {
+        implements OnPreferenceChangeListener, OnPreferenceClickListener {
 
     public static AccountSettingsFragment newInstance() {
         return new AccountSettingsFragment();
     }
 
+    private final RxLoaderObserver<Boolean> mNotificationsSupportObserver
+            = new RxLoaderObserver<Boolean>() {
+        @Override
+        public void onNext(Boolean result) {
+            if (result) {
+                mAccount.mSupportNotifications = true;
+                Preferences.addOrUpdateAccount(getContext(), mAccount);
+                Preferences.setAccount(getContext(), mAccount);
+                enableNotificationsSupport();
+            }
+        }
+    };
+
+    private Account mAccount;
+
     private ListPreference mHomePage;
+    private PreferenceCategory mNotificationsCategory;
+    private Preference mNotificationsAdvise;
+    private Preference mNotificationsEnabled;
+    private Preference mNotificationsEvents;
+
+    private RxLoader<Boolean> mNotificationsSupportLoader;
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -52,6 +90,15 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
             updateHomePageSummary((String) newValue);
         }
         return true;
+}
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        if (preference.equals(mNotificationsAdvise)) {
+            ActivityHelper.openUriInCustomTabs(
+                    getActivity(), getString(R.string.link_cloud_notifications_plugin));
+        }
+        return false;
     }
 
     @Override
@@ -64,22 +111,23 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        Account account = Preferences.getAccount(getContext());
+        mAccount = Preferences.getAccount(getContext());
         getPreferenceManager().setSharedPreferencesName(
-                Preferences.getAccountPreferencesName(account));
+                Preferences.getAccountPreferencesName(mAccount));
 
         setPreferencesFromResource(R.xml.account_preferences, rootKey);
 
-        configureHomePage(account);
+        configureHomePage();
         configureFetchItems();
+        configureNotifications();
     }
 
-    private void configureHomePage(Account account) {
+    private void configureHomePage() {
         String[] namesArray = getResources().getStringArray(R.array.query_filters_ids_names);
         String[] titlesArray = getResources().getStringArray(R.array.query_filters_ids_titles);
         String[] authArray = getResources().getStringArray(R.array.query_filters_auth);
 
-        boolean authenticated = account.hasAuthenticatedAccessMode();
+        boolean authenticated = mAccount.hasAuthenticatedAccessMode();
         List<String> names = new ArrayList<>();
         List<String> titles = new ArrayList<>();
         int i = 0;
@@ -91,7 +139,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
             }
         }
 
-        List<CustomFilter> filters = Preferences.getAccountCustomFilters(getContext(), account);
+        List<CustomFilter> filters = Preferences.getAccountCustomFilters(getContext(), mAccount);
         if (filters != null) {
             for (CustomFilter filter : filters) {
                 names.add(Constants.CUSTOM_FILTER_PREFIX + filter.mId);
@@ -103,10 +151,10 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         mHomePage = (ListPreference) findPreference(PREF_ACCOUNT_HOME_PAGE);
         mHomePage.setEntries(titles.toArray(new String[titles.size()]));
         mHomePage.setEntryValues(names.toArray(new String[names.size()]));
-        mHomePage.setDefaultValue(Preferences.getDefaultHomePageForAccount(account));
-        String value = Preferences.getAccountHomePage(getContext(), account);
+        mHomePage.setDefaultValue(Preferences.getDefaultHomePageForAccount(mAccount));
+        String value = Preferences.getAccountHomePage(getContext(), mAccount);
         if (!names.contains(value)) {
-            value = Preferences.getDefaultHomePageForAccount(account);
+            value = Preferences.getDefaultHomePageForAccount(mAccount);
         }
         mHomePage.setValue(value);
         updateHomePageSummary(mHomePage.getValue());
@@ -127,5 +175,59 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     private void updateHomePageSummary(String value) {
         int index = Arrays.asList(mHomePage.getEntryValues()).indexOf(value);
         mHomePage.setSummary(mHomePage.getEntries()[index]);
+    }
+
+    private void configureNotifications() {
+        // Fetch or join current loader
+        if (mNotificationsSupportLoader == null) {
+            RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mNotificationsSupportLoader = loaderManager.create(
+                    checkNotificationsSupport(), mNotificationsSupportObserver);
+        }
+
+        mNotificationsCategory =
+                (PreferenceCategory) findPreference(PREF_ACCOUNT_NOTIFICATIONS_CATEGORY);
+        mNotificationsAdvise =  findPreference(PREF_ACCOUNT_NOTIFICATIONS_ADVISE);
+        mNotificationsAdvise.setOnPreferenceClickListener(this);
+        mNotificationsEnabled =  findPreference(Constants.PREF_ACCOUNT_NOTIFICATIONS);
+        mNotificationsEvents =  findPreference(Constants.PREF_ACCOUNT_NOTIFICATIONS_EVENTS);
+
+        if (!mAccount.hasAuthenticatedAccessMode()) {
+            if (mNotificationsCategory != null) {
+                getPreferenceScreen().removePreference(mNotificationsCategory);
+                mNotificationsCategory = null;
+            }
+        } else if (mAccount.mSupportNotifications) {
+            enableNotificationsSupport();
+        } else {
+            // Check notification support to server
+            mNotificationsSupportLoader.restart();
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Boolean> checkNotificationsSupport() {
+        final GerritApi api = ModelHelper.getGerritApi(getContext());
+        return Observable.fromCallable(() -> {
+                String device = FirebaseInstanceId.getInstance().getToken();
+                if (TextUtils.isEmpty(device)) {
+                    // Just use a default one. We don't need a real device to test
+                    // notifications support.
+                    device = "test";
+                }
+                api.listCloudNotifications(GerritApi.SELF_ACCOUNT, device).blockingFirst();
+                return true;
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void enableNotificationsSupport() {
+        if (mNotificationsAdvise != null) {
+            mNotificationsCategory.removePreference(mNotificationsAdvise);
+            mNotificationsAdvise = null;
+        }
+        mNotificationsEnabled.setEnabled(true);
+        mNotificationsEvents.setEnabled(true);
     }
 }

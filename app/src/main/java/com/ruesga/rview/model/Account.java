@@ -32,6 +32,7 @@ public class Account implements Parcelable, Comparable<Account> {
     @SerializedName("repo") public Repository mRepository;
     @SerializedName("account") public AccountInfo mAccount;
     @SerializedName("token") public String mToken;
+    @SerializedName("supportNotifications") public boolean mSupportNotifications;
 
     public Account() {
     }
@@ -42,6 +43,7 @@ public class Account implements Parcelable, Comparable<Account> {
         if (in.readInt() == 1) {
             mToken = in.readString();
         }
+        mSupportNotifications = in.readInt() == 1;
     }
 
     public String getAccountDisplayName() {
@@ -95,6 +97,7 @@ public class Account implements Parcelable, Comparable<Account> {
         if (mToken != null) {
             parcel.writeString(mToken);
         }
+        parcel.writeInt(mSupportNotifications ? 1 : 0);
     }
 
     @Override

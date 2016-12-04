@@ -54,6 +54,8 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_UNRE
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_FOLDED;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_EVENTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_WRAP_MODE;
@@ -129,9 +131,22 @@ public class Preferences {
         return accounts;
     }
 
-    public static List<Account> addAccount(Context context, @NonNull Account account) {
+    public static List<Account> addOrUpdateAccount(Context context, @NonNull Account account) {
         List<Account> accounts = getAccounts(context);
-        accounts.add(account);
+        int count = accounts.size();
+        boolean found = false;
+        for (int i = 0; i < count; i++) {
+            Account acct = accounts.get(i);
+            if (acct.getAccountHash().equals(account.getAccountHash())) {
+                accounts.set(i, account);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            accounts.add(account);
+        }
+
         saveAccounts(context, accounts);
         return accounts;
     }
@@ -447,5 +462,26 @@ public class Preferences {
         Editor editor = getAccountPreferences(context, account).edit();
         editor.putStringSet(PREF_ACCOUNT_CUSTOM_FILTERS, set);
         editor.apply();
+    }
+
+    public static boolean isAccountNotificationsEnabled(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_NOTIFICATIONS, false);
+    }
+
+    public static int getAccountNotificationsEvents(Context context, Account account) {
+        if (account == null) {
+            return 0;
+        }
+
+        int events = 0;
+        Set<String> set = getAccountPreferences(
+                context, account).getStringSet(PREF_ACCOUNT_NOTIFICATIONS_EVENTS, null);
+        if (set != null) {
+            for (String bitwise : set) {
+                events |= Integer.valueOf(bitwise);
+            }
+        }
+        return events;
     }
 }

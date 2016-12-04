@@ -104,5 +104,10 @@ public class Constants {
             = "account_highlight_intraline_diffs";
     public static final String PREF_ACCOUNT_SEARCH_MODE = "account_search_mode";
     public static final String PREF_ACCOUNT_CUSTOM_FILTERS = "account_custom_filters";
+    public static final String PREF_ACCOUNT_NOTIFICATIONS_CATEGORY
+            = "account_notifications_category";
+    public static final String PREF_ACCOUNT_NOTIFICATIONS_ADVISE = "account_notifications_advise";
+    public static final String PREF_ACCOUNT_NOTIFICATIONS = "account_notifications";
+    public static final String PREF_ACCOUNT_NOTIFICATIONS_EVENTS = "account_notifications_events";
 
 }
