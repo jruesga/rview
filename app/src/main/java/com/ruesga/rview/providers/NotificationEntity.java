@@ -228,7 +228,14 @@ public class NotificationEntity implements BaseColumns, Parcelable {
         truncateNotifications(context);
     }
 
-    private static void truncateNotifications(Context context) {
+    public static void deleteAccountNotifications(Context context, String accountId) {
+        ContentResolver cr = context.getContentResolver();
+        String where = ACCOUNT_ID + " = ?";
+        String[] args = new String[]{String.valueOf(accountId)};
+        cr.delete(CONTENT_URI, where, args);
+    }
+
+    public static void truncateNotifications(Context context) {
         ContentResolver cr = context.getContentResolver();
         String where = WHEN + " <= ?";
         String[] args = new String[]{String.valueOf(

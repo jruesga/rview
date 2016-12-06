@@ -674,6 +674,7 @@ public class MainActivity extends ChangeListBaseActivity {
         Formatter.refreshCachedPreferences(this);
         Preferences.removeAccountPreferences(this, mAccount);
         CacheHelper.removeAccountCacheDir(this, mAccount);
+        NotificationEntity.deleteAccountNotifications(this, mAccount.getAccountHash());
         mAccount = null;
 
         // Show message

@@ -25,6 +25,7 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.NotificationsHelper;
+import com.ruesga.rview.providers.NotificationEntity;
 import com.ruesga.rview.services.DeviceRegistrationService;
 
 import io.fabric.sdk.android.Fabric;
@@ -70,6 +71,7 @@ public class RviewApplication extends Application {
         Formatter.refreshCachedPreferences(getApplicationContext());
 
         // Recreate notifications
+        NotificationEntity.truncateNotifications(getApplicationContext());
         NotificationsHelper.recreateNotifications(getApplicationContext());
 
         // Register devices for push notifications
