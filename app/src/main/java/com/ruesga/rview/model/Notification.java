@@ -16,9 +16,11 @@
 package com.ruesga.rview.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 
 public class Notification {
     @SerializedName("name") public long when;
+    @SerializedName("who") public AccountInfo who;
     @SerializedName("token") public String token;
     @SerializedName("event") public int event;
     @SerializedName("change") public String change;
@@ -27,7 +29,6 @@ public class Notification {
     @SerializedName("project") public String project;
     @SerializedName("branch") public String branch;
     @SerializedName("topic") public String topic;
-    @SerializedName("author") public String author;
     @SerializedName("subject") public String subject;
     @SerializedName("extra") public String extra;
 }

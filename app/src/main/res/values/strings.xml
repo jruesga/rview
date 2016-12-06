@@ -223,14 +223,15 @@
     <string name="account_settings_notifications_events_1">Change abandoned</string>
     <string name="account_settings_notifications_events_2">Change merged</string>
     <string name="account_settings_notifications_events_4">Change restored</string>
-    <string name="account_settings_notifications_events_8">Comment added</string>
-    <string name="account_settings_notifications_events_16">Draft published</string>
-    <string name="account_settings_notifications_events_32">Hashtag changed</string>
-    <string name="account_settings_notifications_events_64">Reviewer added</string>
-    <string name="account_settings_notifications_events_128">Reviewer deleted</string>
-    <string name="account_settings_notifications_events_256">Patchset created</string>
-    <string name="account_settings_notifications_events_512">Topic changed</string>
-    <string name="account_settings_notifications_events_1024">Assignee changed</string>
+    <string name="account_settings_notifications_events_8">Change reverted</string>
+    <string name="account_settings_notifications_events_16">Comment added</string>
+    <string name="account_settings_notifications_events_32">Draft published</string>
+    <string name="account_settings_notifications_events_64">Hashtag changed</string>
+    <string name="account_settings_notifications_events_128">Reviewer added</string>
+    <string name="account_settings_notifications_events_256">Reviewer deleted</string>
+    <string name="account_settings_notifications_events_512">Patchset created</string>
+    <string name="account_settings_notifications_events_1024">Topic changed</string>
+    <string name="account_settings_notifications_events_2048">Assignee changed</string>
     <string name="account_settings_external_category">External viewers</string>
     <string name="account_settings_use_custom_tabs">Open links in a Chrome tab</string>
     <string name="account_settings_download_format">Download format</string>
@@ -400,13 +401,15 @@
     <string name="notification_content_title_1">abandoned this change</string>
     <string name="notification_content_title_2">merged this change</string>
     <string name="notification_content_title_4">restored this change</string>
-    <string name="notification_content_title_8">commented on this change</string>
-    <string name="notification_content_title_16">published a draft on this change</string>
-    <string name="notification_content_title_32">changed change\'s hashtags</string>
-    <string name="notification_content_title_64">added <xliff:g id="reviewer">%1$s</xliff:g> as reviewer on this changed</string>
-    <string name="notification_content_title_128">removed <xliff:g id="reviewer">%1$s</xliff:g> as reviewer on this changed</string>
-    <string name="notification_content_title_256">uploaded a new patchset</string>
-    <string name="notification_content_title_512">changed change\'s topic</string>
+    <string name="notification_content_title_8">reverted this change</string>
+    <string name="notification_content_title_16">commented on this change</string>
+    <string name="notification_content_title_32">published a draft on this change</string>
+    <string name="notification_content_title_64">edited change\'s hashtags</string>
+    <string name="notification_content_title_128">added <xliff:g id="reviewer">%1$s</xliff:g> as reviewer on this change</string>
+    <string name="notification_content_title_256">removed <xliff:g id="reviewer">%1$s</xliff:g> as reviewer on this change</string>
+    <string name="notification_content_title_512">uploaded a new patchset</string>
+    <string name="notification_content_title_1024">edited change\'s topic</string>
+    <string name="notification_content_title_2048">change assignee to <xliff:g id="assignee">%1$s</xliff:g> on this change</string>
 
     <!-- Links -->
     <string name="link_play_store" translatable="false">https://play.google.com/store/apps/details?id=<xliff:g id="package_name" example="com.ruesga.rview">%1$s</xliff:g></string>

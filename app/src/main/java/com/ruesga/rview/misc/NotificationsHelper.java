@@ -26,7 +26,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -351,10 +350,8 @@ public class NotificationsHelper {
 
     private static String getEventAuthor(Context ctx, NotificationEntity entity) {
         String author = null;
-        if (!TextUtils.isEmpty(entity.mNotification.author)) {
-            author = ModelHelper.getAccountDisplayName(
-                    SerializationManager.getInstance().fromJson(
-                            entity.mNotification.author, AccountInfo.class));
+        if (entity.mNotification.who != null) {
+            author = ModelHelper.getAccountDisplayName(entity.mNotification.who);
         }
         if (author == null) {
             author = ctx.getString(R.string.account_anonymous_coward);
@@ -370,28 +367,33 @@ public class NotificationsHelper {
                 return ctx.getString(R.string.notification_content_title_2);
             case CloudNotificationEvents.CHANGE_RESTORED_EVENT:
                 return ctx.getString(R.string.notification_content_title_4);
-            case CloudNotificationEvents.COMMENT_ADDED_EVENT:
+            case CloudNotificationEvents.CHANGE_REVERTED_EVENT:
                 return ctx.getString(R.string.notification_content_title_8);
-            case CloudNotificationEvents.DRAFT_PUBLISHED_EVENT:
+            case CloudNotificationEvents.COMMENT_ADDED_EVENT:
                 return ctx.getString(R.string.notification_content_title_16);
-            case CloudNotificationEvents.HASHTAG_CHANGED_EVENT:
+            case CloudNotificationEvents.DRAFT_PUBLISHED_EVENT:
                 return ctx.getString(R.string.notification_content_title_32);
+            case CloudNotificationEvents.HASHTAG_CHANGED_EVENT:
+                return ctx.getString(R.string.notification_content_title_64);
             case CloudNotificationEvents.REVIEWER_ADDED_EVENT:
                 AccountInfo reviewer = SerializationManager.getInstance().fromJson(
                         entity.mNotification.extra, AccountInfo.class);
-                return ctx.getString(R.string.notification_content_title_64,
+                return ctx.getString(R.string.notification_content_title_128,
                         ModelHelper.getAccountDisplayName(reviewer));
             case CloudNotificationEvents.REVIEWER_DELETED_EVENT:
                 reviewer = SerializationManager.getInstance().fromJson(
                         entity.mNotification.extra, AccountInfo.class);
-                return ctx.getString(R.string.notification_content_title_128,
+                return ctx.getString(R.string.notification_content_title_256,
                         ModelHelper.getAccountDisplayName(reviewer));
             case CloudNotificationEvents.PATCHSET_CREATED_EVENT:
-                return ctx.getString(R.string.notification_content_title_256);
-            case CloudNotificationEvents.TOPIC_CHANGED_EVENT:
                 return ctx.getString(R.string.notification_content_title_512);
+            case CloudNotificationEvents.TOPIC_CHANGED_EVENT:
+                return ctx.getString(R.string.notification_content_title_1024);
             case CloudNotificationEvents.ASSIGNEE_CHANGED_EVENT:
-                // FIXME This requires 2.14 plugin (sync when ready)
+                AccountInfo assignee = SerializationManager.getInstance().fromJson(
+                        entity.mNotification.extra, AccountInfo.class);
+                return ctx.getString(R.string.notification_content_title_2048,
+                        ModelHelper.getAccountDisplayName(assignee));
         }
         return null;
     }

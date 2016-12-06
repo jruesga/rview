@@ -20,6 +20,7 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
@@ -75,6 +76,8 @@ public class NotificationService extends FirebaseMessagingService {
     private Notification createNotification(Map<String, String> data) {
         Notification notification = new Notification();
         notification.when = Long.valueOf(data.get("when")) * 1000L;
+        notification.who = SerializationManager.getInstance().fromJson(
+                data.get("who"), AccountInfo.class);
         notification.token = data.get("token");
         notification.event = Integer.valueOf(data.get("event"));
         notification.change = data.get("change");
@@ -83,7 +86,6 @@ public class NotificationService extends FirebaseMessagingService {
         notification.project = data.get("project");
         notification.branch = data.get("branch");
         notification.topic = data.get("topic");
-        notification.author = data.get("author");
         notification.subject = data.get("subject");
         notification.extra = data.get("extra");
         return notification;

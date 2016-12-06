@@ -22,12 +22,13 @@ public final class CloudNotificationEvents {
     public static final int CHANGE_ABANDONED_EVENT = 0x01;
     public static final int CHANGE_MERGED_EVENT = 0x02;
     public static final int CHANGE_RESTORED_EVENT = 0x04;
-    public static final int COMMENT_ADDED_EVENT = 0x08;
-    public static final int DRAFT_PUBLISHED_EVENT = 0x10;
-    public static final int HASHTAG_CHANGED_EVENT = 0x20;
-    public static final int REVIEWER_ADDED_EVENT = 0x40;
-    public static final int REVIEWER_DELETED_EVENT = 0x80;
-    public static final int PATCHSET_CREATED_EVENT = 0x100;
-    public static final int TOPIC_CHANGED_EVENT = 0x200;
-    public static final int ASSIGNEE_CHANGED_EVENT = 0x400;
+    public static final int CHANGE_REVERTED_EVENT = 0x08;
+    public static final int COMMENT_ADDED_EVENT = 0x10;
+    public static final int DRAFT_PUBLISHED_EVENT = 0x20;
+    public static final int HASHTAG_CHANGED_EVENT = 0x40;
+    public static final int REVIEWER_ADDED_EVENT = 0x80;
+    public static final int REVIEWER_DELETED_EVENT = 0x100;
+    public static final int PATCHSET_CREATED_EVENT = 0x200;
+    public static final int TOPIC_CHANGED_EVENT = 0x400;
+    public static final int ASSIGNEE_CHANGED_EVENT = 0x600;
 }
