@@ -42,16 +42,19 @@ public class NotificationService extends FirebaseMessagingService {
         final String messageId = message.getMessageId();
         final long notificationId = FowlerNollVo.fnv1_64(messageId.getBytes()).longValue();
         final Notification notification = createNotification(message.getData());
+        String serializedNotification = SerializationManager.getInstance().toJson(notification);
+        Log.i(TAG, "Received notification: " + serializedNotification);
+
         final int groupId = NotificationsHelper.generateGroupId(notification);
         final Account account = ModelHelper.getAccountFromHash(this, notification.token);
         if (account == null) {
-            Log.w(TAG, "Received a notification for an unknown account");
+            Log.w(TAG, "Can't handle notification because because account is unknown");
             return;
         }
 
         // Did we missed an unregistration operation?
         if (!Preferences.isAccountNotificationsEnabled(this, account)) {
-            Log.i(TAG, "Received a notification but account has disabled notifications");
+            Log.i(TAG, "Can't handle notification because account has disabled notifications");
 
             // Register device
             Intent intent = new Intent(this, DeviceRegistrationService.class);
@@ -61,8 +64,10 @@ public class NotificationService extends FirebaseMessagingService {
             return;
         }
 
-        String serializedNotification = SerializationManager.getInstance().toJson(notification);
-        Log.i(TAG, "Received notification: " + serializedNotification);
+        if (!NotificationsHelper.canHandleNotification(this, notification)) {
+            Log.i(TAG, "Can't handle notification because it's unsupported");
+            return;
+        }
 
         // Save notification into the provider
         NotificationEntity entity = new NotificationEntity(notificationId, groupId,

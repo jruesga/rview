@@ -227,8 +227,7 @@
     <string name="account_settings_notifications_events_16">Comment added</string>
     <string name="account_settings_notifications_events_32">Draft published</string>
     <string name="account_settings_notifications_events_64">Hashtag changed</string>
-    <string name="account_settings_notifications_events_128">Reviewer added</string>
-    <string name="account_settings_notifications_events_256">Reviewer deleted</string>
+    <string name="account_settings_notifications_events_128">Added as reviewer</string>
     <string name="account_settings_notifications_events_512">Patchset created</string>
     <string name="account_settings_notifications_events_1024">Topic changed</string>
     <string name="account_settings_notifications_events_2048">Assignee changed</string>
@@ -405,8 +404,7 @@
     <string name="notification_content_title_16">commented on this change</string>
     <string name="notification_content_title_32">published a draft on this change</string>
     <string name="notification_content_title_64">edited change\'s hashtags</string>
-    <string name="notification_content_title_128">added <xliff:g id="reviewer">%1$s</xliff:g> as reviewer on this change</string>
-    <string name="notification_content_title_256">removed <xliff:g id="reviewer">%1$s</xliff:g> as reviewer on this change</string>
+    <string name="notification_content_title_128">wants you to made a code review</string>
     <string name="notification_content_title_512">uploaded a new patchset</string>
     <string name="notification_content_title_1024">edited change\'s topic</string>
     <string name="notification_content_title_2048">change assignee to <xliff:g id="assignee">%1$s</xliff:g> on this change</string>

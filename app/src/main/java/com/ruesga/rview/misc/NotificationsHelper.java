@@ -85,6 +85,33 @@ public class NotificationsHelper {
         }
     }
 
+    public static boolean canHandleNotification(
+            Context ctx, com.ruesga.rview.model.Notification notification) {
+        switch (notification.event) {
+            case CloudNotificationEvents.CHANGE_ABANDONED_EVENT:
+            case CloudNotificationEvents.CHANGE_MERGED_EVENT:
+            case CloudNotificationEvents.CHANGE_RESTORED_EVENT:
+            case CloudNotificationEvents.CHANGE_REVERTED_EVENT:
+            case CloudNotificationEvents.COMMENT_ADDED_EVENT:
+            case CloudNotificationEvents.DRAFT_PUBLISHED_EVENT:
+            case CloudNotificationEvents.HASHTAG_CHANGED_EVENT:
+            case CloudNotificationEvents.PATCHSET_CREATED_EVENT:
+            case CloudNotificationEvents.TOPIC_CHANGED_EVENT:
+            case CloudNotificationEvents.ASSIGNEE_CHANGED_EVENT:
+                return true;
+
+            case CloudNotificationEvents.REVIEWER_ADDED_EVENT:
+                // Made this event looks like like an advise about when others added the
+                // current user to the change (like email notifications). Ignore the
+                // rest of the add or delete reviewer events
+                AccountInfo reviewer = SerializationManager.getInstance().fromJson(
+                        notification.extra, AccountInfo.class);
+                Account me = ModelHelper.getAccountFromHash(ctx, notification.token);
+                return me != null && isSameAccount(me.mAccount, reviewer);
+        }
+        return false;
+    }
+
     @SuppressWarnings("Convert2streamapi")
     public static void createNotification(
             Context ctx, Account account, long groupId, boolean feedback) {
@@ -376,15 +403,15 @@ public class NotificationsHelper {
             case CloudNotificationEvents.HASHTAG_CHANGED_EVENT:
                 return ctx.getString(R.string.notification_content_title_64);
             case CloudNotificationEvents.REVIEWER_ADDED_EVENT:
+                // Made this event looks like like an advise about when others added the
+                // current user to the change (like email notifications). Ignore the
+                // rest of the add or delete reviewer events
                 AccountInfo reviewer = SerializationManager.getInstance().fromJson(
                         entity.mNotification.extra, AccountInfo.class);
-                return ctx.getString(R.string.notification_content_title_128,
-                        ModelHelper.getAccountDisplayName(reviewer));
-            case CloudNotificationEvents.REVIEWER_DELETED_EVENT:
-                reviewer = SerializationManager.getInstance().fromJson(
-                        entity.mNotification.extra, AccountInfo.class);
-                return ctx.getString(R.string.notification_content_title_256,
-                        ModelHelper.getAccountDisplayName(reviewer));
+                Account me = ModelHelper.getAccountFromHash(ctx, entity.mAccountId);
+                if (me != null && isSameAccount(me.mAccount, reviewer)) {
+                    return ctx.getString(R.string.notification_content_title_128);
+                }
             case CloudNotificationEvents.PATCHSET_CREATED_EVENT:
                 return ctx.getString(R.string.notification_content_title_512);
             case CloudNotificationEvents.TOPIC_CHANGED_EVENT:
@@ -405,5 +432,20 @@ public class NotificationsHelper {
                 msg += entity.mNotification.extra;
         }
         return msg;
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    private static boolean isSameAccount(AccountInfo o1, AccountInfo o2) {
+        // Since not always account return
+        if (o1.accountId == o2.accountId) {
+            return true;
+        }
+        if (o1.username != null && o2.username != null && o1.username.equals(o2.username)) {
+            return true;
+        }
+        if (o1.email != null && o2.email != null && o1.email.equals(o2.email)) {
+            return true;
+        }
+        return false;
     }
 }

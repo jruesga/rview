@@ -128,7 +128,6 @@
         <item>@string/account_settings_notifications_events_32</item>
         <item>@string/account_settings_notifications_events_64</item>
         <item>@string/account_settings_notifications_events_128</item>
-        <item>@string/account_settings_notifications_events_256</item>
         <item>@string/account_settings_notifications_events_512</item>
         <item>@string/account_settings_notifications_events_1024</item>
         <item>@string/account_settings_notifications_events_2048</item>
@@ -142,7 +141,6 @@
         <item>32</item>
         <item>64</item>
         <item>128</item>
-        <item>256</item>
         <item>512</item>
         <item>1024</item>
         <item>2048</item>
