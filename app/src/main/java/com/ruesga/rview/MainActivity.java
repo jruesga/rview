@@ -196,7 +196,7 @@ public class MainActivity extends ChangeListBaseActivity {
             String accountId = getIntent().getStringExtra(Constants.EXTRA_ACCOUNT_HASH);
             if (!TextUtils.isEmpty(accountId)) {
                 Preferences.setAccount(this, ModelHelper.getAccountFromHash(this, accountId));
-                NotificationEntity.deleteAccountNotifications(this, accountId);
+                NotificationEntity.markAccountNotificationsAsRead(this, accountId);
             }
         }
 

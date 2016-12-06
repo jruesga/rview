@@ -67,7 +67,7 @@ public class NotificationsHelper {
 
     @SuppressWarnings("Convert2streamapi")
     public static void recreateNotifications(Context ctx) {
-        List<NotificationEntity> entities = NotificationEntity.getAllNotifications(ctx);
+        List<NotificationEntity> entities = NotificationEntity.getAllNotifications(ctx, true);
         SparseArray<Account> notifications = new SparseArray<>();
         for (NotificationEntity entity : entities) {
             if (notifications.indexOfKey(entity.mGroupId) < 0) {
@@ -116,7 +116,7 @@ public class NotificationsHelper {
     public static void createNotification(
             Context ctx, Account account, long groupId, boolean feedback) {
         List<NotificationEntity> entities =
-                NotificationEntity.getAllGroupNotifications(ctx, groupId);
+                NotificationEntity.getAllGroupNotifications(ctx, groupId, true);
         if (entities.isEmpty()) {
             Log.w(TAG, "There isn't notification to display for group " + groupId);
             return;
@@ -134,7 +134,8 @@ public class NotificationsHelper {
         // Create an account group summary notification
         if (AndroidHelper.isNougatOrGreater()) {
             List<NotificationEntity> accountEntities =
-                    NotificationEntity.getAllAccountNotifications(ctx, account.getAccountHash());
+                    NotificationEntity.getAllAccountNotifications(
+                            ctx, account.getAccountHash(), true);
             Set<String> notifications = new LinkedHashSet<>();
             for (NotificationEntity entity : accountEntities) {
                 notifications.add(entity.mNotification.subject);

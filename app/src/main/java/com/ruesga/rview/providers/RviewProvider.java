@@ -132,6 +132,9 @@ public class RviewProvider extends ContentProvider {
         String id = uri.getLastPathSegment();
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         switch (sURLMatcher.match(uri)) {
+            case NOTIFICATIONS_DATA:
+                count = db.update(NotificationEntity.TABLE_NAME, values, where, args);
+                break;
             case NOTIFICATIONS_DATA_ID:
                 count = db.update(NotificationEntity.TABLE_NAME, values,
                         NotificationEntity._ID + " = ?", new String[]{id});
@@ -141,7 +144,9 @@ public class RviewProvider extends ContentProvider {
             }
         }
 
-        notifyChange(uri, id);
+        if (count > 0) {
+            notifyChange(uri, id);
+        }
         return count;
     }
 
@@ -166,7 +171,9 @@ public class RviewProvider extends ContentProvider {
                 throw new IllegalArgumentException("Cannot delete from URL: " + uri);
         }
 
-        notifyChange(uri, null);
+        if (count > 0) {
+            notifyChange(uri, null);
+        }
         return count;
     }
 

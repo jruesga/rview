@@ -191,7 +191,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         if (account != null && changeId != null) {
             int groupId = NotificationsHelper.generateGroupId(account, changeId);
             NotificationsHelper.dismissNotification(this, groupId);
-            NotificationEntity.deleteGroupNotifications(this, groupId);
+            NotificationEntity.markGroupNotificationsAsRead(this, groupId);
         }
     }
 

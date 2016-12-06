@@ -71,9 +71,9 @@ public class NotificationReceiver extends BroadcastReceiver {
         int groupId = intent.getIntExtra(Constants.EXTRA_NOTIFICATION_GROUP_ID, 0);
         String accountId = intent.getStringExtra(Constants.EXTRA_ACCOUNT_HASH);
         if (groupId != 0) {
-            NotificationEntity.deleteGroupNotifications(context, groupId);
+            NotificationEntity.markGroupNotificationsAsRead(context, groupId);
         } else if (accountId != null) {
-            NotificationEntity.deleteAccountNotifications(context, accountId);
+            NotificationEntity.markAccountNotificationsAsRead(context, accountId);
         }
     }
 
@@ -121,7 +121,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                         @Override
                         public void onNext(ReviewInfo value) {
                             NotificationsHelper.dismissNotification(ctx, groupId);
-                            NotificationEntity.deleteGroupNotifications(ctx, groupId);
+                            NotificationEntity.markGroupNotificationsAsRead(ctx, groupId);
                         }
 
                         @Override
