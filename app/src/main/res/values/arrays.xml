@@ -120,17 +120,17 @@
     </integer-array>
 
     <string-array name="notifications_events_labels" translatable="false">
-        <item>@string/account_settings_push_notifications_events_1</item>
-        <item>@string/account_settings_push_notifications_events_2</item>
-        <item>@string/account_settings_push_notifications_events_4</item>
-        <item>@string/account_settings_push_notifications_events_8</item>
-        <item>@string/account_settings_push_notifications_events_16</item>
-        <item>@string/account_settings_push_notifications_events_32</item>
-        <item>@string/account_settings_push_notifications_events_64</item>
-        <item>@string/account_settings_push_notifications_events_128</item>
-        <item>@string/account_settings_push_notifications_events_256</item>
-        <item>@string/account_settings_push_notifications_events_512</item>
-        <item>@string/account_settings_push_notifications_events_1024</item>
+        <item>@string/account_settings_notifications_events_1</item>
+        <item>@string/account_settings_notifications_events_2</item>
+        <item>@string/account_settings_notifications_events_4</item>
+        <item>@string/account_settings_notifications_events_8</item>
+        <item>@string/account_settings_notifications_events_16</item>
+        <item>@string/account_settings_notifications_events_32</item>
+        <item>@string/account_settings_notifications_events_64</item>
+        <item>@string/account_settings_notifications_events_128</item>
+        <item>@string/account_settings_notifications_events_256</item>
+        <item>@string/account_settings_notifications_events_512</item>
+        <item>@string/account_settings_notifications_events_1024</item>
     </string-array>
     <string-array name="notifications_events_values" translatable="false">
         <item>1</item>

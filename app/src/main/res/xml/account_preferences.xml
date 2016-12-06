@@ -60,17 +60,17 @@
 
         <Preference
             android:key="account_notifications_advise"
-            android:summary="@string/account_settings_push_notifications_advise"/>
+            android:summary="@string/account_settings_notifications_advise"/>
 
         <SwitchPreference
             android:key="account_notifications"
-            android:title="@string/account_settings_push_notifications_title"
+            android:title="@string/account_settings_notifications_title"
             android:defaultValue="false"
             android:enabled="false" />
 
         <MultiSelectListPreference
             android:key="account_notifications_events"
-            android:title="@string/account_settings_push_notifications_events_title"
+            android:title="@string/account_settings_notifications_events_title"
             android:entries="@array/notifications_events_labels"
             android:entryValues="@array/notifications_events_values"
             android:defaultValue="@array/notifications_events_defaults"

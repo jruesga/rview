@@ -25,6 +25,7 @@ public class Constants {
 
     public static final String EXTRA_ID = "id";
     public static final String EXTRA_TYPE = "type";
+    public static final String EXTRA_ACCOUNT_HASH = "account_hash";
     public static final String EXTRA_CHANGE_ID = "changeId";
     public static final String EXTRA_LEGACY_CHANGE_ID = "legacyChangeId";
     public static final String EXTRA_PROJECT_ID = "projectId";
@@ -45,6 +46,8 @@ public class Constants {
     public static final String EXTRA_FRAGMENT_EXTRA = "fragment_extra";
     public static final String EXTRA_DATA_CHANGED = "data_changed";
     public static final String EXTRA_DIRTY = "dirty";
+    public static final String EXTRA_COMMENT = "comment";
+    public static final String EXTRA_NOTIFICATION_GROUP_ID = "notification_group_id";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
 

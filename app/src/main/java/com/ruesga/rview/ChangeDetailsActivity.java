@@ -31,10 +31,12 @@ import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.providers.NotificationEntity;
 
 import java.util.List;
 
@@ -147,6 +149,12 @@ public class ChangeDetailsActivity extends BaseActivity {
                     break;
             }
         } else {
+            // Set the account if requested
+            String accountId = getIntent().getStringExtra(Constants.EXTRA_ACCOUNT_HASH);
+            if (!TextUtils.isEmpty(accountId)) {
+                Preferences.setAccount(this, ModelHelper.getAccountFromHash(this, accountId));
+            }
+
             // Open the change directly
             int legacyChangeId = getIntent().getIntExtra(Constants.EXTRA_LEGACY_CHANGE_ID, -1);
             if (legacyChangeId == -1) {
@@ -177,6 +185,14 @@ public class ChangeDetailsActivity extends BaseActivity {
             fragment = ChangeDetailsFragment.newInstance(legacyChangeId);
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
+
+        // Dismiss notifications associated to this change
+        Account account = Preferences.getAccount(this);
+        if (account != null && changeId != null) {
+            int groupId = NotificationsHelper.generateGroupId(account, changeId);
+            NotificationsHelper.dismissNotification(this, groupId);
+            NotificationEntity.deleteGroupNotifications(this, groupId);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")

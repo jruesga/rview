@@ -29,6 +29,7 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_let_start">Let\'s start</string>
     <string name="action_share">Share</string>
+    <string name="action_reply">Reply</string>
     <string name="action_add">Add</string>
     <string name="action_change">Change</string>
     <string name="action_save">Save</string>
@@ -216,20 +217,20 @@
     <string name="account_settings_messages_folded">Fold messages</string>
     <string name="account_settings_inline_comment_in_messages">Display inline comments in messages</string>
     <string name="account_settings_notifications_category">Notifications</string>
-    <string name="account_settings_push_notifications_advise">Push notifications requires \u0027cloud-notifications\u0027 plugin to be installed in the Gerrit server instance. Tap here to navigate to the plugin source repository.</string>
-    <string name="account_settings_push_notifications_title">Enable push notifications</string>
-    <string name="account_settings_push_notifications_events_title">Events</string>
-    <string name="account_settings_push_notifications_events_1">Change abandoned</string>
-    <string name="account_settings_push_notifications_events_2">Change merged</string>
-    <string name="account_settings_push_notifications_events_4">Change restored</string>
-    <string name="account_settings_push_notifications_events_8">Comment added</string>
-    <string name="account_settings_push_notifications_events_16">Draft published</string>
-    <string name="account_settings_push_notifications_events_32">Hashtag changed</string>
-    <string name="account_settings_push_notifications_events_64">Reviewer added</string>
-    <string name="account_settings_push_notifications_events_128">Reviewer deleted</string>
-    <string name="account_settings_push_notifications_events_256">Patchset created</string>
-    <string name="account_settings_push_notifications_events_512">Topic changed</string>
-    <string name="account_settings_push_notifications_events_1024">Assignee changed</string>
+    <string name="account_settings_notifications_advise">Push notifications requires \u0027cloud-notifications\u0027 plugin to be installed in the Gerrit server instance. Tap here to navigate to the plugin source repository.</string>
+    <string name="account_settings_notifications_title">Enable notifications</string>
+    <string name="account_settings_notifications_events_title">Notification events</string>
+    <string name="account_settings_notifications_events_1">Change abandoned</string>
+    <string name="account_settings_notifications_events_2">Change merged</string>
+    <string name="account_settings_notifications_events_4">Change restored</string>
+    <string name="account_settings_notifications_events_8">Comment added</string>
+    <string name="account_settings_notifications_events_16">Draft published</string>
+    <string name="account_settings_notifications_events_32">Hashtag changed</string>
+    <string name="account_settings_notifications_events_64">Reviewer added</string>
+    <string name="account_settings_notifications_events_128">Reviewer deleted</string>
+    <string name="account_settings_notifications_events_256">Patchset created</string>
+    <string name="account_settings_notifications_events_512">Topic changed</string>
+    <string name="account_settings_notifications_events_1024">Assignee changed</string>
     <string name="account_settings_external_category">External viewers</string>
     <string name="account_settings_use_custom_tabs">Open links in a Chrome tab</string>
     <string name="account_settings_download_format">Download format</string>
@@ -370,7 +371,7 @@
     <string name="project_details_status_read_only">Read-only</string>
     <string name="project_details_status_hidden">Hidden</string>
 
-    <!-- Notifications -->
+    <!-- NotificationEntity -->
     <string name="notification_file_download_title">Download completed</string>
     <string name="notification_file_download_text_success">File <xliff:g id="height">%1$s</xliff:g> downloaded successfully</string>
     <string name="notification_file_download_text_failure">File <xliff:g id="height">%1$s</xliff:g> download failed</string>
@@ -394,6 +395,18 @@
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>
     <string name="tag_labels_hint">Type a label tag</string>
+
+    <!-- Notifications -->
+    <string name="notification_content_title_1">abandoned this change</string>
+    <string name="notification_content_title_2">merged this change</string>
+    <string name="notification_content_title_4">restored this change</string>
+    <string name="notification_content_title_8">commented on this change</string>
+    <string name="notification_content_title_16">published a draft on this change</string>
+    <string name="notification_content_title_32">changed change\'s hashtags</string>
+    <string name="notification_content_title_64">added <xliff:g id="reviewer">%1$s</xliff:g> as reviewer on this changed</string>
+    <string name="notification_content_title_128">removed <xliff:g id="reviewer">%1$s</xliff:g> as reviewer on this changed</string>
+    <string name="notification_content_title_256">uploaded a new patchset</string>
+    <string name="notification_content_title_512">changed change\'s topic</string>
 
     <!-- Links -->
     <string name="link_play_store" translatable="false">https://play.google.com/store/apps/details?id=<xliff:g id="package_name" example="com.ruesga.rview">%1$s</xliff:g></string>

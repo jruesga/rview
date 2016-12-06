@@ -959,7 +959,7 @@ public class ChangeDetailsFragment extends Fragment {
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-            mStarredLoader = loaderManager.create("starred", this::changeStarred, mStarredObserver);
+            mStarredLoader = loaderManager.create("starred", this::starChange, mStarredObserver);
             mReviewLoader = loaderManager.create("review", this::reviewChange, mReviewObserver);
             mChangeTopicLoader = loaderManager.create(
                     "change_topic", this::changeTopic, mChangeTopicObserver);
@@ -1130,7 +1130,7 @@ public class ChangeDetailsFragment extends Fragment {
                         return new HashMap<>();
                     }),
                     SafeObservable.fromCallable(() -> {
-                        // Do no fetch drafts if the account is not authenticated
+                        // Do no fetch star labels if the account is not authenticated
                         if (api.supportsFeature(Features.CHANGE_STAR_LABELS)
                                 && mAccount.hasAuthenticatedAccessMode()) {
                             return api.getStarLabelsFromChange(GerritApi.SELF_ACCOUNT, changeId)
@@ -1145,7 +1145,7 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Boolean> changeStarred(final Boolean starred) {
+    private Observable<Boolean> starChange(final Boolean starred) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return SafeObservable.fromCallable(() -> {

@@ -18,10 +18,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ruesga.rview">
 
+    <permission
+        android:name="com.ruesga.rview.permissions.PRIVATE_ACCESS"
+        android:protectionLevel="signature"/>
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.ruesga.rview.permissions.PRIVATE_ACCESS" />
 
     <application
         android:name=".RviewApplication"
@@ -103,6 +108,11 @@
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:exported="false" />
 
+        <provider
+            android:name=".providers.RviewProvider"
+            android:authorities="com.ruesga.rview"
+            android:exported="false"/>
+
         <service
             android:name=".services.DeviceRegistrationService"
             android:exported="false" />
@@ -122,6 +132,16 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".receivers.NotificationReceiver"
+            android:permission="com.ruesga.rview.permissions.PRIVATE_ACCESS">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+                <action android:name="com.ruesga.rview.action.NOTIFICATION_DISMISSED" />
+                <action android:name="com.ruesga.rview.action.NOTIFICATION_REPLY" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

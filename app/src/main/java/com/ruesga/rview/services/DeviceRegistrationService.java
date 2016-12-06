@@ -22,13 +22,18 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.model.CloudNotificationInfo;
 import com.ruesga.rview.gerrit.model.CloudNotificationInput;
 import com.ruesga.rview.gerrit.model.CloudNotificationResponseMode;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.providers.NotificationEntity;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class DeviceRegistrationService extends IntentService {
 
@@ -49,7 +54,8 @@ public class DeviceRegistrationService extends IntentService {
             List<Account> accounts = Preferences.getAccounts(this);
             for (Account acct : accounts) {
                 // Only those accounts that can and wants notifications
-                if (acct.hasAuthenticatedAccessMode() &&
+                if (acct.mSupportNotifications &&
+                        acct.hasAuthenticatedAccessMode() &&
                         account == null || acct.getAccountHash().equals(account)) {
                     // Perform registration in background
                     Thread t = new Thread(() -> {
@@ -80,8 +86,11 @@ public class DeviceRegistrationService extends IntentService {
 
         GerritApi api = ModelHelper.getGerritApi(ctx, account);
         try {
-            api.registerCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, input)
-                    .blockingFirst();
+            SafeObservable.fromCallable(() ->
+                    api.registerCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, input)
+                            .blockingFirst()
+                    ).blockingFirst();
+
         } catch (Exception ex) {
             Log.e(TAG, "Failed to register device: " + deviceId + "/" + input.token, ex);
         }
@@ -96,10 +105,14 @@ public class DeviceRegistrationService extends IntentService {
         final String accountToken = account.getAccountHash();
         GerritApi api = ModelHelper.getGerritApi(ctx, account);
         try {
-            api.unregisterCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, accountToken)
-                    .blockingFirst();
+            SafeObservable.fromCallable(() ->
+                    api.unregisterCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, accountToken)
+                            .blockingFirst()
+                    ).blockingFirst();
         } catch (Exception ex) {
             Log.e(TAG, "Failed to unregister device: " + deviceId + "/" + accountToken, ex);
         }
+
+        NotificationEntity.deleteAccountNotifications(ctx, accountToken);
     }
 }

@@ -31,6 +31,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,7 +60,9 @@ import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.providers.NotificationEntity;
 import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
@@ -187,6 +190,15 @@ public class MainActivity extends ChangeListBaseActivity {
         onRestoreInstanceState(savedInstanceState);
 
         super.onCreate(savedInstanceState);
+
+        if (getIntent() != null) {
+            // Set the account if requested and dismiss notifications for this account
+            String accountId = getIntent().getStringExtra(Constants.EXTRA_ACCOUNT_HASH);
+            if (!TextUtils.isEmpty(accountId)) {
+                Preferences.setAccount(this, ModelHelper.getAccountFromHash(this, accountId));
+                NotificationEntity.deleteAccountNotifications(this, accountId);
+            }
+        }
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
         if (mModel == null) {

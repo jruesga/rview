@@ -16,6 +16,7 @@
 package com.ruesga.rview;
 
 import android.app.Application;
+import android.content.Intent;
 import android.os.StrictMode;
 import android.util.Log;
 
@@ -23,6 +24,8 @@ import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.ruesga.rview.misc.Formatter;
+import com.ruesga.rview.misc.NotificationsHelper;
+import com.ruesga.rview.services.DeviceRegistrationService;
 
 import io.fabric.sdk.android.Fabric;
 import io.fabric.sdk.android.Kit;
@@ -65,5 +68,13 @@ public class RviewApplication extends Application {
 
         // Initialize application resources
         Formatter.refreshCachedPreferences(getApplicationContext());
+
+        // Recreate notifications
+        NotificationsHelper.recreateNotifications(getApplicationContext());
+
+        // Register devices for push notifications
+        Intent intent = new Intent(this, DeviceRegistrationService.class);
+        intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
+        startService(intent);
     }
 }

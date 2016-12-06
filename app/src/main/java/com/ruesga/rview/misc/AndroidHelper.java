@@ -36,6 +36,10 @@ public class AndroidHelper {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
+    public static boolean isNougatOrGreater() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+    }
+
     @TargetApi(Build.VERSION_CODES.N)
     @SuppressWarnings("deprecation")
     public static Locale getCurrentLocale(Context context) {

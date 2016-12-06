@@ -64,6 +64,16 @@ public class ModelHelper {
     private static final Map<String, List<String>> sAvatarUrlCache = new HashMap<>();
     private static final Map<String, Boolean> sTemporaryTrustAllCertificates = new HashMap<>();
 
+    public static Account getAccountFromHash(Context ctx, String hash) {
+        List<Account> accounts = Preferences.getAccounts(ctx);
+        for (Account account : accounts) {
+            if (account.getAccountHash().equals(hash)) {
+                return account;
+            }
+        }
+        return null;
+    }
+
     public static GerritApi getGerritApi(Context context) {
         Account account = Preferences.getAccount(context);
         if (account == null) {
