@@ -32,7 +32,6 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
-import com.ruesga.rview.AccountSettingsActivity;
 import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.ChangeListByFilterActivity;
 import com.ruesga.rview.DiffViewerActivity;
@@ -49,8 +48,6 @@ import com.ruesga.rview.preferences.Preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static com.ruesga.rview.preferences.Constants.EXTRA_FORCE_SINGLE_PANEL;
 
 public class ActivityHelper {
 

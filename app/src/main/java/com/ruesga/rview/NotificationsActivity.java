@@ -22,28 +22,40 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ActivityBaseBinding;
 import com.ruesga.rview.fragments.NotificationsFragment;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
-import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.providers.NotificationEntity;
 
 public class NotificationsActivity extends AppCompatActivity {
 
     private static final String FRAGMENT_TAG = "notifications";
 
     private ActivityBaseBinding mBinding;
+    private Account mAccount;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
+        // Retrieve the account
+        if (getIntent() != null) {
+            String accountId = getIntent().getStringExtra(Constants.EXTRA_ACCOUNT_HASH);
+            if (accountId != null) {
+                mAccount = ModelHelper.getAccountFromHash(this, accountId);
+            }
+        }
+
         // Check we have a valid account
-        Account account = Preferences.getAccount(this);
-        if (account == null) {
+        if (mAccount == null) {
             // Not sure how can get here
             setResult(RESULT_CANCELED);
             finish();
@@ -58,7 +70,7 @@ public class NotificationsActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getString(R.string.account_notifications_title));
             getSupportActionBar().setSubtitle(getString(R.string.account_notifications_subtitle,
-                    account.getRepositoryDisplayName(), account.getAccountDisplayName()));
+                    mAccount.getRepositoryDisplayName(), mAccount.getAccountDisplayName()));
         }
 
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
@@ -66,7 +78,7 @@ public class NotificationsActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
         } else {
-            fragment = NotificationsFragment.newInstance(account);
+            fragment = NotificationsFragment.newInstance(mAccount);
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
     }
@@ -91,12 +103,42 @@ public class NotificationsActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.notification_options, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case android.R.id.home:
                 return ActivityHelper.performFinishActivity(this, false);
+            case R.id.menu_mark_as_read:
+                performMarkAsReadAccountNotifications();
+                return true;
+            case R.id.menu_delete_all:
+                performDeleteAccountNotifications();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void performMarkAsReadAccountNotifications() {
+        NotificationEntity.markAccountNotificationsAsRead(this, mAccount.getAccountHash());
+        invalidateOptionsMenu();
+    }
+
+    private void performDeleteAccountNotifications() {
+        NotificationEntity.deleteAccountNotifications(this, mAccount.getAccountHash());
+        invalidateOptionsMenu();
     }
 }

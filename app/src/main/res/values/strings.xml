@@ -64,6 +64,8 @@
     <string name="menu_share">Share</string>
     <string name="menu_privacy">Privacy policy</string>
     <string name="menu_about">About</string>
+    <string name="menu_delete_all">Delete all</string>
+    <string name="menu_mark_as_read">Mark as read</string>
 
     <!-- Exceptions -->
     <string name="exception_browser_not_found">No browser detected. Can\'t launch <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>

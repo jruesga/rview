@@ -31,6 +31,7 @@ import android.util.SparseArray;
 
 import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.MainActivity;
+import com.ruesga.rview.NotificationsActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.CloudNotificationEvents;
@@ -280,7 +281,7 @@ public class NotificationsHelper {
 
     private static PendingIntent getViewAccountChangesPendingIntent(
             Context ctx, Account account, int notificationId) {
-        Intent intent = new Intent(ctx, MainActivity.class);
+        Intent intent = new Intent(ctx, NotificationsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Constants.EXTRA_ACCOUNT_HASH, account.getAccountHash());
         intent.putExtra(Constants.EXTRA_HAS_PARENT, false);

@@ -27,6 +27,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -172,6 +175,15 @@ public class NotificationsFragment extends Fragment {
         public int getItemCount() {
             return mNotifications.size();
         }
+
+        private boolean hasUnreadNotifications() {
+            for (NotificationEntity notification : Collections.unmodifiableList(mNotifications)) {
+                if (!notification.mRead) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private final RxLoaderObserver<List<NotificationEntity>> mNotificationsObserver
@@ -184,6 +196,10 @@ public class NotificationsFragment extends Fragment {
             mEmptyState.state = result != null && !result.isEmpty()
                     ? EmptyState.NORMAL_STATE : EmptyState.EMPTY_STATE;
             mBinding.setEmpty(mEmptyState);
+
+            if (getActivity() != null) {
+                getActivity().invalidateOptionsMenu();
+            }
         }
 
         @Override
@@ -191,8 +207,13 @@ public class NotificationsFragment extends Fragment {
             mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
             mBinding.setEmpty(mEmptyState);
 
+            mAdapter.clear();
             mNotificationsLoader.clear();
             ((BaseActivity) getActivity()).handleException(TAG, error, null);
+
+            if (getActivity() != null) {
+                getActivity().invalidateOptionsMenu();
+            }
         }
     };
 
@@ -222,10 +243,13 @@ public class NotificationsFragment extends Fragment {
     private Handler mUiHandler;
     private Account mAccount;
 
+    private boolean mMenuInflated = false;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUiHandler = new Handler();
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -339,5 +363,49 @@ public class NotificationsFragment extends Fragment {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (!mMenuInflated) {
+            inflater.inflate(R.menu.notification_options, menu);
+            mMenuInflated = true;
+        }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.menu_mark_as_read).setVisible(
+                mAdapter != null && mAdapter.hasUnreadNotifications());
+        menu.findItem(R.id.menu_delete_all).setVisible(
+                mAdapter != null && mAdapter.getItemCount() > 0);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_mark_as_read:
+                performMarkAsReadAccountNotifications();
+                return true;
+            case R.id.menu_delete_all:
+                performDeleteAccountNotifications();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void performMarkAsReadAccountNotifications() {
+        NotificationEntity.markAccountNotificationsAsRead(getContext(), mAccount.getAccountHash());
+        NotificationEntity.dismissAccountNotifications(getContext(), mAccount.getAccountHash());
+        getActivity().invalidateOptionsMenu();
+    }
+
+    private void performDeleteAccountNotifications() {
+        NotificationEntity.deleteAccountNotifications(getContext(), mAccount.getAccountHash());
+        NotificationEntity.dismissAccountNotifications(getContext(), mAccount.getAccountHash());
+        getActivity().invalidateOptionsMenu();
     }
 }

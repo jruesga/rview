@@ -701,6 +701,8 @@ public class MainActivity extends ChangeListBaseActivity {
         mUiHandler.post(() -> {
             if (mAccount != null) {
                 Intent i = new Intent(MainActivity.this, NotificationsActivity.class);
+                i.putExtra(Constants.EXTRA_ACCOUNT_HASH, mAccount.getAccountHash());
+                i.putExtra(Constants.EXTRA_HAS_PARENT, false);
                 startActivity(i);
                 internalPerformShowAccount(false);
             }
