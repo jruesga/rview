@@ -34,6 +34,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ruesga.rview.annotations.ProguardIgnored;
@@ -69,6 +70,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         public boolean hasPages = false;
         public boolean useTowPane = true;
         public boolean hasMiniDrawer = true;
+        public boolean hasForceSinglePanel = false;
 
         public Model() {
         }
@@ -78,6 +80,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
             hasTabs = in.readByte() != 0;
             hasPages = in.readByte() != 0;
             useTowPane = in.readByte() != 0;
+            hasMiniDrawer = in.readByte() != 0;
+            hasForceSinglePanel = in.readByte() != 0;
         }
 
         @Override
@@ -86,6 +90,8 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
             dest.writeByte((byte) (hasTabs ? 1 : 0));
             dest.writeByte((byte) (hasPages ? 1 : 0));
             dest.writeByte((byte) (useTowPane ? 1 : 0));
+            dest.writeByte((byte) (hasMiniDrawer ? 1 : 0));
+            dest.writeByte((byte) (hasForceSinglePanel ? 1 : 0));
         }
 
         @Override
@@ -200,9 +206,15 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
                     DrawerLayout.LOCK_MODE_UNLOCKED,
                     getContentBinding().drawerNavigationView);
         } else {
-            getContentBinding().drawerLayout.setDrawerLockMode(
-                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                    getContentBinding().drawerNavigationView);
+            if (!mModel.hasForceSinglePanel) {
+                getContentBinding().drawerLayout.setDrawerLockMode(
+                        DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                        getContentBinding().drawerNavigationView);
+            } else {
+                // Someones is requesting a single panel in a multipanel layout
+                // Just hide the multipanel
+                mModel.hasMiniDrawer = false;
+            }
         }
     }
 
@@ -245,6 +257,11 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     }
 
     public void setUseTwoPanel(boolean useTwoPanel) {
+        mModel.useTowPane = useTwoPanel;
+        getContentBinding().setModel(mModel);
+    }
+
+    public void setForceSinglePanel(boolean useTwoPanel) {
         mModel.useTowPane = useTwoPanel;
         getContentBinding().setModel(mModel);
     }

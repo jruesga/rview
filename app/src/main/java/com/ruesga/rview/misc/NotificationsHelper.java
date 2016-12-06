@@ -67,7 +67,7 @@ public class NotificationsHelper {
 
     @SuppressWarnings("Convert2streamapi")
     public static void recreateNotifications(Context ctx) {
-        List<NotificationEntity> entities = NotificationEntity.getAllNotifications(ctx, true);
+        List<NotificationEntity> entities = NotificationEntity.getAllNotifications(ctx, true, true);
         SparseArray<Account> notifications = new SparseArray<>();
         for (NotificationEntity entity : entities) {
             if (notifications.indexOfKey(entity.mGroupId) < 0) {
@@ -116,7 +116,7 @@ public class NotificationsHelper {
     public static void createNotification(
             Context ctx, Account account, long groupId, boolean feedback) {
         List<NotificationEntity> entities =
-                NotificationEntity.getAllGroupNotifications(ctx, groupId, true);
+                NotificationEntity.getAllGroupNotifications(ctx, groupId, true, true);
         if (entities.isEmpty()) {
             Log.w(TAG, "There isn't notification to display for group " + groupId);
             return;
@@ -135,7 +135,7 @@ public class NotificationsHelper {
         if (AndroidHelper.isNougatOrGreater()) {
             List<NotificationEntity> accountEntities =
                     NotificationEntity.getAllAccountNotifications(
-                            ctx, account.getAccountHash(), true);
+                            ctx, account.getAccountHash(), true, true);
             Set<String> notifications = new LinkedHashSet<>();
             for (NotificationEntity entity : accountEntities) {
                 notifications.add(entity.mNotification.subject);
@@ -272,6 +272,7 @@ public class NotificationsHelper {
         intent.putExtra(Constants.EXTRA_CHANGE_ID, entity.mNotification.change);
         intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, entity.mNotification.legacyChangeId);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, false);
+        intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
 
         return PendingIntent.getActivity(
                 ctx, entity.mGroupId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -359,7 +360,7 @@ public class NotificationsHelper {
     }
 
     @SuppressWarnings("deprecation")
-    private static CharSequence getContentMessage(
+    public static CharSequence getContentMessage(
             Context ctx, NotificationEntity entity, boolean bundled, boolean inbox) {
         final String event = getNotificationTitle(ctx, entity);
         if (event == null) {

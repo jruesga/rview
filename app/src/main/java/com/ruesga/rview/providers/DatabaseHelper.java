@@ -60,6 +60,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
                 NotificationEntity.ACCOUNT_ID + " TEXT NOT NULL, " +
                 NotificationEntity.WHEN + " INTEGER NOT NULL, " +
                 NotificationEntity.READ + " INTEGER NOT NULL DEFAULT 0, " +
+                NotificationEntity.DISMISSED + " INTEGER NOT NULL DEFAULT 0, " +
                 NotificationEntity.NOTIFICATION + " TEXT NOT NULL);");
         db.execSQL("CREATE INDEX " + NotificationEntity.TABLE_NAME + "_"
                 + NotificationEntity.GROUP_ID + "_idx ON " +

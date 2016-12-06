@@ -50,6 +50,7 @@
     <string name="menu_watched">Watched</string>
     <string name="menu_my_filters_category">My filters</string>
     <string name="menu_account_settings">Account settings</string>
+    <string name="menu_account_notifications">Notifications</string>
     <string name="menu_account_stats">Account stats</string>
     <string name="menu_delete_account">Delete account</string>
     <string name="menu_other_accounts_category">Other accounts</string>
@@ -235,6 +236,10 @@
     <string name="account_settings_use_custom_tabs">Open links in a Chrome tab</string>
     <string name="account_settings_download_format">Download format</string>
 
+    <!-- Notifications -->
+    <string name="account_notifications_title">Notifications</string>
+    <string name="account_notifications_subtitle" translatable="false"><xliff:g id="repo" example="CyanogenMod">%1$s</xliff:g> - <xliff:g id="username" example="John Doe">%2$s</xliff:g></string>
+
     <!-- File statuses -->
     <string name="file_status_renamed">Renamed</string>
     <string name="file_status_copied">Copied</string>
@@ -377,7 +382,7 @@
     <string name="notification_file_download_text_failure">File <xliff:g id="height">%1$s</xliff:g> download failed</string>
 
     <!-- Empty states -->
-    <string name="empty_states_empty">Not results found</string>
+    <string name="empty_states_empty">No results found</string>
     <string name="empty_states_not_connectivity">No network connectivity detected</string>
     <string name="empty_states_server_not_reached">Server is down or not reached</string>
     <string name="empty_states_error">Something went wrong</string>

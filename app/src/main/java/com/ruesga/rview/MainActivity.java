@@ -197,6 +197,7 @@ public class MainActivity extends ChangeListBaseActivity {
             if (!TextUtils.isEmpty(accountId)) {
                 Preferences.setAccount(this, ModelHelper.getAccountFromHash(this, accountId));
                 NotificationEntity.markAccountNotificationsAsRead(this, accountId);
+                NotificationEntity.dismissAccountNotifications(this, accountId);
             }
         }
 
@@ -406,6 +407,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
     private void internalPerformShowAccount(boolean show) {
         final boolean auth = mAccount != null && mAccount.hasAuthenticatedAccessMode();
+        final boolean supportNotifications = mAccount != null && mAccount.mSupportNotifications;
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
         menu.setGroupVisible(R.id.category_my_menu, !show && auth);
@@ -415,6 +417,7 @@ public class MainActivity extends ChangeListBaseActivity {
         menu.setGroupVisible(R.id.category_other_accounts, show);
         menu.setGroupVisible(R.id.category_info, show);
         menu.findItem(R.id.menu_account_stats).setVisible(show && auth);
+        menu.findItem(R.id.menu_account_notifications).setVisible(show && supportNotifications);
         mModel.isAccountExpanded = show;
         mHeaderDrawerBinding.setModel(mModel);
 
@@ -460,6 +463,9 @@ public class MainActivity extends ChangeListBaseActivity {
         switch (item.getItemId()) {
             case R.id.menu_account_settings:
                 openAccountSettings();
+                break;
+            case R.id.menu_account_notifications:
+                openAccountNotifications();
                 break;
             case R.id.menu_account_stats:
                 openAccountStats();
@@ -681,23 +687,38 @@ public class MainActivity extends ChangeListBaseActivity {
     }
 
     private void openAccountSettings() {
-        if (mAccount != null) {
-            Intent i = new Intent(this, AccountSettingsActivity.class);
-            startActivityForResult(i, REQUEST_ACCOUNT_SETTINGS);
-            internalPerformShowAccount(false);
-        }
+        mUiHandler.post(() -> {
+            if (mAccount != null) {
+                Intent i = new Intent(MainActivity.this, AccountSettingsActivity.class);
+                startActivityForResult(i, REQUEST_ACCOUNT_SETTINGS);
+                internalPerformShowAccount(false);
+            }
+        });
+    }
+
+    private void openAccountNotifications() {
+        mUiHandler.post(() -> {
+            if (mAccount != null) {
+                Intent i = new Intent(MainActivity.this, NotificationsActivity.class);
+                startActivity(i);
+                internalPerformShowAccount(false);
+            }
+        });
     }
 
     private void openAccountStats() {
-        if (mAccount != null) {
-            ChangeQuery filter = new ChangeQuery().owner(
-                    ModelHelper.getSafeAccountOwner(mAccount.mAccount));
-            String title = getString(R.string.account_details);
-            String displayName = ModelHelper.getAccountDisplayName(mAccount.mAccount);
-            String extra = SerializationManager.getInstance().toJson(mAccount.mAccount);
-            ActivityHelper.openStatsActivity(this, title, displayName, StatsFragment.ACCOUNT_STATS,
-                    String.valueOf(mAccount.mAccount.accountId), filter, extra);
-        }
+        mUiHandler.post(() -> {
+            if (mAccount != null) {
+                ChangeQuery filter = new ChangeQuery().owner(
+                        ModelHelper.getSafeAccountOwner(mAccount.mAccount));
+                String title = getString(R.string.account_details);
+                String displayName = ModelHelper.getAccountDisplayName(mAccount.mAccount);
+                String extra = SerializationManager.getInstance().toJson(mAccount.mAccount);
+                ActivityHelper.openStatsActivity(
+                        this, title, displayName, StatsFragment.ACCOUNT_STATS,
+                        String.valueOf(mAccount.mAccount.accountId), filter, extra);
+            }
+        });
     }
 
     private void openDashboardFragment() {

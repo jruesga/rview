@@ -64,6 +64,7 @@
             android:padding="5dp"
             android:gravity="center"
             android:text="@{model != null &amp;&amp; model.state != EmptyState.NORMAL_STATE ? @string/action_retry : null}"
+            android:visibility="@{handlers != null ? View.VISIBLE : View.GONE}"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorAccent"

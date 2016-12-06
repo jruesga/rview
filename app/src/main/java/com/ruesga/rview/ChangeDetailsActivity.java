@@ -48,6 +48,8 @@ import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
+import static com.ruesga.rview.preferences.Constants.EXTRA_FORCE_SINGLE_PANEL;
+
 public class ChangeDetailsActivity extends BaseActivity {
 
     private static final String FRAGMENT_TAG = "details";
@@ -72,18 +74,25 @@ public class ChangeDetailsActivity extends BaseActivity {
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
 
+        // Check we have valid arguments
+        if (getIntent() == null) {
+            finish();
+            return;
+        }
+
+        boolean forceSinglePanel = getIntent().getBooleanExtra(EXTRA_FORCE_SINGLE_PANEL, false);
         boolean isTwoPanel = getResources().getBoolean(R.bool.config_is_two_pane);
-        if (isTwoPanel) {
+        if (!forceSinglePanel & isTwoPanel) {
             // Tablets have a two panel layout in landscape, so finish the current activity
             // to show the change in the proper activity
             finish();
             return;
         }
 
-        // Check we have valid arguments
-        if (getIntent() == null) {
-            finish();
-            return;
+        // Force single panel?
+        if (forceSinglePanel) {
+            setUseTwoPanel(false);
+            setForceSinglePanel(true);
         }
 
         // Setup the title
@@ -192,6 +201,7 @@ public class ChangeDetailsActivity extends BaseActivity {
             int groupId = NotificationsHelper.generateGroupId(account, changeId);
             NotificationsHelper.dismissNotification(this, groupId);
             NotificationEntity.markGroupNotificationsAsRead(this, groupId);
+            NotificationEntity.dismissGroupNotifications(this, groupId);
         }
     }
 

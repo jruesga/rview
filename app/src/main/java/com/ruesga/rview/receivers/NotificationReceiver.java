@@ -71,15 +71,15 @@ public class NotificationReceiver extends BroadcastReceiver {
         int groupId = intent.getIntExtra(Constants.EXTRA_NOTIFICATION_GROUP_ID, 0);
         String accountId = intent.getStringExtra(Constants.EXTRA_ACCOUNT_HASH);
         if (groupId != 0) {
-            NotificationEntity.markGroupNotificationsAsRead(context, groupId);
+            NotificationEntity.dismissGroupNotifications(context, groupId);
         } else if (accountId != null) {
-            NotificationEntity.markAccountNotificationsAsRead(context, accountId);
+            NotificationEntity.dismissAccountNotifications(context, accountId);
         }
     }
 
     private void replyToNotification(Context context, Intent intent) {
         Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-        final int changeId = intent.getIntExtra(Constants.EXTRA_CHANGE_ID, -1);
+        final int changeId = intent.getIntExtra(Constants.EXTRA_LEGACY_CHANGE_ID, -1);
         final String accountId = intent.getStringExtra(Constants.EXTRA_ACCOUNT_HASH);
         final int groupId = intent.getIntExtra(Constants.EXTRA_NOTIFICATION_GROUP_ID, 0);
         if (remoteInput != null && groupId != 0 && changeId >= 0 && accountId != null) {
@@ -94,6 +94,8 @@ public class NotificationReceiver extends BroadcastReceiver {
             }
 
             performSendReply(context, account, groupId, changeId, message.toString());
+        } else {
+
         }
     }
 
@@ -121,6 +123,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                         @Override
                         public void onNext(ReviewInfo value) {
                             NotificationsHelper.dismissNotification(ctx, groupId);
+                            NotificationEntity.dismissGroupNotifications(ctx, groupId);
                             NotificationEntity.markGroupNotificationsAsRead(ctx, groupId);
                         }
 

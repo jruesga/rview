@@ -32,6 +32,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import com.ruesga.rview.AccountSettingsActivity;
 import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.ChangeListByFilterActivity;
 import com.ruesga.rview.DiffViewerActivity;
@@ -48,6 +49,8 @@ import com.ruesga.rview.preferences.Preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static com.ruesga.rview.preferences.Constants.EXTRA_FORCE_SINGLE_PANEL;
 
 public class ActivityHelper {
 
@@ -143,11 +146,19 @@ public class ActivityHelper {
         return true;
     }
 
-    public static void openChangeDetails(Context context, ChangeInfo change, boolean withParent) {
+    public static void openChangeDetails(Context context, ChangeInfo change,
+            boolean withParent, boolean forceSinglePanel) {
+        openChangeDetails(context, change.changeId, change.legacyChangeId,
+                withParent, forceSinglePanel);
+    }
+
+    public static void openChangeDetails(Context context, String changeId, int legacyChangeId,
+            boolean withParent, boolean forceSinglePanel) {
         Intent intent = new Intent(context, ChangeDetailsActivity.class);
-        intent.putExtra(Constants.EXTRA_CHANGE_ID, change.changeId);
-        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, change.legacyChangeId);
+        intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
+        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, withParent);
+        intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, forceSinglePanel);
         context.startActivity(intent);
     }
 

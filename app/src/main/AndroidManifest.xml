@@ -97,6 +97,11 @@
             android:exported="false" />
 
         <activity
+            android:name=".NotificationsActivity"
+            android:parentActivityName=".MainActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".AccountSettingsActivity"
             android:theme="@style/AppTheme.Settings"
             android:parentActivityName=".MainActivity"

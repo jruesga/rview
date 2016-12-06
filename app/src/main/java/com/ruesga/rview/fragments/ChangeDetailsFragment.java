@@ -733,7 +733,7 @@ public class ChangeDetailsFragment extends Fragment {
 
             if (value instanceof ChangeInfo) {
                 // Move to the new change
-                ActivityHelper.openChangeDetails(getContext(), (ChangeInfo) value, false);
+                ActivityHelper.openChangeDetails(getContext(), (ChangeInfo) value, false, false);
                 return;
             }
 

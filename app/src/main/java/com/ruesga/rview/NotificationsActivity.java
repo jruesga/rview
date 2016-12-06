@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview;
 
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,15 +25,14 @@ import android.support.v7.app.AppCompatDelegate;
 import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ActivityBaseBinding;
-import com.ruesga.rview.fragments.AccountSettingsFragment;
+import com.ruesga.rview.fragments.NotificationsFragment;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
-import com.ruesga.rview.services.DeviceRegistrationService;
 
-public class AccountSettingsActivity extends AppCompatActivity {
+public class NotificationsActivity extends AppCompatActivity {
 
-    private static final String FRAGMENT_TAG = "settings";
+    private static final String FRAGMENT_TAG = "notifications";
 
     private ActivityBaseBinding mBinding;
 
@@ -58,8 +56,8 @@ public class AccountSettingsActivity extends AppCompatActivity {
         // Setup the title
         setupToolbar();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(getString(R.string.account_settings_title));
-            getSupportActionBar().setSubtitle(getString(R.string.account_settings_subtitle,
+            getSupportActionBar().setTitle(getString(R.string.account_notifications_title));
+            getSupportActionBar().setSubtitle(getString(R.string.account_notifications_subtitle,
                     account.getRepositoryDisplayName(), account.getAccountDisplayName()));
         }
 
@@ -68,25 +66,9 @@ public class AccountSettingsActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
         } else {
-            fragment = AccountSettingsFragment.newInstance();
+            fragment = NotificationsFragment.newInstance(account);
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        // Register the account to push notifications
-        Account account = Preferences.getAccount(this);
-        if (account != null && account.hasAuthenticatedAccessMode()
-                && account.mSupportNotifications) {
-            // Register device
-            Intent intent = new Intent(this, DeviceRegistrationService.class);
-            intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
-            intent.putExtra(DeviceRegistrationService.EXTRA_ACCOUNT, account.getAccountHash());
-            startService(intent);
-        }
     }
 
     protected void setupToolbar() {
@@ -112,7 +94,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case android.R.id.home:
-                return ActivityHelper.performFinishActivity(this, true);
+                return ActivityHelper.performFinishActivity(this, false);
             default:
                 return super.onOptionsItemSelected(item);
         }

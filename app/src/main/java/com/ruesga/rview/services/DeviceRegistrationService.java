@@ -112,7 +112,5 @@ public class DeviceRegistrationService extends IntentService {
         } catch (Exception ex) {
             Log.e(TAG, "Failed to unregister device: " + deviceId + "/" + accountToken, ex);
         }
-
-        NotificationEntity.markAccountNotificationsAsRead(ctx, accountToken);
     }
 }
