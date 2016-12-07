@@ -16,6 +16,7 @@
 package com.ruesga.rview;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.MenuRes;
@@ -112,6 +113,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
         };
     }
 
+    private Handler mUiHandler;
 
     private Model mModel = new Model();
     private ViewPager mViewPager;
@@ -129,6 +131,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        mUiHandler = new Handler();
     }
 
     @Override
@@ -286,7 +289,7 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
                 PageFragmentAdapter adapter = (PageFragmentAdapter) mViewPager.getAdapter();
                 Fragment fragment = adapter.getCachedFragment(tab.getPosition());
                 if (fragment != null && fragment instanceof SelectableFragment) {
-                    ((SelectableFragment) fragment).onFragmentSelected();
+                    mUiHandler.post(((SelectableFragment) fragment)::onFragmentSelected);
                 }
             }
 
