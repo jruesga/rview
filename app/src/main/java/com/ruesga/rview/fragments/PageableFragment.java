@@ -132,4 +132,8 @@ public abstract class PageableFragment extends Fragment {
         mBinding.viewPager.setCurrentItem(page, smooth);
     }
 
+    public Fragment getCurrentFragment() {
+        return mAdapter.getCachedFragment(mBinding.viewPager.getCurrentItem());
+    }
+
 }

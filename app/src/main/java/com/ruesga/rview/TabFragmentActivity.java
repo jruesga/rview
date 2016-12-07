@@ -23,10 +23,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 
 import com.ruesga.rview.databinding.ContentBinding;
+import com.ruesga.rview.fragments.PageableFragment;
+import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TabFragmentActivity extends ChangeListBaseActivity {
 
@@ -36,9 +39,12 @@ public class TabFragmentActivity extends ChangeListBaseActivity {
 
     private ContentBinding mBinding;
 
+    private boolean mIsTwoPane;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mIsTwoPane = getResources().getBoolean(R.bool.config_is_two_pane);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
 
@@ -141,5 +147,38 @@ public class TabFragmentActivity extends ChangeListBaseActivity {
     @Override
     public ContentBinding getContentBinding() {
         return mBinding;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> void onRefreshEnd(Fragment from, T result) {
+        super.onRefreshEnd(from, result);
+        if (result == null) {
+            return;
+        }
+
+        if (mIsTwoPane && result instanceof List) {
+            Fragment current = getSupportFragmentManager().findFragmentByTag(
+                    FRAGMENT_TAG_LIST);
+            if (current instanceof PageableFragment) {
+                current = ((PageableFragment) current).getCurrentFragment();
+                if (!current.equals(from)) {
+                    // This is not the visible fragment. ignore its results
+                    return;
+                }
+            } else {
+                if (!current.equals(from)) {
+                    // This is not the visible fragment. ignore its results
+                    return;
+                }
+            }
+
+            List<ChangeInfo> changes = (List<ChangeInfo>) result;
+            if (!changes.isEmpty() && mSelectedChangeId == INVALID_ITEM) {
+                onChangeItemPressed(changes.get(0));
+            }
+        } else if (result instanceof ChangeInfo) {
+            mSelectedChangeId = ((ChangeInfo) result).legacyChangeId;
+        }
     }
 }

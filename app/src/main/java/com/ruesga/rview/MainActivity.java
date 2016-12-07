@@ -49,6 +49,7 @@ import com.ruesga.rview.drawer.DrawerNavigationSubMenu;
 import com.ruesga.rview.drawer.DrawerNavigationView;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
+import com.ruesga.rview.fragments.PageableFragment;
 import com.ruesga.rview.fragments.StatsFragment;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -835,9 +836,17 @@ public class MainActivity extends ChangeListBaseActivity {
         if (mIsTwoPane && result instanceof List) {
             Fragment current = getSupportFragmentManager().findFragmentByTag(
                     FRAGMENT_TAG_LIST);
-            if (!current.equals(from)) {
-                // This is not the visible fragment. ignore its results
-                return;
+            if (current instanceof PageableFragment) {
+                current = ((PageableFragment) current).getCurrentFragment();
+                if (!current.equals(from)) {
+                    // This is not the visible fragment. ignore its results
+                    return;
+                }
+            } else {
+                if (!current.equals(from)) {
+                    // This is not the visible fragment. ignore its results
+                    return;
+                }
             }
 
             List<ChangeInfo> changes = (List<ChangeInfo>) result;
