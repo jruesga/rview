@@ -328,6 +328,7 @@ public class MainActivity extends ChangeListBaseActivity {
             }
         } else if (requestCode == REQUEST_ACCOUNT_SETTINGS) {
             // Refresh current view
+            mAccount = Preferences.getAccount(this);
             if (mModel.currentNavigationItemId == INVALID_ITEM) {
                 mModel.currentNavigationItemId = Preferences.getAccountHomePageId(this, mAccount);
             }
