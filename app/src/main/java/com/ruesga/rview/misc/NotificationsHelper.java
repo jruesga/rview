@@ -26,11 +26,12 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.RemoteInput;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.ChangeDetailsActivity;
-import com.ruesga.rview.MainActivity;
 import com.ruesga.rview.NotificationsActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.AccountInfo;
@@ -40,6 +41,7 @@ import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.providers.NotificationEntity;
 import com.ruesga.rview.receivers.NotificationReceiver;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -105,10 +107,14 @@ public class NotificationsHelper {
                 // Made this event looks like like an advise about when others added the
                 // current user to the change (like email notifications). Ignore the
                 // rest of the add or delete reviewer events
-                AccountInfo reviewer = SerializationManager.getInstance().fromJson(
-                        notification.extra, AccountInfo.class);
                 Account me = ModelHelper.getAccountFromHash(ctx, notification.token);
-                return me != null && isSameAccount(me.mAccount, reviewer);
+                List<AccountInfo> reviewers = getReviewers(notification.extra);
+                for (AccountInfo reviewer : reviewers) {
+                    if (me != null && isSameAccount(me.mAccount, reviewer)) {
+                        return true;
+                    }
+                }
+                return false;
         }
         return false;
     }
@@ -409,11 +415,12 @@ public class NotificationsHelper {
                 // Made this event looks like like an advise about when others added the
                 // current user to the change (like email notifications). Ignore the
                 // rest of the add or delete reviewer events
-                AccountInfo reviewer = SerializationManager.getInstance().fromJson(
-                        entity.mNotification.extra, AccountInfo.class);
                 Account me = ModelHelper.getAccountFromHash(ctx, entity.mAccountId);
-                if (me != null && isSameAccount(me.mAccount, reviewer)) {
-                    return ctx.getString(R.string.notification_content_title_128);
+                List<AccountInfo> reviewers = getReviewers(entity.mNotification.extra);
+                for (AccountInfo reviewer : reviewers) {
+                    if (me != null && isSameAccount(me.mAccount, reviewer)) {
+                        return ctx.getString(R.string.notification_content_title_128);
+                    }
                 }
             case CloudNotificationEvents.PATCHSET_CREATED_EVENT:
                 return ctx.getString(R.string.notification_content_title_512);
@@ -450,5 +457,24 @@ public class NotificationsHelper {
             return true;
         }
         return false;
+    }
+
+    private static List<AccountInfo> getReviewers(String serialized) {
+        if (TextUtils.isEmpty(serialized)) {
+            return new ArrayList<>();
+        }
+
+        List<AccountInfo> reviewers = new ArrayList<>();
+        if (serialized.startsWith("[")) {
+            // Version 2.14. Returns an array of added reviewers
+            Type type = new TypeToken<List<AccountInfo>>(){}.getType();
+            reviewers.addAll(SerializationManager.getInstance().fromJson(serialized, type));
+        } else {
+            // Version 2.13. Returns the added reviewer
+            reviewers.add(SerializationManager.getInstance().fromJson(
+                    serialized, AccountInfo.class));
+        }
+
+        return reviewers;
     }
 }
