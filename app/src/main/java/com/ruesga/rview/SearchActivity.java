@@ -266,8 +266,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             ViewCompat.postOnAnimation(v, () -> {
                 int cx = v.getMeasuredWidth();
                 int cy = v.getMeasuredHeight() / 2;
-                int r = v.getWidth() / 2;
-                Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, r);
+                Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, cx);
                 anim.setInterpolator(new AccelerateInterpolator());
                 anim.setDuration(250L);
                 anim.addListener(new Animator.AnimatorListener() {
@@ -295,39 +294,39 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void exitReveal() {
-        if (AndroidHelper.isLollipopOrGreater()) {
-            final View v = mBinding.toolbar;
-            ViewCompat.postOnAnimation(v, () -> {
-                int cx = v.getMeasuredWidth();
-                int cy = v.getMeasuredHeight() / 2;
-                int r = v.getWidth() / 2;
-                Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, r, 0);
-                anim.setInterpolator(new AccelerateInterpolator());
-                anim.setDuration(250L);
-                anim.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                        mBinding.background.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mBinding.searchView.setVisibility(View.INVISIBLE);
-                        finish();
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                });
-                anim.start();
-            });
-        } else {
+        if (!AndroidHelper.isLollipopOrGreater()) {
             finish();
+            return;
         }
+
+        final View v = mBinding.searchView;
+        ViewCompat.postOnAnimation(v, () -> {
+            int cx = v.getMeasuredWidth();
+            int cy = v.getMeasuredHeight() / 2;
+            Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, cx, 0);
+            anim.setInterpolator(new AccelerateInterpolator());
+            anim.setDuration(250L);
+            anim.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mBinding.background.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mBinding.searchView.setVisibility(View.INVISIBLE);
+                    finish();
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
+            anim.start();
+        });
     }
 }
