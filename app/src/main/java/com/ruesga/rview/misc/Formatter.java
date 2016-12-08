@@ -126,7 +126,7 @@ public class Formatter {
     }
 
     @BindingAdapter({"draftAccountDisplayName", "isDraft"})
-    public static void toDrafAccountDisplayName(
+    public static void toDraftAccountDisplayName(
             TextView view, AccountInfo accountInfo, boolean isDraft) {
 
         if (isDraft) {

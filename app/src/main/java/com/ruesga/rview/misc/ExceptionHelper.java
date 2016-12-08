@@ -122,8 +122,6 @@ public class ExceptionHelper {
         return !(isException(cause, ConnectException.class)
                 || isException(cause, NoRouteToHostException.class)
                 || isException(cause, PortUnreachableException.class));
-
-
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})

@@ -154,8 +154,8 @@ public class ActivityStatsChart extends View {
     private final TextPaint mTicksPaint;
 
     private final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
-    private final DecimalFormat mYTicksFormmater = new DecimalFormat("#0", symbols);
-    private final DecimalFormat mYTicksDecFormmater = new DecimalFormat("#0.00", symbols);
+    private final DecimalFormat mYTicksFormatter = new DecimalFormat("#0", symbols);
+    private final DecimalFormat mYTicksDecFormatter = new DecimalFormat("#0.00", symbols);
 
     private ValueAnimator mAnimator;
     private float mAnimationDelta = 0f;
@@ -256,7 +256,7 @@ public class ActivityStatsChart extends View {
 
         // Choose the right formatter based on the max/min diff
         final DecimalFormat formatter = (max - min) < (MAX_Y_TICKS_LABELS * 2)
-                ? mYTicksDecFormmater : mYTicksFormmater;
+                ? mYTicksDecFormatter : mYTicksFormatter;
 
         mLinePath.reset();
         mAreaPath.reset();

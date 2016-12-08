@@ -10,7 +10,7 @@ a new account.
 What do we use your information for?
 ------------------------------------
 We use exclusively your username and password to authenticate you
-throught the Gerrit server you created the account to.
+through the Gerrit server you created the account to.
 
 
 How do we protect your information?

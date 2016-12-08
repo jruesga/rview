@@ -71,7 +71,7 @@ public class AccountPageFragment extends WizardPageFragment {
     private static final String STATE_ACCOUNT_CONFIRMED = "account.confirmed";
     private static final String STATE_REPO_NAME = "repo.name";
     private static final String STATE_REPO_URL = "repo.url";
-    public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCerticates";
+    public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCertificates";
 
     @ProguardIgnored
     @SuppressWarnings("unused")

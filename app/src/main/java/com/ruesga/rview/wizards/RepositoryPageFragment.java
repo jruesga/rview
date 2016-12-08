@@ -64,7 +64,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
 
     public static final String STATE_REPO_NAME = "repo.name";
     public static final String STATE_REPO_URL = "repo.url";
-    public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCerticates";
+    public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCertificates";
     private static final String STATE_REPO_CONFIRMED_URL = "repo.confirmed.url";
 
     @ProguardIgnored

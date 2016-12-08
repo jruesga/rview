@@ -95,7 +95,9 @@ public class NotificationReceiver extends BroadcastReceiver {
 
             performSendReply(context, account, groupId, changeId, message.toString());
         } else {
-
+            // What happens here? Dismiss the notification in case, but don't mark as read
+            NotificationsHelper.dismissNotification(context, groupId);
+            NotificationEntity.dismissGroupNotifications(context, groupId);
         }
     }
 

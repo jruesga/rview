@@ -22,16 +22,13 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.ruesga.rview.gerrit.GerritApi;
-import com.ruesga.rview.gerrit.model.CloudNotificationInfo;
 import com.ruesga.rview.gerrit.model.CloudNotificationInput;
 import com.ruesga.rview.gerrit.model.CloudNotificationResponseMode;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
-import com.ruesga.rview.providers.NotificationEntity;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import me.tatarka.rxloader2.safe.SafeObservable;
 

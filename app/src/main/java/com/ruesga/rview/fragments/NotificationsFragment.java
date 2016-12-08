@@ -224,7 +224,7 @@ public class NotificationsFragment extends Fragment {
 
         @Override
         public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
+            super.onChange(selfChange, null);
         }
 
         @Override
@@ -267,11 +267,6 @@ public class NotificationsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         startLoadersWithValidContext();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     private void startLoadersWithValidContext() {

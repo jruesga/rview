@@ -43,6 +43,7 @@ public class CacheHelper {
     public static final String CACHE_CONTENT = "content";
     public static final String CACHE_PARENT = "parent";
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static File getAvatarsCacheDir(Context context) {
         File cacheDir = new File(context.getCacheDir(), AVATARS_CACHE_FOLDER);
         if (!cacheDir.exists()) {

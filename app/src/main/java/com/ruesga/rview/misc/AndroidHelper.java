@@ -51,7 +51,7 @@ public class AndroidHelper {
 
     public static void showErrorSnackbar(Context context, @NonNull View parent,
             @StringRes int message) {
-        Snackbar snackbar =  Snackbar.make(parent, message, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(parent, message, Snackbar.LENGTH_LONG);
         View v = snackbar.getView();
         v.setBackgroundColor(ContextCompat.getColor(context, R.color.accent));
         snackbar.show();
@@ -59,7 +59,7 @@ public class AndroidHelper {
 
     public static void showWarningSnackbar(Context context, @NonNull View parent,
             @StringRes int message) {
-        Snackbar snackbar =  Snackbar.make(parent, message, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(parent, message, Snackbar.LENGTH_LONG);
         View v = snackbar.getView();
         v.setBackgroundColor(ContextCompat.getColor(context, R.color.alert));
         snackbar.show();
