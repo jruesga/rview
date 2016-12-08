@@ -207,7 +207,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     }
 
     private Observable<List<ItemModel>> refreshItems() {
-        return SafeObservable.fromCallable(getDataProducer())
+        return SafeObservable.fromNullCallable(getDataProducer())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable ->

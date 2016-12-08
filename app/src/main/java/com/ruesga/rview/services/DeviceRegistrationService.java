@@ -86,7 +86,7 @@ public class DeviceRegistrationService extends IntentService {
 
         GerritApi api = ModelHelper.getGerritApi(ctx, account);
         try {
-            SafeObservable.fromCallable(() ->
+            SafeObservable.fromNullCallable(() ->
                     api.registerCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, input)
                             .blockingFirst()
                     ).blockingFirst();
@@ -105,7 +105,7 @@ public class DeviceRegistrationService extends IntentService {
         final String accountToken = account.getAccountHash();
         GerritApi api = ModelHelper.getGerritApi(ctx, account);
         try {
-            SafeObservable.fromCallable(() ->
+            SafeObservable.fromNullCallable(() ->
                     api.unregisterCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, accountToken)
                             .blockingFirst()
                     ).blockingFirst();

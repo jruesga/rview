@@ -111,7 +111,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     public Observable<AccountDetailInfo> fetchDetails() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return SafeObservable.fromCallable(() -> {
+        return SafeObservable.fromNullCallable(() -> {
                 // Some prior versions doesn't support the details entry point
                 // and some other servers doesn't allow to access this information
                 // If something went wrong just fallback to the cached information.

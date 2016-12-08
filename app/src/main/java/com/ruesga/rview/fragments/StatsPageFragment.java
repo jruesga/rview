@@ -171,7 +171,7 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
     private Observable<List<Stats>> internalFetchStats() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return SafeObservable.fromCallable(() -> {
+        return SafeObservable.fromNullCallable(() -> {
                 ChangeQuery query = getStatsQuery();
                 List<ChangeInfo> changes = new ArrayList<>();
                 List<ChangeInfo> tmp;

@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
@@ -185,7 +184,7 @@ public class GerritApiClient implements GerritApi {
     }
 
     private <T> Observable<T> withVersionRequestCheck(final Observable<T> observable) {
-        return SafeObservable.fromCallable(() -> {
+        return SafeObservable.fromNullCallable(() -> {
             long now = System.currentTimeMillis();
             if (mServerVersion == null ||
                     (now - mLastServerVersionCheck > DateUtils.DAY_IN_MILLIS)) {
@@ -198,19 +197,11 @@ public class GerritApiClient implements GerritApi {
     }
 
     private <T> Observable<T> withEmptyObservable(final Observable<T> observable) {
-        return SafeObservable.fromCallable(() -> {
-            try {
-                return observable.blockingFirst();
-            } catch (NoSuchElementException ex) {
-                // RxJava2 doesn't support null observables, so just return an object
-                //noinspection unchecked
-                return (T) Boolean.TRUE;
-            }
-        });
+        return SafeObservable.fromNullCallable(observable::blockingFirst);
     }
 
     private Observable<ServerVersion> andCacheVersion(final Observable<ServerVersion> observable) {
-        return SafeObservable.fromCallable(() -> {
+        return SafeObservable.fromNullCallable(() -> {
             mServerVersion = observable.blockingFirst();
             return mServerVersion;
         });
@@ -315,7 +306,7 @@ public class GerritApiClient implements GerritApi {
     public Observable<List<AccountInfo>> getAccounts(
             @NonNull AccountQuery query, @Nullable Integer count,
             @Nullable Integer start, @Nullable List<AccountOptions> options) {
-        return withVersionRequestCheck(SafeObservable.fromCallable(
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(
                 () -> mService.getAccounts(query, count, start, filterByVersion(options))
                         .blockingFirst()));
     }
@@ -488,7 +479,7 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<AccountCapabilityInfo> getAccountCapabilities(
             @NonNull String accountId, @Nullable List<Capability> filter) {
-        return withVersionRequestCheck(SafeObservable.fromCallable(
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(
                 () -> mService.getAccountCapabilities(accountId, filterByVersion(filter))
                         .blockingFirst()));
     }
@@ -636,7 +627,7 @@ public class GerritApiClient implements GerritApi {
     public Observable<List<ChangeInfo>> getChanges(
             @NonNull ChangeQuery query, @Nullable Integer count,
             @Nullable Integer start, @Nullable List<ChangeOptions> options) {
-        return withVersionRequestCheck(SafeObservable.fromCallable(
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(
                 () -> mService.getChanges(query, count, start, filterByVersion(options))
                         .blockingFirst()));
     }
@@ -644,7 +635,7 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<ChangeInfo> getChange(
             @NonNull String changeId, @Nullable List<ChangeOptions> options) {
-        return withVersionRequestCheck(SafeObservable.fromCallable(
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(
                 () -> mService.getChange(changeId, filterByVersion(options))
                         .blockingFirst()));
     }
@@ -652,7 +643,7 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<ChangeInfo> getChangeDetail(
             @NonNull String changeId, @Nullable List<ChangeOptions> options) {
-        return withVersionRequestCheck(SafeObservable.fromCallable(
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(
                 () -> mService.getChangeDetail(changeId, filterByVersion(options))
                         .blockingFirst()));
     }
@@ -923,7 +914,7 @@ public class GerritApiClient implements GerritApi {
     @Override
     public Observable<ReviewInfo> setChangeRevisionReview(@NonNull String changeId,
             @NonNull String revisionId, @NonNull ReviewInput input) {
-        return withVersionRequestCheck(SafeObservable.fromCallable(() -> {
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
             input.drafts = getApiVersionMediator().resolveDraftActionType(input.drafts);
             return mService.setChangeRevisionReview(
                     changeId, revisionId, input).blockingFirst();
@@ -1232,7 +1223,7 @@ public class GerritApiClient implements GerritApi {
             @Nullable String project, @Nullable String user, @Nullable Option owned,
             @Nullable Option visibleToAll, @Nullable Option verbose,
             @Nullable List<GroupOptions> options) {
-        return withVersionRequestCheck(SafeObservable.fromCallable(
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(
                 () -> mService.getGroups(query, count, start, project, user, owned,
                         visibleToAll, verbose, filterByVersion(options))
                         .blockingFirst()));

@@ -603,7 +603,7 @@ public abstract class WizardActivity extends AppCompatActivity {
     }
 
     private Observable<Boolean> actionObserver(Callable<Boolean> call) {
-        return SafeObservable.fromCallable(call)
+        return SafeObservable.fromNullCallable(call)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(disposable -> changeInProgressStatus(true))

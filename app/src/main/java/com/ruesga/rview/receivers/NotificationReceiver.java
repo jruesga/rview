@@ -110,7 +110,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         input.notify = NotifyType.ALL;
 
         // Send the comment
-        SafeObservable.fromCallable(() ->
+        SafeObservable.fromNullCallable(() ->
                 api.setChangeRevisionReview(String.valueOf(changeId),
                         GerritApi.CURRENT_REVISION, input).blockingFirst())
                 .subscribeOn(Schedulers.io())

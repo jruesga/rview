@@ -819,7 +819,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         String prefix = (mBase == null ? "0" : mBase) + "_" + current + "_";
 
         return withCached(
-                    SafeObservable.fromCallable(() -> {
+                    SafeObservable.fromNullCallable(() -> {
                         Map<String, FileInfo> files =
                                 api.getChangeRevisionFiles(
                                     String.valueOf(mChange.legacyChangeId),

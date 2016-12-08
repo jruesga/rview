@@ -208,7 +208,7 @@ public class ChangeDetailsActivity extends BaseActivity {
     @SuppressWarnings("ConstantConditions")
     private Observable<ChangeInfo> fetchChangeId(ChangeQuery query) {
         final GerritApi api = ModelHelper.getGerritApi(this);
-        return SafeObservable.fromCallable(() -> {
+        return SafeObservable.fromNullCallable(() -> {
                 List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).blockingFirst();
                 if (changes != null && !changes.isEmpty()) {
                     return changes.get(0);

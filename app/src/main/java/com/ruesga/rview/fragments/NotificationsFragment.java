@@ -64,7 +64,7 @@ import me.tatarka.rxloader2.RxLoader;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
-import me.tatarka.rxloader2.safe.SafeObservableFromCallable;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 import static com.ruesga.rview.preferences.Constants.EXTRA_ACCOUNT_HASH;
 
@@ -353,7 +353,7 @@ public class NotificationsFragment extends Fragment {
 
     private Observable<List<NotificationEntity>> fetchNotifications() {
         final Context ctx = getContext().getApplicationContext();
-        return SafeObservableFromCallable.fromCallable(() -> {
+        return SafeObservable.fromNullCallable(() -> {
                     List<NotificationEntity> notifications =
                             NotificationEntity.getAllAccountNotifications(
                                 ctx, mAccount.getAccountHash(), false, false);
