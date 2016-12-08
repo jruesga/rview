@@ -34,7 +34,7 @@ import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.providers.NotificationEntity;
 
-public class NotificationsActivity extends AppCompatActivity {
+public class NotificationsActivity extends AppCompatDelegateActivity {
 
     private static final String FRAGMENT_TAG = "notifications";
 
@@ -44,7 +44,6 @@ public class NotificationsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         // Retrieve the account
         if (getIntent() != null) {

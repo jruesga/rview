@@ -37,6 +37,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.util.TypedValue;
@@ -178,6 +179,7 @@ public abstract class WizardActivity extends AppCompatActivity {
     @Override
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         mFragmentManager = getSupportFragmentManager();
 
         // Load the wizard pages

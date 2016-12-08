@@ -32,7 +32,7 @@ import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.services.DeviceRegistrationService;
 
-public class AccountSettingsActivity extends AppCompatActivity {
+public class AccountSettingsActivity extends AppCompatDelegateActivity {
 
     private static final String FRAGMENT_TAG = "settings";
 
@@ -41,7 +41,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         // Check we have a valid account
         Account account = Preferences.getAccount(this);

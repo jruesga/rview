@@ -51,7 +51,7 @@ import com.ruesga.rview.preferences.Preferences;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatDelegateActivity {
 
     @SuppressWarnings("UnusedParameters")
     @ProguardIgnored
@@ -74,7 +74,6 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.search_activity);
         mBinding.setHandlers(new EventHandlers(this));

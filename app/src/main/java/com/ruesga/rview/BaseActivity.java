@@ -59,7 +59,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLException;
 
-public abstract class BaseActivity extends AppCompatActivity implements OnRefreshListener {
+public abstract class BaseActivity extends AppCompatDelegateActivity implements OnRefreshListener {
 
     public static final String FRAGMENT_TAG_LIST = "list";
     public static final String FRAGMENT_TAG_DETAILS = "details";
@@ -130,7 +130,6 @@ public abstract class BaseActivity extends AppCompatActivity implements OnRefres
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         mUiHandler = new Handler();
     }
 
