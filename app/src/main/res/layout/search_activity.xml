@@ -27,12 +27,12 @@
         android:layout_height="match_parent">
 
         <View
-            android:id="@+id/background"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:minHeight="?attr/actionBarSize"
             android:background="?attr/colorPrimaryDark"
-            android:visibility="gone"
+            android:visibility="invisible"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp" />
 
@@ -43,37 +43,24 @@
             android:background="@color/translucentStatusBarColor"
             android:hapticFeedbackEnabled="false">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            <com.arlib.floatingsearchview.FloatingSearchView
+                android:id="@+id/search_view"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:minHeight="?attr/actionBarSize"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="2dp"
-                android:layout_marginLeft="-5dp"
-                android:layout_marginStart="-5dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_gravity="top"
-                android:theme="@style/ThemeOverlay.AppCompat.Light"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-                <com.arlib.floatingsearchview.FloatingSearchView
-                    android:id="@+id/search_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="3dp"
-                    app:floatingSearch_searchBarTextSize="12sp"
-                    app:floatingSearch_dimBackground="false"
-                    app:floatingSearch_showSearchKey="true"
-                    app:floatingSearch_leftActionMode="customIcon"
-                    app:floatingSearch_showVoiceInput="true"
-                    app:floatingSearch_menu="@menu/more_options"
-                    app:floatingSearch_searchSuggestionTextSize="10sp"
-                    app:floatingSearch_close_search_on_keyboard_dismiss="true"
-                    app:floatingSearch_dismissOnOutsideTouch="true" />
-
-            </android.support.v7.widget.Toolbar>
+                android:layout_height="match_parent"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginEnd="3dp"
+                app:floatingSearch_searchBarTextSize="12sp"
+                app:floatingSearch_dimBackground="false"
+                app:floatingSearch_showSearchKey="true"
+                app:floatingSearch_leftActionMode="customIcon"
+                app:floatingSearch_showVoiceInput="true"
+                app:floatingSearch_menu="@menu/more_options"
+                app:floatingSearch_searchSuggestionTextSize="10sp"
+                app:floatingSearch_close_search_on_keyboard_dismiss="true"
+                app:floatingSearch_dismissOnOutsideTouch="true" />
 
         </FrameLayout>
 

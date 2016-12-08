@@ -78,7 +78,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
         mIcons = loadSearchIcons();
 
-        setupToolbar();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.menu_search);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -137,14 +136,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
 
         return super.onKeyDown(keycode, e);
-    }
-
-    protected void setupToolbar() {
-        setSupportActionBar(mBinding.toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
     }
 
     private void configureSearchHint() {
@@ -262,11 +253,12 @@ public class SearchActivity extends AppCompatDelegateActivity {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void enterReveal() {
         if (AndroidHelper.isLollipopOrGreater()) {
-            final View v = mBinding.searchView;
-            ViewCompat.postOnAnimation(v, () -> {
-                int cx = v.getMeasuredWidth();
-                int cy = v.getMeasuredHeight() / 2;
-                Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, cx);
+            final View target = mBinding.searchView;
+            final View bounds = mBinding.toolbar;
+            ViewCompat.postOnAnimation(bounds, () -> {
+                int cx = bounds.getMeasuredWidth();
+                int cy = bounds.getMeasuredHeight() / 2;
+                Animator anim = ViewAnimationUtils.createCircularReveal(target, cx, cy, 0, cx);
                 anim.setInterpolator(new AccelerateInterpolator());
                 anim.setDuration(250L);
                 anim.addListener(new Animator.AnimatorListener() {
@@ -276,7 +268,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mBinding.background.setVisibility(View.VISIBLE);
+                        mBinding.toolbar.setVisibility(View.VISIBLE);
                     }
 
                     @Override
@@ -299,17 +291,18 @@ public class SearchActivity extends AppCompatDelegateActivity {
             return;
         }
 
-        final View v = mBinding.searchView;
-        ViewCompat.postOnAnimation(v, () -> {
-            int cx = v.getMeasuredWidth();
-            int cy = v.getMeasuredHeight() / 2;
-            Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, cx, 0);
+        final View target = mBinding.searchView;
+        final View bounds = mBinding.toolbar;
+        ViewCompat.postOnAnimation(bounds, () -> {
+            int cx = bounds.getMeasuredWidth();
+            int cy = bounds.getMeasuredHeight() / 2;
+            Animator anim = ViewAnimationUtils.createCircularReveal(target, cx, cy, cx, 0);
             anim.setInterpolator(new AccelerateInterpolator());
             anim.setDuration(250L);
             anim.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    mBinding.background.setVisibility(View.GONE);
+                    mBinding.toolbar.setVisibility(View.GONE);
                 }
 
                 @Override
