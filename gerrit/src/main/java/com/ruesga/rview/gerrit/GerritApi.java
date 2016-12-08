@@ -139,7 +139,8 @@ public interface GerritApi {
     @GET("accounts/")
     Observable<List<AccountInfo>> getAccountsSuggestions(
             @NonNull @Query("q") String query,
-            @Nullable @Query("n") Integer count);
+            @Nullable @Query("n") Integer count,
+            @Nullable @Query("suggest") Option suggest);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#query-account"

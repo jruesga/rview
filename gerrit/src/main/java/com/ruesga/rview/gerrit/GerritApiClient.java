@@ -53,7 +53,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class GerritApiClient implements GerritApi {
+class GerritApiClient implements GerritApi {
     private static final Map<String, CachingAuthenticator> sAuthCache = new ConcurrentHashMap<>();
 
     private final String mEndPoint;
@@ -99,7 +99,7 @@ public class GerritApiClient implements GerritApi {
         }
     };
 
-    public GerritApiClient(String endpoint, Authorization authorization,
+    GerritApiClient(String endpoint, Authorization authorization,
             PlatformAbstractionLayer abstractionLayer) {
         mAbstractionLayer = abstractionLayer;
         mEndPoint = endpoint;
@@ -298,8 +298,8 @@ public class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<List<AccountInfo>> getAccountsSuggestions(
-            @NonNull String query, @Nullable Integer count) {
-        return withVersionRequestCheck(mService.getAccountsSuggestions(query, count));
+            @NonNull String query, @Nullable Integer count, @Nullable Option suggest) {
+        return withVersionRequestCheck(mService.getAccountsSuggestions(query, count, suggest));
     }
 
     @Override
