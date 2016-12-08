@@ -19,7 +19,7 @@ A Gerrit client application  for Android
 
 ### Push Notifications
 
-Push notifications requires [cloud-notifications](https://gerrit.googlesource.com/plugins/cloud-notifications) plugin installed in the Gerrit server instance. You can grab a binary distribution of the plugin [here](https://github.com/jruesga/gerrit-cloud-notifications-plugin/releases).
+Push notifications requires [cloud-notifications](https://gerrit.googlesource.com/plugins/cloud-notifications) plugin installed in the Gerrit server instance. You can grab a binary distribution of the plugin [here](https://gerrit-ci.gerritforge.com/job/plugin-cloud-notifications-master/lastStableBuild/).
 
 
 ### Contribute
