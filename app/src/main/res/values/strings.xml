@@ -85,6 +85,7 @@
     <string name="exception_cannot_share_link">No activity found to share link with</string>
 
     <!-- Formats -->
+    <string name="account_suggest_format"><xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e</string>
     <string name="committer_format"><xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e, <xliff:g id="commit_date" example="2 days ago">%3$s</xliff:g></string>
     <string name="added_vs_deleted"><xliff:g id="added" example="243 added">%1$s</xliff:g>, <xliff:g id="deleted" example="243 deleted">%2$s</xliff:g></string>
 

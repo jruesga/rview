@@ -20,10 +20,16 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Parcel;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.TextUtils;
@@ -38,18 +44,35 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.SearchActivityBinding;
+import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader1;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
 
 public class SearchActivity extends AppCompatDelegateActivity {
+
+    private static final int MAX_SUGGESTIONS = 5;
+
+    private static final int FETCH_SUGGESTIONS_MESSAGE = 1;
 
     @SuppressWarnings("UnusedParameters")
     @ProguardIgnored
@@ -65,13 +88,89 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
     }
 
+    private static class Suggestion implements SearchSuggestion {
+
+        private final String mSuggestionText;
+        private final int mSuggestionIcon;
+
+        Suggestion(String suggestion, @DrawableRes int icon) {
+            mSuggestionText = suggestion;
+            mSuggestionIcon = icon;
+        }
+
+        Suggestion(Parcel in) {
+            mSuggestionText = in.readString();
+            mSuggestionIcon = in.readInt();
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel parcel, int flags) {
+            parcel.writeString(mSuggestionText);
+            parcel.writeInt(mSuggestionIcon);
+        }
+
+        @Override
+        public String getBody() {
+            return mSuggestionText;
+        }
+
+        public static final Creator<Suggestion> CREATOR = new Creator<Suggestion>() {
+            @Override
+            public Suggestion createFromParcel(Parcel in) {
+                return new Suggestion(in);
+            }
+
+            @Override
+            public Suggestion[] newArray(int size) {
+                return new Suggestion[size];
+            }
+        };
+    }
+
+    private final RxLoaderObserver<List<AccountInfo>> mAccountSuggestionsObserver
+            = new RxLoaderObserver<List<AccountInfo>>() {
+        @Override
+        public void onNext(List<AccountInfo> accounts) {
+            if (mBinding.searchView != null) {
+                List<Suggestion> suggestions = new ArrayList<>(accounts.size());
+                for (AccountInfo account : accounts) {
+                    String suggestion = getString(
+                            R.string.account_suggest_format, account.name, account.email);
+                    suggestions.add(new Suggestion(suggestion, R.drawable.ic_search));
+                }
+                mBinding.searchView.swapSuggestions(suggestions);
+            }
+        }
+    };
+
+    private Handler.Callback mMessenger = message -> {
+        if (message.what == FETCH_SUGGESTIONS_MESSAGE) {
+            performFilter((String) message.obj);
+        }
+        return false;
+    };
+
+    private Handler mHandler;
+
     private SearchActivityBinding mBinding;
     private int mCurrentOption;
     private int[] mIcons;
+    private Drawable mSuggestionIcon;
+
+    private RxLoader1<String, List<AccountInfo>> mAccountSuggestionsLoader;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandler = new Handler(mMessenger);
+        mSuggestionIcon = ContextCompat.getDrawable(this, R.drawable.ic_search);
+        DrawableCompat.setTint(mSuggestionIcon, ContextCompat.getColor(
+                this, R.color.gray_active_icon));
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.search_activity);
         mBinding.setHandlers(new EventHandlers(this));
@@ -84,10 +183,17 @@ public class SearchActivity extends AppCompatDelegateActivity {
             getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(false);
         }
 
+        // Configure the suggestions loaders
+        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+        mAccountSuggestionsLoader = loaderManager.create(
+                "accounts", this::fetchAccountSuggestions, mAccountSuggestionsObserver);
+
         // Configure the search view
         mBinding.searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
-            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+            public void onSuggestionClicked(SearchSuggestion suggestion) {
+                final Suggestion s = (Suggestion) suggestion;
+                performSearch(s.mSuggestionText);
             }
 
             @Override
@@ -95,7 +201,27 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 performSearch(currentQuery);
             }
         });
+        mBinding.searchView.setOnQueryChangeListener((oldFilter, newFilter) -> {
+            mHandler.removeMessages(FETCH_SUGGESTIONS_MESSAGE);
+            final Message msg = Message.obtain(mHandler, FETCH_SUGGESTIONS_MESSAGE, newFilter);
+            msg.arg1 = mCurrentOption;
+            mHandler.sendMessageDelayed(msg, 500L);
+        });
+        mBinding.searchView.setOnBindSuggestionCallback(
+                (v, imageView, textView, suggestion, position) -> {
+            final Suggestion s = (Suggestion) suggestion;
+            textView.setText(s.mSuggestionText);
+            if (s.mSuggestionIcon != 0) {
+                Drawable dw = ContextCompat.getDrawable(this, s.mSuggestionIcon);
+                DrawableCompat.setTint(mSuggestionIcon, ContextCompat.getColor(
+                        this, R.color.gray_active_icon));
+                imageView.setImageDrawable(dw);
+            } else {
+                imageView.setImageDrawable(null);
+            }
+        });
         mBinding.searchView.setOnMenuItemClickListener(item -> performShowOptions());
+        clearSuggestions();
 
         mCurrentOption = Preferences.getAccountSearchMode(this, Preferences.getAccount(this));
         mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[mCurrentOption]));
@@ -166,7 +292,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 Arrays.asList(getResources().getStringArray(R.array.search_options_labels)));
         String value = values.get(mCurrentOption);
         SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(this, values, mIcons, value);
-        popupWindow.setAnchorView(mBinding.searchView);
+        popupWindow.setAnchorView(mBinding.anchor);
         popupWindow.setDropDownGravity(Gravity.END);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());
@@ -176,9 +302,34 @@ public class SearchActivity extends AppCompatDelegateActivity {
             Preferences.setAccountSearchMode(this, Preferences.getAccount(this), mCurrentOption);
             configureSearchHint();
             mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[position]));
+            clearSuggestions();
         });
         popupWindow.setModal(true);
         popupWindow.show();
+    }
+
+    private void performFilter(String filter) {
+        if (TextUtils.isEmpty(filter)) {
+
+            return;
+        }
+
+        switch (mCurrentOption) {
+            case Constants.SEARCH_MODE_CHANGE:
+            case Constants.SEARCH_MODE_COMMIT:
+            case Constants.SEARCH_MODE_COMMIT_MESSAGE:
+                // We cannot show suggestion on this modes
+                break;
+            case Constants.SEARCH_MODE_USER:
+                requestAccountSuggestions(filter);
+                break;
+            case Constants.SEARCH_MODE_CUSTOM:
+                break;
+        }
+    }
+
+    private void clearSuggestions() {
+        mBinding.searchView.swapSuggestions(new ArrayList<>());
     }
 
     private void performSearch(String query) {
@@ -250,6 +401,20 @@ public class SearchActivity extends AppCompatDelegateActivity {
         return icons;
     }
 
+    @SuppressWarnings("ConstantConditions")
+    private Observable<List<AccountInfo>> fetchAccountSuggestions(String filter) {
+        final GerritApi api = ModelHelper.getGerritApi(this);
+        return api.getAccountsSuggestions(
+                filter, MAX_SUGGESTIONS, Option.INSTANCE)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void requestAccountSuggestions(String filter) {
+        mAccountSuggestionsLoader.clear();
+        mAccountSuggestionsLoader.restart(filter);
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void enterReveal() {
         if (AndroidHelper.isLollipopOrGreater()) {
@@ -260,7 +425,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 int cy = bounds.getMeasuredHeight() / 2;
                 Animator anim = ViewAnimationUtils.createCircularReveal(target, cx, cy, 0, cx);
                 anim.setInterpolator(new AccelerateInterpolator());
-                anim.setDuration(250L);
+                anim.setDuration(350L);
                 anim.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {

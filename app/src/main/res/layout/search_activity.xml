@@ -36,6 +36,15 @@
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp" />
 
+        <View
+            android:id="@+id/anchor"
+            android:layout_width="16dp"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_gravity="end"
+            android:minHeight="?attr/actionBarSize" />
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -52,6 +61,7 @@
                 android:layout_marginStart="3dp"
                 android:layout_marginRight="3dp"
                 android:layout_marginEnd="3dp"
+                app:floatingSearch_suggestionRightIconColor="?attr/colorAccent"
                 app:floatingSearch_searchBarTextSize="12sp"
                 app:floatingSearch_dimBackground="false"
                 app:floatingSearch_showSearchKey="true"
