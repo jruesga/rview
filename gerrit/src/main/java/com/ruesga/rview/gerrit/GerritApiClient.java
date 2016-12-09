@@ -1423,11 +1423,13 @@ class GerritApiClient implements GerritApi {
     // ===============================
 
     @Override
-    public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Option showDescription,
-            @Nullable Option showTree, @Nullable String branch,
-            @Nullable ProjectType type, @Nullable String group) {
+    public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Integer count,
+        @Nullable Integer start, @Nullable String prefix, @Nullable String regexp,
+        @Nullable String substring, @Nullable Option showDescription, @Nullable Option showTree,
+        @Nullable String branch, @Nullable ProjectType type, @Nullable String group) {
         return withVersionRequestCheck(
-                mService.getProjects(showDescription, showTree, branch, type, group));
+                mService.getProjects(count, start, prefix, regexp, substring,
+                        showDescription, showTree, branch, type, group));
     }
 
     @Override

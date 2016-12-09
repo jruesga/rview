@@ -1536,6 +1536,11 @@ public interface GerritApi {
      */
     @GET("projects/")
     Observable<Map<String, ProjectInfo>> getProjects(
+            @Nullable @Query("n") Integer count,
+            @Nullable @Query("S") Integer start,
+            @Nullable @Query("p") String prefix,
+            @Nullable @Query("r") String regexp,
+            @Nullable @Query("m") String substring,
             @Nullable @Query("d") Option showDescription,
             @Nullable @Query("t") Option showTree,
             @Nullable @Query("b") String branch,
