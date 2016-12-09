@@ -107,7 +107,6 @@
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="14sp"
                     android:inputType="textMultiLine"
-                    android:imeOptions="flagNoFullscreen"
                     android:hint="@string/change_details_review_hint" />
 
             </RelativeLayout>
