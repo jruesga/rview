@@ -72,9 +72,10 @@ public class Constants {
 
     public static final int SEARCH_MODE_CHANGE = 0;
     public static final int SEARCH_MODE_COMMIT = 1;
-    public static final int SEARCH_MODE_USER = 2;
-    public static final int SEARCH_MODE_COMMIT_MESSAGE = 3;
-    public static final int SEARCH_MODE_CUSTOM = 4;
+    public static final int SEARCH_MODE_PROJECT = 2;
+    public static final int SEARCH_MODE_USER = 3;
+    public static final int SEARCH_MODE_COMMIT_MESSAGE = 4;
+    public static final int SEARCH_MODE_CUSTOM = 5;
 
     public static final int MY_FILTERS_GROUP_BASE_ID = 1000;
     public static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 2000;

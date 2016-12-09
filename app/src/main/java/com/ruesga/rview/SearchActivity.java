@@ -49,6 +49,8 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.ProjectInfo;
+import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
@@ -56,9 +58,12 @@ import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -148,6 +153,26 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
     };
 
+    @SuppressWarnings("Convert2streamapi")
+    private final RxLoaderObserver<Map<String, ProjectInfo>> mProjectSuggestionsObserver
+            = new RxLoaderObserver<Map<String, ProjectInfo>>() {
+        @Override
+        public void onNext(Map<String, ProjectInfo> projects) {
+            if (mBinding.searchView != null) {
+                List<Suggestion> suggestions = new ArrayList<>(projects.size());
+                for (ProjectInfo project : projects.values()) {
+                    try {
+                        suggestions.add(new Suggestion(URLDecoder.decode(project.id, "UTF-8"),
+                                R.drawable.ic_search));
+                    } catch (UnsupportedEncodingException ex) {
+                        // Ignore
+                    }
+                }
+                mBinding.searchView.swapSuggestions(suggestions);
+            }
+        }
+    };
+
     private Handler.Callback mMessenger = message -> {
         if (message.what == FETCH_SUGGESTIONS_MESSAGE) {
             performFilter((String) message.obj);
@@ -163,6 +188,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private Drawable mSuggestionIcon;
 
     private RxLoader1<String, List<AccountInfo>> mAccountSuggestionsLoader;
+    private RxLoader1<String, Map<String, ProjectInfo>> mProjectSuggestionsLoader;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -187,6 +213,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
         mAccountSuggestionsLoader = loaderManager.create(
                 "accounts", this::fetchAccountSuggestions, mAccountSuggestionsObserver);
+        mProjectSuggestionsLoader = loaderManager.create(
+                "projects", this::fetchProjectSuggestions, mProjectSuggestionsObserver);
 
         // Configure the search view
         mBinding.searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
@@ -272,6 +300,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
             case Constants.SEARCH_MODE_COMMIT:
                 mBinding.searchView.setSearchHint(getString(R.string.search_by_commit_hint));
                 break;
+            case Constants.SEARCH_MODE_PROJECT:
+                mBinding.searchView.setSearchHint(getString(R.string.search_by_project_hint));
+                break;
             case Constants.SEARCH_MODE_USER:
                 mBinding.searchView.setSearchHint(getString(R.string.search_by_user_hint));
                 break;
@@ -319,6 +350,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
             case Constants.SEARCH_MODE_COMMIT:
             case Constants.SEARCH_MODE_COMMIT_MESSAGE:
                 // We cannot show suggestion on this modes
+                break;
+            case Constants.SEARCH_MODE_PROJECT:
+                requestProjectSuggestions(filter);
                 break;
             case Constants.SEARCH_MODE_USER:
                 requestAccountSuggestions(filter);
@@ -368,6 +402,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
                     return;
                 }
                 break;
+            case Constants.SEARCH_MODE_PROJECT:
+                filter = new ChangeQuery().project(String.valueOf(query));
+                break;
             case Constants.SEARCH_MODE_USER:
                 filter = new ChangeQuery().owner(String.valueOf(query));
                 break;
@@ -413,6 +450,20 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private void requestAccountSuggestions(String filter) {
         mAccountSuggestionsLoader.clear();
         mAccountSuggestionsLoader.restart(filter);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Map<String, ProjectInfo>> fetchProjectSuggestions(String filter) {
+        final GerritApi api = ModelHelper.getGerritApi(this);
+        return api.getProjects(MAX_SUGGESTIONS, null, null, null, filter,
+                    null, null, null, ProjectType.ALL, null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void requestProjectSuggestions(String filter) {
+        mProjectSuggestionsLoader.clear();
+        mProjectSuggestionsLoader.restart(filter);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

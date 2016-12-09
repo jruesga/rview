@@ -106,6 +106,7 @@
     <string-array name="search_options_labels" translatable="false">
         <item>@string/search_by_change</item>
         <item>@string/search_by_commit</item>
+        <item>@string/search_by_project</item>
         <item>@string/search_by_user</item>
         <item>@string/search_by_commit_message</item>
         <item>@string/search_by_custom</item>
@@ -113,6 +114,7 @@
     <integer-array name="search_options_icons" translatable="false">
         <item>@drawable/ic_work</item>
         <item>@drawable/ic_merged</item>
+        <item>@drawable/ic_folder</item>
         <item>@drawable/ic_account_circle</item>
         <item>@drawable/ic_comment</item>
         <item>@drawable/ic_custom_search</item>
