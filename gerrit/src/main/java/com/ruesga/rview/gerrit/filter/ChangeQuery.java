@@ -19,6 +19,8 @@ import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.antlr.QueryLexer;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParser;
+import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.ProjectInfo;
 
 import org.antlr.runtime.tree.Tree;
 
@@ -36,25 +38,34 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
     private static class Label {
     }
 
-    private static List<String> FIELDS_NAMES = Arrays.asList(
+    public static final String[] FIELDS_NAMES = {
             "age", "before", "after", "until", "since", "change", "conflicts", "destination",
             "owner", "ownerin", "query", "reviewer", "reviewerin", "commit", "project",
             "projects", "parentproject", "branch", "intopic", "topic", "ref", "tr",
             "bug", "label", "message", "comment", "path", "file", "star", "has",
             "is", "status", "added", "deleted", "delta", "size", "commentby", "from",
             "reviewedby", "author", "committer", "visibleto", "starredby", "watchedby",
-            "draftby");
+            "draftby"
+    };
 
-    private static Class[] FIELDS_TYPES = {
-            TimeUnit.class, Date.class, Date.class, Date.class, Date.class, String.class,
-            String.class, String.class, String.class, String.class, String.class,
-            String.class, String.class, String.class, String.class, String.class,
-            String.class, String.class, String.class, String.class, String.class,
-            String.class, String.class, Label.class, String.class, String.class, String.class,
-            String.class, String.class, HasType.class, IsType.class, StatusType.class,
-            Relation.class, Relation.class, Relation.class, Relation.class, String.class,
-            String.class, String.class, String.class, String.class, String.class,
-            String.class, String.class, String.class
+    public static final Class[] FIELDS_TYPES = {
+            TimeUnit.class, Date.class, Date.class, Date.class, Date.class, String.class, String.class, String.class,
+            String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+            String.class, String.class, String.class, String.class, String.class, String.class, String.class,
+            String.class, Label.class, String.class, String.class, String.class, String.class, String.class, HasType.class,
+            IsType.class, StatusType.class, Relation.class, Relation.class, Relation.class, Relation.class, String.class, String.class,
+            String.class, String.class, String.class, String.class, String.class, String.class,
+            String.class
+    };
+
+    public static final Class[] SUGGEST_TYPES = {
+            null, null, null, null, null, null, null, null,
+            AccountInfo.class, null, null, AccountInfo.class, null, null, ProjectInfo.class,
+            null, ProjectInfo.class, null, null, null, null, null,
+            null, null, null, null, null, null, null, HasType.class,
+            IsType.class, StatusType.class, null, null, null, null, AccountInfo.class, AccountInfo.class,
+            AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class,
+            AccountInfo.class
     };
 
     public ChangeQuery age(TimeUnit unit, int value) {
@@ -372,7 +383,8 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
         private void addField(Tree tree, ChangeQuery query) throws QueryParseException {
             String fieldName = tree.getText();
             String text = getFieldText(tree);
-            int index = FIELDS_NAMES.indexOf(fieldName);
+            List<String> names = Arrays.asList(FIELDS_NAMES);
+            int index = names.indexOf(fieldName);
             if (index >= 0) {
                 Class type = FIELDS_TYPES[index];
                 if (type.equals(String.class)) {
