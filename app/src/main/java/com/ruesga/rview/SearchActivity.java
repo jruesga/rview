@@ -30,9 +30,14 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.ListPopupWindow;
+import android.text.Spannable;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -72,6 +77,7 @@ import me.tatarka.rxloader2.RxLoader1;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class SearchActivity extends AppCompatDelegateActivity {
 
@@ -79,7 +85,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private static final int FETCH_SUGGESTIONS_MESSAGE = 1;
 
-    @SuppressWarnings("UnusedParameters")
+    @SuppressWarnings({"UnusedParameters", "unused"})
     @ProguardIgnored
     public static class EventHandlers {
         private SearchActivity mActivity;
@@ -95,15 +101,18 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private static class Suggestion implements SearchSuggestion {
 
+        private final String mFilter;
         private final String mSuggestionText;
         private final int mSuggestionIcon;
 
-        Suggestion(String suggestion, @DrawableRes int icon) {
+        Suggestion(String filter, String suggestion, @DrawableRes int icon) {
+            mFilter = filter;
             mSuggestionText = suggestion;
             mSuggestionIcon = icon;
         }
 
         Suggestion(Parcel in) {
+            mFilter = in.readString();
             mSuggestionText = in.readString();
             mSuggestionIcon = in.readInt();
         }
@@ -115,6 +124,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
         @Override
         public void writeToParcel(Parcel parcel, int flags) {
+            parcel.writeString(mFilter);
             parcel.writeString(mSuggestionText);
             parcel.writeInt(mSuggestionIcon);
         }
@@ -137,16 +147,17 @@ public class SearchActivity extends AppCompatDelegateActivity {
         };
     }
 
-    private final RxLoaderObserver<List<AccountInfo>> mAccountSuggestionsObserver
-            = new RxLoaderObserver<List<AccountInfo>>() {
+    private final RxLoaderObserver<Pair<String, List<AccountInfo>>> mAccountSuggestionsObserver
+            = new RxLoaderObserver<Pair<String, List<AccountInfo>>>() {
         @Override
-        public void onNext(List<AccountInfo> accounts) {
+        public void onNext(Pair<String, List<AccountInfo>> response) {
             if (mBinding.searchView != null) {
-                List<Suggestion> suggestions = new ArrayList<>(accounts.size());
-                for (AccountInfo account : accounts) {
+                List<Suggestion> suggestions = new ArrayList<>(response.second.size());
+                for (AccountInfo account : response.second) {
                     String suggestion = getString(
                             R.string.account_suggest_format, account.name, account.email);
-                    suggestions.add(new Suggestion(suggestion, R.drawable.ic_search));
+                    suggestions.add(new Suggestion(
+                            response.first, suggestion, R.drawable.ic_search));
                 }
                 mBinding.searchView.swapSuggestions(suggestions);
             }
@@ -154,15 +165,17 @@ public class SearchActivity extends AppCompatDelegateActivity {
     };
 
     @SuppressWarnings("Convert2streamapi")
-    private final RxLoaderObserver<Map<String, ProjectInfo>> mProjectSuggestionsObserver
-            = new RxLoaderObserver<Map<String, ProjectInfo>>() {
+    private final RxLoaderObserver<Pair<String, Map<String, ProjectInfo>>> mProjectSuggestionsObserver
+            = new RxLoaderObserver<Pair<String, Map<String, ProjectInfo>>>() {
         @Override
-        public void onNext(Map<String, ProjectInfo> projects) {
+        public void onNext(Pair<String, Map<String, ProjectInfo>> result) {
             if (mBinding.searchView != null) {
-                List<Suggestion> suggestions = new ArrayList<>(projects.size());
-                for (ProjectInfo project : projects.values()) {
+                List<Suggestion> suggestions = new ArrayList<>(result.second.size());
+                for (ProjectInfo project : result.second.values()) {
                     try {
-                        suggestions.add(new Suggestion(URLDecoder.decode(project.id, "UTF-8"),
+                        suggestions.add(new Suggestion(
+                                result.first,
+                                URLDecoder.decode(project.id, "UTF-8"),
                                 R.drawable.ic_search));
                     } catch (UnsupportedEncodingException ex) {
                         // Ignore
@@ -187,8 +200,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private int[] mIcons;
     private Drawable mSuggestionIcon;
 
-    private RxLoader1<String, List<AccountInfo>> mAccountSuggestionsLoader;
-    private RxLoader1<String, Map<String, ProjectInfo>> mProjectSuggestionsLoader;
+    private RxLoader1<String, Pair<String, List<AccountInfo>>> mAccountSuggestionsLoader;
+    private RxLoader1<String, Pair<String, Map<String, ProjectInfo>>> mProjectSuggestionsLoader;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -238,7 +251,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mBinding.searchView.setOnBindSuggestionCallback(
                 (v, imageView, textView, suggestion, position) -> {
             final Suggestion s = (Suggestion) suggestion;
-            textView.setText(s.mSuggestionText);
+            textView.setText(performFilterHighlight(s));
             if (s.mSuggestionIcon != 0) {
                 Drawable dw = ContextCompat.getDrawable(this, s.mSuggestionIcon);
                 DrawableCompat.setTint(mSuggestionIcon, ContextCompat.getColor(
@@ -368,6 +381,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private void performSearch(String query) {
         if (TextUtils.isEmpty(query)) {
+            clearSuggestions();
             return;
         }
 
@@ -439,10 +453,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<List<AccountInfo>> fetchAccountSuggestions(String filter) {
+    private Observable<Pair<String, List<AccountInfo>>> fetchAccountSuggestions(String filter) {
         final GerritApi api = ModelHelper.getGerritApi(this);
-        return api.getAccountsSuggestions(
-                filter, MAX_SUGGESTIONS, Option.INSTANCE)
+        return SafeObservable.fromNullCallable(() -> {
+                    List<AccountInfo> accounts =
+                            api.getAccountsSuggestions(
+                                    filter, MAX_SUGGESTIONS, Option.INSTANCE).blockingFirst();
+                    return new Pair<>(filter, accounts);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -453,10 +471,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Map<String, ProjectInfo>> fetchProjectSuggestions(String filter) {
+    private Observable<Pair<String, Map<String, ProjectInfo>>> fetchProjectSuggestions(String filter) {
         final GerritApi api = ModelHelper.getGerritApi(this);
-        return api.getProjects(MAX_SUGGESTIONS, null, null, null, filter,
-                    null, null, null, ProjectType.ALL, null)
+        return SafeObservable.fromNullCallable(() -> {
+                    Map<String, ProjectInfo> projects =
+                            api.getProjects(MAX_SUGGESTIONS, null, null, null, filter,
+                                null, null, null, ProjectType.ALL, null).blockingFirst();
+                    return new Pair<>(filter, projects);
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -464,6 +486,26 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private void requestProjectSuggestions(String filter) {
         mProjectSuggestionsLoader.clear();
         mProjectSuggestionsLoader.restart(filter);
+    }
+
+    private CharSequence performFilterHighlight(Suggestion suggestion) {
+        Spannable span = Spannable.Factory.getInstance().newSpannable(suggestion.mSuggestionText);
+        int pos = 0;
+        final String suggestionNoCase = suggestion.mSuggestionText.toLowerCase();
+        final String filterNoCase = suggestion.mFilter.toLowerCase();
+        while ((pos = suggestionNoCase.indexOf(filterNoCase, pos)) != -1) {
+            final int length = suggestion.mFilter.length();
+            final StyleSpan bold = new StyleSpan(android.graphics.Typeface.BOLD);
+            final ForegroundColorSpan color = new ForegroundColorSpan(
+                    ContextCompat.getColor(this, R.color.accent));
+            span.setSpan(bold, pos, pos + length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            span.setSpan(color, pos, pos + length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            pos += length;
+            if (pos >= suggestionNoCase.length()) {
+                break;
+            }
+        }
+        return span;
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
