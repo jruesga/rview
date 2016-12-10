@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
@@ -324,15 +325,21 @@ public class FileDiffViewerFragment extends Fragment {
                                 getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
                 if (mChange == null) {
                     Log.e(TAG, "Change cached data is null. Exiting...");
+                    Toast.makeText(getContext(),
+                            R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
                     getActivity().finish();
                 }
                 if (mChange.revisions == null) {
                     Log.e(TAG, "Change has no revisions. Exiting...");
+                    Toast.makeText(getContext(),
+                            R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
                     getActivity().finish();
                 }
 
             } catch (IOException ex) {
                 Log.e(TAG, "Failed to load change cached data", ex);
+                Toast.makeText(getContext(),
+                        R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
 

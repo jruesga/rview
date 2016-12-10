@@ -97,7 +97,7 @@ public class ExceptionHelper {
             case 403: //Forbidden
                 return R.string.exception_insufficient_permissions;
             case 404: //Not found
-                return R.string.exception_not_found;
+                return R.string.exception_request_data_not_found;
             case 409: //Conflict
                 return R.string.exception_conflict;
             default:

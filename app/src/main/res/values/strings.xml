@@ -76,13 +76,14 @@
     <string name="exception_invalid_user_password">Invalid user or password</string>
     <string name="exception_invalid_request">Invalid request</string>
     <string name="exception_insufficient_permissions">Insufficient permissions</string>
-    <string name="exception_not_found">Request data not found</string>
+    <string name="exception_request_data_not_found">Request data not found</string>
     <string name="exception_conflict">Operation cannot be performed. There is a conflict.</string>
     <string name="exception_bad_request">Bad request</string>
     <string name="exception_request_error">Request error</string>
     <string name="exception_operation_failed">Operation failed</string>
     <string name="exception_cannot_handle_link">Cannot handle link: <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
     <string name="exception_cannot_share_link">No activity found to share link with</string>
+    <string name="exception_item_not_found">Item not found</string>
 
     <!-- Formats -->
     <string name="account_suggest_format">\u0022<xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e\u0022</string>
