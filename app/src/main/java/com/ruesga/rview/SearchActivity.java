@@ -86,6 +86,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private static final int FETCH_SUGGESTIONS_MESSAGE = 1;
 
+    private static final String EXTRA_REVEALED = "revealed";
+
     @SuppressWarnings({"UnusedParameters", "unused"})
     @ProguardIgnored
     public static class EventHandlers {
@@ -288,7 +290,19 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
         configureSearchHint();
 
-        enterReveal();
+        boolean revealed = false;
+        if (savedInstanceState != null) {
+            revealed = savedInstanceState.getBoolean(EXTRA_REVEALED, false);
+        }
+        if (!revealed) {
+            enterReveal();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_REVEALED, true);
     }
 
     @Override
