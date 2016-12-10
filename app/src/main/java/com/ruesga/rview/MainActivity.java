@@ -241,12 +241,12 @@ public class MainActivity extends ChangeListBaseActivity {
             } else {
                 // Navigate to current item
                 requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
-                        ? defaultMenu : mModel.currentNavigationItemId, true);
+                        ? defaultMenu : mModel.currentNavigationItemId, true, false);
             }
         } else {
             // Navigate to current item
             requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
-                    ? defaultMenu : mModel.currentNavigationItemId, true);
+                    ? defaultMenu : mModel.currentNavigationItemId, true, false);
         }
     }
 
@@ -366,7 +366,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
         // Listen for click events and select the current one
         mBinding.drawerNavigationView.setDrawerNavigationItemSelectedListener(item -> {
-            requestNavigateTo(item.getItemId(), false);
+            requestNavigateTo(item.getItemId(), false, true);
             return true;
         });
 
@@ -445,7 +445,7 @@ public class MainActivity extends ChangeListBaseActivity {
         return false;
     }
 
-    private void requestNavigateTo(int itemId, boolean force) {
+    private void requestNavigateTo(int itemId, boolean force, boolean async) {
         // Select the item
         final boolean navigate = performSelectItem(itemId, force);
 
@@ -457,7 +457,11 @@ public class MainActivity extends ChangeListBaseActivity {
         }
 
         if (navigate) {
-            Message.obtain(mUiHandler, MESSAGE_NAVIGATE_TO).sendToTarget();
+            if (async) {
+                Message.obtain(mUiHandler, MESSAGE_NAVIGATE_TO).sendToTarget();
+            } else {
+                performNavigateTo();
+            }
         }
     }
 
@@ -637,7 +641,7 @@ public class MainActivity extends ChangeListBaseActivity {
         internalPerformShowAccount(false);
 
         // And navigate to the default menu
-        requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount), true);
+        requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount), true, true);
     }
 
     private void requestAccountDeletion() {
@@ -787,7 +791,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
             if (mModel.currentNavigationItemId == menuId) {
                 int defaultMenu = Preferences.getAccountHomePageId(this, mAccount);
-                requestNavigateTo(defaultMenu, true);
+                requestNavigateTo(defaultMenu, true, true);
             }
             updateAccountCustomFilters();
         }
