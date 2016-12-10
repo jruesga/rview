@@ -93,6 +93,7 @@
             android:name=".SearchActivity"
             android:theme="@style/AppTheme.Translucent"
             android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:excludeFromRecents="true"
             android:exported="false" />
 

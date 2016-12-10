@@ -33,7 +33,7 @@ ext {
         picasso2_okhttp3_downloader : '1.1.0',
         prettytime                  : '4.0.1.Final',
         flowlayout                  : '1.10',
-        floatingsearchview          : '0b237ad5bb',
+        floatingsearchview          : 'f92e54c2da',
         androidsvg                  : 'd4ec6d8d13',
         aboutlibraries              : '5.9.1',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml

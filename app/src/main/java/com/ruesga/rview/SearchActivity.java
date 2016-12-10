@@ -67,6 +67,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -102,17 +103,24 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private static class Suggestion implements SearchSuggestion {
 
         private final String mFilter;
+        private final String mPartial;
         private final String mSuggestionText;
         private final int mSuggestionIcon;
 
         Suggestion(String filter, String suggestion, @DrawableRes int icon) {
+            this(filter, "", suggestion, icon);
+        }
+
+        Suggestion(String filter, String partial, String suggestion, @DrawableRes int icon) {
             mFilter = filter;
+            mPartial = partial;
             mSuggestionText = suggestion;
             mSuggestionIcon = icon;
         }
 
         Suggestion(Parcel in) {
             mFilter = in.readString();
+            mPartial = in.readString();
             mSuggestionText = in.readString();
             mSuggestionIcon = in.readInt();
         }
@@ -125,13 +133,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
         @Override
         public void writeToParcel(Parcel parcel, int flags) {
             parcel.writeString(mFilter);
+            parcel.writeString(mPartial);
             parcel.writeString(mSuggestionText);
             parcel.writeInt(mSuggestionIcon);
         }
 
         @Override
         public String getBody() {
-            return mSuggestionText;
+            return mPartial + mSuggestionText;
         }
 
         public static final Creator<Suggestion> CREATOR = new Creator<Suggestion>() {
@@ -203,6 +212,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private RxLoader1<String, Pair<String, List<AccountInfo>>> mAccountSuggestionsLoader;
     private RxLoader1<String, Pair<String, Map<String, ProjectInfo>>> mProjectSuggestionsLoader;
 
+    private List<String> mSuggestions;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,6 +221,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mSuggestionIcon = ContextCompat.getDrawable(this, R.drawable.ic_search);
         DrawableCompat.setTint(mSuggestionIcon, ContextCompat.getColor(
                 this, R.color.gray_active_icon));
+
+        fillSuggestions();
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.search_activity);
         mBinding.setHandlers(new EventHandlers(this));
@@ -232,9 +245,15 @@ public class SearchActivity extends AppCompatDelegateActivity {
         // Configure the search view
         mBinding.searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
-            public void onSuggestionClicked(SearchSuggestion suggestion) {
+            public boolean onSuggestionClicked(SearchSuggestion suggestion) {
+                if (mCurrentOption == Constants.SEARCH_MODE_CUSTOM) {
+                    return true;
+                }
+
+                // Directly complete the search
                 final Suggestion s = (Suggestion) suggestion;
                 performSearch(s.mSuggestionText);
+                return false;
             }
 
             @Override
@@ -371,6 +390,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 requestAccountSuggestions(filter);
                 break;
             case Constants.SEARCH_MODE_CUSTOM:
+                requestCustomSuggestions(filter);
                 break;
         }
     }
@@ -470,6 +490,37 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mAccountSuggestionsLoader.restart(filter);
     }
 
+    @SuppressWarnings("Convert2streamapi")
+    private void requestCustomSuggestions(String filter) {
+        // Do no perform suggestion when there are selection or cursor is not at the end
+        // of the textview
+        if (mBinding.searchView.getSelectionStart() != mBinding.searchView.getSelectionStart()
+                || mBinding.searchView.getSelectionStart() < mBinding.searchView.getText().length()) {
+            clearSuggestions();
+            return;
+        }
+
+        // Extract the current filter
+        int pos = filter.lastIndexOf(" ");
+        pos = pos == -1 ? 0 : ++pos;
+        String currentFilter = filter.substring(pos);
+        String partial = filter.substring(0, pos);
+        if (!TextUtils.isEmpty(currentFilter)) {
+            char c = filter.charAt(pos);
+            if (!Character.isLetter(c) && !Character.isDigit(c)) {
+                return;
+            }
+        }
+
+        final List<Suggestion> suggestions = new ArrayList<>();
+        for (String s : mSuggestions) {
+            if (s.startsWith(currentFilter)) {
+                suggestions.add(new Suggestion(currentFilter, partial, s, R.drawable.ic_search));
+            }
+        }
+        mBinding.searchView.swapSuggestions(suggestions);
+    }
+
     @SuppressWarnings("ConstantConditions")
     private Observable<Pair<String, Map<String, ProjectInfo>>> fetchProjectSuggestions(String filter) {
         final GerritApi api = ModelHelper.getGerritApi(this);
@@ -506,6 +557,22 @@ public class SearchActivity extends AppCompatDelegateActivity {
             }
         }
         return span;
+    }
+
+    private void fillSuggestions() {
+        mSuggestions = new ArrayList<>();
+        int count = ChangeQuery.FIELDS_NAMES.length;
+        for (int i = 0; i < count; i++) {
+            mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":");
+            if (ChangeQuery.SUGGEST_TYPES[i] != null && ChangeQuery.SUGGEST_TYPES[i].isEnum()) {
+                for (Object o : ChangeQuery.SUGGEST_TYPES[i].getEnumConstants()) {
+                    String val = String.valueOf(o).toLowerCase();
+                    mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":" + val + " ");
+                }
+            }
+        }
+
+        Collections.sort(mSuggestions);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
