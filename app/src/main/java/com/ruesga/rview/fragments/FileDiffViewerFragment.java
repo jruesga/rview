@@ -326,6 +326,10 @@ public class FileDiffViewerFragment extends Fragment {
                     Log.e(TAG, "Change cached data is null. Exiting...");
                     getActivity().finish();
                 }
+                if (mChange.revisions == null) {
+                    Log.e(TAG, "Change has no revisions. Exiting...");
+                    getActivity().finish();
+                }
 
             } catch (IOException ex) {
                 Log.e(TAG, "Failed to load change cached data", ex);
