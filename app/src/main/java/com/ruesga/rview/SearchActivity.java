@@ -519,11 +519,16 @@ public class SearchActivity extends AppCompatDelegateActivity {
         pos = pos == -1 ? 0 : ++pos;
         String currentFilter = filter.substring(pos);
         String partial = filter.substring(0, pos);
-        if (!TextUtils.isEmpty(currentFilter)) {
-            char c = filter.charAt(pos);
-            if (!Character.isLetter(c) && !Character.isDigit(c)) {
-                return;
-            }
+
+        // Some sanitize checks
+        if (TextUtils.isEmpty(currentFilter)) {
+            clearSuggestions();
+            return;
+        }
+        char c = filter.charAt(pos);
+        if (!Character.isLetter(c) && !Character.isDigit(c)) {
+            clearSuggestions();
+            return;
         }
 
         final List<Suggestion> suggestions = new ArrayList<>();
