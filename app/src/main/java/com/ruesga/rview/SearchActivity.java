@@ -30,7 +30,6 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.Spannable;
@@ -69,12 +68,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import me.tatarka.rxloader2.RxLoader1;
+import me.tatarka.rxloader2.RxLoader2;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
@@ -108,10 +106,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
         private final String mPartial;
         private final String mSuggestionText;
         private final int mSuggestionIcon;
-
-        Suggestion(String filter, String suggestion, @DrawableRes int icon) {
-            this(filter, "", suggestion, icon);
-        }
 
         Suggestion(String filter, String partial, String suggestion, @DrawableRes int icon) {
             mFilter = filter;
@@ -158,17 +152,29 @@ public class SearchActivity extends AppCompatDelegateActivity {
         };
     }
 
-    private final RxLoaderObserver<Pair<String, List<AccountInfo>>> mAccountSuggestionsObserver
-            = new RxLoaderObserver<Pair<String, List<AccountInfo>>>() {
+    private static class AccountInfoResult {
+        String mFilter;
+        String mPartial;
+        List<AccountInfo> mAccounts;
+    }
+
+    private static class ProjectInfoResult {
+        String mFilter;
+        String mPartial;
+        List<String> mProjects;
+    }
+
+    private final RxLoaderObserver<AccountInfoResult> mAccountSuggestionsObserver
+            = new RxLoaderObserver<AccountInfoResult>() {
         @Override
-        public void onNext(Pair<String, List<AccountInfo>> response) {
+        public void onNext(AccountInfoResult response) {
             if (mBinding.searchView != null) {
-                List<Suggestion> suggestions = new ArrayList<>(response.second.size());
-                for (AccountInfo account : response.second) {
+                List<Suggestion> suggestions = new ArrayList<>(response.mAccounts.size());
+                for (AccountInfo account : response.mAccounts) {
                     String suggestion = getString(
                             R.string.account_suggest_format, account.name, account.email);
-                    suggestions.add(new Suggestion(
-                            response.first, suggestion, R.drawable.ic_search));
+                    suggestions.add(new Suggestion(response.mFilter, response.mPartial,
+                            suggestion, R.drawable.ic_search));
                 }
                 mBinding.searchView.swapSuggestions(suggestions);
             }
@@ -176,17 +182,17 @@ public class SearchActivity extends AppCompatDelegateActivity {
     };
 
     @SuppressWarnings("Convert2streamapi")
-    private final RxLoaderObserver<Pair<String, Map<String, ProjectInfo>>> mProjectSuggestionsObserver
-            = new RxLoaderObserver<Pair<String, Map<String, ProjectInfo>>>() {
+    private final RxLoaderObserver<ProjectInfoResult> mProjectSuggestionsObserver
+            = new RxLoaderObserver<ProjectInfoResult>() {
         @Override
-        public void onNext(Pair<String, Map<String, ProjectInfo>> result) {
+        public void onNext(ProjectInfoResult result) {
             if (mBinding.searchView != null) {
-                List<Suggestion> suggestions = new ArrayList<>(result.second.size());
-                for (ProjectInfo project : result.second.values()) {
+                List<Suggestion> suggestions = new ArrayList<>(result.mProjects.size());
+                for (String project : result.mProjects) {
                     try {
                         suggestions.add(new Suggestion(
-                                result.first,
-                                URLDecoder.decode(project.id, "UTF-8"),
+                                result.mFilter, result.mPartial,
+                                URLDecoder.decode(project, "UTF-8"),
                                 R.drawable.ic_search));
                     } catch (UnsupportedEncodingException ex) {
                         // Ignore
@@ -211,8 +217,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private int[] mIcons;
     private Drawable mSuggestionIcon;
 
-    private RxLoader1<String, Pair<String, List<AccountInfo>>> mAccountSuggestionsLoader;
-    private RxLoader1<String, Pair<String, Map<String, ProjectInfo>>> mProjectSuggestionsLoader;
+    private RxLoader2<String, String, AccountInfoResult> mAccountSuggestionsLoader;
+    private RxLoader2<String, String, ProjectInfoResult> mProjectSuggestionsLoader;
 
     private List<String> mSuggestions;
 
@@ -398,10 +404,10 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 // We cannot show suggestion on this modes
                 break;
             case Constants.SEARCH_MODE_PROJECT:
-                requestProjectSuggestions(filter);
+                requestProjectSuggestions(filter, "");
                 break;
             case Constants.SEARCH_MODE_USER:
-                requestAccountSuggestions(filter);
+                requestAccountSuggestions(filter, "");
                 break;
             case Constants.SEARCH_MODE_CUSTOM:
                 requestCustomSuggestions(filter);
@@ -487,21 +493,45 @@ public class SearchActivity extends AppCompatDelegateActivity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Pair<String, List<AccountInfo>>> fetchAccountSuggestions(String filter) {
+    private Observable<AccountInfoResult> fetchAccountSuggestions(String filter, String partial) {
         final GerritApi api = ModelHelper.getGerritApi(this);
         return SafeObservable.fromNullCallable(() -> {
-                    List<AccountInfo> accounts =
+                    AccountInfoResult result = new AccountInfoResult();
+                    result.mFilter = filter;
+                    result.mPartial = partial;
+                    result.mAccounts =
                             api.getAccountsSuggestions(
                                     filter, MAX_SUGGESTIONS, Option.INSTANCE).blockingFirst();
-                    return new Pair<>(filter, accounts);
+                    return result;
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private void requestAccountSuggestions(String filter) {
+    private void requestAccountSuggestions(String filter, String partial) {
         mAccountSuggestionsLoader.clear();
-        mAccountSuggestionsLoader.restart(filter);
+        mAccountSuggestionsLoader.restart(filter, partial);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<ProjectInfoResult> fetchProjectSuggestions(String filter, String partial) {
+        final GerritApi api = ModelHelper.getGerritApi(this);
+        return SafeObservable.fromNullCallable(() -> {
+                    ProjectInfoResult result = new ProjectInfoResult();
+                    result.mFilter = filter;
+                    result.mPartial = partial;
+                    result.mProjects = new ArrayList<>(
+                            api.getProjects(MAX_SUGGESTIONS, null, null, null, filter,
+                                null, null, null, ProjectType.ALL, null).blockingFirst().keySet());
+                    return result;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void requestProjectSuggestions(String filter, String partial) {
+        mProjectSuggestionsLoader.clear();
+        mProjectSuggestionsLoader.restart(filter, partial);
     }
 
     @SuppressWarnings("Convert2streamapi")
@@ -531,6 +561,29 @@ public class SearchActivity extends AppCompatDelegateActivity {
             return;
         }
 
+
+        // Extract the token
+        pos = currentFilter.indexOf(":");
+        if (pos != -1) {
+            String token = currentFilter.substring(0, pos);
+            currentFilter = currentFilter.substring(pos + 1);
+            partial += token + ":";
+            if (TextUtils.isEmpty(currentFilter)) {
+                clearSuggestions();
+                return;
+            }
+
+            final int index = Arrays.asList(ChangeQuery.FIELDS_NAMES).indexOf(token);
+            if (index != -1) {
+                Class clazz = ChangeQuery.SUGGEST_TYPES[index];
+                if (clazz.equals(AccountInfo.class)) {
+                    requestAccountSuggestions(currentFilter, partial);
+                } else if (clazz.equals(ProjectInfo.class)) {
+                    requestProjectSuggestions(currentFilter, partial);
+                }
+            }
+        }
+
         final List<Suggestion> suggestions = new ArrayList<>();
         for (String s : mSuggestions) {
             if (s.startsWith(currentFilter)) {
@@ -538,24 +591,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
             }
         }
         mBinding.searchView.swapSuggestions(suggestions);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private Observable<Pair<String, Map<String, ProjectInfo>>> fetchProjectSuggestions(String filter) {
-        final GerritApi api = ModelHelper.getGerritApi(this);
-        return SafeObservable.fromNullCallable(() -> {
-                    Map<String, ProjectInfo> projects =
-                            api.getProjects(MAX_SUGGESTIONS, null, null, null, filter,
-                                null, null, null, ProjectType.ALL, null).blockingFirst();
-                    return new Pair<>(filter, projects);
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    private void requestProjectSuggestions(String filter) {
-        mProjectSuggestionsLoader.clear();
-        mProjectSuggestionsLoader.restart(filter);
     }
 
     private CharSequence performFilterHighlight(Suggestion suggestion) {
