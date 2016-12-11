@@ -726,7 +726,19 @@ public class TagEditTextView extends LinearLayout {
     protected void onRestoreInstanceState(Parcelable state) {
         //begin boilerplate code so parent classes can restore state
         if(!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
+            // TODO Something got a bad state from a wrong class
+            // "Wrong state class, expecting View State but received class
+            // android.widget.TextView$SavedState instead. This usually happens when two views of
+            // different type have the same id in the same hierarchy. This view's id
+            // is id/tags_labels. Make sure other views do not use the same id."
+            // Not sure where this comes from, since tags_labels is unique and
+            // this class has a consistent layout, but receiving the state of a TextView.
+            // For now just ensure we don't crash the app because a wrong saved state.
+            try {
+                super.onRestoreInstanceState(state);
+            } catch (IllegalArgumentException ex) {
+                // Ignore
+            }
             return;
         }
 
