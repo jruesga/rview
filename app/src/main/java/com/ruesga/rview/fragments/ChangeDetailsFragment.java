@@ -67,7 +67,6 @@ import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.DraftActionType;
-import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
 import com.ruesga.rview.gerrit.model.NotifyType;
@@ -80,7 +79,6 @@ import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SideType;
-import com.ruesga.rview.gerrit.model.StarInput;
 import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.TopicInput;
@@ -754,7 +752,8 @@ public class ChangeDetailsFragment extends Fragment {
         public void onNext(List<String> value) {
             mResponse.mTags = value;
             mBinding.changeInfo.setTags(mResponse.mTags);
-            mBinding.changeInfo.tagsLabels.setTags(createTags(mResponse.mTags));
+            // TODO Handle tags when 2.14 become stable
+            //mBinding.changeInfo.tagsLabels.setTags(createTags(mResponse.mTags));
             mBinding.executePendingBindings();
         }
 
@@ -1040,9 +1039,10 @@ public class ChangeDetailsFragment extends Fragment {
                 mCurrentRevision.equals(response.mChange.currentRevision));
 
         mBinding.changeInfo.setTags(response.mTags);
-        mBinding.changeInfo.tagsLabels.setTags(createTags(response.mTags));
+        // TODO Handle tags when 2.14 become stable
+        /*mBinding.changeInfo.tagsLabels.setTags(createTags(response.mTags));
         mBinding.changeInfo.tagsLabels.setOnTagClickListener(
-                tag -> performApplyTagFilter(tag.toPlainTag().toString()));
+                tag -> performApplyTagFilter(tag.toPlainTag().toString()));*/
     }
 
     private void updateReviewInfo(DataResponse response) {
@@ -1132,11 +1132,12 @@ public class ChangeDetailsFragment extends Fragment {
                     }),
                     SafeObservable.fromNullCallable(() -> {
                         // Do no fetch star labels if the account is not authenticated
-                        if (api.supportsFeature(Features.CHANGE_STAR_LABELS)
+                        // TODO Handle tags when 2.14 become stable
+                        /*if (api.supportsFeature(Features.CHANGE_STAR_LABELS)
                                 && mAccount.hasAuthenticatedAccessMode()) {
                             return api.getStarLabelsFromChange(GerritApi.SELF_ACCOUNT, changeId)
                                     .blockingFirst();
-                        }
+                        }*/
                         return new ArrayList<>();
                     }),
                     this::combineResponse
@@ -1299,7 +1300,8 @@ public class ChangeDetailsFragment extends Fragment {
     @SuppressWarnings("ConstantConditions")
     private Observable<List<String>> updateTags(
             final List<Tag> oldTags, final List<Tag> newTags) {
-        final Context ctx = getActivity();
+        //TODO Handle tags when 2.14 become stable
+        /*final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
 
         final StarInput input = new StarInput();
@@ -1316,6 +1318,8 @@ public class ChangeDetailsFragment extends Fragment {
                             .blockingFirst())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+        */
+        return Observable.just(new ArrayList<>());
     }
 
     private void setupSwipeToRefresh() {
@@ -1653,14 +1657,15 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performShowChangeTagsDialog(View v) {
-        final Tag[] tags = mBinding.changeInfo.tagsLabels.getTags();
+        // TODO Handle tags when 2.14 become stable
+        /*final Tag[] tags = mBinding.changeInfo.tagsLabels.getTags();
         String title = getString(R.string.change_star_labels_title);
         String action = getString(R.string.action_save);
 
         TagEditDialogFragment fragment = TagEditDialogFragment.newInstance(
                 title, tags, action, v);
         fragment.setOnEditChanged(newTags -> performUpdateChangeTags(tags, newTags));
-        fragment.show(getChildFragmentManager(), TagEditDialogFragment.TAG);
+        fragment.show(getChildFragmentManager(), TagEditDialogFragment.TAG);*/
     }
 
     private void performShowChooseBaseDialog(View v, OnFilterSelectedListener cb) {
