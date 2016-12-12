@@ -576,10 +576,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
             final int index = Arrays.asList(ChangeQuery.FIELDS_NAMES).indexOf(token);
             if (index != -1) {
                 Class clazz = ChangeQuery.SUGGEST_TYPES[index];
-                if (clazz.equals(AccountInfo.class)) {
-                    requestAccountSuggestions(currentFilter, partial);
-                } else if (clazz.equals(ProjectInfo.class)) {
-                    requestProjectSuggestions(currentFilter, partial);
+                if (clazz != null) {
+                    if (clazz.equals(AccountInfo.class)) {
+                        requestAccountSuggestions(currentFilter, partial);
+                        return;
+                    } else if (clazz.equals(ProjectInfo.class)) {
+                        requestProjectSuggestions(currentFilter, partial);
+                        return;
+                    }
                 }
             }
         }
