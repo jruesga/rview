@@ -426,7 +426,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onTagsEditPressed}"
                     android:layout_gravity="center_vertical"
-                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; isOwner &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
                     tools:ignore="ContentDescription"/>
             </LinearLayout>
             <LinearLayout
