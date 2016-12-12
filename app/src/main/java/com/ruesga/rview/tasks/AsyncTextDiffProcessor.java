@@ -49,7 +49,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     public static final int SKIPPED_LINES = 10;
 
     private final Pattern HIGHLIGHT_TRAIL_SPACES_PATTERN
-            = Pattern.compile("\\s+$", Pattern.MULTILINE);
+            = Pattern.compile("( )+$", Pattern.MULTILINE);
 
     private final Context mContext;
     private final int mMode;
