@@ -40,6 +40,8 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     public UnwrappedLinearLayoutManager(Context context,
             int prefetchedMeasuredChildWidth, int prefetchedMeasuredChildHeight) {
         super(context);
+        mPrefetchedMeasuredWidth = prefetchedMeasuredChildWidth;
+        mPrefetchedMeasuredHeight = prefetchedMeasuredChildHeight;
     }
 
     public void setPrefetchedMeasuredWidth(int prefetchedMeasuredWidth) {
