@@ -48,6 +48,7 @@ import me.tatarka.rxloader2.RxLoader;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
@@ -208,7 +209,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     @SuppressWarnings("ConstantConditions")
     private Observable<Boolean> checkNotificationsSupport() {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
-        return Observable.fromCallable(() -> {
+        return SafeObservable.fromNullCallable(() -> {
                 String device = FirebaseInstanceId.getInstance().getToken();
                 if (TextUtils.isEmpty(device)) {
                     // Just use a default one. We don't need a real device to test
