@@ -1653,6 +1653,11 @@ class GerritApiClient implements GerritApi {
     // https://github.com/jruesga/gerrit-cloud-notifications-plugin
 
     @Override
+    public Observable<CloudNotificationsConfigInfo> getCloudNotificationsConfig() {
+        return withVersionRequestCheck(mService.getCloudNotificationsConfig());
+    }
+
+    @Override
     public Observable<List<CloudNotificationInfo>> listCloudNotifications(
             @NonNull String accountId, @NonNull String deviceId) {
         return withVersionRequestCheck(mService.listCloudNotifications(accountId, deviceId));

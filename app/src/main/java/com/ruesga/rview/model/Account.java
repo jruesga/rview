@@ -32,7 +32,7 @@ public class Account implements Parcelable, Comparable<Account> {
     @SerializedName("repo") public Repository mRepository;
     @SerializedName("account") public AccountInfo mAccount;
     @SerializedName("token") public String mToken;
-    @SerializedName("supportNotifications") public boolean mSupportNotifications;
+    @SerializedName("notificationsSenderId") public String mNotificationsSenderId;
 
     public Account() {
     }
@@ -43,7 +43,9 @@ public class Account implements Parcelable, Comparable<Account> {
         if (in.readInt() == 1) {
             mToken = in.readString();
         }
-        mSupportNotifications = in.readInt() == 1;
+        if (in.readInt() == 1) {
+            mNotificationsSenderId = in.readString();
+        }
     }
 
     public String getAccountDisplayName() {
@@ -59,6 +61,10 @@ public class Account implements Parcelable, Comparable<Account> {
 
     public boolean hasAuthenticatedAccessMode() {
         return mAccount.accountId != ANONYMOUS_ACCOUNT_ID;
+    }
+
+    public boolean hasNotificationsSupport() {
+        return !TextUtils.isEmpty(mNotificationsSenderId);
     }
 
     public boolean isSameAs(Account account) {
@@ -97,7 +103,10 @@ public class Account implements Parcelable, Comparable<Account> {
         if (mToken != null) {
             parcel.writeString(mToken);
         }
-        parcel.writeInt(mSupportNotifications ? 1 : 0);
+        parcel.writeInt(hasNotificationsSupport() ? 1 : 0);
+        if (hasNotificationsSupport()) {
+            parcel.writeString(mNotificationsSenderId);
+        }
     }
 
     @Override

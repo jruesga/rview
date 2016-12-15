@@ -23,6 +23,8 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.providers.NotificationEntity;
@@ -66,6 +68,16 @@ public class RviewApplication extends Application {
                 Log.e(TAG, "Cannot configure Fabric", ex);
             }
         }
+
+        // Configure Firebase (just an empty stub to set empty sender ids). Senders
+        // ids will be fetched from the Gerrit server instances.
+        FirebaseOptions options = new FirebaseOptions.Builder()
+                .setApplicationId(getString(R.string.fcm_app_id))
+                .setApiKey(getString(R.string.fcm_api_key))
+                .setGcmSenderId(null)
+                .build();
+        FirebaseApp.initializeApp(getApplicationContext(), options);
+
 
         // Initialize application resources
         Formatter.refreshCachedPreferences(getApplicationContext());

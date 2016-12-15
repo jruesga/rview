@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.model.CloudNotificationsConfigInfo;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
@@ -62,12 +63,12 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         return new AccountSettingsFragment();
     }
 
-    private final RxLoaderObserver<Boolean> mNotificationsSupportObserver
-            = new RxLoaderObserver<Boolean>() {
+    private final RxLoaderObserver<CloudNotificationsConfigInfo> mNotificationsSupportObserver
+            = new RxLoaderObserver<CloudNotificationsConfigInfo>() {
         @Override
-        public void onNext(Boolean result) {
-            if (result) {
-                mAccount.mSupportNotifications = true;
+        public void onNext(CloudNotificationsConfigInfo config) {
+            if (config != null) {
+                mAccount.mNotificationsSenderId = config.senderId;
                 Preferences.addOrUpdateAccount(getContext(), mAccount);
                 Preferences.setAccount(getContext(), mAccount);
                 enableNotificationsSupport();
@@ -83,7 +84,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     private Preference mNotificationsEnabled;
     private Preference mNotificationsEvents;
 
-    private RxLoader<Boolean> mNotificationsSupportLoader;
+    private RxLoader<CloudNotificationsConfigInfo> mNotificationsSupportLoader;
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -198,7 +199,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
                 getPreferenceScreen().removePreference(mNotificationsCategory);
                 mNotificationsCategory = null;
             }
-        } else if (mAccount.mSupportNotifications) {
+        } else if (mAccount.hasNotificationsSupport()) {
             enableNotificationsSupport();
         } else {
             // Check notification support to server
@@ -207,7 +208,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Boolean> checkNotificationsSupport() {
+    private Observable<CloudNotificationsConfigInfo> checkNotificationsSupport() {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         return SafeObservable.fromNullCallable(() -> {
                 String device = FirebaseInstanceId.getInstance().getToken();
@@ -216,8 +217,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
                     // notifications support.
                     device = "test";
                 }
-                api.listCloudNotifications(GerritApi.SELF_ACCOUNT, device).blockingFirst();
-                return true;
+                return api.getCloudNotificationsConfig().blockingFirst();
             })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());

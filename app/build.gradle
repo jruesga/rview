@@ -55,6 +55,11 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         applicationId 'com.ruesga.rview'
+
+        resValue "string", "fcm_app_id", "1:577867348267:android:01dee9b4cab97d4a"
+        resValue "string", "fcm_api_key", "<empty>"
+
+        return void;
     }
 
     dataBinding {
@@ -114,6 +119,5 @@ android {
     return void;
 }
 
-apply plugin: 'com.google.gms.google-services'
 apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'

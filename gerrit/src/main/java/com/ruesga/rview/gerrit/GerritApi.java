@@ -1841,7 +1841,13 @@ public interface GerritApi {
     // https://github.com/jruesga/gerrit-cloud-notifications-plugin
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#list-cloud-notifications"
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#get-cloud-notifications-config"
+     */
+    @GET("config/server/cloud-notifications")
+    Observable<CloudNotificationsConfigInfo> getCloudNotificationsConfig();
+
+    /**
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#list-cloud-notifications"
      */
     @GET("accounts/{account-id}/devices/{device-id}/tokens")
     Observable<List<CloudNotificationInfo>> listCloudNotifications(
@@ -1849,7 +1855,7 @@ public interface GerritApi {
             @NonNull @Path("device-id") String deviceId);
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#get-cloud-notification"
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#get-cloud-notification"
      */
     @GET("accounts/{account-id}/devices/{device-id}/tokens/{token}")
     Observable<CloudNotificationInfo> getCloudNotification(
@@ -1858,7 +1864,7 @@ public interface GerritApi {
             @NonNull @Path("token") String token);
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#register-cloud-notification"
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#register-cloud-notification"
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("accounts/{account-id}/devices/{device-id}/tokens")
@@ -1868,7 +1874,7 @@ public interface GerritApi {
             @NonNull @Body CloudNotificationInput input);
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#unregister-cloud-notification"
+     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#unregister-cloud-notification"
      */
     @DELETE("accounts/{account-id}/devices/{device-id}/tokens/{token}")
     Observable<Void> unregisterCloudNotification(

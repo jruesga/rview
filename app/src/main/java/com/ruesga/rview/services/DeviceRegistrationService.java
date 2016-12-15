@@ -28,6 +28,7 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
+import java.io.IOException;
 import java.util.List;
 
 import me.tatarka.rxloader2.safe.SafeObservable;
@@ -38,6 +39,8 @@ public class DeviceRegistrationService extends IntentService {
 
     public static final String REGISTER_DEVICE_ACTION = "com.ruesga.rview.actions.REGISTER_DEVICE";
     public static final String EXTRA_ACCOUNT = "account";
+
+    private static final String TOKEN_SCOPE = "FCM";
 
     public DeviceRegistrationService() {
         super(TAG);
@@ -51,7 +54,7 @@ public class DeviceRegistrationService extends IntentService {
             List<Account> accounts = Preferences.getAccounts(this);
             for (Account acct : accounts) {
                 // Only those accounts that can and wants notifications
-                if (acct.mSupportNotifications &&
+                if (acct.hasNotificationsSupport() &&
                         acct.hasAuthenticatedAccessMode() &&
                         account == null || acct.getAccountHash().equals(account)) {
                     // Perform registration in background
@@ -71,7 +74,7 @@ public class DeviceRegistrationService extends IntentService {
     }
 
     private void performDeviceRegistration(Context ctx, Account account) {
-        String deviceId = FirebaseInstanceId.getInstance().getToken();
+        String deviceId = getToken(account);
         if (deviceId == null) {
             return;
         }
@@ -94,7 +97,7 @@ public class DeviceRegistrationService extends IntentService {
     }
 
     private void performDeviceUnregistration(Context ctx, Account account) {
-        String deviceId = FirebaseInstanceId.getInstance().getToken();
+        String deviceId = getToken(account);
         if (deviceId == null) {
             return;
         }
@@ -109,5 +112,21 @@ public class DeviceRegistrationService extends IntentService {
         } catch (Exception ex) {
             Log.e(TAG, "Failed to unregister device: " + deviceId + "/" + accountToken, ex);
         }
+    }
+
+    private String getToken(Account account) {
+        String deviceId = FirebaseInstanceId.getInstance().getToken();
+        if (deviceId == null) {
+            return null;
+        }
+
+        try {
+            return FirebaseInstanceId.getInstance().getToken(
+                    account.mNotificationsSenderId, TOKEN_SCOPE);
+        } catch (IOException ex) {
+            // ignore
+        }
+
+        return null;
     }
 }

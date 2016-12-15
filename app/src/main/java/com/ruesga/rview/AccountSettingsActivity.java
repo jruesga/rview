@@ -77,7 +77,7 @@ public class AccountSettingsActivity extends AppCompatDelegateActivity {
         // Register the account to push notifications
         Account account = Preferences.getAccount(this);
         if (account != null && account.hasAuthenticatedAccessMode()
-                && account.mSupportNotifications) {
+                && account.hasNotificationsSupport()) {
             // Register device
             Intent intent = new Intent(this, DeviceRegistrationService.class);
             intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
