@@ -328,12 +328,14 @@ public class FileDiffViewerFragment extends Fragment {
                     Toast.makeText(getContext(),
                             R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
                     getActivity().finish();
+                    return;
                 }
                 if (mChange.revisions == null) {
                     Log.e(TAG, "Change has no revisions. Exiting...");
                     Toast.makeText(getContext(),
                             R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
                     getActivity().finish();
+                    return;
                 }
 
             } catch (IOException ex) {
@@ -341,6 +343,7 @@ public class FileDiffViewerFragment extends Fragment {
                 Toast.makeText(getContext(),
                         R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
+                return;
             }
 
             // Fetch or join current loader
