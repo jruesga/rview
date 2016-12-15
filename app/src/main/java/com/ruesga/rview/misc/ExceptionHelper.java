@@ -28,6 +28,7 @@ import com.ruesga.rview.model.EmptyState;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
+import java.net.SocketTimeoutException;
 
 public class ExceptionHelper {
     @SuppressWarnings("SimplifiableIfStatement")
@@ -71,7 +72,8 @@ public class ExceptionHelper {
 
         } else if (isException(cause, ConnectException.class)
                 || isException(cause, NoRouteToHostException.class)
-                || isException(cause, PortUnreachableException.class)) {
+                || isException(cause, PortUnreachableException.class)
+                || isException(cause, SocketTimeoutException.class)) {
             message = R.string.exception_server_cannot_be_reached;
 
         } else if (isException(cause, IllegalQueryExpressionException.class)) {
@@ -121,7 +123,8 @@ public class ExceptionHelper {
     public static boolean hasServerConnectivity(Throwable cause) {
         return !(isException(cause, ConnectException.class)
                 || isException(cause, NoRouteToHostException.class)
-                || isException(cause, PortUnreachableException.class));
+                || isException(cause, PortUnreachableException.class)
+                || isException(cause, SocketTimeoutException.class));
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
