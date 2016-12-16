@@ -611,6 +611,11 @@ class GerritApiClient implements GerritApi {
         return withVersionRequestCheck(mService.signContributorAgreement(accountId, input));
     }
 
+    @Override
+    public Observable<Void> indexAccount(@NonNull String accountId) {
+        return withVersionRequestCheck(withEmptyObservable(mService.indexAccount(accountId)));
+    }
+
 
 
     // ===============================

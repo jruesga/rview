@@ -530,6 +530,14 @@ public interface GerritApi {
             @NonNull @Path("account-id") String accountId,
             @NonNull @Body ContributorAgreementInput input);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#index-account"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/index")
+    Observable<Void> indexAccount(
+            @NonNull @Path("account-id") String accountId);
+
 
 
     // ===============================
