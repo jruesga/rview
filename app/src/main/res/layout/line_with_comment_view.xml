@@ -21,6 +21,7 @@
 
     <data>
         <variable name="model" type="com.ruesga.rview.gerrit.model.CommentInfo" />
+        <variable name="handlers" type="com.ruesga.rview.widget.LinesWithCommentsView.EventHandlers" />
     </data>
 
     <LinearLayout
@@ -31,11 +32,14 @@
         android:orientation="horizontal">
 
         <com.ruesga.rview.widget.StyleableTextView
-            android:layout_width="@dimen/line_min_width"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="@dimen/line_min_width"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorPrimaryDark"
             app:commentLine="@{model}"
+            android:onClick="@{handlers::onItemClicked}"
+            android:tag="@{model}"
             android:textSize="11sp"
             tools:ignore="Deprecated,SmallSp"/>
 

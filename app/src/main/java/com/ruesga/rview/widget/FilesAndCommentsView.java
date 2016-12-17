@@ -32,6 +32,7 @@ import java.util.Map;
 
 public class FilesAndCommentsView extends LinearLayout {
     private List<FileAndCommentsViewBinding> mBindings = new ArrayList<>();
+    private LinesWithCommentsView.OnLineClickListener mClickListener;
 
     public FilesAndCommentsView(Context context) {
         this(context, null);
@@ -66,6 +67,7 @@ public class FilesAndCommentsView extends LinearLayout {
                 FileAndCommentsViewBinding binding = mBindings.get(n);
                 String file = entry.getKey();
                 binding.setFile(file);
+                binding.lineComments.listenOn(mClickListener);
                 binding.lineComments.from(entry.getValue());
                 binding.getRoot().setVisibility(View.VISIBLE);
                 n++;
@@ -76,6 +78,11 @@ public class FilesAndCommentsView extends LinearLayout {
             binding.getRoot().setVisibility(View.GONE);
         }
 
+        return this;
+    }
+
+    public FilesAndCommentsView listenOn(LinesWithCommentsView.OnLineClickListener cb) {
+        mClickListener = cb;
         return this;
     }
 

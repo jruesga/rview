@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.LineWithCommentViewBinding;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 
@@ -30,7 +31,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LinesWithCommentsView extends LinearLayout {
-    private List<LineWithCommentViewBinding> mBindings = new ArrayList<>();
+    public interface OnLineClickListener {
+        void onLineClick(View v);
+    }
+
+    @ProguardIgnored
+    @SuppressWarnings({"UnusedParameters", "unused"})
+    public static class EventHandlers {
+        private final LinesWithCommentsView mView;
+
+        public EventHandlers(LinesWithCommentsView view) {
+            mView = view;
+        }
+
+        public void onItemClicked(View v) {
+            if (mView.mClickListener != null) {
+                mView.mClickListener.onLineClick(v);
+            }
+        }
+    }
+
+    private final List<LineWithCommentViewBinding> mBindings = new ArrayList<>();
+    private final EventHandlers mHandlers;
+    private OnLineClickListener mClickListener;
 
     public LinesWithCommentsView(Context context) {
         this(context, null);
@@ -42,6 +65,7 @@ public class LinesWithCommentsView extends LinearLayout {
 
     public LinesWithCommentsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mHandlers = new EventHandlers(this);
     }
 
     public LinesWithCommentsView from(List<CommentInfo> comments) {
@@ -63,6 +87,9 @@ public class LinesWithCommentsView extends LinearLayout {
         for (CommentInfo comment : comments) {
             LineWithCommentViewBinding binding = mBindings.get(n);
             binding.setModel(comment);
+            if (mClickListener != null) {
+                binding.setHandlers(mHandlers);
+            }
             binding.getRoot().setVisibility(View.VISIBLE);
             n++;
         }
@@ -74,4 +101,8 @@ public class LinesWithCommentsView extends LinearLayout {
         return this;
     }
 
+    public LinesWithCommentsView listenOn(OnLineClickListener cb) {
+        mClickListener = cb;
+        return this;
+    }
 }

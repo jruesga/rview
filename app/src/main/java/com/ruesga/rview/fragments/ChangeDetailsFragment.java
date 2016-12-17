@@ -97,6 +97,7 @@ import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.ruesga.rview.widget.DividerItemDecoration;
+import com.ruesga.rview.widget.LinesWithCommentsView.OnLineClickListener;
 import com.ruesga.rview.widget.TagEditTextView.Tag;
 import com.squareup.picasso.Picasso;
 
@@ -271,6 +272,11 @@ public class ChangeDetailsFragment extends Fragment {
             int position = (int) v.getTag();
             mFragment.performMessageClick(position);
         }
+
+        private void onNavigateToComment(View v) {
+            CommentInfo comment = (CommentInfo) v.getTag();
+            mFragment.performNavigateToComment(comment);
+        }
     }
 
     @ProguardIgnored
@@ -430,6 +436,13 @@ public class ChangeDetailsFragment extends Fragment {
         private final boolean mIsFolded;
         private final Picasso mPicasso;
 
+        private final OnLineClickListener mLineClickListener = new OnLineClickListener() {
+            @Override
+            public void onLineClick(View v) {
+                mEventHandlers.onNavigateToComment(v);
+            }
+        };
+
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
                 boolean isAuthenticated, boolean isFolded) {
             final Resources res = fragment.getResources();
@@ -493,7 +506,9 @@ public class ChangeDetailsFragment extends Fragment {
             holder.mBinding.setIsAuthenticated(mIsAuthenticated);
             holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);
-            holder.mBinding.comments.from(comments);
+            holder.mBinding.comments
+                    .listenOn(mLineClickListener)
+                    .from(comments);
             holder.mBinding.setFolded(mFolded[position]);
             holder.mBinding.setHandlers(mEventHandlers);
             holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
@@ -1430,6 +1445,20 @@ public class ChangeDetailsFragment extends Fragment {
                 mCurrentRevision, base, current, file, DIFF_REQUEST_CODE);
     }
 
+    private void performNavigateToComment(CommentInfo comment) {
+        // Resolve base diff
+        String base = null;
+        if (mDiffAgainstRevision != null) {
+            base = String.valueOf(mResponse.mChange.revisions.get(mDiffAgainstRevision).number);
+        }
+        String current = String.valueOf(comment.patchSet);
+
+        ArrayList<String> files = new ArrayList<>(mResponse.mFiles.keySet());
+        ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, files,
+                mCurrentRevision, base, current, comment.path, DIFF_REQUEST_CODE);
+
+    }
+
     private void sortRevisions(ChangeInfo change) {
         mAllRevisions.clear();
         for (String revision : change.revisions.keySet()) {
@@ -1905,6 +1934,7 @@ public class ChangeDetailsFragment extends Fragment {
         mMessageAdapter.changeFoldedStatus(position);
     }
 
+
     @SuppressWarnings("ConstantConditions")
     private void fetchNeededRevisionComments(DataResponse response) {
         if (!mIsInlineCommentsInMessages) {
@@ -1956,6 +1986,7 @@ public class ChangeDetailsFragment extends Fragment {
                     List<CommentInfo> items = comments.get(file);
                     if (items != null) {
                         for (CommentInfo comment : items) {
+                            comment.path = file;
                             if (comment.updated.compareTo(message.date) == 0 &&
                                     comment.author.accountId == message.author.accountId) {
                                 if (!mwc.containsKey(message.id)) {
