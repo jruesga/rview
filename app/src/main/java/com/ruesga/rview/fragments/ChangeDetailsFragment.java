@@ -1452,9 +1452,16 @@ public class ChangeDetailsFragment extends Fragment {
             base = String.valueOf(mResponse.mChange.revisions.get(mDiffAgainstRevision).number);
         }
         String current = String.valueOf(comment.patchSet);
+        String revision = mCurrentRevision;
+        for (String rev : mResponse.mChange.revisions.keySet()) {
+            if (mResponse.mChange.revisions.get(rev).number == comment.patchSet) {
+                revision = rev;
+                break;
+            }
+        }
 
         ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, null,
-                mCurrentRevision, base, current, comment.path, comment.id, DIFF_REQUEST_CODE);
+                revision, base, current, comment.path, comment.id, DIFF_REQUEST_CODE);
 
     }
 
