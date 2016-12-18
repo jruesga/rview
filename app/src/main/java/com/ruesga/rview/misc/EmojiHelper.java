@@ -109,7 +109,9 @@ public final class EmojiHelper {
             int count = TEXT.length;
             for (int i = 0; i < count; i++) {
                 if (msg.contains(TEXT[i])) {
-                    msg = msg.replaceAll(REGEXP[i], getEmijoByUnicode(CODES[i]));
+                    msg = msg
+                            .replaceAll("^" + REGEXP[i], getEmijoByUnicode(CODES[i]))
+                            .replaceAll(" " + REGEXP[i], " " + getEmijoByUnicode(CODES[i]));
                 }
             }
         }
