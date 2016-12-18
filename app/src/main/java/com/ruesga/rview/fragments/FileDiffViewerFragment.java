@@ -226,11 +226,12 @@ public class FileDiffViewerFragment extends Fragment {
     private boolean mHighlightTrailingWhitespaces;
     private boolean mHighlightIntralineDiffs;
     private int mScrollToPosition = -1;
+    private String mSkipLinesHistory;
 
     public static FileDiffViewerFragment newInstance(String revisionId, String file,
             String comment, int base, int revision, int mode, boolean wrap, float textSizeFactor,
             boolean highlightTabs, boolean highlightTrailingWhitespaces,
-            boolean highlightIntralineDiffs, int scrollToPosition) {
+            boolean highlightIntralineDiffs, int scrollToPosition, String skipLinesHistory) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
@@ -247,6 +248,7 @@ public class FileDiffViewerFragment extends Fragment {
         arguments.putBoolean("highlight_trailing_whitespaces", highlightTrailingWhitespaces);
         arguments.putBoolean("highlight_intraline_diffs", highlightIntralineDiffs);
         arguments.putInt("scrollToPosition", scrollToPosition);
+        arguments.putString("skipLinesHistory", skipLinesHistory);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -274,7 +276,8 @@ public class FileDiffViewerFragment extends Fragment {
                     .canEdit(mAccount.hasAuthenticatedAccessMode())
                     .highlightTabs(mHighlightTabs)
                     .highlightTrailingWhitespaces(mHighlightTrailingWhitespaces)
-                    .highlightIntralineDiffs(mHighlightIntralineDiffs);
+                    .highlightIntralineDiffs(mHighlightIntralineDiffs)
+                    .withSkipLinesHistory(mSkipLinesHistory);
                 if (mComment != null) {
                     v.scrollToComment(mComment);
                 } else if (mScrollToPosition != -1) {
@@ -306,6 +309,7 @@ public class FileDiffViewerFragment extends Fragment {
         mHighlightTrailingWhitespaces = getArguments().getBoolean("highlight_trailing_whitespaces");
         mHighlightIntralineDiffs = getArguments().getBoolean("highlight_intraline_diffs");
         mScrollToPosition = getArguments().getInt("scrollToPosition", -1);
+        mSkipLinesHistory = getArguments().getString("skipLinesHistory");
     }
 
     @Nullable
@@ -990,4 +994,9 @@ public class FileDiffViewerFragment extends Fragment {
     int getScrollPosition() {
         return mBinding.diff.getScrollPosition();
     }
+
+    String getSkipLinesHistory() {
+        return mBinding.diff.getSkipLinesHistory();
+    }
+
 }

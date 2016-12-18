@@ -181,7 +181,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             final FileDiffViewerFragment fragment = FileDiffViewerFragment.newInstance(
                     mRevisionId, mFile, mComment, base, revision, mMode, mWrap, mTextSizeFactor,
                     mHighlightTabs, mHighlightTrailingWhitespaces, mHighlightIntralineDiffs,
-                    mScrollPosition);
+                    mScrollPosition, mSkipLinesHistory);
             mFragment = new WeakReference<>(fragment);
             return fragment;
         }
@@ -362,6 +362,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     private boolean mIsBinary = false;
     private boolean mHasImagePreview = false;
     private int mScrollPosition = -1;
+    private String mSkipLinesHistory;
 
     private int mCurrentFile;
 
@@ -402,6 +403,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             mIsBinary = savedInstanceState.getBoolean("is_binary", false);
             mHasImagePreview = savedInstanceState.getBoolean("has_image_preview", false);
             mScrollPosition = savedInstanceState.getInt("scroll_position", -1);
+            mSkipLinesHistory = savedInstanceState.getString("skip_lines_history");
+
             applyModeRestrictions();
         }
 
@@ -539,6 +542,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         FileDiffViewerFragment fragment = mFragment.get();
         if (fragment != null) {
             outState.putInt("scroll_position", fragment.getScrollPosition());
+            outState.putString("skip_lines_history", fragment.getSkipLinesHistory());
         }
     }
 
@@ -824,6 +828,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             mCurrentFile = position;
             if (fromUser) {
                 mScrollPosition = -1;
+                mSkipLinesHistory = null;
             }
         });
         activity.getContentBinding().pagerController.currentPage(mCurrentFile, refresh, false);

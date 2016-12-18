@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.R;
 import com.ruesga.rview.annotations.ProguardIgnored;
@@ -261,6 +262,20 @@ public class DiffView extends FrameLayout {
         public String dimensionsRight;
     }
 
+    @ProguardIgnored
+    public static class SkipLinesOpHistory {
+        private static final int SKIP_ALL = 0;
+        private static final int SKIP_UP = -1;
+        private static final int SKIP_DOWN = 1;
+
+        @SerializedName("type") public int type;
+        @SerializedName("at") public final int at;
+
+        public SkipLinesOpHistory(int type, int at) {
+            this.type = type;
+            this.at = at;
+        }
+    }
 
     private class DiffAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private LayoutInflater mLayoutInflater;
@@ -268,20 +283,43 @@ public class DiffView extends FrameLayout {
         private final DiffViewMeasurement mDiffViewMeasurement = new DiffViewMeasurement();
         private final int mMode;
 
+        private final List<SkipLinesOpHistory> mSkipLinesOpHistory = new ArrayList<>();
+
         DiffAdapter(int mode) {
             mLayoutInflater = LayoutInflater.from(getContext());
             mMode = mode;
         }
 
-        private void update(List<AbstractModel> diffs) {
+        private void update(List<AbstractModel> diffs, List<SkipLinesOpHistory> skipLinesOpHistory) {
+            mSkipLinesOpHistory.clear();
             mModel.clear();
             mModel.addAll(diffs);
             mDiffViewMeasurement.clear();
+            if (skipLinesOpHistory != null) {
+                processSkipLinesOpHistory(skipLinesOpHistory);
+            }
             computeViewChildMeasuresIfNeeded();
             notifyDataSetChanged();
         }
 
+        private void processSkipLinesOpHistory(List<SkipLinesOpHistory> skipLinesOpHistory) {
+            for (SkipLinesOpHistory op : skipLinesOpHistory) {
+                switch (op.type) {
+                    case SkipLinesOpHistory.SKIP_ALL: // skip all
+                        showSkippedLinesAt(op.at);
+                        break;
+                    case SkipLinesOpHistory.SKIP_UP: // skip up
+                        showSkippedUpLinesAt(op.at);
+                        break;
+                    case SkipLinesOpHistory.SKIP_DOWN: // skip down
+                        showSkippedDownLinesAt(op.at);
+                        break;
+                }
+            }
+        }
+
         private void showSkippedLinesAt(int position) {
+            final int at = position;
             AbstractModel model = mDiffAdapter.mModel.get(position);
             if (model instanceof SkipLineModel) {
                 SkipLineModel m = (SkipLineModel) model;
@@ -291,10 +329,11 @@ public class DiffView extends FrameLayout {
                     mDiffAdapter.mModel.add(position, m.skippedLines[i]);
                 }
             }
-            mDiffAdapter.notifyDataSetChanged();
+            mSkipLinesOpHistory.add(new SkipLinesOpHistory(SkipLinesOpHistory.SKIP_ALL, at));
         }
 
         private void showSkippedUpLinesAt(int position) {
+            final int at = position;
             AbstractModel model = mDiffAdapter.mModel.get(position);
             if (model instanceof SkipLineModel) {
                 SkipLineModel m = (SkipLineModel) model;
@@ -311,10 +350,11 @@ public class DiffView extends FrameLayout {
                 m.msg = getResources().getQuantityString(
                         R.plurals.skipped_lines, m.skippedLines.length, m.skippedLines.length);
             }
-            mDiffAdapter.notifyDataSetChanged();
+            mSkipLinesOpHistory.add(new SkipLinesOpHistory(SkipLinesOpHistory.SKIP_UP, at));
         }
 
         private void showSkippedDownLinesAt(int position) {
+            final int at = position;
             AbstractModel model = mDiffAdapter.mModel.get(position);
             if (model instanceof SkipLineModel) {
                 SkipLineModel m = (SkipLineModel) model;
@@ -332,7 +372,7 @@ public class DiffView extends FrameLayout {
                 m.msg = getResources().getQuantityString(
                         R.plurals.skipped_lines, m.skippedLines.length, m.skippedLines.length);
             }
-            mDiffAdapter.notifyDataSetChanged();
+            mSkipLinesOpHistory.add(new SkipLinesOpHistory(SkipLinesOpHistory.SKIP_DOWN, at));
         }
 
         @Override
@@ -572,7 +612,7 @@ public class DiffView extends FrameLayout {
                 mRecyclerView.setAdapter(mDiffAdapter);
                 mNeedsNewLayoutManager = false;
             }
-            mDiffAdapter.update(model);
+            mDiffAdapter.update(model, mPendingSkipLinesOpHistory);
             mTmpLayoutManager = null;
 
             // Should scroll?
@@ -583,6 +623,7 @@ public class DiffView extends FrameLayout {
             }
             mPendingScrollToPosition = -1;
             mPendingScrollToComment = null;
+            mPendingSkipLinesOpHistory = null;
         }
     };
 
@@ -593,6 +634,7 @@ public class DiffView extends FrameLayout {
             mBinding.setImageDiffModel(model);
             mBinding.executePendingBindings();
             mPendingScrollToComment = null;
+            mPendingScrollToPosition = -1;
         }
     };
 
@@ -626,6 +668,7 @@ public class DiffView extends FrameLayout {
 
     private int mPendingScrollToPosition = -1;
     private String mPendingScrollToComment;
+    private List<SkipLinesOpHistory> mPendingSkipLinesOpHistory;
 
     public DiffView(Context context) {
         this(context, null);
@@ -795,6 +838,15 @@ public class DiffView extends FrameLayout {
         return this;
     }
 
+    public DiffView withSkipLinesHistory(String skipLinesHistory) {
+        if (skipLinesHistory != null) {
+            Type type = new TypeToken<ArrayList<DiffView.SkipLinesOpHistory>>(){}.getType();
+            mPendingSkipLinesOpHistory = SerializationManager.getInstance().
+                    fromJson(skipLinesHistory, type);
+        }
+        return this;
+    }
+
     public void update() {
         stopTasks();
 
@@ -826,14 +878,17 @@ public class DiffView extends FrameLayout {
 
     private void onSkipLinePressed(int position) {
         mDiffAdapter.showSkippedLinesAt(position);
+        mDiffAdapter.notifyDataSetChanged();
     }
 
     private void onSkipUpLinePressed(int position) {
         mDiffAdapter.showSkippedUpLinesAt(position);
+        mDiffAdapter.notifyDataSetChanged();
     }
 
     private void onSkipDownLinePressed(int position) {
         mDiffAdapter.showSkippedDownLinesAt(position);
+        mDiffAdapter.notifyDataSetChanged();
     }
 
     private void performScrollToPosition() {
@@ -875,7 +930,11 @@ public class DiffView extends FrameLayout {
     }
 
     public int getScrollPosition() {
-        return mLayoutManager.findFirstCompletelyVisibleItemPosition();
+        return mLayoutManager.findFirstVisibleItemPosition();
+    }
+
+    public String getSkipLinesHistory() {
+        return SerializationManager.getInstance().toJson(mDiffAdapter.mSkipLinesOpHistory);
     }
 
     static class SavedState extends BaseSavedState {
