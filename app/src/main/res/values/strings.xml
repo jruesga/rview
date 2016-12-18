@@ -26,7 +26,7 @@
     <string name="action_next">Next</string>
     <string name="action_done">Done</string>
     <string name="action_delete">Delete</string>
-    <string name="action_ok">Ok</string>
+    <string name="action_close">Close</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_let_start">Let\'s start</string>
     <string name="action_share">Share</string>
@@ -293,9 +293,6 @@
     <!-- Edit change message -->
     <string name="change_edit_message_title">Edit change message</string>
     <string name="change_edit_message_hint">Change message</string>
-
-    <!-- Star labels dialog -->
-    <string name="change_star_labels_title">Tags</string>
 
     <!-- Drafts -->
     <string name="draft_title">Draft</string>

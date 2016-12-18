@@ -1790,7 +1790,7 @@ public class ChangeDetailsFragment extends Fragment {
                     AlertDialog dialog = new AlertDialog.Builder(getContext())
                             .setTitle(R.string.delete_draft_change_title)
                             .setMessage(R.string.delete_draft_change_confirm)
-                            .setPositiveButton(R.string.action_ok, (dialog1, which) -> {
+                            .setPositiveButton(R.string.action_delete, (dialog1, which) -> {
                                     mActionLoader.clear();
                                     mActionLoader.restart(ModelHelper.ACTION_DELETE_CHANGE, null);
                                 })

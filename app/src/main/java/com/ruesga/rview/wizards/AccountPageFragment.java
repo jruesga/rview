@@ -439,7 +439,7 @@ public class AccountPageFragment extends WizardPageFragment {
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle(R.string.menu_help)
                 .setMessage(R.string.account_wizard_account_page_help)
-                .setPositiveButton(R.string.action_ok, null)
+                .setPositiveButton(R.string.action_close, null)
                 .create();
         dialog.show();
     }
