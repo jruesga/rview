@@ -94,9 +94,9 @@ public class RegExLinkifyTextView extends StyleableTextView {
         }
 
         return new RegExLink(
-                "http(s)?://" + uri + "#/c/(\\d)+(/)?",
+                "http(s)?://" + uri + "(#/)?c/(\\d)+(/)?",
                 "com.ruesga.rview://changeid/$1", group -> {
-                    int start = group.indexOf("#/c/") + 4;
+                    int start = group.indexOf("/c/") + 3;
                     int end = group.indexOf("/", start);
                     if (end != -1) {
                         return group.substring(start, end);
