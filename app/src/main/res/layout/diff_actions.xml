@@ -42,7 +42,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{model.hasCommentAction ? View.VISIBLE : View.GONE}"
             android:textColor="?attr/colorAccent"
-            android:textStyle="bold"
+            app:font="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>
 
@@ -59,7 +59,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{(isLeft != null &amp;&amp; isLeft ? model.hasLeftDownloadAction : model.hasRightDownloadAction) ? View.VISIBLE : View.GONE}"
             android:textColor="?attr/colorAccent"
-            android:textStyle="bold"
+            app:font="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>
 

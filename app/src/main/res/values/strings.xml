@@ -32,6 +32,7 @@
     <string name="action_reply">Reply</string>
     <string name="action_add">Add</string>
     <string name="action_change">Change</string>
+    <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
     <string name="action_retry">Retry</string>
     <string name="action_yes">Yes</string>
@@ -180,6 +181,7 @@
     <string name="change_details_related_changes">Related changes</string>
     <string name="change_details_download_patchset">Download</string>
     <string name="change_details_view_patchset">View</string>
+    <string name="change_details_edit_message">Edit</string>
     <string name="change_details_review">Review</string>
     <string name="change_details_review_hint">Comment on this change</string>
     <string name="change_details_comment_line_number">L<xliff:g id="line_number" example="1">%1$d</xliff:g>:</string>
@@ -288,6 +290,10 @@
     <!-- Change topic dialog -->
     <string name="change_topic_title">Change topic</string>
     <string name="change_topic_hint">Topic name</string>
+
+    <!-- Edit change message -->
+    <string name="change_edit_message_title">Edit change message</string>
+    <string name="change_edit_message_hint">Change message</string>
 
     <!-- Star labels dialog -->
     <string name="change_star_labels_title">Tags</string>

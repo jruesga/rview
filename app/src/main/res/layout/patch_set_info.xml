@@ -29,6 +29,7 @@
         <variable name="changeId" type="java.lang.String" />
         <variable name="revision" type="java.lang.String" />
         <variable name="patchset" type="java.lang.String" />
+        <variable name="isCurrentRevision" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.RevisionInfo" />
         <variable name="change" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="config" type="com.ruesga.rview.gerrit.model.ConfigInfo" />
@@ -272,7 +273,7 @@
                     android:text="@string/change_details_related_changes"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
-                    android:textStyle="bold"
+                    app:font="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
@@ -288,7 +289,7 @@
                     android:text="@string/change_details_download_patchset"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
-                    android:textStyle="bold"
+                    app:font="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
@@ -305,7 +306,25 @@
                     android:text="@string/change_details_view_patchset"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
-                    android:textStyle="bold"
+                    app:font="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"
+                    tools:ignore="RtlSymmetry"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onEditMessagePressed}"
+                    android:text="@string/change_details_edit_message"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorPrimaryDark"
+                    android:visibility="@{(isAuthenticated != null &amp;&amp; isAuthenticated) &amp;&amp; (isCurrentRevision != null &amp;&amp; isCurrentRevision) ? View.VISIBLE : View.GONE}"
+                    app:font="boldCondensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
