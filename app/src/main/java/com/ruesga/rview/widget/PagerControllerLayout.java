@@ -62,7 +62,7 @@ public class PagerControllerLayout extends FrameLayout {
     }
 
     public interface OnPageSelectionListener {
-        void onPageSelected(int position);
+        void onPageSelected(int position, boolean fromUser);
     }
 
     @ProguardIgnored
@@ -93,7 +93,7 @@ public class PagerControllerLayout extends FrameLayout {
     private DataSetObserver mObserver = new DataSetObserver() {
         @Override
         public void onChanged() {
-            pageSelected(mCurrentItem);
+            pageSelected(mCurrentItem, true);
         }
     };
 
@@ -128,18 +128,18 @@ public class PagerControllerLayout extends FrameLayout {
     public PagerControllerLayout with(PagerControllerAdapter adapter) {
         mAdapter = adapter;
         if (mAdapter == null) {
-            currentPage(INVALID_PAGE);
+            currentPage(INVALID_PAGE, false);
         } else {
             mAdapter.registerObserver(mObserver);
         }
         return this;
     }
 
-    public void currentPage(int position) {
-        currentPage(position, false);
+    private void currentPage(int position, boolean fromUser) {
+        currentPage(position, false, fromUser);
     }
 
-    public void currentPage(int position, boolean force) {
+    public void currentPage(int position, boolean force, boolean fromUser) {
         if (!force && mCurrentItem == position) {
             return;
         }
@@ -156,7 +156,7 @@ public class PagerControllerLayout extends FrameLayout {
             mModel.next = position >= mAdapter.getCount() - 1 ? null
                     : mAdapter.getPageTitle(position + 1);
             mBinding.setModel(mModel);
-            pageSelected(position);
+            pageSelected(position, fromUser);
         } else {
             mModel.prev = null;
             mModel.next = null;
@@ -164,9 +164,9 @@ public class PagerControllerLayout extends FrameLayout {
         }
     }
 
-    private void pageSelected(int position) {
+    private void pageSelected(int position, boolean fromUser) {
         if (mOnPageSelectionListener != null) {
-            mOnPageSelectionListener.onPageSelected(position);
+            mOnPageSelectionListener.onPageSelected(position, fromUser);
         }
 
         FragmentTransaction tx = mAdapter.getFragmentManager().beginTransaction();
@@ -182,10 +182,10 @@ public class PagerControllerLayout extends FrameLayout {
     }
 
     private void performMovePrev() {
-        currentPage(mCurrentItem - 1);
+        currentPage(mCurrentItem - 1, true);
     }
 
     private void performMoveNext() {
-        currentPage(mCurrentItem + 1);
+        currentPage(mCurrentItem + 1, true);
     }
 }

@@ -576,7 +576,13 @@ public class DiffView extends FrameLayout {
             mTmpLayoutManager = null;
 
             // Should scroll?
-            performScrollToComment(model);
+            if (mPendingScrollToPosition != -1) {
+                performScrollToPosition();
+            } else if (mPendingScrollToComment != null) {
+                performScrollToComment(model);
+            }
+            mPendingScrollToPosition = -1;
+            mPendingScrollToComment = null;
         }
     };
 
@@ -586,7 +592,7 @@ public class DiffView extends FrameLayout {
         public void onImageDiffProcessEnded(ImageDiffModel model) {
             mBinding.setImageDiffModel(model);
             mBinding.executePendingBindings();
-            mPendingScrollTo = null;
+            mPendingScrollToComment = null;
         }
     };
 
@@ -597,6 +603,7 @@ public class DiffView extends FrameLayout {
     private LinearLayoutManager mLayoutManager;
     private LinearLayoutManager mTmpLayoutManager;
 
+    private String mFile;
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
     private boolean mHighlightIntralineDiffs;
@@ -617,7 +624,8 @@ public class DiffView extends FrameLayout {
     private AsyncTextDiffProcessor mTextDiffTask;
     private AsyncImageDiffProcessor mImageDiffTask;
 
-    private String mPendingScrollTo;
+    private int mPendingScrollToPosition = -1;
+    private String mPendingScrollToComment;
 
     public DiffView(Context context) {
         this(context, null);
@@ -657,6 +665,9 @@ public class DiffView extends FrameLayout {
     @Override
     protected Parcelable onSaveInstanceState() {
         SavedState savedState = new SavedState(super.onSaveInstanceState());
+        savedState.mFile = mFile;
+        savedState.mPosition = mLayoutManager != null
+                ? mLayoutManager.findFirstVisibleItemPosition() : -1;
         savedState.mHighlightTabs = mHighlightTabs;
         savedState.mHighlightTrailingWhitespaces = mHighlightTrailingWhitespaces;
         savedState.mHighlightIntralineDiffs = mHighlightIntralineDiffs;
@@ -677,6 +688,8 @@ public class DiffView extends FrameLayout {
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
 
+        mFile = savedState.mFile;
+        mPendingScrollToPosition = savedState.mPosition;
         mHighlightTabs = savedState.mHighlightTabs;
         mHighlightTrailingWhitespaces = savedState.mHighlightTrailingWhitespaces;
         mHighlightIntralineDiffs = savedState.mHighlightIntralineDiffs;
@@ -684,6 +697,14 @@ public class DiffView extends FrameLayout {
         mDiffMode = savedState.mDiffMode;
         Type type = new TypeToken<Pair<List<CommentInfo>, List<CommentInfo>>>(){}.getType();
         mDrafts = SerializationManager.getInstance().fromJson(savedState.mDrafts, type);
+    }
+
+    public DiffView file(String file) {
+        if (!file.equals(mFile)) {
+            mPendingScrollToPosition = -1;
+        }
+        mFile = file;
+        return this;
     }
 
     public DiffView from(DiffInfo diff) {
@@ -762,7 +783,15 @@ public class DiffView extends FrameLayout {
     }
 
     public DiffView scrollToComment(String comment) {
-        mPendingScrollTo = comment;
+        mPendingScrollToComment = comment;
+        if (comment != null) {
+            mPendingScrollToPosition = -1;
+        }
+        return this;
+    }
+
+    public DiffView scrollToPosition(int position) {
+        mPendingScrollToPosition = position;
         return this;
     }
 
@@ -807,44 +836,51 @@ public class DiffView extends FrameLayout {
         mDiffAdapter.showSkippedDownLinesAt(position);
     }
 
-    private void performScrollToComment(List<AbstractModel> model) {
-        if (mPendingScrollTo != null) {
-            // Compute comment position
-            int position = -1;
-            for (int i = 0; i < model.size(); i++) {
-                AbstractModel am = model.get(i);
-                if (am instanceof CommentModel) {
-                    CommentModel comment = (CommentModel) am;
-                    if (comment.commentA != null
-                            && comment.commentA.id.equals(mPendingScrollTo)) {
-                        position = i;
-                        break;
-                    }
-                    if (comment.commentB != null
-                            && comment.commentB.id.equals(mPendingScrollTo)) {
-                        position = i;
-                        break;
-                    }
-                }
-            }
+    private void performScrollToPosition() {
+        mLayoutManager.scrollToPosition(mPendingScrollToPosition);
+    }
 
-            // Jump to position?
-            if (position != -1) {
-                int start = mLayoutManager.findFirstVisibleItemPosition();
-                int end = mLayoutManager.findLastVisibleItemPosition();
-                int index = position - (end - start + 1);
-                if (index < 0) {
-                    index = 0;
-                } else if (index >= mDiffAdapter.getItemCount()) {
-                    index = mDiffAdapter.getItemCount() - 1;
+    private void performScrollToComment(List<AbstractModel> model) {
+        // Compute comment position
+        int position = -1;
+        for (int i = 0; i < model.size(); i++) {
+            AbstractModel am = model.get(i);
+            if (am instanceof CommentModel) {
+                CommentModel comment = (CommentModel) am;
+                if (comment.commentA != null
+                        && comment.commentA.id.equals(mPendingScrollToComment)) {
+                    position = i;
+                    break;
                 }
-                mLayoutManager.scrollToPosition(index);
+                if (comment.commentB != null
+                        && comment.commentB.id.equals(mPendingScrollToComment)) {
+                    position = i;
+                    break;
+                }
             }
-            mPendingScrollTo = null;
+        }
+
+        // Jump to position?
+        if (position != -1) {
+            int start = mLayoutManager.findFirstVisibleItemPosition();
+            int end = mLayoutManager.findLastVisibleItemPosition();
+            int index = position - (end - start + 1);
+            if (index < 0) {
+                index = 0;
+            } else if (index >= mDiffAdapter.getItemCount()) {
+                index = mDiffAdapter.getItemCount() - 1;
+            }
+            mLayoutManager.scrollToPosition(index);
         }
     }
 
+    public int getScrollPosition() {
+        return mLayoutManager.findFirstCompletelyVisibleItemPosition();
+    }
+
     static class SavedState extends BaseSavedState {
+        String mFile;
+        int mPosition = -1;
         boolean mHighlightTabs;
         boolean mHighlightTrailingWhitespaces;
         boolean mHighlightIntralineDiffs;
@@ -858,6 +894,8 @@ public class DiffView extends FrameLayout {
 
         private SavedState(Parcel in) {
             super(in);
+            mFile = in.readString();
+            mPosition = in.readInt();
             mHighlightTabs = in.readInt() == 1;
             mHighlightTrailingWhitespaces = in.readInt() == 1;
             mHighlightIntralineDiffs = in.readInt() == 1;
@@ -869,6 +907,8 @@ public class DiffView extends FrameLayout {
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
+            out.writeString(mFile);
+            out.writeInt(mPosition);
             out.writeInt(mHighlightTabs ? 1 : 0);
             out.writeInt(mHighlightTrailingWhitespaces ? 1 : 0);
             out.writeInt(mHighlightIntralineDiffs ? 1 : 0);

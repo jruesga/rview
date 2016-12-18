@@ -313,14 +313,14 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         mModel.hasPages = true;
         mModel.hasTabs = false;
         getContentBinding().pagerController
-                .listenOn(position -> {
+                .listenOn((position, fromUser) -> {
                     if (getSupportActionBar() != null) {
                         getSupportActionBar().setSubtitle(
                                 position == PagerControllerLayout.INVALID_PAGE
                                         ? null : adapter.getPageTitle(position));
 
                         if (cb != null) {
-                            cb.onPageSelected(position);
+                            cb.onPageSelected(position, fromUser);
                         }
                     }
                 })

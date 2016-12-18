@@ -225,11 +225,12 @@ public class FileDiffViewerFragment extends Fragment {
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
     private boolean mHighlightIntralineDiffs;
+    private int mScrollToPosition = -1;
 
     public static FileDiffViewerFragment newInstance(String revisionId, String file,
             String comment, int base, int revision, int mode, boolean wrap, float textSizeFactor,
             boolean highlightTabs, boolean highlightTrailingWhitespaces,
-            boolean highlightIntralineDiffs) {
+            boolean highlightIntralineDiffs, int scrollToPosition) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
@@ -245,6 +246,7 @@ public class FileDiffViewerFragment extends Fragment {
         arguments.putBoolean("highlight_tabs", highlightTabs);
         arguments.putBoolean("highlight_trailing_whitespaces", highlightTrailingWhitespaces);
         arguments.putBoolean("highlight_intraline_diffs", highlightIntralineDiffs);
+        arguments.putInt("scrollToPosition", scrollToPosition);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -258,7 +260,8 @@ public class FileDiffViewerFragment extends Fragment {
                     return;
                 }
 
-                mBinding.diff
+                DiffView v = mBinding.diff
+                    .file(mFile)
                     .from(mResponse.diff)
                     .withLeftContent(mResponse.leftContent)
                     .withRightContent(mResponse.rightContent)
@@ -271,9 +274,13 @@ public class FileDiffViewerFragment extends Fragment {
                     .canEdit(mAccount.hasAuthenticatedAccessMode())
                     .highlightTabs(mHighlightTabs)
                     .highlightTrailingWhitespaces(mHighlightTrailingWhitespaces)
-                    .highlightIntralineDiffs(mHighlightIntralineDiffs)
-                    .scrollToComment(mComment)
-                    .update();
+                    .highlightIntralineDiffs(mHighlightIntralineDiffs);
+                if (mComment != null) {
+                    v.scrollToComment(mComment);
+                } else if (mScrollToPosition != -1) {
+                    v.scrollToPosition(mScrollToPosition);
+                }
+                v.update();
             },
             250L);
         }
@@ -298,6 +305,7 @@ public class FileDiffViewerFragment extends Fragment {
         mHighlightTabs = getArguments().getBoolean("highlight_tabs");
         mHighlightTrailingWhitespaces = getArguments().getBoolean("highlight_trailing_whitespaces");
         mHighlightIntralineDiffs = getArguments().getBoolean("highlight_intraline_diffs");
+        mScrollToPosition = getArguments().getInt("scrollToPosition", -1);
     }
 
     @Nullable
@@ -977,5 +985,9 @@ public class FileDiffViewerFragment extends Fragment {
 
     DiffView.OnCommentListener getCommentListener() {
         return mCommentListener;
+    }
+
+    int getScrollPosition() {
+        return mBinding.diff.getScrollPosition();
     }
 }

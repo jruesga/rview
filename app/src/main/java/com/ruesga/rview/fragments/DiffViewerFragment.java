@@ -180,7 +180,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
             final FileDiffViewerFragment fragment = FileDiffViewerFragment.newInstance(
                     mRevisionId, mFile, mComment, base, revision, mMode, mWrap, mTextSizeFactor,
-                    mHighlightTabs, mHighlightTrailingWhitespaces, mHighlightIntralineDiffs);
+                    mHighlightTabs, mHighlightTrailingWhitespaces, mHighlightIntralineDiffs,
+                    mScrollPosition);
             mFragment = new WeakReference<>(fragment);
             return fragment;
         }
@@ -360,6 +361,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private boolean mIsBinary = false;
     private boolean mHasImagePreview = false;
+    private int mScrollPosition = -1;
 
     private int mCurrentFile;
 
@@ -399,6 +401,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             mMode = savedInstanceState.getInt("mode", -1);
             mIsBinary = savedInstanceState.getBoolean("is_binary", false);
             mHasImagePreview = savedInstanceState.getBoolean("has_image_preview", false);
+            mScrollPosition = savedInstanceState.getInt("scroll_position", -1);
             applyModeRestrictions();
         }
 
@@ -525,15 +528,17 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         outState.putString(Constants.EXTRA_FILE, mFile);
         outState.putString(Constants.EXTRA_BASE, mBase);
-        if (mComment != null) {
-            outState.putString(Constants.EXTRA_COMMENT, mComment);
-        }
         outState.putInt("mode", mMode);
         outState.putBoolean("is_binary", mIsBinary);
         outState.putBoolean("has_image_preview", mHasImagePreview);
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         if (mResult != null) {
             outState.putParcelable(Constants.EXTRA_DATA, mResult);
+        }
+
+        FileDiffViewerFragment fragment = mFragment.get();
+        if (fragment != null) {
+            outState.putInt("scroll_position", fragment.getScrollPosition());
         }
     }
 
@@ -814,11 +819,14 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private void configurePageController(BaseActivity activity, boolean refresh) {
         activity.invalidatePages();
-        activity.configurePages(mAdapter, position -> {
+        activity.configurePages(mAdapter, (position, fromUser) -> {
             mFile = mFiles.get(position);
             mCurrentFile = position;
+            if (fromUser) {
+                mScrollPosition = -1;
+            }
         });
-        activity.getContentBinding().pagerController.currentPage(mCurrentFile, refresh);
+        activity.getContentBinding().pagerController.currentPage(mCurrentFile, refresh, false);
         if (refresh) {
             mAdapter.notifyDataSetChanged();
         }
