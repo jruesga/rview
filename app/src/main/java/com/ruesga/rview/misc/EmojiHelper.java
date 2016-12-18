@@ -17,6 +17,8 @@ package com.ruesga.rview.misc;
 
 import android.os.Build;
 
+import java.util.regex.Pattern;
+
 public final class EmojiHelper {
     private static final String[] TEXT =
             {
@@ -46,33 +48,61 @@ public final class EmojiHelper {
                     ":P",
                     ":D"
             };
-    private static final String[] REGEXP =
+    private static final Pattern[] REGEXP1 =
             {
-                    "<3",
-                    "\\^_\\^",
-                    "-_-",
-                    "o.O",
-                    ">:O",
-                    "\\\\o/",
-                    "3:\\)",
-                    "O:\\)",
-                    ">:\\(",
-                    "B-\\)",
-                    "B\\|",
-                    ":'\\(",
-                    ":\\*",
-                    ":P",
-                    ":D",
-                    ":'D",
-                    ":O",
-                    ";\\)",
-                    ":/",
-                    ":-\\)",
-                    ":\\)",
-                    ":\\(",
-                    ":-\\(",
-                    ":P",
-                    ":D"
+                    Pattern.compile("^<3", Pattern.MULTILINE),
+                    Pattern.compile("^\\^_\\^", Pattern.MULTILINE),
+                    Pattern.compile("^-_-", Pattern.MULTILINE),
+                    Pattern.compile("^o.O", Pattern.MULTILINE),
+                    Pattern.compile("^>:O", Pattern.MULTILINE),
+                    Pattern.compile("^\\\\o/", Pattern.MULTILINE),
+                    Pattern.compile("^3:\\)", Pattern.MULTILINE),
+                    Pattern.compile("^O:\\)", Pattern.MULTILINE),
+                    Pattern.compile("^>:\\(", Pattern.MULTILINE),
+                    Pattern.compile("^B-\\)", Pattern.MULTILINE),
+                    Pattern.compile("^B\\|", Pattern.MULTILINE),
+                    Pattern.compile("^:'\\(", Pattern.MULTILINE),
+                    Pattern.compile("^:\\*", Pattern.MULTILINE),
+                    Pattern.compile("^:P", Pattern.MULTILINE),
+                    Pattern.compile("^:D", Pattern.MULTILINE),
+                    Pattern.compile("^:'D", Pattern.MULTILINE),
+                    Pattern.compile("^:O", Pattern.MULTILINE),
+                    Pattern.compile("^;\\)", Pattern.MULTILINE),
+                    Pattern.compile("^:/", Pattern.MULTILINE),
+                    Pattern.compile("^:-\\)", Pattern.MULTILINE),
+                    Pattern.compile("^:\\)", Pattern.MULTILINE),
+                    Pattern.compile("^:\\(", Pattern.MULTILINE),
+                    Pattern.compile("^:-\\(", Pattern.MULTILINE),
+                    Pattern.compile("^:P", Pattern.MULTILINE),
+                    Pattern.compile("^:D", Pattern.MULTILINE)
+            };
+    private static final Pattern[] REGEXP2 =
+            {
+                    Pattern.compile(" <3"),
+                    Pattern.compile(" \\^_\\^"),
+                    Pattern.compile(" -_-"),
+                    Pattern.compile(" o.O"),
+                    Pattern.compile(" >:O"),
+                    Pattern.compile(" \\\\o/"),
+                    Pattern.compile(" 3:\\)"),
+                    Pattern.compile(" O:\\)"),
+                    Pattern.compile(" >:\\("),
+                    Pattern.compile(" B-\\)"),
+                    Pattern.compile(" B\\|"),
+                    Pattern.compile(" :'\\("),
+                    Pattern.compile(" :\\*"),
+                    Pattern.compile(" :P"),
+                    Pattern.compile(" :D"),
+                    Pattern.compile(" :'D"),
+                    Pattern.compile(" :O"),
+                    Pattern.compile(" ;\\)"),
+                    Pattern.compile(" :/"),
+                    Pattern.compile(" :-\\)"),
+                    Pattern.compile(" :\\)"),
+                    Pattern.compile(" :\\("),
+                    Pattern.compile(" :-\\("),
+                    Pattern.compile(" :P"),
+                    Pattern.compile(" :D")
             };
     private static final int[] CODES =
             {
@@ -109,9 +139,9 @@ public final class EmojiHelper {
             int count = TEXT.length;
             for (int i = 0; i < count; i++) {
                 if (msg.contains(TEXT[i])) {
-                    msg = msg
-                            .replaceAll("^" + REGEXP[i], getEmijoByUnicode(CODES[i]))
-                            .replaceAll(" " + REGEXP[i], " " + getEmijoByUnicode(CODES[i]));
+                    String emoji = getEmijoByUnicode(CODES[i]);
+                    msg = REGEXP1[i].matcher(msg).replaceAll(emoji);
+                    msg = REGEXP2[i].matcher(msg).replaceAll(" " + emoji);
                 }
             }
         }
