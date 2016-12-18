@@ -437,7 +437,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 }
 
                 if (isLegacyChangeNumber || StringHelper.GERRIT_CHANGE.matcher(query).matches()) {
-                    filter = new ChangeQuery().change(String.valueOf(query));
+                    filter = new ChangeQuery().change(query);
                 } else {
                     // Not a valid filter
                     AndroidHelper.showErrorSnackbar(
@@ -448,7 +448,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 break;
             case Constants.SEARCH_MODE_COMMIT:
                 if (StringHelper.GERRIT_COMMIT.matcher(query).matches()) {
-                    filter = new ChangeQuery().commit(String.valueOf(query));
+                    filter = new ChangeQuery().commit(query);
                 } else {
                     // Not a valid filter
                     AndroidHelper.showErrorSnackbar(
@@ -457,13 +457,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 }
                 break;
             case Constants.SEARCH_MODE_PROJECT:
-                filter = new ChangeQuery().project(String.valueOf(query));
+                filter = new ChangeQuery().project(query);
                 break;
             case Constants.SEARCH_MODE_USER:
-                filter = new ChangeQuery().owner(String.valueOf(query));
+                String cleanedQuery = clearOwnerQuery(query);
+                filter = new ChangeQuery().owner(cleanedQuery);
                 break;
             case Constants.SEARCH_MODE_COMMIT_MESSAGE:
-                filter = new ChangeQuery().message(String.valueOf(query));
+                filter = new ChangeQuery().message(query);
                 break;
             case Constants.SEARCH_MODE_CUSTOM:
                 try {
@@ -631,6 +632,13 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
 
         Collections.sort(mSuggestions);
+    }
+
+    private String clearOwnerQuery(String query) {
+        if (query.startsWith("\"") && query.endsWith("\"") && query.length() >= 3) {
+            return query.substring(1, query.length() - 1);
+        }
+        return query;
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
