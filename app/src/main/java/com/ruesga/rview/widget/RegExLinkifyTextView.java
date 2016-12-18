@@ -27,6 +27,7 @@ import android.view.View;
 
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.StringHelper;
+import com.ruesga.rview.model.Repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,13 +37,23 @@ import java.util.regex.Pattern;
 
 public class RegExLinkifyTextView extends StyleableTextView {
     public static class RegExLink {
+        interface RegExLinkExtractor {
+            String extractLink(String group);
+        }
+
         public final Pattern mPattern;
-        public final String mLink;
+        private final String mLink;
+        private final RegExLinkExtractor mExtractor;
 
         public RegExLink(String regEx, String link) {
+            this(regEx, link, null);
+        }
+
+        private RegExLink(String regEx, String link, RegExLinkExtractor extractor) {
             mPattern = Pattern.compile(regEx,
                     Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             mLink = link;
+            mExtractor = extractor;
         }
     }
 
@@ -75,6 +86,25 @@ public class RegExLinkifyTextView extends StyleableTextView {
         addRegEx(EMAIL_REGEX, WEB_LINK_REGEX);
     }
 
+    public static RegExLink createRepositoryRegExpLink(Repository repository) {
+        String uri = repository.mUrl.substring(
+                repository.mUrl.toLowerCase().indexOf("://") + 3);
+        if (!uri.endsWith("/")) {
+            uri += "/";
+        }
+
+        return new RegExLink(
+                "http(s)?://" + uri + "#/c/(\\d)+(/)?",
+                "com.ruesga.rview://changeid/$1", group -> {
+                    int start = group.indexOf("#/c/") + 4;
+                    int end = group.indexOf("/", start);
+                    if (end != -1) {
+                        return group.substring(start, end);
+                    }
+                    return group.substring(start);
+                });
+    }
+
     @Override
     @SuppressWarnings("ConstantConditions")
     public void setText(CharSequence text, BufferType type) {
@@ -83,6 +113,10 @@ public class RegExLinkifyTextView extends StyleableTextView {
                     ? (Spannable) text : Spannable.Factory.getInstance().newSpannable(text);
             if (mRegEx != null) {
                 for (final RegExLink regEx : mRegEx) {
+                    if (regEx == null) {
+                        continue;
+                    }
+
                     final Matcher matcher = regEx.mPattern.matcher(text);
                     while (matcher.find()) {
                         String group = matcher.group();
@@ -94,7 +128,21 @@ public class RegExLinkifyTextView extends StyleableTextView {
                             group = group.substring(0, group.length() - 1);
                             end--;
                         }
+
+                        // Extract url link
+                        if (regEx.mExtractor != null) {
+                            group = regEx.mExtractor.extractLink(group);
+                        }
                         final String url = group;
+
+                        // Remove previous spans
+                        ClickableSpan[] old = span.getSpans(start, end, ClickableSpan.class);
+                        if (old != null) {
+                            for (ClickableSpan s : old) {
+                                span.removeSpan(s);
+                            }
+                        }
+
                         span.setSpan(new ClickableSpan() {
                             @Override
                             public void onClick(View v) {
@@ -115,8 +163,8 @@ public class RegExLinkifyTextView extends StyleableTextView {
         super.setText(text, type);
     }
 
-    public void addRegEx(RegExLink... regex) {
-        mRegEx.addAll(Arrays.asList(regex));
+    public void addRegEx(RegExLink... regexs) {
+        mRegEx.addAll(Arrays.asList(regexs));
         setText(getText(), BufferType.SPANNABLE);
     }
 }

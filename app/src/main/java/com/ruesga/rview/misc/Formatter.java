@@ -67,6 +67,7 @@ import java.util.regex.Matcher;
 @ProguardIgnored
 @SuppressWarnings("unused")
 public class Formatter {
+    private static Account mAccount;
     private static final Map<String, PrettyTime> sPrettyTimeMap = new HashMap<>();
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
@@ -76,9 +77,9 @@ public class Formatter {
     private static int sQuoteMargin = -1;
 
     public static void refreshCachedPreferences(Context context) {
-        Account account = Preferences.getAccount(context);
-        sDisplayFormat = Preferences.getAccountDisplayFormat(context, account);
-        sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, account);
+        mAccount = Preferences.getAccount(context);
+        sDisplayFormat = Preferences.getAccountDisplayFormat(context, mAccount);
+        sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, mAccount);
     }
 
     private static PrettyTime getPrettyTime(Context context) {
@@ -213,8 +214,15 @@ public class Formatter {
 
     @BindingAdapter("regexpLinkifyCommitsOnly")
     public static void toRegExLinkifyCommitsOnly(RegExLinkifyTextView view, Boolean only) {
+        RegExLink repositoryRegExLink = null;
+        if (mAccount != null) {
+            repositoryRegExLink =
+                    RegExLinkifyTextView.createRepositoryRegExpLink(mAccount.mRepository);
+        }
+
         if (only) {
             view.addRegEx(
+                    repositoryRegExLink,
                     RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX,
                     RegExLinkifyTextView.GERRIT_COMMIT_REGEX);
         }
@@ -227,6 +235,10 @@ public class Formatter {
         }
 
         List<RegExLink> linksScanners = new ArrayList<>();
+        if (mAccount != null) {
+            linksScanners.add(0,
+                    RegExLinkifyTextView.createRepositoryRegExpLink(mAccount.mRepository));
+        }
         for (String key : info.commentLinks.keySet()) {
             switch (key) {
                 case "changeid":

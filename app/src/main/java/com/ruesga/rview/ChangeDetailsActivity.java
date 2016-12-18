@@ -39,6 +39,7 @@ import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -125,7 +126,10 @@ public class ChangeDetailsActivity extends BaseActivity {
             ChangeQuery filter;
             switch (host) {
                 case "change":
-                    if (!StringHelper.GERRIT_CHANGE.matcher(query).matches()) {
+                case "changeid":
+                    Pattern pattern = host.equals("change")
+                            ? StringHelper.GERRIT_CHANGE : StringHelper.GERRIT_CHANGE_ID;
+                    if (!pattern.matcher(query).matches()) {
                         notifyInvalidArgsAndFinish();
                         return;
                     }

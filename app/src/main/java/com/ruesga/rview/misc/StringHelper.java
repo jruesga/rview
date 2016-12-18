@@ -47,6 +47,7 @@ public class StringHelper {
             "(\\w)(\n" + NON_PRINTABLE_CHAR +")(\\w)", Pattern.MULTILINE);
 
     public static final Pattern GERRIT_CHANGE = Pattern.compile("I[0-9a-f]{8,40}");
+    public static final Pattern GERRIT_CHANGE_ID = Pattern.compile("[0-9]{1,10}");
     public static final Pattern GERRIT_COMMIT = Pattern.compile("[0-9a-f]{7,40}");
 
     public static String removeLineBreaks(String message) {

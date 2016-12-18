@@ -68,6 +68,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="com.ruesga.rview" android:host="change" />
                 <data android:scheme="com.ruesga.rview" android:host="commit" />
+                <data android:scheme="com.ruesga.rview" android:host="changeid" />
             </intent-filter>
         </activity-alias>
 
