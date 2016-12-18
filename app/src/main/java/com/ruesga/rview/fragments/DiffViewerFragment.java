@@ -179,7 +179,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             int revision = mChange.revisions.get(mRevisionId).number;
 
             final FileDiffViewerFragment fragment = FileDiffViewerFragment.newInstance(
-                    mRevisionId, mFile, base, revision, mMode, mWrap, mTextSizeFactor,
+                    mRevisionId, mFile, mComment, base, revision, mMode, mWrap, mTextSizeFactor,
                     mHighlightTabs, mHighlightTrailingWhitespaces, mHighlightIntralineDiffs);
             mFragment = new WeakReference<>(fragment);
             return fragment;
@@ -345,6 +345,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     private String mRevisionId;
     private String mFile;
     private String mBase;
+    private String mComment;
 
     private RxLoader2<String, String, ArrayList<String>> mFilesLoader;
 
@@ -366,12 +367,16 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private Intent mResult;
 
-    public static DiffViewerFragment newInstance(String revisionId, String base, String file) {
+    public static DiffViewerFragment newInstance(
+            String revisionId, String base, String file, String comment) {
         DiffViewerFragment fragment = new DiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
         arguments.putString(Constants.EXTRA_BASE, base);
         arguments.putString(Constants.EXTRA_FILE, file);
+        if (comment != null) {
+            arguments.putString(Constants.EXTRA_COMMENT, comment);
+        }
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -384,8 +389,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
         Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
         mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
-        mFile = state.getString(Constants.EXTRA_FILE_ID);
+        mFile = state.getString(Constants.EXTRA_FILE);
         mBase = state.getString(Constants.EXTRA_BASE);
+        mComment = state.getString(Constants.EXTRA_COMMENT);
         if (state.containsKey(Constants.EXTRA_DATA)) {
             mResult = state.getParcelable(Constants.EXTRA_DATA);
         }
@@ -419,15 +425,19 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                             getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
 
             // Deserialize the files
+            mFiles.clear();
             String current = String.valueOf(mChange.revisions.get(mRevisionId).number);
             String prefix = (mBase == null ? "0" : mBase) + "_" + current + "_";
-            Type type = new TypeToken<List<String>>(){}.getType();
-            List<String> files = SerializationManager.getInstance().fromJson(
-                    new String(CacheHelper.readAccountDiffCacheFile(
-                            getContext(), prefix + CacheHelper.CACHE_FILES_JSON)), type);
-            mFiles.clear();
-            mFiles.addAll(files);
-            mCurrentFile = mFiles.indexOf(mFile);
+            String name = prefix + CacheHelper.CACHE_FILES_JSON;
+            if (CacheHelper.hasAccountDiffCache(getContext(), name)) {
+                Type type = new TypeToken<List<String>>() {}.getType();
+                List<String> files = SerializationManager.getInstance().fromJson(
+                        new String(CacheHelper.readAccountDiffCacheFile(getContext(), name)), type);
+                mFiles.addAll(files);
+            }
+            if (!mFiles.isEmpty()) {
+                mCurrentFile = mFiles.indexOf(mFile);
+            }
 
             // Load revisions
             loadRevisions();
@@ -475,6 +485,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mFilesLoader = loaderManager.create(
                     "files" + hashCode(), this::loadFiles, mFilesObserver);
+            if (mFiles.isEmpty()) {
+                performLoadFiles();
+            }
 
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);
@@ -512,6 +525,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         outState.putString(Constants.EXTRA_FILE, mFile);
         outState.putString(Constants.EXTRA_BASE, mBase);
+        if (mComment != null) {
+            outState.putString(Constants.EXTRA_COMMENT, mComment);
+        }
         outState.putInt("mode", mMode);
         outState.putBoolean("is_binary", mIsBinary);
         outState.putBoolean("has_image_preview", mHasImagePreview);
@@ -858,7 +874,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     @SuppressWarnings("unchecked")
     private <T> Observable<T> withCached(Observable<T> call, Type type, String name) {
         try {
-            if (CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
+            if (CacheHelper.hasAccountDiffCache(getContext(), name)) {
                 T o = SerializationManager.getInstance().fromJson(
                         new String(CacheHelper.readAccountDiffCacheFile(
                                 getContext(), name)), type);

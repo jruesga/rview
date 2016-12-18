@@ -212,6 +212,7 @@ public class FileDiffViewerFragment extends Fragment {
 
     private String mRevisionId;
     private String mFile;
+    private String mComment;
     private String mFileHash;
     private String mBase;
     private String mRevision;
@@ -226,13 +227,16 @@ public class FileDiffViewerFragment extends Fragment {
     private boolean mHighlightIntralineDiffs;
 
     public static FileDiffViewerFragment newInstance(String revisionId, String file,
-            int base, int revision, int mode, boolean wrap, float textSizeFactor,
+            String comment, int base, int revision, int mode, boolean wrap, float textSizeFactor,
             boolean highlightTabs, boolean highlightTrailingWhitespaces,
             boolean highlightIntralineDiffs) {
         FileDiffViewerFragment fragment = new FileDiffViewerFragment();
         Bundle arguments = new Bundle();
         arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
         arguments.putString(Constants.EXTRA_FILE, file);
+        if (comment != null) {
+            arguments.putString(Constants.EXTRA_COMMENT, comment);
+        }
         arguments.putInt(Constants.EXTRA_BASE, base);
         arguments.putInt(Constants.EXTRA_REVISION, revision);
         arguments.putInt("mode", mode);
@@ -268,6 +272,7 @@ public class FileDiffViewerFragment extends Fragment {
                     .highlightTabs(mHighlightTabs)
                     .highlightTrailingWhitespaces(mHighlightTrailingWhitespaces)
                     .highlightIntralineDiffs(mHighlightIntralineDiffs)
+                    .scrollToComment(mComment)
                     .update();
             },
             250L);
@@ -283,6 +288,7 @@ public class FileDiffViewerFragment extends Fragment {
         mRevisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
         mFile = getArguments().getString(Constants.EXTRA_FILE);
         mFileHash = FowlerNollVo.fnv1a_64(mFile.getBytes()).toString();
+        mComment = getArguments().getString(Constants.EXTRA_COMMENT);
         int base = getArguments().getInt(Constants.EXTRA_BASE);
         mBase = base == 0 ? null : String.valueOf(base);
         mRevision = String.valueOf(getArguments().getInt(Constants.EXTRA_REVISION));
@@ -768,7 +774,7 @@ public class FileDiffViewerFragment extends Fragment {
     @SuppressWarnings("unchecked")
     private <T> Observable<T> withCached(Observable<T> call, Type type, String name) {
         try {
-            if (CacheHelper.hasAccountDiffCacheDir(getContext(), name)) {
+            if (CacheHelper.hasAccountDiffCache(getContext(), name)) {
                 T o = SerializationManager.getInstance().fromJson(
                         new String(CacheHelper.readAccountDiffCacheFile(
                                 getContext(), name)), type);

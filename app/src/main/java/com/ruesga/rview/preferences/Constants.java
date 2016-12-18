@@ -31,8 +31,7 @@ public class Constants {
     public static final String EXTRA_PROJECT_ID = "projectId";
     public static final String EXTRA_REVISION_ID = "revisionId";
     public static final String EXTRA_REVISION = "revision";
-    public static final String EXTRA_FILE_ID = "fileId";
-    public static final String EXTRA_FILE = "fileId";
+    public static final String EXTRA_FILE = "file";
     public static final String EXTRA_TOPIC = "topic";
     public static final String EXTRA_BRANCH = "branch";
     public static final String EXTRA_MESSAGE = "message";

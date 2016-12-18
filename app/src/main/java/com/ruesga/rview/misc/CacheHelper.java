@@ -113,11 +113,11 @@ public class CacheHelper {
         }
     }
 
-    public static boolean hasAccountDiffCacheDir(Context context, String name) {
-        return hasAccountDiffCacheDir(context, Preferences.getAccount(context), name);
+    public static boolean hasAccountDiffCache(Context context, String name) {
+        return hasAccountDiffCache(context, Preferences.getAccount(context), name);
     }
 
-    public static boolean hasAccountDiffCacheDir(Context context, Account account, String name) {
+    public static boolean hasAccountDiffCache(Context context, Account account, String name) {
         return new File(getAccountDiffCacheDir(context, account), name).exists();
     }
 

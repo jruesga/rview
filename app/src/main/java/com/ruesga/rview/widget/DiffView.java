@@ -25,7 +25,6 @@ import android.os.Parcelable;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -575,6 +574,9 @@ public class DiffView extends FrameLayout {
             }
             mDiffAdapter.update(model);
             mTmpLayoutManager = null;
+
+            // Should scroll?
+            performScrollToComment(model);
         }
     };
 
@@ -584,6 +586,7 @@ public class DiffView extends FrameLayout {
         public void onImageDiffProcessEnded(ImageDiffModel model) {
             mBinding.setImageDiffModel(model);
             mBinding.executePendingBindings();
+            mPendingScrollTo = null;
         }
     };
 
@@ -591,8 +594,8 @@ public class DiffView extends FrameLayout {
 
     private final RecyclerView mRecyclerView;
     private DiffAdapter mDiffAdapter;
-    private LayoutManager mLayoutManager;
-    private LayoutManager mTmpLayoutManager;
+    private LinearLayoutManager mLayoutManager;
+    private LinearLayoutManager mTmpLayoutManager;
 
     private boolean mHighlightTabs;
     private boolean mHighlightTrailingWhitespaces;
@@ -613,6 +616,8 @@ public class DiffView extends FrameLayout {
 
     private AsyncTextDiffProcessor mTextDiffTask;
     private AsyncImageDiffProcessor mImageDiffTask;
+
+    private String mPendingScrollTo;
 
     public DiffView(Context context) {
         this(context, null);
@@ -756,6 +761,11 @@ public class DiffView extends FrameLayout {
         return this;
     }
 
+    public DiffView scrollToComment(String comment) {
+        mPendingScrollTo = comment;
+        return this;
+    }
+
     public void update() {
         stopTasks();
 
@@ -795,6 +805,43 @@ public class DiffView extends FrameLayout {
 
     private void onSkipDownLinePressed(int position) {
         mDiffAdapter.showSkippedDownLinesAt(position);
+    }
+
+    private void performScrollToComment(List<AbstractModel> model) {
+        if (mPendingScrollTo != null) {
+            // Compute comment position
+            int position = -1;
+            for (int i = 0; i < model.size(); i++) {
+                AbstractModel am = model.get(i);
+                if (am instanceof CommentModel) {
+                    CommentModel comment = (CommentModel) am;
+                    if (comment.commentA != null
+                            && comment.commentA.id.equals(mPendingScrollTo)) {
+                        position = i;
+                        break;
+                    }
+                    if (comment.commentB != null
+                            && comment.commentB.id.equals(mPendingScrollTo)) {
+                        position = i;
+                        break;
+                    }
+                }
+            }
+
+            // Jump to position?
+            if (position != -1) {
+                int start = mLayoutManager.findFirstVisibleItemPosition();
+                int end = mLayoutManager.findLastVisibleItemPosition();
+                int index = position - (end - start + 1);
+                if (index < 0) {
+                    index = 0;
+                } else if (index >= mDiffAdapter.getItemCount()) {
+                    index = mDiffAdapter.getItemCount() - 1;
+                }
+                mLayoutManager.scrollToPosition(index);
+            }
+            mPendingScrollTo = null;
+        }
     }
 
     static class SavedState extends BaseSavedState {

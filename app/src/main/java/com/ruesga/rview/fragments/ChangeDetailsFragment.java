@@ -1442,7 +1442,7 @@ public class ChangeDetailsFragment extends Fragment {
 
         ArrayList<String> files = new ArrayList<>(mResponse.mFiles.keySet());
         ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, files,
-                mCurrentRevision, base, current, file, DIFF_REQUEST_CODE);
+                mCurrentRevision, base, current, file, null, DIFF_REQUEST_CODE);
     }
 
     private void performNavigateToComment(CommentInfo comment) {
@@ -1453,9 +1453,8 @@ public class ChangeDetailsFragment extends Fragment {
         }
         String current = String.valueOf(comment.patchSet);
 
-        ArrayList<String> files = new ArrayList<>(mResponse.mFiles.keySet());
-        ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, files,
-                mCurrentRevision, base, current, comment.path, DIFF_REQUEST_CODE);
+        ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, null,
+                mCurrentRevision, base, current, comment.path, comment.id, DIFF_REQUEST_CODE);
 
     }
 
