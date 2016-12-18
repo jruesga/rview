@@ -166,8 +166,9 @@ public class Formatter {
             return;
         }
 
-        view.setText(StringHelper.removeLineBreaks(
-                info.message.substring(info.subject.length()).trim()));
+        String message = EmojiHelper.createEmoji(
+                info.message.substring(info.subject.length()).trim());
+        view.setText(StringHelper.removeLineBreaks(message));
     }
 
     @BindingAdapter("userMessage")
@@ -177,8 +178,9 @@ public class Formatter {
             return;
         }
 
+        String message = EmojiHelper.createEmoji(msg);
         String preparedQuote = StringHelper.obtainMessageFromQuote(
-                StringHelper.removeLineBreaks(msg));
+                StringHelper.removeLineBreaks(message));
         if (!preparedQuote.contains(StringHelper.NON_PRINTABLE_CHAR)) {
             // there is not quoted messages here, just a simple message
             view.setText(preparedQuote);
