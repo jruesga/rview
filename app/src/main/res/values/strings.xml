@@ -322,6 +322,8 @@
     <string name="custom_filter_hint">Filter name</string>
 
     <!-- Options -->
+    <string name="options_navigation">Navigation</string>
+    <string name="options_file">File</string>
     <string name="options_base">Base</string>
     <string name="options_actions">Actions</string>
     <string name="options_base_left">Left</string>

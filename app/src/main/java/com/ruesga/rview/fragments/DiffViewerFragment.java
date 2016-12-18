@@ -55,6 +55,7 @@ import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.DiffActionsHeaderBinding;
 import com.ruesga.rview.databinding.DiffBaseChooserHeaderBinding;
+import com.ruesga.rview.databinding.DiffFileChooserHeaderBinding;
 import com.ruesga.rview.databinding.DiffViewerFragmentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
 import com.ruesga.rview.fragments.FileDiffViewerFragment.OnDiffCompleteListener;
@@ -106,6 +107,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     @ProguardIgnored
     public static class Model {
+        public String file;
+
         public String baseLeft;
         public String baseRight;
 
@@ -121,6 +124,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
         public EventHandlers(DiffViewerFragment fragment) {
             mFragment = fragment;
+        }
+
+        public void onFileChooserPressed(View v) {
+            mFragment.performFileChooser(v);
         }
 
         public void onBaseChooserPressed(View v) {
@@ -333,6 +340,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     }
 
     private DiffViewerFragmentBinding mBinding;
+    private DiffFileChooserHeaderBinding mFileChooserBinding;
     private DiffBaseChooserHeaderBinding mBaseChooserBinding;
     private DiffActionsHeaderBinding mActionsBinding;
     private Model mModel = new Model();
@@ -471,6 +479,11 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             activity.configureOptionsTitle(getString(R.string.menu_diff_options));
             activity.configureOptionsMenu(R.menu.diff_options_menu, mOptionsItemListener);
 
+            mFileChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
+                    R.layout.diff_file_chooser_header, activity.getOptionsMenu(), false);
+            mFileChooserBinding.setHandlers(mEventHandlers);
+            activity.getOptionsMenu().addHeaderView(mFileChooserBinding.getRoot());
+
             mBaseChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
                     R.layout.diff_base_chooser_header, activity.getOptionsMenu(), false);
             mBaseChooserBinding.setHandlers(mEventHandlers);
@@ -601,6 +614,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     @SuppressWarnings("ConstantConditions")
     private void updateModel() {
+        mModel.file = new File(mFile).getName();
         mModel.baseLeft = mBase == null ? getString(R.string.options_base) : mBase;
         mModel.baseRight = String.valueOf(mChange.revisions.get(mRevisionId).number);
 
@@ -616,8 +630,40 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             mModel.hasRightDownloadAction = !status.equals(FileStatus.D);
         }
 
+        mFileChooserBinding.setModel(mModel);
         mBaseChooserBinding.setModel(mModel);
         mActionsBinding.setModel(mModel);
+    }
+
+    @SuppressWarnings("Convert2streamapi")
+    private void performFileChooser(View v) {
+        final List<String> files = new ArrayList<>();
+        for (String file : mFiles) {
+            files.add(new File(file).getName());
+        }
+
+        final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
+        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
+                getContext(), files, new File(mFile).getName());
+        popupWindow.setAnchorView(v);
+        popupWindow.setAdapter(adapter);
+        popupWindow.setContentWidth(adapter.measureContentWidth());
+        popupWindow.setOnItemClickListener((parent, view, position, id) -> {
+            popupWindow.dismiss();
+
+            // Close the drawer
+            BaseActivity activity = (BaseActivity) getActivity();
+            activity.closeOptionsDrawer();
+
+            // Change to the new file
+            if (position != mCurrentFile) {
+                mFile = mFiles.get(position);
+                mCurrentFile = position;
+                activity.getContentBinding().pagerController.currentPage(mCurrentFile, true, true);
+            }
+        });
+        popupWindow.setModal(true);
+        popupWindow.show();
     }
 
     @SuppressWarnings("Convert2streamapi")

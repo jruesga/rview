@@ -41,7 +41,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textColor="?android:textColorSecondary"
             android:textStyle="bold"
-            android:text="@string/options_base"/>
+            android:text="@string/options_navigation"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -49,13 +49,12 @@
             android:orientation="horizontal"
             android:baselineAligned="false">
 
-            <!-- Left -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UselessParent">
 
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="@dimen/label_min_width"
@@ -69,7 +68,7 @@
                     android:paddingEnd="?attr/listPreferredItemPaddingRight"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="?android:textColorPrimary"
-                    android:text="@string/options_base_left"/>
+                    android:text="@string/options_file"/>
 
                 <LinearLayout
                     android:id="@+id/baseLeft"
@@ -77,62 +76,15 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:padding="3dp"
-                    android:onClick="@{handlers::onBaseChooserPressed}"
-                    android:background="?attr/selectableItemBackgroundBorderless">
+                    android:onClick="@{handlers::onFileChooserPressed}"
+                    android:background="?attr/selectableItemBackground">
                     <com.ruesga.rview.widget.StyleableTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?android:attr/textColorSecondary"
-                        android:text="@{model.baseLeft}"
-                        android:gravity="center"
-                        android:textSize="12sp"/>
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@drawable/ic_arrow_drop_down"
-                        tools:ignore="ContentDescription"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Right -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <com.ruesga.rview.widget.StyleableTextView
-                    android:layout_width="@dimen/label_min_width"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical|start"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    android:paddingLeft="?attr/listPreferredItemPaddingLeft"
-                    android:paddingStart="?attr/listPreferredItemPaddingLeft"
-                    android:paddingRight="?attr/listPreferredItemPaddingRight"
-                    android:paddingEnd="?attr/listPreferredItemPaddingRight"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    android:textColor="?android:textColorPrimary"
-                    android:text="@string/options_base_right"/>
-
-                <LinearLayout
-                    android:id="@+id/baseRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:padding="3dp"
-                    android:onClick="@{handlers::onBaseChooserPressed}"
-                    android:background="?attr/selectableItemBackgroundBorderless">
-                    <com.ruesga.rview.widget.StyleableTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:text="@{model.baseRight}"
+                        android:text="@{model.file}"
                         android:gravity="center"
                         android:textSize="12sp"/>
                     <ImageView
