@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.FilterableAdapter;
 import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.misc.AndroidHelper;
@@ -114,7 +115,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
 
         builder.setTitle(getDialogTitle())
                 .setView(binding.getRoot())
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(getDialogActionLabel(),
                         (dialog, which) -> performNotifyFilterSelected());
     }

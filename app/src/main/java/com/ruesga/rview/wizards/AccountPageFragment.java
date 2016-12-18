@@ -439,7 +439,7 @@ public class AccountPageFragment extends WizardPageFragment {
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle(R.string.menu_help)
                 .setMessage(R.string.account_wizard_account_page_help)
-                .setPositiveButton(android.R.string.ok, null)
+                .setPositiveButton(R.string.action_ok, null)
                 .create();
         dialog.show();
     }

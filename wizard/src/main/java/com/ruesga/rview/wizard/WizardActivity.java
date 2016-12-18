@@ -481,7 +481,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         mWorkflow.hasForward = fragment.hasAcceptButton();
         if (mWorkflow.hasForward) {
             mWorkflow.forwardDrawable = 0;
-            mWorkflow.forwardLabel = getString(android.R.string.ok);
+            mWorkflow.forwardLabel = getString(R.string.accept);
             mWorkflow.isForwardEnabled = fragment.isAcceptButtonEnabled();
         }
         mWorkflow.hasCancel = true;

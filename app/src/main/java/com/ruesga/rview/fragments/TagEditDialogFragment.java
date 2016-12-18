@@ -92,7 +92,7 @@ public class TagEditDialogFragment extends RevealDialogFragment {
 
         builder.setTitle(title)
                 .setView(mBinding.getRoot())
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(action, (dialog, which) -> performEditChanged());
     }
 
