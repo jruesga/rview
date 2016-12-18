@@ -99,12 +99,10 @@ import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.LinesWithCommentsView.OnLineClickListener;
-import com.ruesga.rview.widget.TagEditTextView.Tag;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -218,10 +216,6 @@ public class ChangeDetailsFragment extends Fragment {
 
         public void onTopicEditPressed(View v) {
             mFragment.performShowChangeTopicDialog(v);
-        }
-
-        public void onTagsEditPressed(View v) {
-            mFragment.performShowChangeTagsDialog(v);
         }
 
         public void onRelatedChangesPressed(View v) {
@@ -529,7 +523,6 @@ public class ChangeDetailsFragment extends Fragment {
         Map<String, Integer> mDraftComments;
         ConfigInfo mProjectConfig;
         Map<String, LinkedHashMap<String, List<CommentInfo>>> mMessagesWithComments = new HashMap<>();
-        List<String> mTags = new ArrayList<>();
     }
 
     private final RxLoaderObserver<DataResponse> mChangeObserver =
@@ -781,23 +774,6 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
-    private final RxLoaderObserver<List<String>> mTagsObserver
-            = new RxLoaderObserver<List<String>>() {
-        @Override
-        public void onNext(List<String> value) {
-            mResponse.mTags = value;
-            mBinding.changeInfo.setTags(mResponse.mTags);
-            // TODO Handle tags when 2.14 become stable
-            //mBinding.changeInfo.tagsLabels.setTags(createTags(mResponse.mTags));
-            mBinding.executePendingBindings();
-        }
-
-        @Override
-        public void onError(Throwable error) {
-            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
-        }
-    };
-
     @ProguardIgnored
     public static class EmptyEventHandlers extends EmptyState.EventHandlers {
         private ChangeDetailsFragment mFragment;
@@ -842,7 +818,6 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
     private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
-    private RxLoader2<List<Tag>, List<Tag>, List<String>> mTagsLoader;
     private int mLegacyChangeId;
 
     private Map<String, Integer> savedReview;
@@ -1011,7 +986,6 @@ public class ChangeDetailsFragment extends Fragment {
                     "action", this::doAction, mActionObserver);
             mDraftsRefreshLoader = loaderManager.create(
                     "drafts_refresh", fetchDrafts(), mDraftsRefreshObserver);
-            mTagsLoader = loaderManager.create("tags", this::updateTags, mTagsObserver);
             mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver);
             mChangeLoader.start(String.valueOf(mLegacyChangeId));
         }
@@ -1021,17 +995,6 @@ public class ChangeDetailsFragment extends Fragment {
     public final void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
-    }
-
-    private Tag[] createTags(List<String> starLabels) {
-        Tag[] tags = new Tag[starLabels.size()];
-        int i = 0;
-        for (String s : starLabels) {
-            tags[i] = new Tag();
-            tags[i].mTag = "#" + s;
-            i++;
-        }
-        return tags;
     }
 
     private void updatePatchSetInfo(DataResponse response) {
@@ -1077,12 +1040,6 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
         mBinding.changeInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
-
-        mBinding.changeInfo.setTags(response.mTags);
-        // TODO Handle tags when 2.14 become stable
-        /*mBinding.changeInfo.tagsLabels.setTags(createTags(response.mTags));
-        mBinding.changeInfo.tagsLabels.setOnTagClickListener(
-                tag -> performApplyTagFilter(tag.toPlainTag().toString()));*/
     }
 
     private void updateReviewInfo(DataResponse response) {
@@ -1169,16 +1126,6 @@ public class ChangeDetailsFragment extends Fragment {
                                     changeId, mDiffAgainstRevision).blockingFirst();
                         }
                         return new HashMap<>();
-                    }),
-                    SafeObservable.fromNullCallable(() -> {
-                        // Do no fetch star labels if the account is not authenticated
-                        // TODO Handle tags when 2.14 become stable
-                        /*if (api.supportsFeature(Features.CHANGE_STAR_LABELS)
-                                && mAccount.hasAuthenticatedAccessMode()) {
-                            return api.getStarLabelsFromChange(GerritApi.SELF_ACCOUNT, changeId)
-                                    .blockingFirst();
-                        }*/
-                        return new ArrayList<>();
                     }),
                     this::combineResponse
                 )
@@ -1350,31 +1297,6 @@ public class ChangeDetailsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private Observable<List<String>> updateTags(
-            final List<Tag> oldTags, final List<Tag> newTags) {
-        //TODO Handle tags when 2.14 become stable
-        /*final Context ctx = getActivity();
-        final GerritApi api = ModelHelper.getGerritApi(ctx);
-
-        final StarInput input = new StarInput();
-        input.add = convertTags(newTags);
-        input.remove = convertTags(oldTags);
-        if (input.add == null && input.remove == null) {
-            // Nothing to do. Just return the current tags
-            return Observable.just(mResponse.mTags);
-        }
-
-        return SafeObservable.fromNullCallable(() ->
-                api.updateStarLabelsFromChange(
-                        GerritApi.SELF_ACCOUNT, String.valueOf(mLegacyChangeId), input)
-                            .blockingFirst())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        */
-        return Observable.just(new ArrayList<>());
-    }
-
     private void setupSwipeToRefresh() {
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
@@ -1389,15 +1311,6 @@ public class ChangeDetailsFragment extends Fragment {
             mChangeLoader.clear();
             mChangeLoader.restart(String.valueOf(mLegacyChangeId));
         }
-    }
-
-    private void performUpdateChangeTags(
-            Tag[] oldTags, Tag[] newTags) {
-        List<Tag> o = new ArrayList<>(Arrays.asList(oldTags));
-        o.removeAll(Arrays.asList(newTags));
-        List<Tag> n = new ArrayList<>(Arrays.asList(newTags));
-
-        mTagsLoader.restart(o, n);
     }
 
     private void showProgress(boolean show, ChangeInfo change) {
@@ -1415,8 +1328,7 @@ public class ChangeDetailsFragment extends Fragment {
             Map<String, List<CommentInfo>> revisionComments,
             Map<String, List<CommentInfo>> baseRevisionComments,
             Map<String, List<CommentInfo>> revisionDraftComments,
-            Map<String, List<CommentInfo>> baseRevisionDraftComments,
-            List<String> tags) {
+            Map<String, List<CommentInfo>> baseRevisionDraftComments) {
         // Map inline and draft comments
         Map<String, Integer> inlineComments = new HashMap<>();
         if (revisionComments != null) {
@@ -1465,8 +1377,6 @@ public class ChangeDetailsFragment extends Fragment {
         response.mSubmitType = submitType;
         response.mInlineComments = inlineComments;
         response.mDraftComments = draftComments;
-        response.mTags.clear();
-        response.mTags.addAll(tags);
         return response;
     }
 
@@ -1752,18 +1662,6 @@ public class ChangeDetailsFragment extends Fragment {
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
-    private void performShowChangeTagsDialog(View v) {
-        // TODO Handle tags when 2.14 become stable
-        /*final Tag[] tags = mBinding.changeInfo.tagsLabels.getTags();
-        String title = getString(R.string.change_star_labels_title);
-        String action = getString(R.string.action_save);
-
-        TagEditDialogFragment fragment = TagEditDialogFragment.newInstance(
-                title, tags, action, v);
-        fragment.setOnEditChanged(newTags -> performUpdateChangeTags(tags, newTags));
-        fragment.show(getChildFragmentManager(), TagEditDialogFragment.TAG);*/
-    }
-
     private void performShowChooseBaseDialog(View v, OnFilterSelectedListener cb) {
         BaseChooserDialogFragment fragment = BaseChooserDialogFragment.newInstance(
                 mLegacyChangeId, mResponse.mChange.project, mResponse.mChange.branch, v);
@@ -1821,12 +1719,6 @@ public class ChangeDetailsFragment extends Fragment {
                 filter = new ChangeQuery().topic(((TextView) v).getText().toString());
                 break;
         }
-        ActivityHelper.openChangeListByFilterActivity(getActivity(), title, filter, false);
-    }
-
-    private void performApplyTagFilter(String tag) {
-        String title = getString(R.string.change_details_tag);
-        ChangeQuery filter = new ChangeQuery().star(tag);
         ActivityHelper.openChangeListByFilterActivity(getActivity(), title, filter, false);
     }
 
@@ -1898,11 +1790,11 @@ public class ChangeDetailsFragment extends Fragment {
                     AlertDialog dialog = new AlertDialog.Builder(getContext())
                             .setTitle(R.string.delete_draft_change_title)
                             .setMessage(R.string.delete_draft_change_confirm)
-                            .setPositiveButton(android.R.string.ok, (dialog1, which) -> {
+                            .setPositiveButton(R.string.action_ok, (dialog1, which) -> {
                                     mActionLoader.clear();
                                     mActionLoader.restart(ModelHelper.ACTION_DELETE_CHANGE, null);
                                 })
-                            .setNegativeButton(android.R.string.cancel, null)
+                            .setNegativeButton(R.string.action_cancel, null)
                             .create();
                     dialog.show();
                     break;
@@ -2075,20 +1967,6 @@ public class ChangeDetailsFragment extends Fragment {
                 }
             }
         }
-    }
-
-    private String[] convertTags(List<Tag> tags) {
-        if (tags != null) {
-            int count = tags.size();
-            if (count > 0) {
-                String[] t = new String[count];
-                for (int i = 0; i < count; i++) {
-                    t[i] = tags.get(i).toPlainTag().toString();
-                }
-                return t;
-            }
-        }
-        return null;
     }
 
     private String resolveDiffAgainstSelectorText() {
