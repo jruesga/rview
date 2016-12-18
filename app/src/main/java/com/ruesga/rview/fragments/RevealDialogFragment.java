@@ -104,7 +104,7 @@ public abstract class RevealDialogFragment extends DialogFragment {
             cy = Math.min(Math.max(mAnchorRect.centerY(), dialogRect.top), dialogRect.bottom) - dialogRect.top;
         }
 
-        int finalRadius = Math.max(v.getWidth(), v.getHeight()) / 2;
+        int finalRadius = Math.max(v.getWidth(), v.getHeight());
         Animator anim = ViewAnimationUtils.createCircularReveal(v, cx, cy, 0, finalRadius);
         anim.setDuration(350);
         anim.setInterpolator(new AccelerateInterpolator());
