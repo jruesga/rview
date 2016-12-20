@@ -148,15 +148,15 @@ public class ModelHelper {
             }
         }
 
-        // Github avatar/identicons
-        if (account.username != null) {
-            urls.add("https://github.com/" + account.username + ".png?size=" + maxSize);
-        }
-
         // Gravatar icons
         if (account.email != null) {
             urls.add("https://www.gravatar.com/avatar/"
                     + computeGravatarHash(account.email) + ".png?s=" + maxSize + "&d=404");
+        }
+
+        // Github avatar/identicons
+        if (account.username != null) {
+            urls.add("https://github.com/" + account.username + ".png?size=" + maxSize);
         }
 
         sAvatarUrlCache.put(accountKey, urls);
