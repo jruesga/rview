@@ -231,7 +231,8 @@ public class MainActivity extends ChangeListBaseActivity {
             Fragment listFragment = getSupportFragmentManager().getFragment(
                     savedInstanceState, FRAGMENT_TAG_LIST);
             if (listFragment != null) {
-                FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                        .setAllowOptimization(false);
                 tx.replace(R.id.content, listFragment, FRAGMENT_TAG_LIST);
                 if (detailsFragment != null) {
                     tx.replace(R.id.details, detailsFragment, FRAGMENT_TAG_DETAILS);
@@ -743,7 +744,8 @@ public class MainActivity extends ChangeListBaseActivity {
 
         // Open the dashboard fragment
         mModel.selectedChangeId = INVALID_ITEM;
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                .setAllowOptimization(false);
         Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
         if (oldFragment != null) {
             tx.remove(oldFragment);
@@ -766,7 +768,8 @@ public class MainActivity extends ChangeListBaseActivity {
 
         // Open the filter fragment
         mModel.selectedChangeId = INVALID_ITEM;
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                .setAllowOptimization(false);
         Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
         if (oldFragment != null) {
             tx.remove(oldFragment);

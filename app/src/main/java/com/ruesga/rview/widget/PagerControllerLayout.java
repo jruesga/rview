@@ -169,7 +169,8 @@ public class PagerControllerLayout extends FrameLayout {
             mOnPageSelectionListener.onPageSelected(position, fromUser);
         }
 
-        FragmentTransaction tx = mAdapter.getFragmentManager().beginTransaction();
+        FragmentTransaction tx = mAdapter.getFragmentManager().beginTransaction()
+                .setAllowOptimization(false);
         Fragment oldFragment = mAdapter.getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         if (oldFragment != null) {
             tx.remove(oldFragment);

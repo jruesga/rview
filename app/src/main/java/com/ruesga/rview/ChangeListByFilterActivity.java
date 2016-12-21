@@ -100,7 +100,8 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
             Fragment listFragment = getSupportFragmentManager().getFragment(
                     savedInstanceState, FRAGMENT_TAG_LIST);
             if (listFragment != null) {
-                FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                        .setAllowOptimization(false);
                 tx.replace(R.id.content, listFragment, FRAGMENT_TAG_LIST);
                 if (detailsFragment != null) {
                     tx.replace(R.id.details, detailsFragment, FRAGMENT_TAG_DETAILS);
@@ -133,7 +134,8 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
     }
 
     private void openChangeListByFilterFragment(String filter) {
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                .setAllowOptimization(false);
         Fragment fragment = ChangeListByFilterFragment.newInstance(filter);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG_LIST);
         tx.commit();

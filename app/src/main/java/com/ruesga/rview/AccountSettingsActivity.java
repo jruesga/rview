@@ -60,7 +60,8 @@ public class AccountSettingsActivity extends AppCompatDelegateActivity {
                     account.getRepositoryDisplayName(), account.getAccountDisplayName()));
         }
 
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                .setAllowOptimization(false);
         Fragment fragment;
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);

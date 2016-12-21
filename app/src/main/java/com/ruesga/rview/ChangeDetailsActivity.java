@@ -190,7 +190,8 @@ public class ChangeDetailsActivity extends BaseActivity {
             getSupportActionBar().setSubtitle(changeId);
         }
 
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                .setAllowOptimization(false);
         Fragment fragment;
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);

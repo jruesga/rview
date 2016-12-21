@@ -102,7 +102,8 @@ public class DiffViewerActivity extends BaseActivity {
             Fragment fragment = getSupportFragmentManager().getFragment(
                     savedInstanceState, FRAGMENT_TAG);
             if (fragment != null) {
-                FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+                FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                        .setAllowOptimization(false);
                 tx.replace(R.id.content, fragment, FRAGMENT_TAG);
                 tx.commit();
             }
@@ -116,7 +117,8 @@ public class DiffViewerActivity extends BaseActivity {
 
     private void createDiffViewFragment(
             String revisionId, String base, String file, String comment) {
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                .setAllowOptimization(false);
         Fragment fragment = DiffViewerFragment.newInstance(revisionId, base, file, comment);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG);
         tx.commit();

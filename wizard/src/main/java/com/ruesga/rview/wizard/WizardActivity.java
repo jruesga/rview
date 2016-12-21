@@ -374,7 +374,8 @@ public abstract class WizardActivity extends AppCompatActivity {
 
         // Navigate to chooser
         mCurrentChooserFragmentTag = chooser.getClass().getSimpleName();
-        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        FragmentTransaction transaction = mFragmentManager.beginTransaction()
+                .setAllowOptimization(false);;
         if (mCurrentPageFragment != null) {
             transaction.remove(mCurrentPageFragment);
         }
@@ -437,7 +438,8 @@ public abstract class WizardActivity extends AppCompatActivity {
         }
 
         // Navigate to page
-        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        FragmentTransaction transaction = mFragmentManager.beginTransaction()
+                .setAllowOptimization(false);
         if (oldFragment != null) {
             transaction.remove(oldFragment);
         }

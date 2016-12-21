@@ -70,7 +70,8 @@ public class NotificationsActivity extends AppCompatDelegateActivity {
                     mAccount.getRepositoryDisplayName(), mAccount.getAccountDisplayName()));
         }
 
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
+                .setAllowOptimization(false);
         Fragment fragment;
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
