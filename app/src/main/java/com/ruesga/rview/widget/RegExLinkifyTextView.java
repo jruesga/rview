@@ -17,6 +17,7 @@ package com.ruesga.rview.widget;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -160,12 +161,14 @@ public class RegExLinkifyTextView extends StyleableTextView {
                                 v.playSoundEffect(SoundEffectConstants.CLICK);
                                 String link = regEx.mLink.replace("$1", url);
 
-                                if (ModelHelper.canAnyAccountHandleUrl(getContext(), link)) {
-                                    ActivityHelper.handleUri(getContext(),
-                                            StringHelper.buildUriAndEnsureScheme(link));
+                                Uri uri = StringHelper.buildUriAndEnsureScheme(link);
+                                boolean isHttpScheme = uri.getScheme().equals("http")
+                                        || uri.getScheme().equals("https");
+                                if (isHttpScheme ||
+                                        ModelHelper.canAnyAccountHandleUrl(getContext(), link)) {
+                                    ActivityHelper.handleUri(getContext(), uri);
                                 } else {
-                                    ActivityHelper.openUriInCustomTabs((Activity) getContext(),
-                                            StringHelper.buildUriAndEnsureScheme(link));
+                                    ActivityHelper.openUriInCustomTabs((Activity) getContext(), uri);
                                 }
                             }
                         }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
