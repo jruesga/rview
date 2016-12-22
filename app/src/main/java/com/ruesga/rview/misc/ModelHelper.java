@@ -36,6 +36,7 @@ import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.widget.RegExLinkifyTextView;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -46,6 +47,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class ModelHelper {
 
@@ -427,5 +429,17 @@ public class ModelHelper {
                         context.getPackageName(),
                         context.getPackageName() + "." + activityAlias),
                 state, PackageManager.DONT_KILL_APP);
+    }
+
+    public static boolean canHandleUrl(Context ctx, String url) {
+        List<Account> accounts = Preferences.getAccounts(ctx);
+        for (Account account : accounts) {
+            Pattern pattern = RegExLinkifyTextView.createRepositoryRegExpLink(
+                    account.mRepository).mPattern;
+            if (pattern.matcher(url).find()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

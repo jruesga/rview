@@ -145,6 +145,19 @@ public class ActivityHelper {
         }
     }
 
+    public static void handleUri(Context ctx, Uri uri) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.putExtra(Constants.EXTRA_SOURCE, ctx.getPackageName());
+            intent.setPackage(ctx.getPackageName());
+            ctx.startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            // Fallback to default browser
+            String msg = ctx.getString(R.string.exception_browser_not_found, uri.toString());
+            Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressWarnings("deprecation")
     public static void share(Context ctx, String action, String title, String text) {
