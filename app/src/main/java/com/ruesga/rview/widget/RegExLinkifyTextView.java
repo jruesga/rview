@@ -94,14 +94,22 @@ public class RegExLinkifyTextView extends StyleableTextView {
         }
 
         return new RegExLink(
-                "http(s)?://" + uri + "(#/)?c/(\\d)+(/)?",
+                "http(s)?://" + uri + "((#/)?c/)?(\\d)+(/)?",
                 "com.ruesga.rview://changeid/$1", group -> {
-                    int start = group.indexOf("/c/") + 3;
-                    int end = group.indexOf("/", start);
-                    if (end != -1) {
-                        return group.substring(start, end);
+                    int pos = group.indexOf("/c/");
+                    if (pos != -1) {
+                        int start = group.indexOf("/c/") + 3;
+                        int end = group.indexOf("/", start);
+                        if (end != -1) {
+                            return group.substring(start, end);
+                        }
+                        return group.substring(start);
+                    } else {
+                        if (group.endsWith("/")) {
+                            return group.substring(group.lastIndexOf("/", group.length() - 2) + 1);
+                        }
+                        return group.substring(group.lastIndexOf("/") + 1);
                     }
-                    return group.substring(start);
                 });
     }
 
