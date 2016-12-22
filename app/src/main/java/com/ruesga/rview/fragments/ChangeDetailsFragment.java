@@ -1445,7 +1445,7 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void showPatchSetChooser(View anchor) {
-        if (mModel.isLocked) {
+        if (isLocked()) {
             return;
         }
 
@@ -1467,7 +1467,7 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void showDiffAgainstChooser(View anchor) {
-        if (mModel.isLocked) {
+        if (isLocked()) {
             return;
         }
 
@@ -1491,21 +1491,21 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performStarred(boolean starred) {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             mStarredLoader.clear();
             mStarredLoader.restart(starred);
         }
     }
 
     private void performChangeTopic(String newTopic) {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             mChangeTopicLoader.clear();
             mChangeTopicLoader.restart(newTopic);
         }
     }
 
     private void performEditMessage(String newMessage) {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             ChangeEditMessageInput input = new ChangeEditMessageInput();
             input.message = newMessage;
             mChangeEditMessageLoader.clear();
@@ -1523,35 +1523,35 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performAddReviewer(String reviewer) {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             mAddReviewerLoader.clear();
             mAddReviewerLoader.restart(reviewer);
         }
     }
 
     private void performRemoveAccount(AccountInfo account) {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             mRemoveReviewerLoader.clear();
             mRemoveReviewerLoader.restart(account);
         }
     }
 
     private void performMessagesRefresh() {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             mMessagesRefreshLoader.clear();
             mMessagesRefreshLoader.restart();
         }
     }
 
     private void performDraftsRefresh() {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             mDraftsRefreshLoader.clear();
             mDraftsRefreshLoader.restart();
         }
     }
 
     private void performReview() {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             String message = StringHelper.obtainQuoteFromMessage(
                     mBinding.reviewInfo.reviewComment.getText().toString());
             Map<String, Integer> review = mBinding.reviewInfo.reviewLabels.getReview(false);
@@ -1574,9 +1574,9 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void updateLocked() {
-        mBinding.patchSetInfo.setIsLocked(mModel.isLocked);
-        mBinding.changeInfo.setIsLocked(mModel.isLocked);
-        mBinding.reviewInfo.setIsLocked(mModel.isLocked);
+        mBinding.patchSetInfo.setIsLocked(isLocked());
+        mBinding.changeInfo.setIsLocked(isLocked());
+        mBinding.reviewInfo.setIsLocked(isLocked());
         mBinding.executePendingBindings();
     }
 
@@ -1723,7 +1723,7 @@ public class ChangeDetailsFragment extends Fragment {
     }
 
     private void performAction(View v) {
-        if (!mModel.isLocked) {
+        if (!isLocked()) {
             String action;
             String hint;
             switch (v.getId()) {
@@ -2008,5 +2008,9 @@ public class ChangeDetailsFragment extends Fragment {
             }
         }
         return count;
+    }
+
+    private boolean isLocked() {
+        return mResponse == null || mResponse.mChange == null || mModel.isLocked;
     }
 }
