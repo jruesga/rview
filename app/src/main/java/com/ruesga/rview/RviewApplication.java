@@ -103,10 +103,14 @@ public class RviewApplication extends Application {
     private void enableExternalUrlHandlers() {
         List<Account> accounts =  Preferences.getAccounts(getApplicationContext());
         for (Account account : accounts) {
-            if (Preferences.isAccountHandleLinks(getApplicationContext(), account)) {
-                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, true);
-            } else {
-                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, false);
+            if (ModelHelper.canAccountHandleUrls(getApplicationContext(), account)) {
+                if (Preferences.isAccountHandleLinks(getApplicationContext(), account)) {
+                    ModelHelper.setAccountUrlHandlingStatus(
+                            getApplicationContext(), account, true);
+                } else {
+                    ModelHelper.setAccountUrlHandlingStatus(
+                            getApplicationContext(), account, false);
+                }
             }
         }
     }

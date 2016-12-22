@@ -115,5 +115,6 @@ public class Constants {
     public static final String PREF_ACCOUNT_NOTIFICATIONS_ADVISE = "account_notifications_advise";
     public static final String PREF_ACCOUNT_NOTIFICATIONS = "account_notifications";
     public static final String PREF_ACCOUNT_NOTIFICATIONS_EVENTS = "account_notifications_events";
+    public static final String PREF_ACCOUNT_EXTERNAL_CATEGORY = "account_external_category";
 
 }

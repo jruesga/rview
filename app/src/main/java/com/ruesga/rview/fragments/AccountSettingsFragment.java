@@ -22,7 +22,6 @@ import android.support.v7.preference.Preference.OnPreferenceChangeListener;
 import android.support.v7.preference.Preference.OnPreferenceClickListener;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.preference.SwitchPreferenceCompat;
 import android.support.v7.preference.TwoStatePreference;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -53,6 +52,7 @@ import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_EXTERNAL_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
@@ -215,10 +215,19 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     }
 
     private void configureHandleLinks() {
+        PreferenceCategory category =
+                (PreferenceCategory) findPreference(PREF_ACCOUNT_EXTERNAL_CATEGORY);
         mHandleLinks = (TwoStatePreference) findPreference(PREF_ACCOUNT_HANDLE_LINKS);
-        mHandleLinks.setChecked(Preferences.isAccountHandleLinks(getContext(), mAccount)
-                && ModelHelper.isAccountUrlHandlingEnabled(getContext(), mAccount));
-        mHandleLinks.setOnPreferenceChangeListener(this);
+        if (!ModelHelper.canAccountHandleUrls(getContext(), mAccount)) {
+            if (mHandleLinks != null) {
+                category.removePreference(mHandleLinks);
+                mHandleLinks = null;
+            }
+        } else {
+            mHandleLinks.setChecked(Preferences.isAccountHandleLinks(getContext(), mAccount)
+                    && ModelHelper.isAccountUrlHandlingEnabled(getContext(), mAccount));
+            mHandleLinks.setOnPreferenceChangeListener(this);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -882,10 +882,12 @@ public class MainActivity extends ChangeListBaseActivity {
     }
 
     private void setupAccountUrlHandlingStatus(Account account) {
-        if (Preferences.isAccountHandleLinks(getApplicationContext(), account)) {
-            ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, true);
-        } else {
-            ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, false);
+        if (ModelHelper.canAccountHandleUrls(getApplicationContext(), account)) {
+            if (Preferences.isAccountHandleLinks(getApplicationContext(), account)) {
+                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, true);
+            } else {
+                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, false);
+            }
         }
     }
 }

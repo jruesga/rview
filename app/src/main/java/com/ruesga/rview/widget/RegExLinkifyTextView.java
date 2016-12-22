@@ -160,7 +160,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
                                 v.playSoundEffect(SoundEffectConstants.CLICK);
                                 String link = regEx.mLink.replace("$1", url);
 
-                                if (ModelHelper.canHandleUrl(getContext(), link)) {
+                                if (ModelHelper.canAnyAccountHandleUrl(getContext(), link)) {
                                     ActivityHelper.handleUri(getContext(),
                                             StringHelper.buildUriAndEnsureScheme(link));
                                 } else {

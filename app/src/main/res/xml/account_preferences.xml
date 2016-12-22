@@ -80,6 +80,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="account_external_category"
         android:title="@string/account_settings_external_category">
 
         <SwitchPreference

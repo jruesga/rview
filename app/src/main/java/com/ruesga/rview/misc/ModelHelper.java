@@ -441,7 +441,22 @@ public class ModelHelper {
         return status == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }
 
-    public static boolean canHandleUrl(Context ctx, String url) {
+    public static boolean canAccountHandleUrls(Context ctx, Account account) {
+        String name = account.mRepository.mName.replaceAll(" ", "");
+        String activityAlias = name + "ExternalUrlHandlerActivity";
+        try {
+            ctx.getPackageManager().getResourcesForActivity(
+                    new ComponentName(
+                            ctx.getPackageName(),
+                            ctx.getPackageName() + "." + activityAlias));
+            return true;
+        } catch (PackageManager.NameNotFoundException ex) {
+            // Ignore
+        }
+        return false;
+    }
+
+    public static boolean canAnyAccountHandleUrl(Context ctx, String url) {
         List<Account> accounts = Preferences.getAccounts(ctx);
         for (Account account : accounts) {
             if (!Preferences.isAccountHandleLinks(ctx, account)) {
