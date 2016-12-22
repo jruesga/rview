@@ -1603,7 +1603,7 @@ public class ChangeDetailsFragment extends Fragment {
         Uri uri = api.getRevisionUri(
                 String.valueOf(mLegacyChangeId), String.valueOf(revision.number));
 
-        ActivityHelper.openUriInCustomTabs(getActivity(), uri);
+        ActivityHelper.openUriInCustomTabs(getActivity(), uri, true);
     }
 
     @SuppressWarnings("ConstantConditions")
