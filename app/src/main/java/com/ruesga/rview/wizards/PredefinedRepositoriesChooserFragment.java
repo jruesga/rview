@@ -19,17 +19,12 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.R;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.wizard.choosers.ListChooserFragment;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -37,8 +32,6 @@ import java.util.concurrent.Callable;
 public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
 
     public static final String EXTRA_REPOSITORY = "repository";
-
-    private final Gson mGson = new GsonBuilder().create();
 
     public PredefinedRepositoriesChooserFragment() {
         super();
@@ -64,8 +57,7 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
     }
 
     private List<ItemModel> getRepositoriesAsModel() throws IOException {
-        Type type = new TypeToken<ArrayList<Repository>>(){}.getType();
-        ArrayList<Repository> repositories = mGson.fromJson(loadRawResourceAsStream(), type);
+        List<Repository> repositories = ModelHelper.getPredefinedRepositories(getContext());
         ArrayList<ItemModel> itemModels = new ArrayList<>(repositories.size());
         for (Repository repo : repositories) {
             ItemModel item = new ItemModel();
@@ -75,28 +67,5 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
             itemModels.add(item);
         }
         return itemModels;
-    }
-
-    private String loadRawResourceAsStream() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(
-                    getResources().openRawResource(R.raw.repositories)));
-            char[] chars = new char[4096];
-            int read;
-            while ((read = reader.read(chars, 0, 4096)) != -1) {
-                sb.append(chars, 0, read);
-            }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    // Ignore
-                }
-            }
-        }
-        return sb.toString();
     }
 }

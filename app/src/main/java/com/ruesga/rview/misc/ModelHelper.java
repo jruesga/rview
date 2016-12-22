@@ -20,7 +20,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.Authorization;
 import com.ruesga.rview.gerrit.GerritApi;
@@ -35,10 +39,13 @@ import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.RegExLinkifyTextView;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -50,6 +57,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ModelHelper {
+
+    private static final String TAG = "ModelHelper";
 
     public static final String ACTION_CHERRY_PICK = "cherrypick";
     public static final String ACTION_REBASE = "rebase";
@@ -67,6 +76,7 @@ public class ModelHelper {
 
     private static final Map<String, List<String>> sAvatarUrlCache = new HashMap<>();
     private static final Map<String, Boolean> sTemporaryTrustAllCertificates = new HashMap<>();
+    private static final List<Repository> sPredefinedRepositories = new ArrayList<>();
 
     public static Account getAccountFromHash(Context ctx, String hash) {
         List<Account> accounts = Preferences.getAccounts(ctx);
@@ -442,16 +452,10 @@ public class ModelHelper {
     }
 
     public static boolean canAccountHandleUrls(Context ctx, Account account) {
-        String name = account.mRepository.mName.replaceAll(" ", "");
-        String activityAlias = name + "ExternalUrlHandlerActivity";
-        try {
-            ctx.getPackageManager().getResourcesForActivity(
-                    new ComponentName(
-                            ctx.getPackageName(),
-                            ctx.getPackageName() + "." + activityAlias));
-            return true;
-        } catch (PackageManager.NameNotFoundException ex) {
-            // Ignore
+        for (Repository repository : getPredefinedRepositories(ctx)) {
+            if (repository.mUrl.equals(account.mRepository.mUrl)) {
+                return true;
+            }
         }
         return false;
     }
@@ -470,5 +474,19 @@ public class ModelHelper {
             }
         }
         return false;
+    }
+
+    public static List<Repository> getPredefinedRepositories(Context ctx) {
+        if (sPredefinedRepositories.isEmpty()) {
+            try {
+                final Gson gson = new GsonBuilder().create();
+                Type type = new TypeToken<ArrayList<Repository>>() {}.getType();
+                sPredefinedRepositories.addAll(gson.fromJson(
+                        AndroidHelper.loadRawResourceAsStream(ctx), type));
+            } catch (IOException ex) {
+                Log.e(TAG, "Can't load predefined repositories", ex);
+            }
+        }
+        return sPredefinedRepositories;
     }
 }

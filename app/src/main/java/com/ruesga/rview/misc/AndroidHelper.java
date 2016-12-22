@@ -28,6 +28,9 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.ruesga.rview.R;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Locale;
 
 public class AndroidHelper {
@@ -76,5 +79,28 @@ public class AndroidHelper {
                     Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    public static String loadRawResourceAsStream(Context ctx) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(
+                    ctx.getResources().openRawResource(R.raw.repositories)));
+            char[] chars = new char[4096];
+            int read;
+            while ((read = reader.read(chars, 0, 4096)) != -1) {
+                sb.append(chars, 0, read);
+            }
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException ex) {
+                    // Ignore
+                }
+            }
+        }
+        return sb.toString();
     }
 }
