@@ -40,6 +40,7 @@ import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
 import com.ruesga.rview.widget.RegExLinkifyTextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -71,6 +72,7 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private ContentBinding mBinding;
 
+    @SuppressWarnings("Convert2streamapi")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,23 +121,17 @@ public class ChangeDetailsActivity extends BaseActivity {
 
             // Check if we can handle this url
             if (scheme.equals("http") || scheme.equals("https")) {
-                boolean valid = false;
                 List<Account> accounts = Preferences.getAccounts(this);
+                List<Account> targetAccounts = new ArrayList<>();
                 for (Account acct : accounts) {
                     Pattern pattern = RegExLinkifyTextView.createRepositoryRegExpLink(
                             acct.mRepository).mPattern;
                     if (pattern.matcher(data.toString()).find()) {
-                        valid = true;
-
-                        // Change to the request account
-                        if (!account.getAccountHash().equals(acct.getAccountHash())) {
-                            Preferences.setAccount(this, acct);
-                        }
-                        break;
+                        targetAccounts.add(acct);
                     }
                 }
 
-                if (!valid) {
+                if (targetAccounts.isEmpty()) {
                     String source = getIntent().getStringExtra(Constants.EXTRA_SOURCE);
                     if (source != null && source.equals(getPackageName())) {
                         ActivityHelper.openUriInCustomTabs(this, data, true);
@@ -144,6 +140,19 @@ public class ChangeDetailsActivity extends BaseActivity {
                     }
                     finish();
                     return;
+                } else {
+                    boolean isSameAccount = false;
+                    for (Account acct : targetAccounts) {
+                        if (account.getAccountHash().equals(acct.getAccountHash())) {
+                            isSameAccount = true;
+                            break;
+                        }
+                    }
+                    if (!isSameAccount) {
+                        // Change to the first of all
+                        // TODO should we ask to the user?
+                        Preferences.setAccount(this, targetAccounts.get(0));
+                    }
                 }
             }
 
