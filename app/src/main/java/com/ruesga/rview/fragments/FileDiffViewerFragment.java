@@ -790,7 +790,9 @@ public class FileDiffViewerFragment extends Fragment {
                 T o = SerializationManager.getInstance().fromJson(
                         new String(CacheHelper.readAccountDiffCacheFile(
                                 getContext(), name)), type);
-                return Observable.just((o));
+                if (o != null) {
+                    return Observable.just(o);
+                }
             }
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load diff cached data: " + name, ex);
