@@ -686,16 +686,18 @@ public class MainActivity extends ChangeListBaseActivity {
 
         // Unregister the url handling for this repository if no other account for the
         // same repository is active
-        boolean unregisterUrlHandler = true;
-        List<Account> accounts =  Preferences.getAccounts(getApplicationContext());
-        for (Account account : accounts) {
-            if (mAccount.mRepository.mUrl.equals(account.mRepository.mUrl)) {
-                unregisterUrlHandler = false;
-                break;
+        if (ModelHelper.canAccountHandleUrls(this, mAccount)) {
+            boolean unregisterUrlHandler = true;
+            List<Account> accounts = Preferences.getAccounts(getApplicationContext());
+            for (Account account : accounts) {
+                if (mAccount.mRepository.mUrl.equals(account.mRepository.mUrl)) {
+                    unregisterUrlHandler = false;
+                    break;
+                }
             }
-        }
-        if (unregisterUrlHandler) {
-            ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), mAccount, false);
+            if (unregisterUrlHandler) {
+                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), mAccount, false);
+            }
         }
 
         mAccount = null;
