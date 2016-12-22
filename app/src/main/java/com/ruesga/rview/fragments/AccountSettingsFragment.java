@@ -22,6 +22,8 @@ import android.support.v7.preference.Preference.OnPreferenceChangeListener;
 import android.support.v7.preference.Preference.OnPreferenceClickListener;
 import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.SwitchPreferenceCompat;
+import android.support.v7.preference.TwoStatePreference;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +54,7 @@ import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_ADVISE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_CATEGORY;
@@ -83,6 +86,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     private Preference mNotificationsAdvise;
     private Preference mNotificationsEnabled;
     private Preference mNotificationsEvents;
+    private TwoStatePreference mHandleLinks;
 
     private RxLoader<CloudNotificationsConfigInfo> mNotificationsSupportLoader;
 
@@ -90,6 +94,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference.equals(mHomePage)) {
             updateHomePageSummary((String) newValue);
+        } else if (preference.equals(mHandleLinks)) {
+            ModelHelper.setAccountUrlHandlingStatus(getContext(), mAccount, (boolean) newValue);
         }
         return true;
 }
@@ -122,6 +128,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         configureHomePage();
         configureFetchItems();
         configureNotifications();
+        configureHandleLinks();
     }
 
     private void configureHomePage() {
@@ -205,6 +212,13 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
             // Check notification support to server
             mNotificationsSupportLoader.restart();
         }
+    }
+
+    private void configureHandleLinks() {
+        mHandleLinks = (TwoStatePreference) findPreference(PREF_ACCOUNT_HANDLE_LINKS);
+        mHandleLinks.setChecked(Preferences.isAccountHandleLinks(getContext(), mAccount)
+                && ModelHelper.isAccountUrlHandlingEnabled(getContext(), mAccount));
+        mHandleLinks.setOnPreferenceChangeListener(this);
     }
 
     @SuppressWarnings("ConstantConditions")

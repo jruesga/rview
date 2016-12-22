@@ -431,9 +431,23 @@ public class ModelHelper {
                 state, PackageManager.DONT_KILL_APP);
     }
 
+    public static boolean isAccountUrlHandlingEnabled(Context context, Account account) {
+        String name = account.mRepository.mName.replaceAll(" ", "");
+        String activityAlias = name + "ExternalUrlHandlerActivity";
+        int status = context.getPackageManager().getComponentEnabledSetting(
+                new ComponentName(
+                        context.getPackageName(),
+                        context.getPackageName() + "." + activityAlias));
+        return status == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+    }
+
     public static boolean canHandleUrl(Context ctx, String url) {
         List<Account> accounts = Preferences.getAccounts(ctx);
         for (Account account : accounts) {
+            if (!Preferences.isAccountHandleLinks(ctx, account)) {
+                continue;
+            }
+
             Pattern pattern = RegExLinkifyTextView.createRepositoryRegExpLink(
                     account.mRepository).mPattern;
             if (pattern.matcher(url).find()) {

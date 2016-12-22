@@ -57,6 +57,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_FOLDE
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_EVENTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_MODE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_WRAP_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TEXT_SIZE_FACTOR;
@@ -239,6 +240,11 @@ public class Preferences {
     public static boolean isAccountHighlightUnreviewed(Context context, Account account) {
         return account == null || getAccountPreferences(context, account)
                 .getBoolean(PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED, true);
+    }
+
+    public static boolean isAccountHandleLinks(Context context, Account account) {
+        return account == null || getAccountPreferences(context, account)
+                .getBoolean(PREF_ACCOUNT_HANDLE_LINKS, false);
     }
 
     public static boolean isAccountUseCustomTabs(Context context, Account account) {

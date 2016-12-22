@@ -239,7 +239,8 @@
     <string name="account_settings_notifications_events_1024">Topic changed</string>
     <string name="account_settings_notifications_events_2048">Assignee changed</string>
     <string name="account_settings_external_category">External viewers</string>
-    <string name="account_settings_use_custom_tabs">Open links in app</string>
+    <string name="account_settings_handle_links">Open Gerrit change links in Rview</string>
+    <string name="account_settings_use_custom_tabs">Open external links in a custom tab</string>
     <string name="account_settings_download_format">Download format</string>
 
     <!-- Notifications -->
