@@ -66,10 +66,10 @@ public class RegExLinkifyTextView extends StyleableTextView {
             "((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
             "$1");
     public static final RegExLink GERRIT_CHANGE_ID_REGEX = new RegExLink(
-            "(I[0-9a-f]{8,40})",
+            "(^|\\s)(I[0-9a-f]{8,40})",
             "com.ruesga.rview://change/$1");
     public static final RegExLink GERRIT_COMMIT_REGEX = new RegExLink(
-            "(^|\\S|[:.,!?\\(\\[\\{])([0-9a-f]{7,40})\\b",
+            "(^|\\s|[:.,!?\\(\\[\\{])([0-9a-f]{7,40})\\b",
             "com.ruesga.rview://commit/$1");
 
     private final List<RegExLink> mRegEx = new ArrayList<>();
@@ -138,12 +138,16 @@ public class RegExLinkifyTextView extends StyleableTextView {
                             group = group.substring(0, group.length() - 1);
                             end--;
                         }
+                        while (group.startsWith(" ")) {
+                            group = group.substring(1);
+                            start++;
+                        }
 
                         // Extract url link
                         if (regEx.mExtractor != null) {
                             group = regEx.mExtractor.extractLink(group);
                         }
-                        final String url = group;
+                        final String url = group.trim();
 
                         // Remove previous spans
                         ClickableSpan[] old = span.getSpans(start, end, ClickableSpan.class);
@@ -164,7 +168,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
                                 Uri uri = StringHelper.buildUriAndEnsureScheme(link);
                                 boolean isHttpScheme = uri.getScheme().equals("http")
                                         || uri.getScheme().equals("https");
-                                if (isHttpScheme ||
+                                if (!isHttpScheme ||
                                         ModelHelper.canAnyAccountHandleUrl(getContext(), link)) {
                                     ActivityHelper.handleUri(getContext(), uri);
                                 } else {
