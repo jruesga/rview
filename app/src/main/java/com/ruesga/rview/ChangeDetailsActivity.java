@@ -30,6 +30,7 @@ import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.misc.StringHelper;
@@ -37,6 +38,7 @@ import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
+import com.ruesga.rview.widget.RegExLinkifyTextView;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -113,6 +115,36 @@ public class ChangeDetailsActivity extends BaseActivity {
                     && !scheme.equals("http") && !scheme.equals("https")) {
                 notifyInvalidArgsAndFinish();
                 return;
+            }
+
+            // Check if we can handle this url
+            if (scheme.equals("http") || scheme.equals("https")) {
+                boolean valid = false;
+                List<Account> accounts = Preferences.getAccounts(this);
+                for (Account acct : accounts) {
+                    Pattern pattern = RegExLinkifyTextView.createRepositoryRegExpLink(
+                            acct.mRepository).mPattern;
+                    if (pattern.matcher(data.toString()).find()) {
+                        valid = true;
+
+                        // Change to the request account
+                        if (!account.getAccountHash().equals(acct.getAccountHash())) {
+                            Preferences.setAccount(this, acct);
+                        }
+                        break;
+                    }
+                }
+
+                if (!valid) {
+                    String source = getIntent().getStringExtra(Constants.EXTRA_SOURCE);
+                    if (source != null && source.equals(getPackageName())) {
+                        ActivityHelper.openUriInCustomTabs(this, data, true);
+                    } else {
+                        ActivityHelper.openUri(this, data, true);
+                    }
+                    finish();
+                    return;
+                }
             }
 
             // Gather change id

@@ -418,7 +418,7 @@ public class AccountPageFragment extends WizardPageFragment {
             return;
         }
         final String url = mModel.repoUrl + GerritApi.HTTP_PASSWORD_URI;
-        ActivityHelper.openUriInCustomTabs(getActivity(), url);
+        ActivityHelper.openUriInCustomTabs(getActivity(), url, true);
     }
 
     private void openSignInUrl() {
@@ -427,7 +427,7 @@ public class AccountPageFragment extends WizardPageFragment {
             return;
         }
         final String url = mModel.repoUrl + GerritApi.LOGIN_URI;
-        ActivityHelper.openUriInCustomTabs(getActivity(), url);
+        ActivityHelper.openUriInCustomTabs(getActivity(), url, true);
     }
 
     private void openHelp() {

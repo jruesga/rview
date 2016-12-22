@@ -315,6 +315,7 @@ public class MainActivity extends ChangeListBaseActivity {
                     Preferences.setAccount(this, mAccount);
                     Formatter.refreshCachedPreferences(this);
                     CacheHelper.createAccountCacheDir(this, mAccount);
+                    ModelHelper.setAccountUrlHandlingStatus(this, mAccount, true);
                 } else {
                     showWarning(R.string.account_exists);
                 }
@@ -682,6 +683,21 @@ public class MainActivity extends ChangeListBaseActivity {
         Preferences.removeAccountPreferences(this, mAccount);
         CacheHelper.removeAccountCacheDir(this, mAccount);
         NotificationEntity.deleteAccountNotifications(this, mAccount.getAccountHash());
+
+        // Unregister the url handling for this repository if no other account for the
+        // same repository is active
+        boolean unregisterUrlHandler = true;
+        List<Account> accounts =  Preferences.getAccounts(getApplicationContext());
+        for (Account account : accounts) {
+            if (mAccount.mRepository.mUrl.equals(account.mRepository.mUrl)) {
+                unregisterUrlHandler = false;
+                break;
+            }
+        }
+        if (unregisterUrlHandler) {
+            ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), mAccount, false);
+        }
+
         mAccount = null;
 
         // Show message

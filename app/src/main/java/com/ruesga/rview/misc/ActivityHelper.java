@@ -22,8 +22,11 @@ import android.app.DownloadManager.Request;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.Fragment;
@@ -48,19 +51,28 @@ import com.ruesga.rview.preferences.Preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ActivityHelper {
 
     public static final int LIST_RESULT_CODE = 100;
 
     public static void openUriInCustomTabs(Activity activity, String uri) {
-        openUriInCustomTabs(activity, Uri.parse(uri));
+        openUriInCustomTabs(activity, Uri.parse(uri), false);
+    }
+
+    public static void openUriInCustomTabs(Activity activity, String uri, boolean excludeRview) {
+        openUriInCustomTabs(activity, Uri.parse(uri), excludeRview);
     }
 
     public static void openUriInCustomTabs(Activity activity, Uri uri) {
+        openUriInCustomTabs(activity, uri, false);
+    }
+
+    public static void openUriInCustomTabs(Activity activity, Uri uri, boolean excludeRview) {
         // Check user preferences
         if (!Preferences.isAccountUseCustomTabs(activity, Preferences.getAccount(activity))) {
-            openUri(activity, uri);
+            openUri(activity, uri, excludeRview);
             return;
         }
 
@@ -69,18 +81,62 @@ public class ActivityHelper {
             builder.setShowTitle(true);
             builder.setToolbarColor(ContextCompat.getColor(activity, R.color.primaryDark));
             CustomTabsIntent intent = builder.build();
+
+            String packageName = CustomTabsHelper.getPackageNameToUse(activity);
+            if (packageName == null) {
+                openUri(activity, uri, excludeRview);
+                return;
+            }
+
+            intent.intent.setPackage(packageName);
+            if (excludeRview) {
+                intent.intent.putExtra(Constants.EXTRA_SOURCE, activity.getPackageName());
+            }
             intent.launchUrl(activity, uri);
 
         } catch (ActivityNotFoundException ex) {
             // Fallback to default browser
-            openUri(activity, uri);
+            openUri(activity, uri, excludeRview);
         }
     }
 
-    public static void openUri(Context ctx, Uri uri) {
+    @SuppressWarnings("Convert2streamapi")
+    public static void openUri(Context ctx, Uri uri, boolean excludeRview) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            ctx.startActivity(intent);
+            intent.putExtra(Constants.EXTRA_SOURCE, ctx.getPackageName());
+
+            if (excludeRview) {
+                // Use a different url to find all the browsers activities
+                Intent test = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.es"));
+                PackageManager pm = ctx.getPackageManager();
+                List<ResolveInfo> activities = pm.queryIntentActivities(
+                        test, PackageManager.MATCH_DEFAULT_ONLY);
+
+                List<Intent> targetIntents = new ArrayList<>();
+                for (ResolveInfo ri : activities) {
+                    if (!ri.activityInfo.packageName.equals(ctx.getPackageName())) {
+                        Intent i = new Intent(Intent.ACTION_VIEW, uri);
+                        i.setPackage(ri.activityInfo.packageName);
+                        i.putExtra(Constants.EXTRA_SOURCE, ctx.getPackageName());
+                        targetIntents.add(i);
+                    }
+                }
+
+                if (targetIntents.size() == 0) {
+                    throw new ActivityNotFoundException();
+                } else if (targetIntents.size() == 1) {
+                    ctx.startActivity(targetIntents.get(0));
+                } else {
+                    Intent chooserIntent = Intent.createChooser(
+                            intent, ctx.getString(R.string.action_open_with));
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+                            targetIntents.toArray(new Parcelable[] {}));
+                    ctx.startActivity(chooserIntent);
+                }
+            } else {
+                ctx.startActivity(intent);
+            }
 
         } catch (ActivityNotFoundException ex) {
             // Fallback to default browser

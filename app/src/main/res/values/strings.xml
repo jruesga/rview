@@ -38,6 +38,7 @@
     <string name="action_retry">Retry</string>
     <string name="action_yes">Yes</string>
     <string name="action_no">No</string>
+    <string name="action_open_with">Open with</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>

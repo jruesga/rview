@@ -15,7 +15,9 @@
  */
 package com.ruesga.rview.misc;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -410,5 +412,20 @@ public class ModelHelper {
 
     private static boolean isGravatarIdenticon(AvatarInfo avatar) {
         return avatar.url.contains("gravatar") && avatar.url.contains("identicon");
+    }
+
+    public static void setAccountUrlHandlingStatus(
+            Context context, Account account, boolean enabled) {
+        String name = account.mRepository.mName.replaceAll(" ", "");
+        String activityAlias = name + "ExternalUrlHandlerActivity";
+
+        int state = enabled
+                ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+        context.getPackageManager().setComponentEnabledSetting(
+                new ComponentName(
+                        context.getPackageName(),
+                        context.getPackageName() + "." + activityAlias),
+                state, PackageManager.DONT_KILL_APP);
     }
 }

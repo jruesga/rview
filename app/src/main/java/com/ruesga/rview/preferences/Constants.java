@@ -46,6 +46,7 @@ public class Constants {
     public static final String EXTRA_DATA_CHANGED = "data_changed";
     public static final String EXTRA_DIRTY = "dirty";
     public static final String EXTRA_COMMENT = "comment";
+    public static final String EXTRA_SOURCE = "source";
     public static final String EXTRA_NOTIFICATION_GROUP_ID = "notification_group_id";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";

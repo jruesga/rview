@@ -26,9 +26,14 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.ruesga.rview.misc.Formatter;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
 import com.ruesga.rview.services.DeviceRegistrationService;
+
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 import io.fabric.sdk.android.Kit;
@@ -90,5 +95,15 @@ public class RviewApplication extends Application {
         Intent intent = new Intent(this, DeviceRegistrationService.class);
         intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
         startService(intent);
+
+        // Enable Url Handlers
+        enableExternalUrlHandlers();
+    }
+
+    private void enableExternalUrlHandlers() {
+        List<Account> accounts =  Preferences.getAccounts(getApplicationContext());
+        for (Account account : accounts) {
+            ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, true);
+        }
     }
 }

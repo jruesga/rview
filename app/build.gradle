@@ -17,6 +17,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+import groovy.json.JsonSlurper
+
 def libraries = rootProject.ext.libraries;
 
 dependencies {
@@ -117,6 +119,75 @@ android {
     }
 
     return void;
+}
+
+def addActivityAliases(manifest) {
+    if (!manifest.exists()) {
+        return;
+    }
+
+    def repositories = new File(
+            (project.path + "/src/main/res/raw/repositories.json")
+                    .replace(":", ""))
+
+    def json = new JsonSlurper().parseText(repositories.text)
+    def activityAlias = "\n\n<!-- Repositorires url handling activity-aliases -->\n"
+    json.each {
+        def url = new URL(it.url.toString())
+        def host = url.authority;
+        def path = url.path;
+        def name = it.name.toString().replaceAll(" ", "");
+
+        activityAlias +=
+            "<activity-alias android:name=\".${name}ExternalUrlHandlerActivity\"\n" +
+            "    android:theme=\"@style/AppTheme.NoStatusBarColor\"\n" +
+            "    android:targetActivity=\".ChangeDetailsActivity\"\n" +
+            "    android:enabled=\"false\">\n" +
+            "    <intent-filter>\n" +
+            "        <action android:name=\"android.intent.action.VIEW\" />\n" +
+            "        <category android:name=\"android.intent.category.DEFAULT\" />\n" +
+            "        <category android:name=\"android.intent.category.BROWSABLE\" />\n" +
+            "        <data android:scheme=\"http\" android:host=\"${host}\" android:path=\"${path}\" />\n" +
+            "        <data android:scheme=\"https\" android:host=\"${host}\" android:path=\"${path}\" />\n" +
+            "    </intent-filter>\n" +
+            "</activity-alias>\n\n"
+    }
+
+    def text = manifest.text.replace("<!-- URL-ACTIVITY-HANDLERS -->", activityAlias.toString())
+    manifest.delete()
+    manifest.createNewFile()
+    manifest.text += text
+}
+
+def registerAddActivityAliases(task, build) {
+    def buildName = build.name.toString()
+    def manifestFull = new File(
+            (project.path + "/build/intermediates/manifests/full/${buildName}/AndroidManifest.xml")
+            .replace(":", ""))
+    def manifestInstantRun = new File(
+            (project.path + "/build/intermediates/manifests/instant-run/${buildName}/AndroidManifest.xml")
+                    .replace(":", ""))
+
+    def addActivityAliasesTaskName = "addActivityAliases${buildName.capitalize()}"
+    project.task(addActivityAliasesTaskName) << {
+        description = 'Include extra activity-alias to final AndroidManifest.xml'
+        addActivityAliases(manifestFull)
+        addActivityAliases(manifestInstantRun)
+    }
+
+    task.dependsOn(addActivityAliasesTaskName)
+    def processTask = "process${buildName.capitalize()}Manifest"
+    project.(addActivityAliasesTaskName.toString()).dependsOn(processTask)
+}
+
+tasks.whenTaskAdded { task ->
+    project.("android").buildTypes.all { build ->
+        def buildName = build.name.capitalize().toString()
+        def compileTask = "process${buildName}Resources".toString()
+        if (compileTask.equals(task.name)) {
+            registerAddActivityAliases(task, build)
+        }
+    }
 }
 
 apply plugin: 'io.fabric'

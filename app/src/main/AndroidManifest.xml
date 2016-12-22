@@ -59,7 +59,7 @@
             android:parentActivityName=".MainActivity"
             android:exported="false" />
         <activity-alias
-            android:name=".ExternalChangeDetailsActivity"
+            android:name=".InternalUrlHandlerActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:targetActivity=".ChangeDetailsActivity">
             <intent-filter>
@@ -71,6 +71,7 @@
                 <data android:scheme="com.ruesga.rview" android:host="changeid" />
             </intent-filter>
         </activity-alias>
+        <!-- URL-ACTIVITY-HANDLERS -->
 
         <activity
             android:name=".TabFragmentActivity"
