@@ -109,7 +109,9 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         this, R.layout.account_chooser_item_layout);
                 for (Account acct : targetAccounts) {
-                    adapter.add(ModelHelper.formatAccountWithEmail(acct.mAccount));
+                    final String name = getString(R.string.account_settings_subtitle,
+                            acct.getRepositoryDisplayName(), acct.getAccountDisplayName());
+                    adapter.add(name);
                 }
 
                 AlertDialog dialog = new AlertDialog.Builder(this)
