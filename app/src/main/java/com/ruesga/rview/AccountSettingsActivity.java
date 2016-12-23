@@ -115,4 +115,9 @@ public class AccountSettingsActivity extends AppCompatDelegateActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        ActivityHelper.performFinishActivity(this, true);
+    }
 }
