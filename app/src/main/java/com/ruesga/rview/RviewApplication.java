@@ -104,13 +104,8 @@ public class RviewApplication extends Application {
         List<Account> accounts =  Preferences.getAccounts(getApplicationContext());
         for (Account account : accounts) {
             if (ModelHelper.canAccountHandleUrls(getApplicationContext(), account)) {
-                if (Preferences.isAccountHandleLinks(getApplicationContext(), account)) {
-                    ModelHelper.setAccountUrlHandlingStatus(
-                            getApplicationContext(), account, true);
-                } else {
-                    ModelHelper.setAccountUrlHandlingStatus(
-                            getApplicationContext(), account, false);
-                }
+                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account,
+                        Preferences.isAccountHandleLinks(getApplicationContext(), account));
             }
         }
     }

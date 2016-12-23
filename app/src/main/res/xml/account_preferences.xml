@@ -86,7 +86,7 @@
         <SwitchPreference
             android:key="account_handle_links"
             android:title="@string/account_settings_handle_links"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
         <SwitchPreference
             android:key="account_use_custom_tabs"

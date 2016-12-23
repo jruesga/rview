@@ -315,7 +315,7 @@ public class MainActivity extends ChangeListBaseActivity {
                     Preferences.setAccount(this, mAccount);
                     Formatter.refreshCachedPreferences(this);
                     CacheHelper.createAccountCacheDir(this, mAccount);
-                    setupAccountUrlHandlingStatus(mAccount);
+                    setupAccountUrlHandlingStatus(mAccount, true);
                 } else {
                     showWarning(R.string.account_exists);
                 }
@@ -883,13 +883,10 @@ public class MainActivity extends ChangeListBaseActivity {
         }
     }
 
-    private void setupAccountUrlHandlingStatus(Account account) {
+    private void setupAccountUrlHandlingStatus(Account account, boolean status) {
+        Preferences.setAccountHandleLinks(this, account, status);
         if (ModelHelper.canAccountHandleUrls(getApplicationContext(), account)) {
-            if (Preferences.isAccountHandleLinks(getApplicationContext(), account)) {
-                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, true);
-            } else {
-                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, false);
-            }
+            ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, status);
         }
     }
 }

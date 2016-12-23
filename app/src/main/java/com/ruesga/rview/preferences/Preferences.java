@@ -244,7 +244,17 @@ public class Preferences {
 
     public static boolean isAccountHandleLinks(Context context, Account account) {
         return account == null || getAccountPreferences(context, account)
-                .getBoolean(PREF_ACCOUNT_HANDLE_LINKS, false);
+                .getBoolean(PREF_ACCOUNT_HANDLE_LINKS, true);
+    }
+
+    public static void setAccountHandleLinks(Context context, Account account, boolean status) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putBoolean(PREF_ACCOUNT_HANDLE_LINKS, status);
+        editor.apply();
     }
 
     public static boolean isAccountUseCustomTabs(Context context, Account account) {
