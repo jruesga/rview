@@ -142,6 +142,8 @@ def addActivityAliases(manifest) {
             "<activity-alias android:name=\".${name}ExternalUrlHandlerActivity\"\n" +
             "    android:theme=\"@style/AppTheme.NoStatusBarColor\"\n" +
             "    android:targetActivity=\".UrlHandlerProxyActivity\"\n" +
+            "    android:excludeFromRecents=\"true\"\n" +
+            "    android:taskAffinity=\"\"\n" +
             "    android:enabled=\"false\">\n" +
             "    <intent-filter>\n" +
             "        <action android:name=\"android.intent.action.VIEW\" />\n" +
