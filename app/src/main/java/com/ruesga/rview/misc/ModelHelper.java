@@ -467,10 +467,12 @@ public class ModelHelper {
                 continue;
             }
 
-            Pattern pattern = RegExLinkifyTextView.createRepositoryRegExpLink(
-                    account.mRepository).mPattern;
-            if (pattern.matcher(url).find()) {
-                return true;
+            List<RegExLinkifyTextView.RegExLink> links =
+                    RegExLinkifyTextView.createRepositoryRegExpLinks(account.mRepository);
+            for (RegExLinkifyTextView.RegExLink link : links) {
+                if (link.mPattern.matcher(url).find()) {
+                    return true;
+                }
             }
         }
         return false;

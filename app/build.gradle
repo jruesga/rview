@@ -141,14 +141,14 @@ def addActivityAliases(manifest) {
         activityAlias +=
             "<activity-alias android:name=\".${name}ExternalUrlHandlerActivity\"\n" +
             "    android:theme=\"@style/AppTheme.NoStatusBarColor\"\n" +
-            "    android:targetActivity=\".ChangeDetailsActivity\"\n" +
+            "    android:targetActivity=\".UrlHandlerProxyActivity\"\n" +
             "    android:enabled=\"false\">\n" +
             "    <intent-filter>\n" +
             "        <action android:name=\"android.intent.action.VIEW\" />\n" +
             "        <category android:name=\"android.intent.category.DEFAULT\" />\n" +
             "        <category android:name=\"android.intent.category.BROWSABLE\" />\n" +
-            "        <data android:scheme=\"http\" android:host=\"${host}\" android:path=\"${path}\" />\n" +
-            "        <data android:scheme=\"https\" android:host=\"${host}\" android:path=\"${path}\" />\n" +
+            "        <data android:scheme=\"http\" android:host=\"${host}\" android:pathPrefix=\"${path}\" />\n" +
+            "        <data android:scheme=\"https\" android:host=\"${host}\" android:pathPrefix=\"${path}\" />\n" +
             "    </intent-filter>\n" +
             "</activity-alias>\n\n"
     }

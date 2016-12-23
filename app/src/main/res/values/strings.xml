@@ -71,7 +71,7 @@
     <string name="menu_mark_as_read">Mark as read</string>
 
     <!-- Exceptions -->
-    <string name="exception_browser_not_found">No browser detected. Can\'t launch <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
+    <string name="exception_browser_not_found">No browser detected. Can\'t open <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
     <string name="exception_unsupported_server_version">Gerrit server is unsupported</string>
     <string name="exception_invalid_endpoint">Endpoint is not a Gerrit instance</string>
     <string name="exception_no_network_available">No network connectivity detected</string>
@@ -239,7 +239,7 @@
     <string name="account_settings_notifications_events_1024">Topic changed</string>
     <string name="account_settings_notifications_events_2048">Assignee changed</string>
     <string name="account_settings_external_category">External viewers</string>
-    <string name="account_settings_handle_links">Open Gerrit change links in Rview</string>
+    <string name="account_settings_handle_links">Open Gerrit links in Rview</string>
     <string name="account_settings_use_custom_tabs">Open external links in a custom tab</string>
     <string name="account_settings_download_format">Download format</string>
 

@@ -70,6 +70,11 @@ public class Constants {
 
     public static final String CUSTOM_FILTER_PREFIX = "custom-filter:";
 
+    public static final String CUSTOM_URI_CHANGE = "change";
+    public static final String CUSTOM_URI_CHANGE_ID = "changeid";
+    public static final String CUSTOM_URI_COMMIT = "commit";
+    public static final String CUSTOM_URI_QUERY = "query";
+
     public static final int SEARCH_MODE_CHANGE = 0;
     public static final int SEARCH_MODE_COMMIT = 1;
     public static final int SEARCH_MODE_PROJECT = 2;

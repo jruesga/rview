@@ -214,17 +214,21 @@ public class Formatter {
 
     @BindingAdapter("regexpLinkifyCommitsOnly")
     public static void toRegExLinkifyCommitsOnly(RegExLinkifyTextView view, Boolean only) {
-        RegExLink repositoryRegExLink = null;
+        List<RegExLink> linksScanners = new ArrayList<>();
+
         if (mAccount != null) {
-            repositoryRegExLink =
-                    RegExLinkifyTextView.createRepositoryRegExpLink(mAccount.mRepository);
+            linksScanners.addAll(
+                    RegExLinkifyTextView.createRepositoryRegExpLinks(mAccount.mRepository));
         }
 
         if (only) {
-            view.addRegEx(
-                    repositoryRegExLink,
-                    RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX,
-                    RegExLinkifyTextView.GERRIT_COMMIT_REGEX);
+            linksScanners.add(RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX);
+            linksScanners.add(RegExLinkifyTextView.GERRIT_COMMIT_REGEX);
+
+        }
+
+        if (!linksScanners.isEmpty()) {
+            view.addRegEx(linksScanners.toArray(new RegExLink[linksScanners.size()]));
         }
     }
 
@@ -236,8 +240,8 @@ public class Formatter {
 
         List<RegExLink> linksScanners = new ArrayList<>();
         if (mAccount != null) {
-            linksScanners.add(0,
-                    RegExLinkifyTextView.createRepositoryRegExpLink(mAccount.mRepository));
+            linksScanners.addAll(
+                    RegExLinkifyTextView.createRepositoryRegExpLinks(mAccount.mRepository));
         }
         for (String key : info.commentLinks.keySet()) {
             switch (key) {
@@ -256,13 +260,17 @@ public class Formatter {
                         if (matcher.find()) {
                             link = matcher.group();
                             linksScanners.add(new RegExLink(
+                                    RegExLinkifyTextView.WEB_LINK_REGEX.mType,
                                     info.commentLinks.get(key).match, link));
                         }
                     }
                     break;
             }
         }
-        view.addRegEx(linksScanners.toArray(new RegExLink[linksScanners.size()]));
+
+        if (!linksScanners.isEmpty()) {
+            view.addRegEx(linksScanners.toArray(new RegExLink[linksScanners.size()]));
+        }
     }
 
     @BindingAdapter("committer")

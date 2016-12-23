@@ -30,6 +30,7 @@ import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Repository;
+import com.ruesga.rview.preferences.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,15 +44,17 @@ public class RegExLinkifyTextView extends StyleableTextView {
             String extractLink(String group);
         }
 
+        public final String mType;
         public final Pattern mPattern;
         private final String mLink;
         private final RegExLinkExtractor mExtractor;
 
-        public RegExLink(String regEx, String link) {
-            this(regEx, link, null);
+        public RegExLink(String type, String regEx, String link) {
+            this(type, regEx, link, null);
         }
 
-        private RegExLink(String regEx, String link, RegExLinkExtractor extractor) {
+        private RegExLink(String type, String regEx, String link, RegExLinkExtractor extractor) {
+            mType = type;
             mPattern = Pattern.compile(regEx,
                     Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             mLink = link;
@@ -60,17 +63,21 @@ public class RegExLinkifyTextView extends StyleableTextView {
     }
 
     public static final RegExLink EMAIL_REGEX = new RegExLink(
+            "email",
             "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}",
             "mailto:$1");
     public static final RegExLink WEB_LINK_REGEX = new RegExLink(
+            "web",
             "((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
             "$1");
     public static final RegExLink GERRIT_CHANGE_ID_REGEX = new RegExLink(
+            Constants.CUSTOM_URI_CHANGE,
             "(^|\\s)(I[0-9a-f]{8,40})",
-            "com.ruesga.rview://change/$1");
+            "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE + "/$1");
     public static final RegExLink GERRIT_COMMIT_REGEX = new RegExLink(
+            Constants.CUSTOM_URI_COMMIT,
             "(^|\\s|[:.,!?\\(\\[\\{])([0-9a-f]{7,40})\\b",
-            "com.ruesga.rview://commit/$1");
+            "com.ruesga.rview://" + Constants.CUSTOM_URI_COMMIT + "/$1");
 
     private final List<RegExLink> mRegEx = new ArrayList<>();
 
@@ -88,31 +95,44 @@ public class RegExLinkifyTextView extends StyleableTextView {
         addRegEx(EMAIL_REGEX, WEB_LINK_REGEX);
     }
 
-    public static RegExLink createRepositoryRegExpLink(Repository repository) {
+    public static List<RegExLink> createRepositoryRegExpLinks(Repository repository) {
         String uri = repository.mUrl.substring(
                 repository.mUrl.toLowerCase().indexOf("://") + 3);
         if (!uri.endsWith("/")) {
             uri += "/";
         }
 
-        return new RegExLink(
+        List<RegExLink> regexLinks = new ArrayList<>();
+
+        // Changes
+        regexLinks.add(new RegExLink(
+                Constants.CUSTOM_URI_CHANGE_ID,
                 "http(s)?://" + uri + "((#/)?c/)?(\\d)+(/)?",
-                "com.ruesga.rview://changeid/$1", group -> {
-                    int pos = group.indexOf("/c/");
-                    if (pos != -1) {
-                        int start = group.indexOf("/c/") + 3;
-                        int end = group.indexOf("/", start);
-                        if (end != -1) {
-                            return group.substring(start, end);
-                        }
-                        return group.substring(start);
-                    } else {
-                        if (group.endsWith("/")) {
-                            return group.substring(group.lastIndexOf("/", group.length() - 2) + 1);
-                        }
-                        return group.substring(group.lastIndexOf("/") + 1);
-                    }
-                });
+                "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1", group -> {
+            int pos = group.indexOf("/c/");
+            if (pos != -1) {
+                int start = group.indexOf("/c/") + 3;
+                int end = group.indexOf("/", start);
+                if (end != -1) {
+                    return group.substring(start, end);
+                }
+                return group.substring(start);
+            } else {
+                if (group.endsWith("/")) {
+                    return group.substring(group.lastIndexOf("/", group.length() - 2) + 1);
+                }
+                return group.substring(group.lastIndexOf("/") + 1);
+            }
+        }));
+
+        // Queries
+        regexLinks.add(new RegExLink(
+                Constants.CUSTOM_URI_QUERY,
+                "http(s)?://" + uri + "(#/)?q/.*(\\\\s|$)",
+                "$1",
+                null));
+
+        return regexLinks;
     }
 
     @Override
@@ -132,15 +152,21 @@ public class RegExLinkifyTextView extends StyleableTextView {
                         String group = matcher.group();
                         int start = matcher.start();
                         int end = matcher.end();
+
+                        // Try to deal with phrases "." catches by the regexp (this shouldn't
+                        // be the case for the 99% of the urls). Also trim up spaces.
                         if (group.endsWith("/.")) {
-                            // Try to deal with phrases "." catches by the regexp (this shouldn't
-                            // be the case for the 99% of the urls)
+
                             group = group.substring(0, group.length() - 1);
                             end--;
                         }
-                        while (group.startsWith(" ")) {
+                        while (group.startsWith(" ") || group.startsWith("\n")) {
                             group = group.substring(1);
                             start++;
+                        }
+                        while (group.endsWith(" ") || group.endsWith("\n")) {
+                            group = group.substring(0, group.length() - 1);
+                            end++;
                         }
 
                         // Extract url link

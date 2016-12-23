@@ -71,6 +71,13 @@
                 <data android:scheme="com.ruesga.rview" android:host="changeid" />
             </intent-filter>
         </activity-alias>
+
+        <activity
+            android:name=".UrlHandlerProxyActivity"
+            android:theme="@style/AppTheme.Translucent"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:exported="false" />
         <!-- URL-ACTIVITY-HANDLERS -->
 
         <activity

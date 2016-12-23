@@ -30,7 +30,6 @@ import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
-import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.misc.StringHelper;
@@ -38,9 +37,7 @@ import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
-import com.ruesga.rview.widget.RegExLinkifyTextView;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -111,52 +108,15 @@ public class ChangeDetailsActivity extends BaseActivity {
                 return;
             }
 
+            // Check scheme
             Uri data = getIntent().getData();
             String scheme = data.getScheme();
-            if (!scheme.equals(getPackageName())
-                    && !scheme.equals("http") && !scheme.equals("https")) {
+            if (!scheme.equals(getPackageName())) {
                 notifyInvalidArgsAndFinish();
                 return;
             }
 
-            // Check if we can handle this url
-            if (scheme.equals("http") || scheme.equals("https")) {
-                List<Account> accounts = Preferences.getAccounts(this);
-                List<Account> targetAccounts = new ArrayList<>();
-                for (Account acct : accounts) {
-                    Pattern pattern = RegExLinkifyTextView.createRepositoryRegExpLink(
-                            acct.mRepository).mPattern;
-                    if (pattern.matcher(data.toString()).find()) {
-                        targetAccounts.add(acct);
-                    }
-                }
-
-                if (targetAccounts.isEmpty()) {
-                    String source = getIntent().getStringExtra(Constants.EXTRA_SOURCE);
-                    if (source != null && source.equals(getPackageName())) {
-                        ActivityHelper.openUriInCustomTabs(this, data, true);
-                    } else {
-                        ActivityHelper.openUri(this, data, true);
-                    }
-                    finish();
-                    return;
-                } else {
-                    boolean isSameAccount = false;
-                    for (Account acct : targetAccounts) {
-                        if (account.getAccountHash().equals(acct.getAccountHash())) {
-                            isSameAccount = true;
-                            break;
-                        }
-                    }
-                    if (!isSameAccount) {
-                        // Change to the first of all
-                        // TODO should we ask to the user?
-                        Preferences.setAccount(this, targetAccounts.get(0));
-                    }
-                }
-            }
-
-            // Gather change id
+            // Retrieve the host and the request id
             String host = data.getHost();
             String query = StringHelper.getSafeLastPathSegment(data);
             if (TextUtils.isEmpty(query)) {
@@ -166,9 +126,9 @@ public class ChangeDetailsActivity extends BaseActivity {
 
             ChangeQuery filter;
             switch (host) {
-                case "change":
-                case "changeid":
-                    Pattern pattern = host.equals("change")
+                case Constants.CUSTOM_URI_CHANGE:
+                case Constants.CUSTOM_URI_CHANGE_ID:
+                    Pattern pattern = host.equals(Constants.CUSTOM_URI_CHANGE)
                             ? StringHelper.GERRIT_CHANGE : StringHelper.GERRIT_CHANGE_ID;
                     if (!pattern.matcher(query).matches()) {
                         notifyInvalidArgsAndFinish();
@@ -178,7 +138,7 @@ public class ChangeDetailsActivity extends BaseActivity {
                     performGatherChangeId(filter);
                     break;
 
-                case "commit":
+                case Constants.CUSTOM_URI_COMMIT:
                     if (!StringHelper.GERRIT_COMMIT.matcher(query).matches()) {
                         notifyInvalidArgsAndFinish();
                         return;

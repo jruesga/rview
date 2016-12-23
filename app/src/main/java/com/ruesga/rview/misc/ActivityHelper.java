@@ -92,6 +92,7 @@ public class ActivityHelper {
             if (excludeRview) {
                 intent.intent.putExtra(Constants.EXTRA_SOURCE, activity.getPackageName());
             }
+            intent.intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
             intent.launchUrl(activity, uri);
 
         } catch (ActivityNotFoundException ex) {
@@ -104,6 +105,7 @@ public class ActivityHelper {
     public static void openUri(Context ctx, Uri uri, boolean excludeRview) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
             intent.putExtra(Constants.EXTRA_SOURCE, ctx.getPackageName());
 
             if (excludeRview) {
@@ -119,6 +121,7 @@ public class ActivityHelper {
                         Intent i = new Intent(Intent.ACTION_VIEW, uri);
                         i.setPackage(ri.activityInfo.packageName);
                         i.putExtra(Constants.EXTRA_SOURCE, ctx.getPackageName());
+                        i.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
                         targetIntents.add(i);
                     }
                 }
@@ -148,6 +151,7 @@ public class ActivityHelper {
     public static void handleUri(Context ctx, Uri uri) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
             intent.putExtra(Constants.EXTRA_SOURCE, ctx.getPackageName());
             intent.setPackage(ctx.getPackageName());
             ctx.startActivity(intent);
@@ -210,6 +214,13 @@ public class ActivityHelper {
         }
         activity.finish();
         return true;
+    }
+
+    public static void openChangeDetailsByUri(Context context, Uri uri) {
+        Intent intent = new Intent(context, ChangeDetailsActivity.class);
+        intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
+        intent.setData(uri);
+        context.startActivity(intent);
     }
 
     public static void openChangeDetails(Context context, ChangeInfo change,
@@ -310,5 +321,9 @@ public class ActivityHelper {
     public static void openSearchActivity(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
         context.startActivity(intent);
+    }
+
+    public static Uri createCustomUri(Context ctx, String kind, String query) {
+        return Uri.parse(ctx.getPackageName() + "://" + kind + "/" + query);
     }
 }
