@@ -15,16 +15,20 @@
  */
 package com.ruesga.rview;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -51,8 +55,8 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
         }
 
         // Check we have something we allow to handle
-        Uri data = getIntent().getData();
-        String scheme = data.getScheme();
+        final Uri uri = getIntent().getData();
+        String scheme = uri.getScheme();
         if (!scheme.equals("http") && !scheme.equals("https")) {
             finish();
             return;
@@ -61,7 +65,7 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
         // If we don't have an account, then we can handle the link for sure
         Account account = Preferences.getAccount(this);
         if (account == null) {
-            openExternalHttpLinkAndFinish(data);
+            openExternalHttpLinkAndFinish(uri);
             return;
         }
 
@@ -73,7 +77,7 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
             List<RegExLinkifyTextView.RegExLink> links =
                     RegExLinkifyTextView.createRepositoryRegExpLinks(acct.mRepository);
             for (RegExLinkifyTextView.RegExLink link : links) {
-                if (link.mPattern.matcher(data.toString()).find()) {
+                if (link.mPattern.matcher(uri.toString()).find()) {
                     targetAccounts.add(acct);
 
                     // We can assume safely that all matches are of the same type
@@ -84,7 +88,7 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
 
         // No accounts are able to handle the link
         if (targetAccounts.isEmpty()) {
-            openExternalHttpLinkAndFinish(data);
+            openExternalHttpLinkAndFinish(uri);
             return;
         }
 
@@ -96,21 +100,63 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                 break;
             }
         }
+
         if (!isSameAccount) {
-            // Change to the first of account. TODO should we ask to the user?
-            Preferences.setAccount(this, targetAccounts.get(0));
+            // Open a dialog to ask the user which of the configure accounts wants
+            // to use to open the uri
+            if (targetAccounts.size() > 1) {
+                final String t = type;
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        this, R.layout.account_chooser_item_layout);
+                for (Account acct : targetAccounts) {
+                    adapter.add(ModelHelper.formatAccountWithEmail(acct.mAccount));
+                }
+
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.account_choose_title)
+                        .setSingleChoiceItems(adapter, -1, (d, which) -> {
+                            d.dismiss();
+
+                            // Change to the selected account.
+                            final Context ctx = UrlHandlerProxyActivity.this;
+                            Preferences.setAccount(ctx, targetAccounts.get(which));
+
+                            // An now handle the dialog
+                            handleUri(t, uri);
+                            finish();
+                        })
+                        .setPositiveButton(R.string.action_cancel, (d, which) -> {
+                            d.dismiss();
+                            finish();
+                        })
+                        .setOnCancelListener(d -> finish())
+                        .setOnDismissListener(d -> finish())
+                        .create();
+                dialog.show();
+                return;
+
+            } else {
+                // Use the unique account found
+                Preferences.setAccount(this, targetAccounts.get(0));
+            }
         }
 
+        // Open the change details
+        handleUri(type, uri);
+        finish();
+    }
+
+    private void handleUri(String type, Uri uri) {
         // Open the change details
         switch (type) {
             case Constants.CUSTOM_URI_CHANGE_ID:
                 ActivityHelper.openChangeDetailsByUri(
                         this, ActivityHelper.createCustomUri(this, Constants.CUSTOM_URI_CHANGE_ID,
-                                StringHelper.getSafeLastPathSegment(data)));
+                                StringHelper.getSafeLastPathSegment(uri)));
                 break;
 
             case Constants.CUSTOM_URI_QUERY:
-                String query = extractQuery(data);
+                String query = extractQuery(uri);
                 if (!TextUtils.isEmpty(query)) {
                     try {
                         ChangeQuery filter = ChangeQuery.parse(query);
@@ -120,8 +166,8 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                         // Ignore
                         Log.w(TAG, "Can parse query: " + query);
                         Toast.makeText(this, getString(
-                                R.string.exception_cannot_handle_link, data.toString()),
-                                    Toast.LENGTH_SHORT).show();
+                                R.string.exception_cannot_handle_link, uri.toString()),
+                                Toast.LENGTH_SHORT).show();
                         break;
                     }
                 }
@@ -129,10 +175,9 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
 
             default:
                 // We cannot handle this
-                openExternalHttpLinkAndFinish(data);
-                return;
+                openExternalHttpLinkAndFinish(uri);
+                break;
         }
-        finish();
     }
 
     private void openExternalHttpLinkAndFinish(Uri link) {
