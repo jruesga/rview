@@ -298,6 +298,10 @@ public class DiffView extends FrameLayout {
             if (skipLinesOpHistory != null) {
                 processSkipLinesOpHistory(skipLinesOpHistory);
             }
+            refresh();
+        }
+
+        private void refresh() {
             computeViewChildMeasuresIfNeeded();
             notifyDataSetChanged();
         }
@@ -878,17 +882,17 @@ public class DiffView extends FrameLayout {
 
     private void onSkipLinePressed(int position) {
         mDiffAdapter.showSkippedLinesAt(position);
-        mDiffAdapter.notifyDataSetChanged();
+        mDiffAdapter.refresh();
     }
 
     private void onSkipUpLinePressed(int position) {
         mDiffAdapter.showSkippedUpLinesAt(position);
-        mDiffAdapter.notifyDataSetChanged();
+        mDiffAdapter.refresh();
     }
 
     private void onSkipDownLinePressed(int position) {
         mDiffAdapter.showSkippedDownLinesAt(position);
-        mDiffAdapter.notifyDataSetChanged();
+        mDiffAdapter.refresh();
     }
 
     private void performScrollToPosition() {
