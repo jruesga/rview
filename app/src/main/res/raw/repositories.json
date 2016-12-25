@@ -16,6 +16,7 @@
   {"name":"GerritHub", "url":"https://gerrithub.io/"},
   {"name":"Kitware", "url":"http://review.source.kitware.com/"},
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/"},
+  {"name":"Lineage OS", "url":"https://review.lineageos.org/"},
   {"name":"MediaWiki", "url":"https://gerrit.wikimedia.org/r/"},
   {"name":"msm7x30", "url":"http://review.msm7x30.org/"},
   {"name":"OmniROM", "url":"https://gerrit.omnirom.org/"},
