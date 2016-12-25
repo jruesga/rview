@@ -8,7 +8,6 @@
   {"name":"CandyRoms", "url":"https://gerrit.bbqdroid.org/"},
   {"name":"Chromium", "url":"https://chromium-review.googlesource.com/"},
   {"name":"Cloudera", "url":"https://gerrit.cloudera.org/"},
-  {"name":"CyanogenMod", "url":"https://review.cyanogenmod.org/"},
   {"name":"Dirty Unicorns", "url":"http://gerrit.dirtyunicorns.com/"},
   {"name":"Eclipse", "url":"https://git.eclipse.org/r/"},
   {"name":"Exynos5420", "url":"https://review.exynos5420.com/"},
