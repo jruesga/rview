@@ -1036,7 +1036,7 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.changeInfo.setHandlers(mEventHandlers);
         mBinding.changeInfo.setHasData(true);
         mBinding.changeInfo.setIsReviewer(ModelHelper.isReviewer(
-                mAccount.mAccount, mResponse.mChange));
+                mAccount.mAccount, response.mChange));
         mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
         mBinding.changeInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
