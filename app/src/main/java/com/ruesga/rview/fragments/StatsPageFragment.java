@@ -125,8 +125,10 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
 
         if (mStatsLoader == null) {
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            RxLoader<T> loader = loaderManager.create(
+                    "details", internalFetchDetails(), mDetailsObserver);
             mStatsLoader = loaderManager.create("stats", internalFetchStats(), mStatsObserver);
-            loaderManager.create("details", internalFetchDetails(), mDetailsObserver).start();
+            loader.start();
         }
     }
 

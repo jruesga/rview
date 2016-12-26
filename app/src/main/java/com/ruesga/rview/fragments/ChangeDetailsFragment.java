@@ -970,6 +970,7 @@ public class ChangeDetailsFragment extends Fragment {
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver);
             mStarredLoader = loaderManager.create("starred", this::starChange, mStarredObserver);
             mChangeEditMessageLoader = loaderManager.create(
                     "edit:message", this::editMessage, mChangeEditMessageObserver);
@@ -986,7 +987,6 @@ public class ChangeDetailsFragment extends Fragment {
                     "action", this::doAction, mActionObserver);
             mDraftsRefreshLoader = loaderManager.create(
                     "drafts_refresh", fetchDrafts(), mDraftsRefreshObserver);
-            mChangeLoader = loaderManager.create("fetch", this::fetchChange, mChangeObserver);
             mChangeLoader.start(String.valueOf(mLegacyChangeId));
         }
     }

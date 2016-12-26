@@ -366,13 +366,13 @@ public class FileDiffViewerFragment extends Fragment {
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mLoader = loaderManager.create("file-diff-" + hashCode(), fetchDiffs(), mObserver);
             mActionLoader = loaderManager.create(
                     "file-diff-action" + hashCode(), this::doAction, mActionObserver);
             mReviewedLoader = loaderManager.create(
                     "file-reviewed" + hashCode(), performReviewedStatus(), mReviewedObserver);
             mDraftsLoader = loaderManager.create(
                     "file-drafts" + hashCode(), fetchDrafts(), mObserver);
-            mLoader = loaderManager.create("file-diff-" + hashCode(), fetchDiffs(), mObserver);
             mLoader.start();
         }
     }
