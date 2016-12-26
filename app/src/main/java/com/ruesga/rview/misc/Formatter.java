@@ -21,9 +21,10 @@ import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.style.LeadingMarginSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -182,8 +183,9 @@ public class Formatter {
         String message = EmojiHelper.createEmoji(msg);
         String preparedQuote = StringHelper.obtainMessageFromQuote(
                 StringHelper.removeLineBreaks(message));
-        if (!preparedQuote.contains(StringHelper.NON_PRINTABLE_CHAR)) {
-            // there is not quoted messages here, just a simple message
+        if (!preparedQuote.contains(StringHelper.NON_PRINTABLE_CHAR)
+                && !preparedQuote.contains("- ") && !preparedQuote.contains("* ")) {
+            // there is not quoted messages or list here, just a simple message
             view.setText(preparedQuote);
             return;
         }
@@ -195,16 +197,30 @@ public class Formatter {
         }
 
         String[] lines = preparedQuote.split("\n");
-        Spannable spannable = Spannable.Factory.getInstance().newSpannable(
+        SpannableStringBuilder spannable = new SpannableStringBuilder(
                 preparedQuote.replaceAll(StringHelper.NON_PRINTABLE_CHAR, ""));
         int start = 0;
         for (String line : lines) {
+            // Quotes
             int maxIndent = StringHelper.countOccurrences(StringHelper.NON_PRINTABLE_CHAR, line);
             for (int i = 0; i < maxIndent; i++) {
                 QuotedSpan span = new QuotedSpan(sQuoteColor, sQuoteWidth, sQuoteMargin);
                 spannable.setSpan(span, start, start + line.length() - maxIndent,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
+
+            // List
+            if (line.startsWith("- ") || line.startsWith("* ")
+                    || line.contains(StringHelper.NON_PRINTABLE_CHAR + "- ")
+                    || line.contains(StringHelper.NON_PRINTABLE_CHAR + "* ")) {
+                int pos = line.startsWith(StringHelper.NON_PRINTABLE_CHAR)
+                        ? start + line.lastIndexOf(StringHelper.NON_PRINTABLE_CHAR) + 1 : start;
+                spannable.replace(start, start + 1, "\u2022");
+                spannable.setSpan(new LeadingMarginSpan.Standard(sQuoteMargin),
+                        start, start + line.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            }
+
             start += line.length() - maxIndent + 1;
         }
 
