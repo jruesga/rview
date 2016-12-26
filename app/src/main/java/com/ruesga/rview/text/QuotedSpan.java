@@ -27,20 +27,16 @@ public class QuotedSpan extends QuoteSpan {
 
     private final int mWidth;
     private final int mMargin;
-    private final int mIndent;
-    private final int mMaxIndent;
 
-    public QuotedSpan(@ColorInt int color, int width, int margin, int indent, int maxIndent) {
+    public QuotedSpan(@ColorInt int color, int width, int margin) {
         super(color);
         mWidth = width;
         mMargin = margin;
-        mIndent = indent;
-        mMaxIndent = maxIndent;
     }
 
     @Override
     public int getLeadingMargin(boolean first) {
-        return mWidth + (mMaxIndent * mMargin) + mMargin;
+        return mMargin + mWidth;
     }
 
     @Override
@@ -52,8 +48,7 @@ public class QuotedSpan extends QuoteSpan {
         p.setStyle(Paint.Style.FILL);
         p.setColor(getColor());
 
-        int xx = (mMargin * mIndent) + x;
-        c.drawRect(xx, top, xx + dir * mWidth, bottom, p);
+        c.drawRect(x, top, x + dir * mWidth, bottom, p);
 
         p.setStyle(style);
         p.setColor(color);

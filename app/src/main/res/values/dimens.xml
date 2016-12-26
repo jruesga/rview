@@ -22,7 +22,7 @@
     <dimen name="line_min_width">36dp</dimen>
     <dimen name="message_list_left_padding">56dp</dimen>
     <dimen name="dropdown_min_width">96dp</dimen>
-    <dimen name="quote_margin">1.5dp</dimen>
+    <dimen name="quote_margin">3dp</dimen>
     <dimen name="quote_width">2.5dp</dimen>
     <dimen name="pager_controller_text_size">11sp</dimen>
     <dimen name="pager_controller_chevron_size">20dp</dimen>

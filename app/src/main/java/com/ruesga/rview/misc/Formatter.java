@@ -201,8 +201,7 @@ public class Formatter {
         for (String line : lines) {
             int maxIndent = StringHelper.countOccurrences(StringHelper.NON_PRINTABLE_CHAR, line);
             for (int i = 0; i < maxIndent; i++) {
-                QuotedSpan span = new QuotedSpan(
-                        sQuoteColor, sQuoteWidth, sQuoteMargin, i, maxIndent);
+                QuotedSpan span = new QuotedSpan(sQuoteColor, sQuoteWidth, sQuoteMargin);
                 spannable.setSpan(span, start, start + line.length() - maxIndent,
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
