@@ -1703,6 +1703,7 @@ public class ChangeDetailsFragment extends Fragment {
         String msg = StringHelper.quoteMessage(currentMessage, replyMessage);
         mBinding.reviewInfo.reviewComment.setText(msg);
         mBinding.reviewInfo.reviewComment.setSelection(msg.length());
+        mBinding.nestedScroll.fullScroll(View.FOCUS_DOWN);
     }
 
     private void performApplyFilter(View v) {
