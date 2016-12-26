@@ -29,6 +29,7 @@ import android.view.View;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.StringHelper;
+import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 
@@ -107,23 +108,9 @@ public class RegExLinkifyTextView extends StyleableTextView {
         // Changes
         regexLinks.add(new RegExLink(
                 Constants.CUSTOM_URI_CHANGE_ID,
-                "http(s)?://" + uri + "((#/)?c/)?(\\d)+(/)?",
-                "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1", group -> {
-            int pos = group.indexOf("/c/");
-            if (pos != -1) {
-                int start = group.indexOf("/c/") + 3;
-                int end = group.indexOf("/", start);
-                if (end != -1) {
-                    return group.substring(start, end);
-                }
-                return group.substring(start);
-            } else {
-                if (group.endsWith("/")) {
-                    return group.substring(group.lastIndexOf("/", group.length() - 2) + 1);
-                }
-                return group.substring(group.lastIndexOf("/") + 1);
-            }
-        }));
+                "http(s)?://" + uri + "((#/)?c/)?(\\d)+(/((\\d)+)?(/)?)?",
+                "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
+                        UriHelper::extractChangeId));
 
         // Queries
         regexLinks.add(new RegExLink(
@@ -156,7 +143,6 @@ public class RegExLinkifyTextView extends StyleableTextView {
                         // Try to deal with phrases "." catches by the regexp (this shouldn't
                         // be the case for the 99% of the urls). Also trim up spaces.
                         if (group.endsWith("/.")) {
-
                             group = group.substring(0, group.length() - 1);
                             end--;
                         }

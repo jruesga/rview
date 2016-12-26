@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.misc.StringHelper;
@@ -38,6 +40,7 @@ import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -55,17 +58,41 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private static final String FRAGMENT_TAG = "details";
 
-    private final RxLoaderObserver<ChangeInfo> mChangeObserver = new RxLoaderObserver<ChangeInfo>() {
-                @Override
-                public void onNext(ChangeInfo change) {
-                    performShowChange(null, change.legacyChangeId, change.changeId);
+    private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
+        add(ChangeOptions.ALL_REVISIONS);
+    }};
+
+    private final RxLoaderObserver<Pair<ChangeInfo, String>> mChangeObserver
+            = new RxLoaderObserver<Pair<ChangeInfo, String>>() {
+        @Override
+        public void onNext(Pair<ChangeInfo, String> result) {
+            if (result != null) {
+                final ChangeInfo change = result.first;
+
+                // Extract revision id
+                String revisionId = null;
+                if (!TextUtils.isEmpty(result.second) && change.revisions != null) {
+                    for (String rev : change.revisions.keySet()) {
+                        if (String.valueOf(change.revisions.get(rev).number).equals(result.second)
+                                || rev.equals(result.second)) {
+                            revisionId = rev;
+                            break;
+                        }
+                    }
                 }
 
-                @Override
-                public void onError(Throwable error) {
-                    notifyInvalidArgsAndFinish();
-                }
-            };
+                performShowChange(null, change.legacyChangeId, change.changeId, revisionId);
+            } else {
+                // Not ready to handle it
+                notifyInvalidArgsAndFinish();
+            }
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            notifyInvalidArgsAndFinish();
+        }
+    };
 
     private ContentBinding mBinding;
 
@@ -127,15 +154,23 @@ public class ChangeDetailsActivity extends BaseActivity {
             ChangeQuery filter;
             switch (host) {
                 case Constants.CUSTOM_URI_CHANGE:
-                case Constants.CUSTOM_URI_CHANGE_ID:
-                    Pattern pattern = host.equals(Constants.CUSTOM_URI_CHANGE)
-                            ? StringHelper.GERRIT_CHANGE : StringHelper.GERRIT_CHANGE_ID;
+                    Pattern pattern = StringHelper.GERRIT_CHANGE;
                     if (!pattern.matcher(query).matches()) {
                         notifyInvalidArgsAndFinish();
                         return;
                     }
                     filter = new ChangeQuery().change(query);
                     performGatherChangeId(filter);
+                    break;
+                case Constants.CUSTOM_URI_CHANGE_ID:
+                    pattern = StringHelper.GERRIT_CHANGE_ID;
+                    String[] q = query.split("_");
+                    if (!pattern.matcher(q[0]).matches()) {
+                        notifyInvalidArgsAndFinish();
+                        return;
+                    }
+                    filter = new ChangeQuery().change(q[0]);
+                    performGatherChangeId(filter, q.length > 1 ? q[1] : null);
                     break;
 
                 case Constants.CUSTOM_URI_COMMIT:
@@ -176,16 +211,22 @@ public class ChangeDetailsActivity extends BaseActivity {
                 return;
             }
             String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
-            performShowChange(savedInstanceState, legacyChangeId, changeId);
+            performShowChange(savedInstanceState, legacyChangeId, changeId, null);
         }
     }
 
     private void performGatherChangeId(ChangeQuery filter) {
-        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-        loaderManager.create("fetch", this::fetchChangeId, mChangeObserver).start(filter);
+        performGatherChangeId(filter, null);
     }
 
-    private void performShowChange(Bundle savedInstanceState, int legacyChangeId, String changeId) {
+    private void performGatherChangeId(ChangeQuery filter, String revisionId) {
+        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+        loaderManager.create("fetch", this::fetchChangeId, mChangeObserver)
+                .start(filter, revisionId);
+    }
+
+    private void performShowChange(
+            Bundle savedInstanceState, int legacyChangeId, String changeId, String currentRevision) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
             getSupportActionBar().setSubtitle(changeId);
@@ -197,7 +238,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
         } else {
-            fragment = ChangeDetailsFragment.newInstance(legacyChangeId);
+            fragment = ChangeDetailsFragment.newInstance(legacyChangeId, currentRevision);
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
 
@@ -212,12 +253,14 @@ public class ChangeDetailsActivity extends BaseActivity {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<ChangeInfo> fetchChangeId(ChangeQuery query) {
+    private Observable<Pair<ChangeInfo, String>> fetchChangeId(
+            ChangeQuery query, String revisionId) {
         final GerritApi api = ModelHelper.getGerritApi(this);
         return SafeObservable.fromNullCallable(() -> {
-                List<ChangeInfo> changes = api.getChanges(query, 1, 0, null).blockingFirst();
+                List<ChangeInfo> changes = api.getChanges(query, 1, 0,
+                        TextUtils.isEmpty(revisionId) ? null : OPTIONS).blockingFirst();
                 if (changes != null && !changes.isEmpty()) {
-                    return changes.get(0);
+                    return new Pair<>(changes.get(0), revisionId);
                 }
                 return null;
             })

@@ -163,6 +163,10 @@ public class StringHelper {
         if (u.endsWith("/")) {
             u = u.substring(0, u.length() - 1);
         }
-        return u.substring(u.lastIndexOf("/") + 1);
+        int pos = u.lastIndexOf("/", 9);
+        if (pos != -1) {
+            return u.substring(u.lastIndexOf("/") + 1);
+        }
+        return null;
     }
 }

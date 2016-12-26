@@ -827,9 +827,14 @@ public class ChangeDetailsFragment extends Fragment {
     private boolean mIsInlineCommentsInMessages;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
+        return newInstance(changeId, null);
+    }
+
+    public static ChangeDetailsFragment newInstance(int changeId, String revision) {
         ChangeDetailsFragment fragment = new ChangeDetailsFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, changeId);
+        arguments.putString(Constants.EXTRA_REVISION, revision);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -839,6 +844,7 @@ public class ChangeDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mLegacyChangeId = getArguments().getInt(
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
+        mCurrentRevision = getArguments().getString(Constants.EXTRA_REVISION);
         mPicasso = PicassoHelper.getPicassoClient(getContext());
         mEmptyHandlers = new EmptyEventHandlers(this);
 

@@ -23,20 +23,17 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.misc.ActivityHelper;
-import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.StringHelper;
+import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.RegExLinkifyTextView;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,24 +151,31 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
             case Constants.CUSTOM_URI_CHANGE_ID:
                 ActivityHelper.openChangeDetailsByUri(
                         this, ActivityHelper.createCustomUri(this, Constants.CUSTOM_URI_CHANGE_ID,
-                                StringHelper.getSafeLastPathSegment(uri)));
+                                UriHelper.extractChangeId(uri)));
                 break;
 
             case Constants.CUSTOM_URI_QUERY:
-                String query = extractQuery(uri);
+                String query = UriHelper.extractQuery(uri);
                 if (!TextUtils.isEmpty(query)) {
-                    try {
-                        ChangeQuery filter = ChangeQuery.parse(query);
-                        ActivityHelper.openChangeListByFilterActivity(this, null, filter, true);
-                        break;
-                    } catch (QueryParseException ex) {
-                        // Ignore
-                        Log.w(TAG, "Can parse query: " + query);
-                        Toast.makeText(this, getString(
-                                R.string.exception_cannot_handle_link, uri.toString()),
-                                Toast.LENGTH_SHORT).show();
-                        break;
+                    final ChangeQuery filter;
+                    if (isCommit(query)) {
+                        filter = new ChangeQuery().commit(query);
+                    } else if (isChange(query) || isChangeId(query)) {
+                        filter = new ChangeQuery().change(query);
+                    } else {
+                        // Try to parse the query
+                        try {
+                            filter = ChangeQuery.parse(query);
+                        } catch (QueryParseException ex) {
+                            // Ignore. Try to open the url.
+                            Log.w(TAG, "Can parse query: " + query);
+                            openExternalHttpLinkAndFinish(uri);
+                            return;
+                        }
                     }
+
+                    ActivityHelper.openChangeListByFilterActivity(this, null, filter, true);
+                    break;
                 }
                 // fallback to default
 
@@ -192,19 +196,16 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
         finish();
     }
 
-    private String extractQuery(Uri uri) {
-        String url = uri.toString();
-        int pos = url.indexOf("/q/");
-        if (pos == -1) {
-            return null;
-        }
-        try {
-            String query = url.substring(pos + 3);
-            // Double url decode to ensure is all has the proper format to be parsed
-            return URLDecoder.decode(URLDecoder.decode(query, "UTF-8"), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // Ignore
-        }
-        return null;
+    private static boolean isChange(String query) {
+        return StringHelper.GERRIT_CHANGE.matcher(query).matches();
     }
+
+    private static boolean isCommit(String query) {
+        return StringHelper.GERRIT_COMMIT.matcher(query).matches();
+    }
+
+    private static boolean isChangeId(String query) {
+        return StringHelper.GERRIT_CHANGE_ID.matcher(query).matches();
+    }
+
 }
