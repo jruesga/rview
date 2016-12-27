@@ -289,33 +289,46 @@ public class ActivityHelper {
     }
 
     public static void openDiffViewerActivity(Fragment fragment, ChangeInfo change,
-          ArrayList<String> files, String revisionId, String base, String current,
-          String file, String comment, int requestCode) {
-        Intent intent = new Intent(fragment.getContext(), DiffViewerActivity.class);
+            ArrayList<String> files, String revisionId, String base, String current,
+            String file, String comment, int requestCode) {
+        Intent intent = getOpenDiffViewerActivityIntent(fragment.getContext(), change,
+                files, revisionId, base, current, file, comment, requestCode);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    public static void openDiffViewerActivity(Activity activity, ChangeInfo change,
+            ArrayList<String> files, String revisionId, String base, String current,
+            String file, String comment, int requestCode) {
+        Intent intent = getOpenDiffViewerActivityIntent(activity, change, files, revisionId, base,
+                current, file, comment, requestCode);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    private static Intent getOpenDiffViewerActivityIntent(Context context, ChangeInfo change,
+            ArrayList<String> files, String revisionId, String base, String current,
+            String file, String comment, int requestCode) {
+        Intent intent = new Intent(context, DiffViewerActivity.class);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_BASE, base);
         intent.putExtra(Constants.EXTRA_FILE, file);
         if (comment != null) {
             intent.putExtra(Constants.EXTRA_COMMENT, comment);
         }
-        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, requestCode != 0);
 
         try {
-            CacheHelper.writeAccountDiffCacheFile(fragment.getContext(),
-                    CacheHelper.CACHE_CHANGE_JSON,
+            CacheHelper.writeAccountDiffCacheFile(context, CacheHelper.CACHE_CHANGE_JSON,
                     SerializationManager.getInstance().toJson(change).getBytes());
 
             if (files != null) {
                 String prefix = (base == null ? "0" : base) + "_" + current + "_";
-                CacheHelper.writeAccountDiffCacheFile(fragment.getContext(),
-                        prefix + CacheHelper.CACHE_FILES_JSON,
+                CacheHelper.writeAccountDiffCacheFile(context, prefix + CacheHelper.CACHE_FILES_JSON,
                         SerializationManager.getInstance().toJson(files).getBytes());
             }
         } catch (IOException ex) {
             // Ignore
         }
-
-        fragment.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     public static void openSearchActivity(Context context) {

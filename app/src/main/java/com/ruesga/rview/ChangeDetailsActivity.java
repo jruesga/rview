@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.util.Pair;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -32,9 +31,11 @@ import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.misc.StringHelper;
+import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
@@ -60,28 +61,46 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.ALL_REVISIONS);
+        add(ChangeOptions.ALL_FILES);
     }};
 
-    private final RxLoaderObserver<Pair<ChangeInfo, String>> mChangeObserver
-            = new RxLoaderObserver<Pair<ChangeInfo, String>>() {
+    private static class ChangeDetailsRequest {
+        private ChangeQuery mFilter;
+        private String mRevision;
+        private String mFile;
+    }
+    private static class ChangeDetailsResponse {
+        private ChangeInfo mChange;
+        private String mRevision;
+        private String mFile;
+    }
+
+    private final RxLoaderObserver<ChangeDetailsResponse> mChangeObserver
+            = new RxLoaderObserver<ChangeDetailsResponse>() {
         @Override
-        public void onNext(Pair<ChangeInfo, String> result) {
+        public void onNext(ChangeDetailsResponse result) {
             if (result != null) {
-                final ChangeInfo change = result.first;
+                final ChangeInfo change = result.mChange;
 
                 // Extract revision id
                 String revisionId = null;
-                if (!TextUtils.isEmpty(result.second) && change.revisions != null) {
+                if (!TextUtils.isEmpty(result.mRevision) && change.revisions != null) {
                     for (String rev : change.revisions.keySet()) {
-                        if (String.valueOf(change.revisions.get(rev).number).equals(result.second)
-                                || rev.equals(result.second)) {
+                        if (String.valueOf(change.revisions.get(rev).number).equals(result.mRevision)
+                                || rev.equals(result.mRevision)) {
                             revisionId = rev;
                             break;
                         }
                     }
                 }
 
-                performShowChange(null, change.legacyChangeId, change.changeId, revisionId);
+                if (TextUtils.isEmpty(result.mFile)) {
+                    // Open the details view
+                    performShowChange(null, change.legacyChangeId, change.changeId, revisionId);
+                } else {
+                    // Directly open the diff view
+                    performShowDiffFile(change, revisionId, result.mFile);
+                }
             } else {
                 // Not ready to handle it
                 notifyInvalidArgsAndFinish();
@@ -164,13 +183,14 @@ public class ChangeDetailsActivity extends BaseActivity {
                     break;
                 case Constants.CUSTOM_URI_CHANGE_ID:
                     pattern = StringHelper.GERRIT_CHANGE_ID;
-                    String[] q = query.split("_");
+                    String[] q = query.split(UriHelper.CUSTOM_URI_TOKENIZER);
                     if (!pattern.matcher(q[0]).matches()) {
                         notifyInvalidArgsAndFinish();
                         return;
                     }
                     filter = new ChangeQuery().change(q[0]);
-                    performGatherChangeId(filter, q.length > 1 ? q[1] : null);
+                    String file = rebuildFileInfo(q);
+                    performGatherChangeId(filter, q.length > 1 ? q[1] : null, file);
                     break;
 
                 case Constants.CUSTOM_URI_COMMIT:
@@ -216,13 +236,17 @@ public class ChangeDetailsActivity extends BaseActivity {
     }
 
     private void performGatherChangeId(ChangeQuery filter) {
-        performGatherChangeId(filter, null);
+        performGatherChangeId(filter, null, null);
     }
 
-    private void performGatherChangeId(ChangeQuery filter, String revisionId) {
+    private void performGatherChangeId(ChangeQuery filter, String revision, String file) {
+        ChangeDetailsRequest request = new ChangeDetailsRequest();
+        request.mFilter = filter;
+        request.mRevision = revision;
+        request.mFile = file;
+
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-        loaderManager.create("fetch", this::fetchChangeId, mChangeObserver)
-                .start(filter, revisionId);
+        loaderManager.create("fetch", this::fetchChangeId, mChangeObserver).start(request);
     }
 
     private void performShowChange(
@@ -252,15 +276,25 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
     }
 
+    private void performShowDiffFile(ChangeInfo change, String revisionId, String file) {
+        String current = String.valueOf(change.revisions.get(revisionId).number);
+        ActivityHelper.openDiffViewerActivity(
+                this, change, /*files*/null, revisionId, /*base*/null, current, file, null, 0);
+        finish();
+    }
+
     @SuppressWarnings("ConstantConditions")
-    private Observable<Pair<ChangeInfo, String>> fetchChangeId(
-            ChangeQuery query, String revisionId) {
+    private Observable<ChangeDetailsResponse> fetchChangeId(ChangeDetailsRequest request) {
         final GerritApi api = ModelHelper.getGerritApi(this);
         return SafeObservable.fromNullCallable(() -> {
-                List<ChangeInfo> changes = api.getChanges(query, 1, 0,
-                        TextUtils.isEmpty(revisionId) ? null : OPTIONS).blockingFirst();
+                List<ChangeInfo> changes = api.getChanges(
+                        request.mFilter, 1, 0, OPTIONS).blockingFirst();
                 if (changes != null && !changes.isEmpty()) {
-                    return new Pair<>(changes.get(0), revisionId);
+                    ChangeDetailsResponse result = new ChangeDetailsResponse();
+                    result.mChange = changes.get(0);
+                    result.mRevision = request.mRevision;
+                    result.mFile = request.mFile;
+                    return result;
                 }
                 return null;
             })
@@ -294,5 +328,19 @@ public class ChangeDetailsActivity extends BaseActivity {
                 R.string.exception_cannot_handle_link, getIntent().getData().toString()),
                 Toast.LENGTH_SHORT).show();
         finish();
+    }
+
+    private String rebuildFileInfo(String[] tokens) {
+        StringBuilder sb = new StringBuilder();
+        int count = tokens.length;
+        if (count >= 2) {
+            for (int i = 2; i < count; i++) {
+                sb.append(tokens[i]);
+                if (i < (count - 1)) {
+                    sb.append("/");
+                }
+            }
+        }
+        return sb.toString();
     }
 }
