@@ -205,7 +205,8 @@ public class Formatter {
             int maxIndent = StringHelper.countOccurrences(StringHelper.NON_PRINTABLE_CHAR, line);
             for (int i = 0; i < maxIndent; i++) {
                 QuotedSpan span = new QuotedSpan(sQuoteColor, sQuoteWidth, sQuoteMargin);
-                spannable.setSpan(span, start, start + line.length() - maxIndent,
+                spannable.setSpan(span, start,
+                        Math.min(start + line.length() - maxIndent, spannable.length()),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
@@ -217,7 +218,8 @@ public class Formatter {
                         ? start + line.lastIndexOf(StringHelper.NON_PRINTABLE_CHAR) + 1 : start;
                 spannable.replace(start, start + 1, "\u2022");
                 spannable.setSpan(new LeadingMarginSpan.Standard(sQuoteMargin),
-                        start, start + line.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        start, Math.min(start + line.length(), spannable.length()),
+                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             }
 
