@@ -827,14 +827,15 @@ public class ChangeDetailsFragment extends Fragment {
     private boolean mIsInlineCommentsInMessages;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
-        return newInstance(changeId, null);
+        return newInstance(changeId, null, null);
     }
 
-    public static ChangeDetailsFragment newInstance(int changeId, String revision) {
+    public static ChangeDetailsFragment newInstance(int changeId, String revision, String base) {
         ChangeDetailsFragment fragment = new ChangeDetailsFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, changeId);
         arguments.putString(Constants.EXTRA_REVISION, revision);
+        arguments.putString(Constants.EXTRA_BASE, base);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -845,12 +846,15 @@ public class ChangeDetailsFragment extends Fragment {
         mLegacyChangeId = getArguments().getInt(
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mCurrentRevision = getArguments().getString(Constants.EXTRA_REVISION);
+        mDiffAgainstRevision = getArguments().getString(Constants.EXTRA_BASE);
         mPicasso = PicassoHelper.getPicassoClient(getContext());
         mEmptyHandlers = new EmptyEventHandlers(this);
 
         if (savedInstanceState != null) {
-            mCurrentRevision = savedInstanceState.getString("current_revision", null);
-            mDiffAgainstRevision = savedInstanceState.getString("diff_against_revision", null);
+            mCurrentRevision = savedInstanceState.getString(
+                    "current_revision", mCurrentRevision);
+            mDiffAgainstRevision = savedInstanceState.getString(
+                    "diff_against_revision", mDiffAgainstRevision);
         }
     }
 

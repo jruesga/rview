@@ -32,6 +32,7 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.misc.StringHelper;
@@ -66,12 +67,12 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private static class ChangeDetailsRequest {
         private ChangeQuery mFilter;
-        private String mRevision;
+        private String[] mRevAndBase;
         private String mFile;
     }
     private static class ChangeDetailsResponse {
         private ChangeInfo mChange;
-        private String mRevision;
+        private String[] mRevAndBase;
         private String mFile;
     }
 
@@ -80,26 +81,22 @@ public class ChangeDetailsActivity extends BaseActivity {
         @Override
         public void onNext(ChangeDetailsResponse result) {
             if (result != null) {
-                final ChangeInfo change = result.mChange;
+                // Clear the cache
+                CacheHelper.removeAccountDiffCacheDir(ChangeDetailsActivity.this);
 
-                // Extract revision id
-                String revisionId = null;
-                if (!TextUtils.isEmpty(result.mRevision) && change.revisions != null) {
-                    for (String rev : change.revisions.keySet()) {
-                        if (String.valueOf(change.revisions.get(rev).number).equals(result.mRevision)
-                                || rev.equals(result.mRevision)) {
-                            revisionId = rev;
-                            break;
-                        }
-                    }
-                }
+                final ChangeInfo change = result.mChange;
+                final int legacyChangeId = change.legacyChangeId;
+                final String changeId = change.changeId;
+                final String base = result.mRevAndBase[0];
+                final String baseRevisionId = obtainRevisionId(change, result.mRevAndBase[0]);
+                final String revisionId = obtainRevisionId(change, result.mRevAndBase[1]);
 
                 if (TextUtils.isEmpty(result.mFile)) {
                     // Open the details view
-                    performShowChange(null, change.legacyChangeId, change.changeId, revisionId);
+                    performShowChange(null, legacyChangeId, changeId, revisionId, baseRevisionId);
                 } else {
                     // Directly open the diff view
-                    performShowDiffFile(change, revisionId, result.mFile);
+                    performShowDiffFile(change, base, revisionId, result.mFile);
                 }
             } else {
                 // Not ready to handle it
@@ -190,7 +187,8 @@ public class ChangeDetailsActivity extends BaseActivity {
                     }
                     filter = new ChangeQuery().change(q[0]);
                     String file = rebuildFileInfo(q);
-                    performGatherChangeId(filter, q.length > 1 ? q[1] : null, file);
+                    String[] revAndBase = extractRevisionAndBase(q);
+                    performGatherChangeId(filter, revAndBase, file);
                     break;
 
                 case Constants.CUSTOM_URI_COMMIT:
@@ -231,7 +229,7 @@ public class ChangeDetailsActivity extends BaseActivity {
                 return;
             }
             String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
-            performShowChange(savedInstanceState, legacyChangeId, changeId, null);
+            performShowChange(savedInstanceState, legacyChangeId, changeId, null, null);
         }
     }
 
@@ -239,18 +237,18 @@ public class ChangeDetailsActivity extends BaseActivity {
         performGatherChangeId(filter, null, null);
     }
 
-    private void performGatherChangeId(ChangeQuery filter, String revision, String file) {
+    private void performGatherChangeId(ChangeQuery filter, String[] revAndBase, String file) {
         ChangeDetailsRequest request = new ChangeDetailsRequest();
         request.mFilter = filter;
-        request.mRevision = revision;
+        request.mRevAndBase = revAndBase;
         request.mFile = file;
 
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
         loaderManager.create("fetch", this::fetchChangeId, mChangeObserver).start(request);
     }
 
-    private void performShowChange(
-            Bundle savedInstanceState, int legacyChangeId, String changeId, String currentRevision) {
+    private void performShowChange(Bundle savedInstanceState, int legacyChangeId,
+            String changeId, String currentRevision, String base) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
             getSupportActionBar().setSubtitle(changeId);
@@ -262,7 +260,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
         } else {
-            fragment = ChangeDetailsFragment.newInstance(legacyChangeId, currentRevision);
+            fragment = ChangeDetailsFragment.newInstance(legacyChangeId, currentRevision, base);
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
 
@@ -276,10 +274,11 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
     }
 
-    private void performShowDiffFile(ChangeInfo change, String revisionId, String file) {
+    private void performShowDiffFile(
+            ChangeInfo change, String base, String revisionId, String file) {
         String current = String.valueOf(change.revisions.get(revisionId).number);
         ActivityHelper.openDiffViewerActivity(
-                this, change, /*files*/null, revisionId, /*base*/null, current, file, null, 0);
+                this, change, /*files*/null, revisionId, base, current, file, null, 0);
         finish();
     }
 
@@ -292,7 +291,7 @@ public class ChangeDetailsActivity extends BaseActivity {
                 if (changes != null && !changes.isEmpty()) {
                     ChangeDetailsResponse result = new ChangeDetailsResponse();
                     result.mChange = changes.get(0);
-                    result.mRevision = request.mRevision;
+                    result.mRevAndBase = request.mRevAndBase;
                     result.mFile = request.mFile;
                     return result;
                 }
@@ -330,6 +329,19 @@ public class ChangeDetailsActivity extends BaseActivity {
         finish();
     }
 
+    private String[] extractRevisionAndBase(String[] tokens) {
+        String[] ret = new String[2];
+        if (tokens.length >= 1) {
+            String q = tokens[1];
+            if (q.contains("..")) {
+                ret = q.split("\\.\\.");
+            } else {
+                ret[1] = q;
+            }
+        }
+        return ret;
+    }
+
     private String rebuildFileInfo(String[] tokens) {
         StringBuilder sb = new StringBuilder();
         int count = tokens.length;
@@ -342,5 +354,20 @@ public class ChangeDetailsActivity extends BaseActivity {
             }
         }
         return sb.toString();
+    }
+
+    private String obtainRevisionId(ChangeInfo change, String revision) {
+        String revisionId = null;
+        if (!TextUtils.isEmpty(revision) && change.revisions != null) {
+            for (String rev : change.revisions.keySet()) {
+                if (change.revisions.containsKey(rev) &&
+                        String.valueOf(change.revisions.get(rev).number).equals(revision)
+                        || rev.equals(revision)) {
+                    revisionId = rev;
+                    break;
+                }
+            }
+        }
+        return revisionId;
     }
 }
