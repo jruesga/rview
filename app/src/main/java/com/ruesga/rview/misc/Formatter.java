@@ -124,6 +124,9 @@ public class Formatter {
         if (TextUtils.isEmpty(accountDisplayName)) {
             accountDisplayName = accountInfo.username;
         }
+        if (TextUtils.isEmpty(accountDisplayName)) {
+            accountDisplayName = String.valueOf(accountInfo.accountId);
+        }
         view.setText(accountDisplayName);
     }
 
