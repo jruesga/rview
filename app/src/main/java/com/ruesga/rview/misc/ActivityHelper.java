@@ -322,31 +322,4 @@ public class ActivityHelper {
         Intent intent = new Intent(context, SearchActivity.class);
         context.startActivity(intent);
     }
-
-    public static Uri createCustomUri(Context ctx, String kind, String query) {
-        return Uri.parse(ctx.getPackageName() + "://" + kind + "/" + query);
-    }
-
-    public static String extractChangeId(Uri uri) {
-        String q = uri.toString();
-        int pos = q.indexOf("/c/");
-        String target = "-1";
-        if (pos != -1) {
-            int start = q.indexOf("/c/") + 3;
-            target = q.substring(start);
-        } else {
-            int start = q.indexOf("/", 9) + 1;
-            if (start != -1) {
-                target = q.substring(start);
-            }
-        }
-
-        // Clean up the target
-        if (target.endsWith("/")) {
-            return target.substring(target.lastIndexOf("/", target.length() - 2) + 1);
-        }
-        return target.substring(target.lastIndexOf("/") + 1)
-                .replaceAll("//", "/")
-                .replaceAll("/", "_");
-    }
 }

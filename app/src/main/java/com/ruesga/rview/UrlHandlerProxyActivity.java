@@ -150,7 +150,7 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
         switch (type) {
             case Constants.CUSTOM_URI_CHANGE_ID:
                 ActivityHelper.openChangeDetailsByUri(
-                        this, ActivityHelper.createCustomUri(this, Constants.CUSTOM_URI_CHANGE_ID,
+                        this, UriHelper.createCustomUri(this, Constants.CUSTOM_URI_CHANGE_ID,
                                 UriHelper.extractChangeId(uri)));
                 break;
 
