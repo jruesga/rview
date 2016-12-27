@@ -26,6 +26,7 @@ import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.squareup.picasso.Picasso;
@@ -166,7 +167,8 @@ public class ReviewersView extends FlowLayout {
     private List<AccountInfo> sortReviewers(List<AccountInfo> reviewers) {
         final Collator collator = Collator.getInstance(
                 AndroidHelper.getCurrentLocale(getContext()));
-        Collections.sort(reviewers, (a1, a2) -> collator.compare(a1.name, a2.name));
+        Collections.sort(reviewers, (a1, a2) -> collator.compare(
+                ModelHelper.getAccountDisplayName(a1), ModelHelper.getAccountDisplayName(a2)));
         return reviewers;
     }
 }
