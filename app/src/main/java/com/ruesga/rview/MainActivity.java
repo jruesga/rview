@@ -163,8 +163,7 @@ public class MainActivity extends ChangeListBaseActivity {
             return true;
         }
         if (message.what == MESSAGE_DELETE_ACCOUNT) {
-            performDeleteAccount();
-            return true;
+            performDeleteAccount((String) message.obj);
         }
         return false;
     };
@@ -364,7 +363,7 @@ public class MainActivity extends ChangeListBaseActivity {
         mHeaderDrawerBinding = DataBindingUtil.inflate(LayoutInflater.from(this),
                 R.layout.navigation_header, mBinding.drawerNavigationView, false);
         mBinding.drawerNavigationView.addHeaderView(mHeaderDrawerBinding.getRoot());
-        mBinding.drawerNavigationView.setOnMenuButtonClickListener(this::performDeleteCustomFilter);
+        mBinding.drawerNavigationView.setOnMenuButtonClickListener(this::onNavigationMenuItemClick);
 
         // Listen for click events and select the current one
         mBinding.drawerNavigationView.setDrawerNavigationItemSelectedListener(item -> {
@@ -479,7 +478,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 openAccountStats();
                 break;
             case R.id.menu_delete_account:
-                requestAccountDeletion();
+                requestAccountDeletion(mAccount);
                 break;
             case R.id.menu_add_account:
                 Intent i = new Intent(this, SetupAccountActivity.class);
@@ -605,7 +604,9 @@ public class MainActivity extends ChangeListBaseActivity {
             int id = OTHER_ACCOUNTS_GROUP_BASE_ID + i;
             String title = account.getAccountDisplayName()
                     + DrawerNavigationView.SEPARATOR
-                    + account.getRepositoryDisplayName();
+                    + account.getRepositoryDisplayName()
+                    + DrawerNavigationView.SEPARATOR
+                    + "ic_delete";
             MenuItem item = otherAccountsSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
             item.setIcon(R.drawable.ic_account_circle);
             i++;
@@ -646,25 +647,50 @@ public class MainActivity extends ChangeListBaseActivity {
         requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount), true, true);
     }
 
-    private void requestAccountDeletion() {
+    private void requestAccountDeletion(Account account) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.account_deletion_title)
                 .setMessage(R.string.account_deletion_message)
                 .setPositiveButton(R.string.action_delete, (dialogInterface, i) ->
-                        Message.obtain(mUiHandler, MESSAGE_DELETE_ACCOUNT).sendToTarget())
+                        Message.obtain(mUiHandler, MESSAGE_DELETE_ACCOUNT, account.getAccountHash())
+                                .sendToTarget())
                 .setNegativeButton(R.string.action_cancel, null)
                 .create();
         dialog.show();
-        internalPerformShowAccount(false);
     }
 
-    private void performDeleteAccount() {
+    @SuppressWarnings("Convert2streamapi")
+    private void performDeleteAccount(String accountHash) {
+        List<Account> accounts = Preferences.getAccounts(this);
+        for (Account acct : accounts) {
+            if (acct.getAccountHash().equals(accountHash)) {
+                boolean currentAccount = mAccount != null &&
+                        mAccount.getAccountHash().equals(acct.getAccountHash());
+                if (currentAccount) {
+                    performDeleteAccount(mAccount, true);
+                    internalPerformShowAccount(false);
+                } else {
+                    performDeleteAccount(acct, false);
+                }
+
+                // Close the drawer
+                if (mBinding.drawerLayout != null) {
+                    if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        mBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    private void performDeleteAccount(Account acct, boolean isCurrent) {
         // Remove the account
         boolean accountDeleted = false;
         int count = mAccounts.size();
         for (int i = 0; i < count; i++) {
             Account account = mAccounts.get(i);
-            if (account.isSameAs(mAccount)) {
+            if (account.isSameAs(acct)) {
                 accountDeleted = true;
                 mAccounts.remove(i);
                 break;
@@ -677,39 +703,45 @@ public class MainActivity extends ChangeListBaseActivity {
         }
 
         // Remove the account
-        Preferences.removeAccount(this, mAccount);
-        Preferences.setAccount(this, null);
+        Preferences.removeAccount(this, acct);
+        if (isCurrent) {
+            Preferences.setAccount(this, null);
+        }
         Formatter.refreshCachedPreferences(this);
-        Preferences.removeAccountPreferences(this, mAccount);
-        CacheHelper.removeAccountCacheDir(this, mAccount);
-        NotificationEntity.deleteAccountNotifications(this, mAccount.getAccountHash());
+        Preferences.removeAccountPreferences(this, acct);
+        CacheHelper.removeAccountCacheDir(this, acct);
+        NotificationEntity.deleteAccountNotifications(this, acct.getAccountHash());
 
         // Unregister the url handling for this repository if no other account for the
         // same repository is active
-        if (ModelHelper.canAccountHandleUrls(this, mAccount)) {
+        if (ModelHelper.canAccountHandleUrls(this, acct)) {
             boolean unregisterUrlHandler = true;
             List<Account> accounts = Preferences.getAccounts(getApplicationContext());
             for (Account account : accounts) {
-                if (mAccount.mRepository.mUrl.equals(account.mRepository.mUrl)) {
+                if (acct.mRepository.mUrl.equals(account.mRepository.mUrl)) {
                     unregisterUrlHandler = false;
                     break;
                 }
             }
             if (unregisterUrlHandler) {
-                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), mAccount, false);
+                ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), acct, false);
             }
         }
-
-        mAccount = null;
 
         // Show message
         Snackbar.make(mBinding.getRoot(), R.string.account_deletion_confirm_message,
                 Snackbar.LENGTH_SHORT).show();
 
-        performAccountSwitch();
+        if (isCurrent) {
+            mAccount = null;
 
-        // Have any account? No, then launch setup account wizard
-        launchAddAccountIfNeeded();
+            performAccountSwitch();
+
+            // Have any account? No, then launch setup account wizard
+            launchAddAccountIfNeeded();
+        } else {
+            updateAccountsDrawerInfo();
+        }
     }
 
     private void openAccountSettings() {
@@ -804,18 +836,29 @@ public class MainActivity extends ChangeListBaseActivity {
         mModel.currentNavigationItemId = id;
     }
 
-    private void performDeleteCustomFilter(int menuId) {
-        if (mCustomFilters != null) {
-            CustomFilter filter = mCustomFilters.get(menuId - MY_FILTERS_GROUP_BASE_ID);
-            mCustomFilters.remove(filter);
-            Preferences.setAccountCustomFilters(this, mAccount, mCustomFilters);
-
-            if (mModel.currentNavigationItemId == menuId) {
-                int defaultMenu = Preferences.getAccountHomePageId(this, mAccount);
-                requestNavigateTo(defaultMenu, true, true);
+    private void onNavigationMenuItemClick(int menuId) {
+        if (mCustomFilters != null &&
+                menuId >= MY_FILTERS_GROUP_BASE_ID && menuId <= OTHER_ACCOUNTS_GROUP_BASE_ID) {
+            performDeleteCustomFilter(menuId);
+        } else if (menuId >= OTHER_ACCOUNTS_GROUP_BASE_ID) {
+            int accountIndex = menuId - OTHER_ACCOUNTS_GROUP_BASE_ID;
+            Account account = mAccounts.get(accountIndex);
+            if (account != null) {
+                requestAccountDeletion(account);
             }
-            updateAccountCustomFilters();
         }
+    }
+
+    private void performDeleteCustomFilter(int menuId) {
+        CustomFilter filter = mCustomFilters.get(menuId - MY_FILTERS_GROUP_BASE_ID);
+        mCustomFilters.remove(filter);
+        Preferences.setAccountCustomFilters(this, mAccount, mCustomFilters);
+
+        if (mModel.currentNavigationItemId == menuId) {
+            int defaultMenu = Preferences.getAccountHomePageId(this, mAccount);
+            requestNavigateTo(defaultMenu, true, true);
+        }
+        updateAccountCustomFilters();
     }
 
     private boolean launchAddAccountIfNeeded() {
