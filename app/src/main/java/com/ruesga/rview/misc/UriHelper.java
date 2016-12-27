@@ -62,7 +62,7 @@ public class UriHelper {
 
         // Clean up the target
         if (target.endsWith("/")) {
-            target = target.substring(target.lastIndexOf("/", target.length() - 2) + 1);
+            target = target.substring(0, target.length() - 1);
         }
         return target.replaceAll("//", "/").replaceAll("/", "_");
     }
