@@ -83,6 +83,95 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{model.actions.size() &gt; 0 ? View.VISIBLE : View.GONE}"
+                android:paddingLeft="16dp"
+                android:paddingStart="16dp"
+                android:paddingRight="16dp"
+                android:paddingEnd="16dp">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="?android:attr/listDivider" />
+
+                <org.apmem.tools.layouts.FlowLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    android:background="@android:color/transparent"
+                    android:gravity="end">
+
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:gravity="center"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:visibility='@{model.actions["action1"] != null ? View.VISIBLE : View.GONE}'
+                        android:text='@{model.actions["action1"]}'
+                        android:tag='@{id + "-action1"}'
+                        android:onClick="@{handlers::onListHeaderActionPressed}"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?attr/colorAccent"
+                        app:font="condensed"
+                        app:allCaps="true"
+                        android:textSize="12sp"/>
+
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:gravity="center"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:visibility='@{model.actions["action2"] != null ? View.VISIBLE : View.GONE}'
+                        android:text='@{model.actions["action2"]}'
+                        android:tag='@{id + "-action2"}'
+                        android:onClick="@{handlers::onListHeaderActionPressed}"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?attr/colorAccent"
+                        app:font="condensed"
+                        app:allCaps="true"
+                        android:textSize="12sp"/>
+
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:gravity="center"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:visibility='@{model.actions["action3"] != null ? View.VISIBLE : View.GONE}'
+                        android:text='@{model.actions["action3"]}'
+                        android:tag='@{id + "-action3"}'
+                        android:onClick="@{handlers::onListHeaderActionPressed}"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?attr/colorAccent"
+                        app:font="condensed"
+                        app:allCaps="true"
+                        android:textSize="12sp"/>
+
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:gravity="center"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:visibility='@{model.actions["action4"] != null ? View.VISIBLE : View.GONE}'
+                        android:text='@{model.actions["action4"]}'
+                        android:tag='@{id + "-action4"}'
+                        android:onClick="@{handlers::onListHeaderActionPressed}"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?attr/colorAccent"
+                        app:font="condensed"
+                        app:allCaps="true"
+                        android:textSize="12sp"/>
+                </org.apmem.tools.layouts.FlowLayout>
+
+            </FrameLayout>
+
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="ext-metadata.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        #editor {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+<div id="editor"></div>
+<script>
+    var edt_content = '';
+    var edt_last_change_event = 0;
+    var edt_MAX_EXCHANGE_SIZE = 25000;
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/chrome");
+    editor.session.setUseWrapMode(false);
+    editor.setReadOnly(false);
+    editor.setFontSize(14);
+    editor.setScrollSpeed(0.05);
+    editor.setOptions({
+        maxLines: 100000
+    });
+    editor.on('change', function(e) {
+        var now = new Date().getTime();
+        if ((now - edt_last_change_event) > 300) {
+            console.log("edt:u");
+            edt_last_change_event = now;
+        }
+    });
+
+    function setWrapMode(wrap) {
+        editor.session.setUseWrapMode(wrap);
+        editor.resize(true);
+    }
+    function setReadOnly(readOnly) {
+        editor.setReadOnly(readOnly);
+    }
+    function setTextSize(textSize) {
+        editor.setFontSize(textSize);
+    }
+    function addPartialContent(content) {
+        edt_content += content;
+    }
+    function loadContent(name) {
+        editor.session.setMode(edtFindByFileName(name));
+        editor.setValue(window.atob(edt_content), 0);
+        editor.session.getSelection().clearSelection();
+        editor.gotoLine(1, 0);
+        edt_content = '';
+    }
+    function readContent(key) {
+        var encoded = window.btoa(editor.getValue());
+        do {
+            var l = Math.min(encoded.length, edt_MAX_EXCHANGE_SIZE);
+            var msg = encoded.substring(0, l);
+            console.log("edt:" + key + ":p:" + msg);
+
+            if (l <= edt_MAX_EXCHANGE_SIZE) {
+                break;
+            }
+            encoded = encoded.substring(edt_MAX_EXCHANGE_SIZE);
+        } while (encoded.length > edt_MAX_EXCHANGE_SIZE);
+        console.log("edt:" + key + ":f:");
+    }
+</script>
+</body>
+</html>

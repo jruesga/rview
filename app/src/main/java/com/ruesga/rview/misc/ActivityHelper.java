@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.ChangeListByFilterActivity;
 import com.ruesga.rview.DiffViewerActivity;
+import com.ruesga.rview.EditorActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.SearchActivity;
 import com.ruesga.rview.TabFragmentActivity;
@@ -239,6 +240,14 @@ public class ActivityHelper {
         context.startActivity(intent);
     }
 
+    public static void editChange(
+            Fragment fragment, int legacyChangeId, String changeId, int requestCode) {
+        Intent intent = new Intent(fragment.getContext(), EditorActivity.class);
+        intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
+        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
     public static void openChangeListByFilterActivity(
             Activity activity, String title, ChangeQuery filter, boolean dirty) {
         Intent intent = new Intent(activity, ChangeListByFilterActivity.class);
@@ -289,64 +298,50 @@ public class ActivityHelper {
     }
 
     public static void openDiffViewerActivity(Fragment fragment, ChangeInfo change,
-          ArrayList<String> files, String revisionId, String base, String current,
-          String file, String comment, int requestCode) {
-        Intent intent = new Intent(fragment.getContext(), DiffViewerActivity.class);
+            ArrayList<String> files, String revisionId, String base, String current,
+            String file, String comment, int requestCode) {
+        Intent intent = getOpenDiffViewerActivityIntent(fragment.getContext(), change,
+                files, revisionId, base, current, file, comment, requestCode);
+        fragment.startActivityForResult(intent, requestCode);
+    }
+
+    public static void openDiffViewerActivity(Activity activity, ChangeInfo change,
+            ArrayList<String> files, String revisionId, String base, String current,
+            String file, String comment, int requestCode) {
+        Intent intent = getOpenDiffViewerActivityIntent(activity, change, files, revisionId, base,
+                current, file, comment, requestCode);
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    private static Intent getOpenDiffViewerActivityIntent(Context context, ChangeInfo change,
+            ArrayList<String> files, String revisionId, String base, String current,
+            String file, String comment, int requestCode) {
+        Intent intent = new Intent(context, DiffViewerActivity.class);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_BASE, base);
         intent.putExtra(Constants.EXTRA_FILE, file);
         if (comment != null) {
             intent.putExtra(Constants.EXTRA_COMMENT, comment);
         }
-        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, requestCode != 0);
 
         try {
-            CacheHelper.writeAccountDiffCacheFile(fragment.getContext(),
-                    CacheHelper.CACHE_CHANGE_JSON,
+            CacheHelper.writeAccountDiffCacheFile(context, CacheHelper.CACHE_CHANGE_JSON,
                     SerializationManager.getInstance().toJson(change).getBytes());
 
             if (files != null) {
                 String prefix = (base == null ? "0" : base) + "_" + current + "_";
-                CacheHelper.writeAccountDiffCacheFile(fragment.getContext(),
-                        prefix + CacheHelper.CACHE_FILES_JSON,
+                CacheHelper.writeAccountDiffCacheFile(context, prefix + CacheHelper.CACHE_FILES_JSON,
                         SerializationManager.getInstance().toJson(files).getBytes());
             }
         } catch (IOException ex) {
             // Ignore
         }
-
-        fragment.startActivityForResult(intent, requestCode);
+        return intent;
     }
 
     public static void openSearchActivity(Context context) {
         Intent intent = new Intent(context, SearchActivity.class);
         context.startActivity(intent);
-    }
-
-    public static Uri createCustomUri(Context ctx, String kind, String query) {
-        return Uri.parse(ctx.getPackageName() + "://" + kind + "/" + query);
-    }
-
-    public static String extractChangeId(Uri uri) {
-        String q = uri.toString();
-        int pos = q.indexOf("/c/");
-        String target = "-1";
-        if (pos != -1) {
-            int start = q.indexOf("/c/") + 3;
-            target = q.substring(start);
-        } else {
-            int start = q.indexOf("/", 9) + 1;
-            if (start != -1) {
-                target = q.substring(start);
-            }
-        }
-
-        // Clean up the target
-        if (target.endsWith("/")) {
-            return target.substring(target.lastIndexOf("/", target.length() - 2) + 1);
-        }
-        return target.substring(target.lastIndexOf("/") + 1)
-                .replaceAll("//", "/")
-                .replaceAll("/", "_");
     }
 }

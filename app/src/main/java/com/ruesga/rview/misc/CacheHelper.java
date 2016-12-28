@@ -142,6 +142,18 @@ public class CacheHelper {
                 new File(getAccountDiffCacheDir(context, account), name), data);
     }
 
+    public static void removeAccountDiffCacheFile(Context context, String name) {
+        removeAccountDiffCacheFile(context, Preferences.getAccount(context), name);
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void removeAccountDiffCacheFile(Context context, Account account, String name) {
+        final File cacheDir = getAccountDiffCacheDir(context, account);
+        if (cacheDir.exists()) {
+            new File(getAccountDiffCacheDir(context, account), name).delete();
+        }
+    }
+
     public static Response.Builder addCacheControl(Response.Builder builder) {
         return builder.header("Cache-Control", "max-age=" + MAX_AGE_CACHE);
     }

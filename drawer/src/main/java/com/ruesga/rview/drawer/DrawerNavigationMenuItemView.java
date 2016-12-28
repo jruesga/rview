@@ -23,6 +23,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.support.design.internal.ForegroundLinearLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.view.menu.MenuView;
@@ -164,19 +165,7 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         mTextView.setText(s1);
         mSubTextView.setText(s2);
         mSubTextView.setVisibility(TextUtils.isEmpty(s2) ? View.GONE : View.VISIBLE);
-
-        int id = 0;
-        if (!TextUtils.isEmpty(s3)) {
-            final Context ctx = getContext();
-            id = ctx.getResources().getIdentifier(s3, "drawable", ctx.getPackageName());
-        }
-        if (id > 0) {
-            mButton.setImageResource(id);
-            mButton.setVisibility(View.VISIBLE);
-        } else {
-            mButton.setImageDrawable(null);
-            mButton.setVisibility(View.GONE);
-        }
+        setActionIcon(s3);
     }
 
     @Override
@@ -263,5 +252,22 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         mTextView.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
         mSubTextView.setVisibility(noSubtitle || offset == 0f ? View.GONE : View.VISIBLE);
         mActionArea.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+    }
+
+    private void setActionIcon(String resourceName) {
+        int id = 0;
+        final Context ctx = getContext();
+        if (!TextUtils.isEmpty(resourceName)) {
+            id = ctx.getResources().getIdentifier(resourceName, "drawable", ctx.getPackageName());
+        }
+        if (id > 0) {
+            Drawable dw = ContextCompat.getDrawable(getContext(), id);
+            DrawableCompat.setTintList(dw, mIconTintList);
+            mButton.setImageDrawable(dw);
+            mButton.setVisibility(View.VISIBLE);
+        } else {
+            mButton.setImageDrawable(null);
+            mButton.setVisibility(View.GONE);
+        }
     }
 }

@@ -16,6 +16,7 @@
 package com.ruesga.rview.misc;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;

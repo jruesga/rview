@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/wrap_mode"
+            android:title="@string/options_wrap_mode">
+            <menu>
+                <item
+                    android:id="@+id/wrap_mode_on"
+                    android:title="@string/options_wrap_mode_on"
+                    android:icon="@drawable/ic_wrap_text"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/wrap_mode_off"
+                    android:title="@string/options_wrap_mode_off"
+                    android:icon="@drawable/ic_unwrap_text"
+                    android:checkable="true"/>
+            </menu>
+        </item>
+    </group>
+    <group
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/text_size"
+            android:title="@string/options_text_size">
+            <menu>
+                <item
+                    android:id="@+id/text_size_smaller"
+                    android:title="@string/options_text_size_smaller"
+                    android:icon="@drawable/ic_text_size_smaller"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/text_size_normal"
+                    android:title="@string/options_text_size_normal"
+                    android:icon="@drawable/ic_text_size_normal"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/text_size_bigger"
+                    android:title="@string/options_text_size_bigger"
+                    android:icon="@drawable/ic_text_size_bigger"
+                    android:checkable="true"/>
+            </menu>
+        </item>
+    </group>
+</menu>

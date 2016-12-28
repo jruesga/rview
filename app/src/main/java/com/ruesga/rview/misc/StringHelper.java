@@ -18,6 +18,7 @@ package com.ruesga.rview.misc;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -166,6 +167,15 @@ public class StringHelper {
         int pos = u.lastIndexOf("/", 9);
         if (pos != -1) {
             return u.substring(u.lastIndexOf("/") + 1);
+        }
+        return null;
+    }
+
+    public static String getFileExtension(File path) {
+        final String name = path.getName();
+        int pos = name.lastIndexOf(".");
+        if (pos != -1 && !name.endsWith(".")) {
+            return name.substring(pos + 1);
         }
         return null;
     }

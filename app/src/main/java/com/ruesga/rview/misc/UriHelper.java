@@ -23,6 +23,8 @@ import java.net.URLDecoder;
 
 public class UriHelper {
 
+    public static final String CUSTOM_URI_TOKENIZER = ":";
+
     public static Uri createCustomUri(Context ctx, String kind, String query) {
         return Uri.parse(ctx.getPackageName() + "://" + kind + "/" + query);
     }
@@ -62,8 +64,8 @@ public class UriHelper {
 
         // Clean up the target
         if (target.endsWith("/")) {
-            target = target.substring(target.lastIndexOf("/", target.length() - 2) + 1);
+            target = target.substring(0, target.length() - 1);
         }
-        return target.replaceAll("//", "/").replaceAll("/", "_");
+        return target.replaceAll("//", "/").replaceAll("/", CUSTOM_URI_TOKENIZER);
     }
 }

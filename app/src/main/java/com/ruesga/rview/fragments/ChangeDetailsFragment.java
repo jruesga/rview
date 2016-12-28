@@ -149,6 +149,7 @@ public class ChangeDetailsFragment extends Fragment {
             = Pattern.compile("(^|\\s)(\\(\\d+ (inline )?comment(s)?\\))$", Pattern.MULTILINE);
 
     private static final int DIFF_REQUEST_CODE = 99;
+    private static final int EDIT_REQUEST_CODE = 98;
 
     @ProguardIgnored
     public static class ListModel {
@@ -156,6 +157,7 @@ public class ChangeDetailsFragment extends Fragment {
         public int header;
         public String selector;
         public boolean visible;
+        public final Map<String, String> actions = new HashMap<>();
         private ListModel(int h) {
             header = h;
             selector = null;
@@ -190,6 +192,17 @@ public class ChangeDetailsFragment extends Fragment {
                 switch (id) {
                     case "files":
                         mFragment.showDiffAgainstChooser(v);
+                        break;
+                }
+            }
+        }
+
+        public void onListHeaderActionPressed(View v) {
+            String id = (String) v.getTag();
+            if (!TextUtils.isEmpty(id)) {
+                switch (id) {
+                    case "files-action1":
+                        mFragment.showEditChangeActivity();
                         break;
                 }
             }
@@ -552,6 +565,11 @@ public class ChangeDetailsFragment extends Fragment {
 
                 mModel.filesListModel.selector = resolveDiffAgainstSelectorText();
                 mModel.filesListModel.visible = result.mFiles != null && !result.mFiles.isEmpty();
+                mModel.filesListModel.actions.clear();
+                if (mModel.isAuthenticated &&
+                        mCurrentRevision.equals(result.mChange.currentRevision)) {
+                    mModel.filesListModel.actions.put("action1", getString(R.string.action_edit));
+                }
                 mFileAdapter.update(result.mFiles, result.mInlineComments, result.mDraftComments);
                 mModel.msgListModel.visible =
                         change.messages != null && change.messages.length > 0;
@@ -827,14 +845,15 @@ public class ChangeDetailsFragment extends Fragment {
     private boolean mIsInlineCommentsInMessages;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
-        return newInstance(changeId, null);
+        return newInstance(changeId, null, null);
     }
 
-    public static ChangeDetailsFragment newInstance(int changeId, String revision) {
+    public static ChangeDetailsFragment newInstance(int changeId, String revision, String base) {
         ChangeDetailsFragment fragment = new ChangeDetailsFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, changeId);
         arguments.putString(Constants.EXTRA_REVISION, revision);
+        arguments.putString(Constants.EXTRA_BASE, base);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -845,12 +864,15 @@ public class ChangeDetailsFragment extends Fragment {
         mLegacyChangeId = getArguments().getInt(
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mCurrentRevision = getArguments().getString(Constants.EXTRA_REVISION);
+        mDiffAgainstRevision = getArguments().getString(Constants.EXTRA_BASE);
         mPicasso = PicassoHelper.getPicassoClient(getContext());
         mEmptyHandlers = new EmptyEventHandlers(this);
 
         if (savedInstanceState != null) {
-            mCurrentRevision = savedInstanceState.getString("current_revision", null);
-            mDiffAgainstRevision = savedInstanceState.getString("diff_against_revision", null);
+            mCurrentRevision = savedInstanceState.getString(
+                    "current_revision", mCurrentRevision);
+            mDiffAgainstRevision = savedInstanceState.getString(
+                    "diff_against_revision", mDiffAgainstRevision);
         }
     }
 
@@ -919,6 +941,16 @@ public class ChangeDetailsFragment extends Fragment {
                     // Refresh drafts comments
                     performDraftsRefresh();
                 }
+            }
+        } else if (requestCode == EDIT_REQUEST_CODE) {
+            // Remove the cache, in case the user request to enter again in edit mode
+            CacheHelper.removeAccountDiffCacheDir(getContext());
+
+            // If the user publish the edit, then reload the whole change
+            if (resultCode == Activity.RESULT_OK) {
+                mCurrentRevision = null;
+                mDiffAgainstRevision = null;
+                forceRefresh();
             }
         }
     }
@@ -1494,6 +1526,14 @@ public class ChangeDetailsFragment extends Fragment {
         });
         popupWindow.setModal(true);
         popupWindow.show();
+    }
+
+    private void showEditChangeActivity() {
+        if (!isLocked()) {
+            ActivityHelper.editChange(this,
+                    mResponse.mChange.legacyChangeId, mResponse.mChange.changeId,
+                    EDIT_REQUEST_CODE);
+        }
     }
 
     private void performStarred(boolean starred) {
