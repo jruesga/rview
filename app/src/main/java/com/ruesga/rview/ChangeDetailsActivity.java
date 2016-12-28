@@ -331,7 +331,7 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private String[] extractRevisionAndBase(String[] tokens) {
         String[] ret = new String[2];
-        if (tokens.length >= 1) {
+        if (tokens.length >= 2) {
             String q = tokens[1];
             if (q.contains("..")) {
                 ret = q.split("\\.\\.");
@@ -345,7 +345,7 @@ public class ChangeDetailsActivity extends BaseActivity {
     private String rebuildFileInfo(String[] tokens) {
         StringBuilder sb = new StringBuilder();
         int count = tokens.length;
-        if (count >= 2) {
+        if (count >= 3) {
             for (int i = 2; i < count; i++) {
                 sb.append(tokens[i]);
                 if (i < (count - 1)) {
