@@ -99,6 +99,16 @@
             android:exported="false" />
 
         <activity
+            android:name=".EditorActivity"
+            android:parentActivityName=".MainActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".SearchActivity"
             android:theme="@style/AppTheme.Translucent"
             android:parentActivityName=".MainActivity"

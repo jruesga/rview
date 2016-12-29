@@ -244,7 +244,6 @@ public class Formatter {
         if (only) {
             linksScanners.add(RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX);
             linksScanners.add(RegExLinkifyTextView.GERRIT_COMMIT_REGEX);
-
         }
 
         if (!linksScanners.isEmpty()) {

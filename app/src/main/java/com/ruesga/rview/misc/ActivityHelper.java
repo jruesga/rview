@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.ChangeListByFilterActivity;
 import com.ruesga.rview.DiffViewerActivity;
+import com.ruesga.rview.EditorActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.SearchActivity;
 import com.ruesga.rview.TabFragmentActivity;
@@ -237,6 +238,14 @@ public class ActivityHelper {
         intent.putExtra(Constants.EXTRA_HAS_PARENT, withParent);
         intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, forceSinglePanel);
         context.startActivity(intent);
+    }
+
+    public static void editChange(
+            Fragment fragment, int legacyChangeId, String changeId, int requestCode) {
+        Intent intent = new Intent(fragment.getContext(), EditorActivity.class);
+        intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
+        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        fragment.startActivityForResult(intent, requestCode);
     }
 
     public static void openChangeListByFilterActivity(

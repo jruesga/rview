@@ -63,6 +63,7 @@ import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
+import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
@@ -301,7 +302,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     public boolean onKeyDown(int keycode, KeyEvent e) {
         switch(keycode) {
             case KeyEvent.KEYCODE_MENU:
-                ((BaseActivity) getActivity()).openOptionsDrawer();
+                openOptionsMenu();
                 return true;
         }
 
@@ -492,7 +493,6 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             mActionsBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
                     R.layout.diff_actions_header, activity.getOptionsMenu(), false);
             mActionsBinding.setHandlers(mEventHandlers);
-            mActionsBinding.setHandlers(mEventHandlers);
             activity.getOptionsMenu().addHeaderView(mActionsBinding.getRoot());
 
             updateModel();
@@ -532,6 +532,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         switch (item.getItemId()) {
             case R.id.menu_diff_options:
                 openOptionsMenu();
+                AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
                 break;
         }
         return false;

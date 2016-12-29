@@ -906,7 +906,7 @@ public class MainActivity extends ChangeListBaseActivity {
                     FRAGMENT_TAG_LIST);
             if (current instanceof PageableFragment) {
                 current = ((PageableFragment) current).getCurrentFragment();
-                if (!current.equals(from)) {
+                if (current != null && !current.equals(from)) {
                     // This is not the visible fragment. ignore its results
                     return;
                 }
