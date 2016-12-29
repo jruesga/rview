@@ -217,11 +217,9 @@ public class Formatter {
             if (line.startsWith("- ") || line.startsWith("* ")
                     || line.contains(StringHelper.NON_PRINTABLE_CHAR + "- ")
                     || line.contains(StringHelper.NON_PRINTABLE_CHAR + "* ")) {
-                int pos = line.startsWith(StringHelper.NON_PRINTABLE_CHAR)
-                        ? start + line.lastIndexOf(StringHelper.NON_PRINTABLE_CHAR) + 1 : start;
-                spannable.replace(pos, pos + 1, "\u2022");
+                spannable.replace(start, start + 1, "\u2022");
                 spannable.setSpan(new LeadingMarginSpan.Standard(sQuoteMargin),
-                        pos, Math.min(pos + line.length(), spannable.length()),
+                        start, Math.min(start + line.length(), spannable.length()),
                         Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
 
