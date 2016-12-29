@@ -886,6 +886,9 @@ public class ChangeDetailsFragment extends Fragment {
         mBinding.setEmpty(mEmptyState);
         mBinding.setEmptyHandlers(mEmptyHandlers);
         startLoadersWithValidContext(savedInstanceState);
+
+        // Force HW acceleration in case the activity disabled it in minidrawer mode
+        mBinding.getRoot().setLayerType(View.LAYER_TYPE_HARDWARE, null);
         return mBinding.getRoot();
     }
 
