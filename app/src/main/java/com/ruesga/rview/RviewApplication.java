@@ -100,6 +100,7 @@ public class RviewApplication extends Application {
         enableExternalUrlHandlers();
     }
 
+    @SuppressWarnings("Convert2streamapi")
     private void enableExternalUrlHandlers() {
         List<Account> accounts =  Preferences.getAccounts(getApplicationContext());
         for (Account account : accounts) {

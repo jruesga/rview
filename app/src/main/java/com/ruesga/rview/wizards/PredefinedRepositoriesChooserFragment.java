@@ -56,7 +56,7 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
         return i;
     }
 
-    private List<ItemModel> getRepositoriesAsModel() throws IOException {
+    private List<ItemModel> getRepositoriesAsModel() {
         List<Repository> repositories = ModelHelper.getPredefinedRepositories(getContext());
         ArrayList<ItemModel> itemModels = new ArrayList<>(repositories.size());
         for (Repository repo : repositories) {

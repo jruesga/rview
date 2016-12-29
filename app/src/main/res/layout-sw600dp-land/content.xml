@@ -82,7 +82,8 @@
                 android:id="@+id/mini_drawer_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                tools:ignore="InconsistentLayout">
 
                 <com.ruesga.rview.drawer.DrawerNavigationView
                     android:id="@+id/drawer_navigation_view"

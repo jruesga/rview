@@ -692,6 +692,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         });
     }
 
+    @SuppressWarnings("Convert2streamapi")
     private void createFileHashes() {
         mFilesHashes.clear();
         for (String file : mFiles) {
