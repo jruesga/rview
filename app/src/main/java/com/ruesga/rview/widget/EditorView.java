@@ -136,6 +136,7 @@ public class EditorView extends FrameLayout {
                         mContentChangedListener.onContentChanged();
                     }
                     mIgnoreNextUnsavedEvent = false;
+                    return true;
                 }
 
                 if (mPattern.matcher(msg).find()) {

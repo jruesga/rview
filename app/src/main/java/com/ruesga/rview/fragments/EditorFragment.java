@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -77,6 +78,8 @@ import okhttp3.ResponseBody;
 public class EditorFragment extends Fragment implements KeyEventBindable {
 
     private static final String TAG = "EditorFragment";
+
+    private static final int READ_CONTENT_MESSAGE = 0;
 
     private interface OnSavedContentReady {
         void onContentSaved();
@@ -275,7 +278,16 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         @Override
         public void onContentChanged() {
             mIsDirty = true;
+            mUiHandler.removeMessages(READ_CONTENT_MESSAGE);
+            mUiHandler.sendEmptyMessageDelayed(READ_CONTENT_MESSAGE, 500L);
         }
+    };
+
+    private Handler.Callback mOnChangeCallback = msg -> {
+        if (msg.what == READ_CONTENT_MESSAGE) {
+            readFileContent(null);
+        }
+        return false;
     };
 
     private EditorFragmentBinding mBinding;
@@ -302,6 +314,8 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
     private boolean mWrap;
     private float mTextSizeFactor;
 
+    private Handler mUiHandler;
+
     public static EditorFragment newInstance(int legacyChangeId, String changeId) {
         EditorFragment fragment = new EditorFragment();
         Bundle arguments = new Bundle();
@@ -315,6 +329,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mEventHandlers = new EventHandlers(this);
+        mUiHandler = new Handler(mOnChangeCallback);
 
         Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
         mLegacyChangeId = state.getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
@@ -342,6 +357,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
         if (mBinding != null) {
             mBinding.unbind();
         }
@@ -396,6 +412,9 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
             mCurrentFile = savedInstanceState.getInt("current_file");
             mIsDirty = savedInstanceState.getBoolean("is_dirty");
             createFileHashes();
+
+            updateModel();
+            requestFileContent();
         } else {
             // Cancel any previous edit and request files
             mCancelLoader = loaderManager.create("cancel", cancelEdit(), mCancelObserver).start();
