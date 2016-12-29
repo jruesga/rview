@@ -35,8 +35,6 @@ import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.BitmapUtils;
 
-import org.apmem.tools.layouts.FlowLayout;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +43,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScoreLabelsView extends FlowLayout {
+public class ScoreLabelsView extends NonDebuggableFlowLayout {
     @ProguardIgnored
     public static class Model {
         public boolean visible = false;
@@ -94,14 +92,6 @@ public class ScoreLabelsView extends FlowLayout {
             }
         }
         a.recycle();
-    }
-
-    @Override
-    public boolean isDebugDraw() {
-        // FIXME: super.isDebugDraw() does reflection calls that cause
-        // IllegalArgumentExceptions being thrown, causing scrolling slowness,
-        // thus we avoid it being called here. This should probably be fixed upstream.
-        return false;
     }
 
     public void setScores(Map<String, LabelInfo> scores) {

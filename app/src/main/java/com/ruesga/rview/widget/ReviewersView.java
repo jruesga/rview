@@ -31,15 +31,13 @@ import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.squareup.picasso.Picasso;
 
-import org.apmem.tools.layouts.FlowLayout;
-
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ReviewersView extends FlowLayout {
+public class ReviewersView extends NonDebuggableFlowLayout {
     private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
@@ -73,7 +71,8 @@ public class ReviewersView extends FlowLayout {
             for (int i = children; i < count; i++) {
                 addView(new AccountChipView(getContext()));
                 View v = getChildAt(getChildCount() - 1);
-                FlowLayout.LayoutParams params = ((FlowLayout.LayoutParams) v.getLayoutParams());
+                NonDebuggableFlowLayout.LayoutParams params =
+                        ((NonDebuggableFlowLayout.LayoutParams) v.getLayoutParams());
                 params.setMargins(rtl ? margin : 0, 0, rtl ? 0 : margin, margin);
             }
         }
@@ -126,14 +125,6 @@ public class ReviewersView extends FlowLayout {
     public ReviewersView listenOn(OnAccountChipRemovedListener cb) {
         mOnAccountChipRemovedListener = cb;
         return this;
-    }
-
-    @Override
-    public boolean isDebugDraw() {
-        // FIXME: super.isDebugDraw() does reflection calls that cause
-        // IllegalArgumentExceptions being thrown, causing scrolling slowness,
-        // thus we avoid it being called here. This should probably be fixed upstream.
-        return false;
     }
 
     private List<AccountInfo> fromReviewers(ChangeInfo change) {

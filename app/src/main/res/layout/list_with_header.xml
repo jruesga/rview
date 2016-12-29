@@ -97,7 +97,7 @@
                     android:layout_marginBottom="16dp"
                     android:background="?android:attr/listDivider" />
 
-                <org.apmem.tools.layouts.FlowLayout
+                <com.ruesga.rview.widget.NonDebuggableFlowLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -168,7 +168,7 @@
                         app:font="condensed"
                         app:allCaps="true"
                         android:textSize="12sp"/>
-                </org.apmem.tools.layouts.FlowLayout>
+                </com.ruesga.rview.widget.NonDebuggableFlowLayout>
 
             </FrameLayout>
 

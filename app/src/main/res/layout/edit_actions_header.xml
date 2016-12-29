@@ -65,7 +65,7 @@
                 android:textColor="?android:textColorPrimary"
                 android:text="@string/change_edit_option_file"/>
 
-            <org.apmem.tools.layouts.FlowLayout
+            <com.ruesga.rview.widget.NonDebuggableFlowLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/listPreferredItemHeightSmall"
                 android:gravity="center_vertical|start"
@@ -89,7 +89,7 @@
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
-            </org.apmem.tools.layouts.FlowLayout>
+            </com.ruesga.rview.widget.NonDebuggableFlowLayout>
 
         </LinearLayout>
 
@@ -114,7 +114,7 @@
             android:textColor="?android:textColorPrimary"
             android:text="@string/change_edit_option_edit"/>
 
-            <org.apmem.tools.layouts.FlowLayout
+            <com.ruesga.rview.widget.NonDebuggableFlowLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/listPreferredItemHeightSmall"
                 android:gravity="center_vertical|start"
@@ -154,7 +154,7 @@
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
-            </org.apmem.tools.layouts.FlowLayout>
+            </com.ruesga.rview.widget.NonDebuggableFlowLayout>
 
         </LinearLayout>
 

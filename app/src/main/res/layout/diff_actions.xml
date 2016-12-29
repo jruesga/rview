@@ -25,7 +25,7 @@
         <variable name="handlers" type="com.ruesga.rview.fragments.DiffViewerFragment.EventHandlers" />
     </data>
 
-    <org.apmem.tools.layouts.FlowLayout
+    <com.ruesga.rview.widget.NonDebuggableFlowLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -63,5 +63,5 @@
             app:allCaps="true"
             android:textSize="12sp"/>
 
-    </org.apmem.tools.layouts.FlowLayout>
+    </com.ruesga.rview.widget.NonDebuggableFlowLayout>
 </layout>

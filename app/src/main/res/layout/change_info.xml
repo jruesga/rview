@@ -188,7 +188,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
                     </FrameLayout>
-                    <org.apmem.tools.layouts.FlowLayout
+                    <com.ruesga.rview.widget.NonDebuggableFlowLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -221,7 +221,7 @@
                             android:textStyle="bold"
                             app:allCaps="true"
                             android:textSize="12sp"/>
-                    </org.apmem.tools.layouts.FlowLayout>
+                    </com.ruesga.rview.widget.NonDebuggableFlowLayout>
                 </LinearLayout>
             </LinearLayout>
             <LinearLayout
