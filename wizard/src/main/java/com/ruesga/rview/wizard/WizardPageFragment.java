@@ -207,6 +207,8 @@ public abstract class WizardPageFragment extends Fragment {
     }
 
     private void notifyValidationChanged() {
-        ((WizardActivity) getActivity()).onValidationChanged(this);
+        if (getActivity() != null) {
+            ((WizardActivity) getActivity()).onValidationChanged(this);
+        }
     }
 }
