@@ -13,6 +13,7 @@ A Gerrit client application  for Android
 * View open, merged or abandoned changes.
 * Search for changes.
 * Review and comment on changes.
+* Edit files and publish new revisions
 * Compare textually and visually the differences on any changed file.
 * and much more...
 
