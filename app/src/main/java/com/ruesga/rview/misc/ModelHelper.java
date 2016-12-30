@@ -427,27 +427,42 @@ public class ModelHelper {
 
     public static void setAccountUrlHandlingStatus(
             Context context, Account account, boolean enabled) {
-        String name = account.mRepository.mName.replaceAll(" ", "");
-        String activityAlias = name + "ExternalUrlHandlerActivity";
+        Repository repository = findRepositoryForAccount(context, account);
+        if (repository != null) {
+            String name = repository.mName.replaceAll(" ", "");
+            String activityAlias = name + "ExternalUrlHandlerActivity";
 
-        int state = enabled
-                ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
-        context.getPackageManager().setComponentEnabledSetting(
-                new ComponentName(
-                        context.getPackageName(),
-                        context.getPackageName() + "." + activityAlias),
-                state, PackageManager.DONT_KILL_APP);
+            try {
+                int state = enabled
+                        ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                        : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+                context.getPackageManager().setComponentEnabledSetting(
+                        new ComponentName(
+                                context.getPackageName(),
+                                context.getPackageName() + "." + activityAlias),
+                        state, PackageManager.DONT_KILL_APP);
+            } catch (IllegalArgumentException ex) {
+                // ignore
+            }
+        }
     }
 
     public static boolean isAccountUrlHandlingEnabled(Context context, Account account) {
-        String name = account.mRepository.mName.replaceAll(" ", "");
-        String activityAlias = name + "ExternalUrlHandlerActivity";
-        int status = context.getPackageManager().getComponentEnabledSetting(
-                new ComponentName(
-                        context.getPackageName(),
-                        context.getPackageName() + "." + activityAlias));
-        return status == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+        Repository repository = findRepositoryForAccount(context, account);
+        if (repository != null) {
+            try {
+                String name = repository.mName.replaceAll(" ", "");
+                String activityAlias = name + "ExternalUrlHandlerActivity";
+                int status = context.getPackageManager().getComponentEnabledSetting(
+                        new ComponentName(
+                                context.getPackageName(),
+                                context.getPackageName() + "." + activityAlias));
+                return status == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+            } catch (IllegalArgumentException ex) {
+                // ignore
+            }
+        }
+        return false;
     }
 
     public static boolean canAccountHandleUrls(Context ctx, Account account) {
@@ -457,6 +472,15 @@ public class ModelHelper {
             }
         }
         return false;
+    }
+
+    private static Repository findRepositoryForAccount(Context ctx, Account account) {
+        for (Repository repository : getPredefinedRepositories(ctx)) {
+            if (repository.mUrl.equals(account.mRepository.mUrl)) {
+                return repository;
+            }
+        }
+        return null;
     }
 
     public static boolean canAnyAccountHandleUrl(Context ctx, String url) {
