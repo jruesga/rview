@@ -167,7 +167,8 @@ class GerritApiClient implements GerritApi {
             Request original = chain.request();
             Request.Builder requestBuilder = original.newBuilder();
             if (!mAbstractionLayer.isDebugBuild()) {
-                requestBuilder.header("Accept", "application/json");
+                requestBuilder.header("Accept",
+                        "application/octet-stream, text/plain, application/json");
             }
             Request request = requestBuilder.build();
             return chain.proceed(request);
