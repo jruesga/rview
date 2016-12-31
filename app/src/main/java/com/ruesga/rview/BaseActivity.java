@@ -26,6 +26,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
@@ -144,8 +145,9 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         mMiniDrawerLayout = (SlidingPaneLayout) getContentBinding().getRoot()
                 .findViewById(R.id.mini_drawer_layout);
         if (mMiniDrawerLayout != null) {
-            // Disable hardware acceleration to deal with draw glitches
-            getContentBinding().getRoot().setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            // Disable drawer elevation to match AppBarLayout
+            View v = getContentBinding().getRoot().findViewById(R.id.drawer_navigation_view);
+            ViewCompat.setElevation(v, 0);
         }
 
         setSupportActionBar(getContentBinding().toolbar);

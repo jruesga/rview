@@ -38,7 +38,7 @@
             <android.support.design.widget.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="4dp"
+                app:elevation="0dp"
                 tools:ignore="UnusedAttribute">
 
                 <android.support.v7.widget.Toolbar
@@ -90,7 +90,6 @@
                     android:layout_width="320dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
-                    app:elevation="8dp"
                     app:theme="@style/AppTheme.DrawerMenu"
                     android:visibility="@{model.hasMiniDrawer ? View.VISIBLE : View.GONE}"
                     app:menu="@menu/drawer">
@@ -148,6 +147,12 @@
                                 tools:ignore="InconsistentLayout"/>
                         </LinearLayout>
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="5dp"
+                        android:background="@drawable/bg_shadow_top"
+                        tools:ignore="RtlSymmetry"/>
 
                     <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
                         android:layout_width="match_parent"
