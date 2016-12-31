@@ -282,7 +282,7 @@ public class AccountPageFragment extends WizardPageFragment {
     public Callable<Boolean> doForwardAction() {
         // Check if the url passed is a valid Gerrit endpoint
         return () -> {
-            if (mModel.wasConfirmed) {
+            if (mModel.wasConfirmed && mModel.accountInfo != null) {
                 return Boolean.TRUE;
             }
 

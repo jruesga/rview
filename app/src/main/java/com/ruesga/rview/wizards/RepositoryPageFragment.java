@@ -25,6 +25,7 @@ import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
@@ -209,7 +210,8 @@ public class RepositoryPageFragment extends WizardPageFragment {
     public Callable<Boolean> doForwardAction() {
         // Check if the url passed is a valid Gerrit endpoint
         return () -> {
-            if (mModel.wasConfirmed) {
+            if (mModel.wasConfirmed && !TextUtils.isEmpty(mModel.name)
+                    && !TextUtils.isEmpty(mModel.url)) {
                 return Boolean.TRUE;
             }
 
