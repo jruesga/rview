@@ -87,9 +87,17 @@ public class ChangeDetailsActivity extends BaseActivity {
                 final ChangeInfo change = result.mChange;
                 final int legacyChangeId = change.legacyChangeId;
                 final String changeId = change.changeId;
-                final String base = result.mRevAndBase[0];
-                final String baseRevisionId = obtainRevisionId(change, result.mRevAndBase[0]);
-                final String revisionId = obtainRevisionId(change, result.mRevAndBase[1]);
+
+                final String base;
+                final String baseRevisionId;
+                final String revisionId;
+                if (result.mRevAndBase == null) {
+                    base = baseRevisionId = revisionId = null;
+                } else {
+                    base = result.mRevAndBase[0];
+                    baseRevisionId = obtainRevisionId(change, result.mRevAndBase[0]);
+                    revisionId = obtainRevisionId(change, result.mRevAndBase[1]);
+                }
 
                 if (TextUtils.isEmpty(result.mFile)) {
                     // Open the details view
