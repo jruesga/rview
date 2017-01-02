@@ -46,7 +46,8 @@ public final class EmojiHelper {
                     ":(",
                     ":-(",
                     ":P",
-                    ":D"
+                    ":D",
+                    ":S"
             };
     private static final Pattern[] REGEXP1 =
             {
@@ -74,7 +75,8 @@ public final class EmojiHelper {
                     Pattern.compile("^:\\(", Pattern.MULTILINE),
                     Pattern.compile("^:-\\(", Pattern.MULTILINE),
                     Pattern.compile("^:P", Pattern.MULTILINE),
-                    Pattern.compile("^:D", Pattern.MULTILINE)
+                    Pattern.compile("^:D", Pattern.MULTILINE),
+                    Pattern.compile("^:S", Pattern.MULTILINE)
             };
     private static final Pattern[] REGEXP2 =
             {
@@ -102,7 +104,8 @@ public final class EmojiHelper {
                     Pattern.compile(" :\\("),
                     Pattern.compile(" :-\\("),
                     Pattern.compile(" :P"),
-                    Pattern.compile(" :D")
+                    Pattern.compile(" :D"),
+                    Pattern.compile(" :S")
             };
     private static final int[] CODES =
             {
@@ -124,13 +127,14 @@ public final class EmojiHelper {
                     0x1F602,
                     0x1F62E,
                     0x1F609,
-                    0x1F615,
+                    0x1F62E,
                     0x1F600,
                     0x1F600,
                     0x1F641,
                     0x1F641,
                     0x1F61B,
-                    0x1F601
+                    0x1F601,
+                    0x1F615
             };
 
     public static String createEmoji(String msg) {
