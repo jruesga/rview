@@ -208,6 +208,7 @@ public class ActivityHelper {
                 TaskStackBuilder.create(activity)
                         .addNextIntentWithParentStack(upIntent)
                         .startActivities();
+                activity.finish();
             } else {
                 NavUtils.navigateUpTo(activity, upIntent);
             }
