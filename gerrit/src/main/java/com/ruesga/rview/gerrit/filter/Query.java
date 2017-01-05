@@ -42,7 +42,7 @@ public abstract class Query {
         mQueries.clear();
     }
 
-    String sanitizeValue(String val) {
+    static String sanitizeValue(String val) {
         return "\"" + val.trim().replace("\"", "\"\"") + "\"";
     }
 

@@ -15,6 +15,8 @@
  */
 package com.ruesga.rview.gerrit.filter;
 
+import java.util.ArrayList;
+
 public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
 
     public T and(T query) {
@@ -60,13 +62,18 @@ public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
         return (T)this;
     }
 
+    static boolean isValidExpression(String exp) {
+        return !(exp.equalsIgnoreCase("and") || exp.equalsIgnoreCase("or") || exp.startsWith("("));
+    }
+
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
-        int count = queries().size();
+        ArrayList<String> queries = queries();
+        int count = queries.size();
         for (int i = 0; i < count; i++) {
             sb.append(" ");
-            sb.append(queries().get(i));
+            sb.append(queries.get(i));
         }
         return sb.toString().trim();
     }

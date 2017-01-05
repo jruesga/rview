@@ -82,6 +82,18 @@ public class ChangeQueryTest {
                         new ChangeQuery().negate(
                                 new ChangeQuery().topic("translations").and(
                                         new ChangeQuery().owner("aa")))));
+        testParseQuery("aaa",
+                new ChangeQuery().simple("aaa"));
+        testParseQuery("status:open aaa",
+                new ChangeQuery().status(StatusType.OPEN)
+                        .and(new ChangeQuery().simple("aaa")));
+        testParseQuery("aaa status:open",
+                new ChangeQuery().simple("aaa")
+                        .and(new ChangeQuery().status(StatusType.OPEN)));
+        testParseQuery("owner:\"Test <test@test.com>\" (aaa branch:test2)",
+                new ChangeQuery().owner("Test <test@test.com>")
+                        .and(new ChangeQuery().simple("aaa")
+                                .and(new ChangeQuery().branch("test2"))));
     }
 
     private void testParseQuery(String expression, ChangeQuery expectedResult) {
@@ -91,7 +103,8 @@ public class ChangeQueryTest {
         } catch (QueryParseException ex) {
             // Ignore
         }
-        System.out.println("Testing '" + expression + "': '" + String.valueOf(expectedResult) + "'");
+        System.out.println("Testing '" + expression + "' (" + String.valueOf(result) + "): '" +
+                String.valueOf(expectedResult) + "'");
         assertEquals(expression, String.valueOf(expectedResult), result);
     }
 

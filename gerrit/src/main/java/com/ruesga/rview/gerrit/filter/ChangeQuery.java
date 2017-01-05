@@ -318,6 +318,11 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
         return this;
     }
 
+    public ChangeQuery simple(String query) {
+        add(sanitizeValue(query));
+        return this;
+    }
+
     private static String toScore(int n) {
         return (n > 0 ? "+" : n < 0 ? "-" : "") +  n;
     }
@@ -345,14 +350,17 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                 case QueryLexer.AND:
                 case QueryLexer.OR:
                     int childType = tree.getChild(0).getType();
-                    if (childType == QueryLexer.NOT) {
+                    if (childType == QueryLexer.DEFAULT_FIELD) {
+                        query.add(getDefaultFieldText(tree.getChild(0)));
+                    } else if (childType == QueryLexer.NOT) {
                         query.negate(toChangeQuery(tree.getChild(0).getChild(0)));
                     } else {
                         addField(tree.getChild(0), query);
                     }
                     for (int i = 1; i < tree.getChildCount(); i++) {
                         childType = tree.getChild(i).getType();
-                        if (childType == QueryLexer.FIELD_NAME) {
+                        if (childType == QueryLexer.FIELD_NAME
+                                || childType == QueryLexer.DEFAULT_FIELD) {
                             if (tree.getType() == QueryLexer.AND) {
                                 query.and(toChangeQuery(tree.getChild(i)));
                             } else {
@@ -372,12 +380,27 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                 case QueryLexer.NOT:
                     query.negate(toChangeQuery(tree.getChild(0)));
                     break;
+                case QueryLexer.DEFAULT_FIELD:
+                    query.add(getDefaultFieldText(tree));
+                    break;
                 default:
                     throw new QueryParseException("Invalid query at " +
                             tree.getCharPositionInLine() + ": " + tree.getText());
             }
 
             return query;
+        }
+
+        private String getDefaultFieldText(Tree tree) throws QueryParseException {
+            String val = tree.getChild(0).toString();
+            if (val.startsWith("\"") && val.endsWith("\"") && val.length() >= 2) {
+                val = val.substring(1, val.length() - 1);
+            }
+            if (!isValidExpression(val)) {
+                throw new QueryParseException("Invalid query at " +
+                        tree.getCharPositionInLine() + ": " + tree.getText());
+            }
+            return Query.sanitizeValue(val);
         }
 
         private void addField(Tree tree, ChangeQuery query) throws QueryParseException {
@@ -485,7 +508,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
         private String getFieldText(Tree tree) {
             // Extract default fields
             StringBuilder sb = new StringBuilder();
-            Tree parent = tree.getParent();
+            /*Tree parent = tree.getParent();
             if (parent != null && tree.getParent().getType() == QueryLexer.AND
                     && parent.getChildCount() > 1) {
                 int count = parent.getChildCount();
@@ -495,7 +518,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                         sb.append(" ").append(child.getChild(0).getText());
                     }
                 }
-            }
+            }*/
 
             // Get text
             String value = tree.getChild(0).getText();
