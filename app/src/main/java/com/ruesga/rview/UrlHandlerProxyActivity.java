@@ -174,7 +174,7 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                         }
                     }
 
-                    ActivityHelper.openChangeListByFilterActivity(this, null, filter, true);
+                    ActivityHelper.openChangeListByFilterActivity(this, null, filter, true, true);
                     break;
                 }
                 // fallback to default

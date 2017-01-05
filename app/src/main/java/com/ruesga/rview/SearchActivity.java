@@ -479,7 +479,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
 
         // Open the activity
-        ActivityHelper.openChangeListByFilterActivity(this, null, filter, true);
+        ActivityHelper.openChangeListByFilterActivity(this, null, filter, true, false);
     }
 
     private int[] loadSearchIcons() {

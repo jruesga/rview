@@ -220,6 +220,7 @@ public class ActivityHelper {
 
     public static void openChangeDetailsByUri(Context context, Uri uri) {
         Intent intent = new Intent(context, ChangeDetailsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
         intent.setData(uri);
         context.startActivity(intent);
@@ -249,9 +250,12 @@ public class ActivityHelper {
         fragment.startActivityForResult(intent, requestCode);
     }
 
-    public static void openChangeListByFilterActivity(
-            Activity activity, String title, ChangeQuery filter, boolean dirty) {
+    public static void openChangeListByFilterActivity(Activity activity, String title,
+            ChangeQuery filter, boolean dirty, boolean clearStack) {
         Intent intent = new Intent(activity, ChangeListByFilterActivity.class);
+        if (clearStack) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
         intent.putExtra(Constants.EXTRA_TITLE, title);
         intent.putExtra(Constants.EXTRA_FILTER, filter.toString());
         intent.putExtra(Constants.EXTRA_DIRTY, dirty);
