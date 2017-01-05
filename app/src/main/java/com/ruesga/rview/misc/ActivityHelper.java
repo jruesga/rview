@@ -210,6 +210,9 @@ public class ActivityHelper {
     }
 
     public static boolean performFinishActivity(Activity activity, boolean forceNavigateUp) {
+        if (activity == null) {
+            return false;
+        }
         boolean hasParent = activity.getIntent().getBooleanExtra(Constants.EXTRA_HAS_PARENT, false);
         if (forceNavigateUp || !hasParent) {
             Intent upIntent = NavUtils.getParentActivityIntent(activity);
