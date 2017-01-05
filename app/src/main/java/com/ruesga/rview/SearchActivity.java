@@ -393,7 +393,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private void performFilter(String filter) {
         if (TextUtils.isEmpty(filter)) {
-
             return;
         }
 
@@ -590,9 +589,17 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
 
         final List<Suggestion> suggestions = new ArrayList<>();
+        String f = partial + currentFilter;
+        pos = f.trim().lastIndexOf(" ");
+        if (pos != -1) {
+            partial = f.substring(0, pos + 1);
+            f = f.substring(pos + 1);
+        } else if (f.contains(":")) {
+            partial = "";
+        }
         for (String s : mSuggestions) {
-            if (s.startsWith(currentFilter)) {
-                suggestions.add(new Suggestion(currentFilter, partial, s, R.drawable.ic_search));
+            if (s.startsWith(f) && !s.trim().equals(f)) {
+                suggestions.add(new Suggestion(f, partial, s, R.drawable.ic_search));
             }
         }
         mBinding.searchView.swapSuggestions(suggestions);
@@ -605,6 +612,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
         final String filterNoCase = suggestion.mFilter.toLowerCase();
         while ((pos = suggestionNoCase.indexOf(filterNoCase, pos)) != -1) {
             final int length = suggestion.mFilter.length();
+            if (length == 0) {
+                break;
+            }
             final StyleSpan bold = new StyleSpan(android.graphics.Typeface.BOLD);
             final ForegroundColorSpan color = new ForegroundColorSpan(
                     ContextCompat.getColor(this, R.color.accent));
