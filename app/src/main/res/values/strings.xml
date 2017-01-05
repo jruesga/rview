@@ -42,6 +42,7 @@
     <string name="action_yes">Yes</string>
     <string name="action_no">No</string>
     <string name="action_open_with">Open with</string>
+    <string name="action_continue">Continue</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -295,6 +296,10 @@
     <!-- Delete draft change -->
     <string name="delete_draft_change_title">Delete Draft</string>
     <string name="delete_draft_change_confirm">Delete draft change?</string>
+
+    <!-- Download patchset -->
+    <string name="download_patchset_metered_network_title">Download patchset</string>
+    <string name="download_patchset_metered_network_confirm">Download a patchset over a metered or roaming network could incurs in expensive billing charges. Do you want to proceed with the download?</string>
 
     <!-- Actions dialog -->
     <string name="actions_message_hint">Commit message</string>

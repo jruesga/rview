@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
@@ -49,6 +50,7 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -185,14 +187,21 @@ public class ActivityHelper {
         }
     }
 
-    public static void downloadUri(Context context, Uri uri, @Nullable String mimeType) {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void downloadUri(
+            Context context, Uri uri, String fileName, @Nullable String mimeType) {
+        // Create the destination location
+        File destination = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS);
+        destination.mkdirs();
+        Uri destinationUri = Uri.fromFile(new File(destination, fileName));
+
         // Use the download manager to perform the download
         DownloadManager downloadManager =
                 (DownloadManager) context.getSystemService(Activity.DOWNLOAD_SERVICE);
         Request request = new Request(uri)
-                .setAllowedOverMetered(false)
-                .setAllowedOverRoaming(false)
-                .setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                .setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setDestinationUri(destinationUri);
         if (mimeType != null) {
             request.setMimeType(mimeType);
         }
