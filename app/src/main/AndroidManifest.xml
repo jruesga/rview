@@ -44,7 +44,6 @@
 
         <activity
             android:name=".MainActivity"
-            android:clearTaskOnLaunch="true"
             android:theme="@style/AppTheme.NoStatusBarColor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
