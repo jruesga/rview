@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 public class ActivityStatsChart extends View {
 
@@ -70,7 +71,7 @@ public class ActivityStatsChart extends View {
 
         @SuppressLint("UseSparseArrays")
         private Map<Long, Integer> aggregateStats(List<Stats> stats) {
-            Map<Long, Integer> aggregatedStats = new HashMap<>();
+            Map<Long, Integer> aggregatedStats = new TreeMap<>();
             Calendar e = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             truncateCalendar(e);
             Calendar s = (Calendar) e.clone();
