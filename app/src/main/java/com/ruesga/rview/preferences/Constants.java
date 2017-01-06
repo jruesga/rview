@@ -38,6 +38,7 @@ public class Constants {
     public static final String EXTRA_FILTER = "filter";
     public static final String EXTRA_TITLE = "title";
     public static final String EXTRA_SUBTITLE = "subtitle";
+    public static final String EXTRA_ACTION = "action";
     public static final String EXTRA_BASE = "base";
     public static final String EXTRA_DATA = "data";
     public static final String EXTRA_FRAGMENT = "fragment";

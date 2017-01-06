@@ -131,10 +131,10 @@ public class BindingAdapters {
         v.setBackground(dw);
     }
 
-    @BindingAdapter("bindToFeature")
-    public static void bindToFeature(View v, Features feature) {
+    @BindingAdapter(value={"bindToFeature", "bindToBoolean"})
+    public static void bindToFeature(View v, Features feature, Boolean value) {
         GerritApi api = ModelHelper.getGerritApi(v.getContext());
-        boolean supported = api != null && api.supportsFeature(feature);
+        boolean supported = value && api != null && api.supportsFeature(feature);
         v.setVisibility(supported ? View.VISIBLE : View.GONE);
     }
 }

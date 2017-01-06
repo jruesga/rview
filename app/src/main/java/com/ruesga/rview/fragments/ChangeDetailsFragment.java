@@ -42,6 +42,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
@@ -76,6 +77,7 @@ import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
+import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.NotifyType;
 import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RestoreInput;
@@ -238,6 +240,10 @@ public class ChangeDetailsFragment extends Fragment {
             if (account != null) {
                 mFragment.performAddReviewer(String.valueOf(account.mAccount.accountId));
             }
+        }
+
+        public void onBranchEditPressed(View v) {
+            mFragment.performShowMoveBranchDialog(v);
         }
 
         public void onTopicEditPressed(View v) {
@@ -805,6 +811,20 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
+    private final RxLoaderObserver<ChangeInfo> mMoveBranchObserver
+            = new RxLoaderObserver<ChangeInfo>() {
+        @Override
+        public void onNext(ChangeInfo value) {
+            // Refresh the change
+            forceRefresh();
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+        }
+    };
+
     private final RxLoaderObserver<Integer> mDownloadPatchSetObserver
             = new RxLoaderObserver<Integer>() {
         @Override
@@ -865,6 +885,7 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
     private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
+    private RxLoader1<String, ChangeInfo> mMoveBranchLoader;
     private RxLoader<Integer> mDownloadPatchSetLoader;
     private int mLegacyChangeId;
 
@@ -1056,6 +1077,8 @@ public class ChangeDetailsFragment extends Fragment {
                     "messages_refresh", fetchMessages(), mMessagesRefreshObserver);
             mActionLoader = loaderManager.create(
                     "action", this::doAction, mActionObserver);
+            mMoveBranchLoader = loaderManager.create(
+                    "move_branch", this::doMoveBranch, mMoveBranchObserver);
             mDraftsRefreshLoader = loaderManager.create(
                     "drafts_refresh", fetchDrafts(), mDraftsRefreshObserver);
             mDownloadPatchSetLoader = loaderManager.create(
@@ -1365,6 +1388,19 @@ public class ChangeDetailsFragment extends Fragment {
                             break;
                     }
                     return Empty.NULL;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<ChangeInfo> doMoveBranch(final String newBranch) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return SafeObservable.fromNullCallable(() -> {
+                    MoveInput input = new MoveInput();
+                    input.destinationBranch = newBranch;
+                    return api.moveChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -1745,6 +1781,17 @@ public class ChangeDetailsFragment extends Fragment {
         fragment.show(getChildFragmentManager(), AddReviewerDialogFragment.TAG);
     }
 
+    private void performShowMoveBranchDialog(View v) {
+        BranchChooserDialogFragment fragment = BranchChooserDialogFragment.newInstance(
+                R.string.move_branch_title, R.string.action_move,
+                mResponse.mChange.project, mResponse.mChange.branch, null, v);
+        fragment.setOnFilterSelectedListener(o -> {
+            mMoveBranchLoader.clear();
+            mMoveBranchLoader.restart((String) o);
+        });
+        fragment.show(getChildFragmentManager(), BranchChooserDialogFragment.TAG);
+    }
+
     private void performShowChangeTopicDialog(View v) {
         String title = getString(R.string.change_topic_title);
         String action = getString(R.string.action_change);
@@ -1765,10 +1812,11 @@ public class ChangeDetailsFragment extends Fragment {
 
     private void performShowCherryPickDialog(View v, OnFilterSelectedListener cb) {
         String message = mResponse.mChange.revisions.get(mCurrentRevision).commit.message;
-        CherryPickChooserDialogFragment fragment = CherryPickChooserDialogFragment.newInstance(
+        BranchChooserDialogFragment fragment = BranchChooserDialogFragment.newInstance(
+                R.string.change_action_cherrypick, R.string.change_action_cherrypick,
                 mResponse.mChange.project, mResponse.mChange.branch, message, v);
         fragment.setOnFilterSelectedListener(cb);
-        fragment.show(getChildFragmentManager(), CherryPickChooserDialogFragment.TAG);
+        fragment.show(getChildFragmentManager(), BranchChooserDialogFragment.TAG);
     }
 
     private void performShowRequestMessageDialog(View v, String title,

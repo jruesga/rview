@@ -25,5 +25,7 @@ public enum Features {
     @Since(2.13)
     BLAME,
     @Since(2.13)
-    CHANGE_STAR_LABELS
+    CHANGE_STAR_LABELS,
+    @Since(2.13)
+    MOVE
 }

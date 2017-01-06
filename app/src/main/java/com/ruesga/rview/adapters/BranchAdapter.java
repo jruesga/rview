@@ -25,12 +25,12 @@ import com.ruesga.rview.preferences.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CherryPickAdapter extends FilterableAdapter {
+public class BranchAdapter extends FilterableAdapter {
 
     private final String mProjectId;
     private final String mBranch;
 
-    public CherryPickAdapter(Context context, String projectId, String branch) {
+    public BranchAdapter(Context context, String projectId, String branch) {
         super(context);
         mProjectId = projectId;
         mBranch = branch;

@@ -35,6 +35,7 @@
     <string name="action_restore">Restore</string>
     <string name="action_change">Change</string>
     <string name="action_edit">Edit</string>
+    <string name="action_move">Move</string>
     <string name="action_publish">Publish</string>
     <string name="action_discard">Discard</string>
     <string name="action_save">Save</string>
@@ -308,6 +309,9 @@
     <string name="actions_change_base">Change parent revision</string>
     <string name="actions_base_hint">Subject, change number, or leave empty</string>
     <string name="actions_confirm_submit">Submit this patchset?</string>
+
+    <!-- Move branch dialog -->
+    <string name="move_branch_title">Move branch</string>
 
     <!-- Change topic dialog -->
     <string name="change_topic_title">Change topic</string>
