@@ -1142,7 +1142,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#cherry-pick"
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
-    @PUT("changes/{change-id}/revisions/{revision-id}/cherrypick")
+    @POST("changes/{change-id}/revisions/{revision-id}/cherrypick")
     Observable<ChangeInfo> cherryPickChangeRevision(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
