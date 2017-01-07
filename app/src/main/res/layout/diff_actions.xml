@@ -20,6 +20,7 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.Features" />
         <variable name="isLeft" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.fragments.DiffViewerFragment.Model" />
         <variable name="handlers" type="com.ruesga.rview.fragments.DiffViewerFragment.EventHandlers" />
@@ -40,8 +41,26 @@
             android:tag="@{isLeft}"
             android:text="@string/change_action_comment"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:visibility="@{model.hasCommentAction ? View.VISIBLE : View.GONE}"
+            android:visibility="@{(isLeft != null &amp;&amp; isLeft ? model.hasLeftCommentAction : model.hasRightCommentAction) ? View.VISIBLE : View.GONE}"
             android:textColor="?attr/colorAccent"
+            app:font="condensed"
+            app:allCaps="true"
+            android:textSize="12sp"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/blame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:tag="@{isLeft}"
+            android:text="@string/change_action_blame"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            app:bindToFeature="@{Features.BLAME}"
+            app:bindToBoolean="@{(isLeft != null &amp;&amp; isLeft ? model.hasLeftBlameAction : model.hasRightBlameAction)}"
+            android:textColor="@{((isLeft != null &amp;&amp; isLeft &amp;&amp; model.isLeftBlame) || ((isLeft == null || !isLeft) &amp;&amp; model.isRightBlame)) ? @color/primaryDark : @color/accent}"
             app:font="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>

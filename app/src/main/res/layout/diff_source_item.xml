@@ -26,6 +26,8 @@
         <variable name="wrap" type="java.lang.Boolean" />
         <variable name="mode" type="java.lang.Integer" />
         <variable name="textSizeFactor" type="java.lang.Float" />
+        <variable name="showBlameA" type="java.lang.Boolean" />
+        <variable name="showBlameB" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.widget.DiffView.DiffInfoModel" />
         <variable name="measurement" type="com.ruesga.rview.widget.DiffView.DiffViewMeasurement" />
         <variable name="handlers" type="com.ruesga.rview.widget.DiffView.EventHandlers" />
@@ -69,6 +71,26 @@
                 android:text="@{model.lineNumberA}"/>
         </FrameLayout>
 
+        <LinearLayout
+            android:layout_width="@dimen/diff_line_blame_width"
+            android:layout_height="match_parent"
+            android:visibility="@{showBlameA != null &amp;&amp; showBlameA ? View.VISIBLE : View.GONE}"
+            android:background="@color/diffLineBackgroundColor">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimaryDark"
+                android:padding="@dimen/diff_line_text_padding"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:font="boldMonospace"
+                android:text="@{model.blameA}"/>
+
+        </LinearLayout>
+
         <View
             android:layout_width="@dimen/diff_line_separator_width"
             android:layout_height="match_parent"
@@ -104,6 +126,26 @@
                 app:font="monospace"
                 android:text="@{model.lineNumberB}"/>
         </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/diff_line_blame_width"
+            android:layout_height="match_parent"
+            android:visibility="@{showBlameB != null &amp;&amp; showBlameB &amp;&amp; mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
+            android:background="@color/diffLineBackgroundColor">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimaryDark"
+                android:padding="@dimen/diff_line_text_padding"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:font="boldMonospace"
+                android:text="@{model.blameB}"/>
+
+        </LinearLayout>
 
         <View
             android:layout_width="@dimen/diff_line_separator_width"
@@ -188,6 +230,26 @@
                 app:font="monospace"
                 android:text="@{model.lineNumberB}"/>
         </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="@dimen/diff_line_blame_width"
+            android:layout_height="match_parent"
+            android:visibility="@{showBlameB != null &amp;&amp; showBlameB &amp;&amp; mode != null &amp;&amp; mode == DiffView.SIDE_BY_SIDE_MODE ? View.VISIBLE : View.GONE}"
+            android:background="@color/diffLineBackgroundColor">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorPrimaryDark"
+                android:padding="@dimen/diff_line_text_padding"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:font="boldMonospace"
+                android:text="@{model.blameB}"/>
+
+        </LinearLayout>
 
         <View
             android:layout_width="@dimen/diff_line_separator_width"

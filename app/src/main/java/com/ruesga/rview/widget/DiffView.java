@@ -43,6 +43,7 @@ import com.ruesga.rview.databinding.DiffDecoratorItemBinding;
 import com.ruesga.rview.databinding.DiffSkipItemBinding;
 import com.ruesga.rview.databinding.DiffSourceItemBinding;
 import com.ruesga.rview.databinding.DiffViewBinding;
+import com.ruesga.rview.gerrit.model.BlameInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.misc.SerializationManager;
@@ -214,6 +215,8 @@ public class DiffView extends FrameLayout {
         public int colorB;
         public CharSequence lineA;
         public CharSequence lineB;
+        public String blameA;
+        public String blameB;
     }
 
     @ProguardIgnored
@@ -271,7 +274,7 @@ public class DiffView extends FrameLayout {
         @SerializedName("type") public int type;
         @SerializedName("at") public final int at;
 
-        public SkipLinesOpHistory(int type, int at) {
+        SkipLinesOpHistory(int type, int at) {
             this.type = type;
             this.at = at;
         }
@@ -423,6 +426,8 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setTextSizeFactor(mTextSizeFactor);
                 holder.mBinding.setMode(mMode);
                 holder.mBinding.setModel(diff);
+                holder.mBinding.setShowBlameA(mShowBlameA);
+                holder.mBinding.setShowBlameB(mShowBlameB);
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
                 if (mCanEdit) {
                     holder.mBinding.setHandlers(mEventHandlers);
@@ -517,6 +522,8 @@ public class DiffView extends FrameLayout {
                 paint.setTypeface(TypefaceCache.getTypeface(getContext(), TypefaceCache.TF_MONOSPACE));
                 float padding = res.getDimension(R.dimen.diff_line_text_padding);
                 float margin = res.getDimension(R.dimen.diff_line_separator_width) * 2;
+                float blameWidth = res.getDimension(R.dimen.diff_line_blame_width);
+                mDiffViewMeasurement.clear();
 
                 for (AbstractModel model : mModel) {
                     if (model instanceof DiffInfoModel) {
@@ -529,6 +536,9 @@ public class DiffView extends FrameLayout {
                         mDiffViewMeasurement.lineNumWidth,
                         res.getDimension(R.dimen.diff_line_number_min_width));
 
+                // Blame
+                float blame = (mShowBlameA ? blameWidth : 0) + (mShowBlameB ? blameWidth : 0);
+
                 // Adjust padding
                 mDiffViewMeasurement.lineNumWidth += (padding * 2f);
                 float diffIndicatorWidth = mMode == UNIFIED_MODE
@@ -538,9 +548,9 @@ public class DiffView extends FrameLayout {
                 float decorWidth = 2 * mDiffViewMeasurement.lineNumWidth +
                         diffIndicatorWidth + separatorWidth;
 
-                mDiffViewMeasurement.width = decorWidth +
-                        (mMode == UNIFIED_MODE ? 1 : 2) * mDiffViewMeasurement.lineWidth;
 
+                mDiffViewMeasurement.width = decorWidth + blame +
+                        (mMode == UNIFIED_MODE ? 1 : 2) * mDiffViewMeasurement.lineWidth;
                 if (mDiffViewMeasurement.width < getWidth()) {
                     mDiffViewMeasurement.width = getWidth();
                     if (mMode == UNIFIED_MODE) {
@@ -659,9 +669,12 @@ public class DiffView extends FrameLayout {
     private DiffInfo mDiffInfo;
     private Pair<List<CommentInfo>, List<CommentInfo>> mComments;
     private Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
+    private Pair<List<BlameInfo>, List<BlameInfo>> mBlames;
     private File mLeftContent;
     private File mRightContent;
     private OnCommentListener mOnCommentListener;
+    private boolean mShowBlameA;
+    private boolean mShowBlameB;
 
     private boolean mNeedsNewLayoutManager;
 
@@ -721,6 +734,8 @@ public class DiffView extends FrameLayout {
         savedState.mCanEdit = mCanEdit;
         savedState.mDiffMode = mDiffMode;
         savedState.mDrafts = SerializationManager.getInstance().toJson(mDrafts);
+        savedState.mShowBlameA = mShowBlameA;
+        savedState.mShowBlameB = mShowBlameB;
         return savedState;
     }
 
@@ -744,6 +759,8 @@ public class DiffView extends FrameLayout {
         mDiffMode = savedState.mDiffMode;
         Type type = new TypeToken<Pair<List<CommentInfo>, List<CommentInfo>>>(){}.getType();
         mDrafts = SerializationManager.getInstance().fromJson(savedState.mDrafts, type);
+        mShowBlameA = savedState.mShowBlameA;
+        mShowBlameB = savedState.mShowBlameB;
     }
 
     public DiffView file(String file) {
@@ -779,6 +796,11 @@ public class DiffView extends FrameLayout {
         return this;
     }
 
+    public DiffView withBlames(Pair<List<BlameInfo>, List<BlameInfo>> blames) {
+        mBlames = blames;
+        return this;
+    }
+
     public DiffView canEdit(boolean canEdit) {
         mCanEdit = canEdit;
         return this;
@@ -796,6 +818,16 @@ public class DiffView extends FrameLayout {
 
     public DiffView highlightIntralineDiffs(boolean highlight) {
         mHighlightIntralineDiffs = highlight;
+        return this;
+    }
+
+    public DiffView showBlameA(boolean show) {
+        mShowBlameA = show;
+        return this;
+    }
+
+    public DiffView showBlameB(boolean show) {
+        mShowBlameB = show;
         return this;
     }
 
@@ -856,13 +888,19 @@ public class DiffView extends FrameLayout {
 
         if (mDiffMode != IMAGE_MODE) {
             mTextDiffTask = new AsyncTextDiffProcessor(getContext(), mDiffMode, mDiffInfo, mComments,
-                    mDrafts, mHighlightTabs, mHighlightTrailingWhitespaces,
+                    mDrafts, mBlames, mHighlightTabs, mHighlightTrailingWhitespaces,
                     mHighlightIntralineDiffs, mTextProcessorListener);
             mTextDiffTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
             mImageDiffTask = new AsyncImageDiffProcessor(getContext(),
                     mLeftContent, mRightContent, mImageProcessorListener);
             mImageDiffTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+    }
+
+    public void refresh() {
+        if (mDiffAdapter != null) {
+            mDiffAdapter.refresh();
         }
     }
 
@@ -950,6 +988,8 @@ public class DiffView extends FrameLayout {
         boolean mCanEdit;
         int mDiffMode;
         String mDrafts;
+        boolean mShowBlameA;
+        boolean mShowBlameB;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -965,6 +1005,8 @@ public class DiffView extends FrameLayout {
             mCanEdit = in.readInt() == 1;
             mDiffMode = in.readInt();
             mDrafts = in.readString();
+            mShowBlameA = in.readInt() == 1;
+            mShowBlameB = in.readInt() == 1;
         }
 
         @Override
@@ -978,6 +1020,8 @@ public class DiffView extends FrameLayout {
             out.writeInt(mCanEdit ? 1 : 0);
             out.writeInt(mDiffMode);
             out.writeString(mDrafts);
+            out.writeInt(mShowBlameA ? 1 : 0);
+            out.writeInt(mShowBlameB ? 1 : 0);
         }
 
         //required field that makes Parcelables from a Parcel

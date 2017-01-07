@@ -15,16 +15,13 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.SerializedName;
-
-/**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#blame-info"
- */
-public class BlameInfo {
-    @SerializedName("author") public String author;
-    @SerializedName("id") public String id;
-    @SerializedName("time") public long time;
-    @SerializedName("commit_msg") public String commitMsg;
-    @SerializedName("ranges") public RangeInfo[] ranges;
+public enum BlameBaseType {
+    /**
+     * Current revision
+     */
+    f,
+    /**
+     * Parent revision
+     */
+    t
 }
-

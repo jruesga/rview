@@ -1078,10 +1078,10 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<BlameInfo> getChangeRevisionFileBlame(@NonNull String changeId,
-            @NonNull String revisionId, @NonNull String fileId, @Nullable String base) {
+    public Observable<List<BlameInfo>> getChangeRevisionFileBlames(@NonNull String changeId,
+            @NonNull String revisionId, @NonNull String fileId, @Nullable BlameBaseType base) {
         return withVersionRequestCheck(
-                mService.getChangeRevisionFileBlame(changeId, revisionId, fileId, base));
+                mService.getChangeRevisionFileBlames(changeId, revisionId, fileId, base));
     }
 
     @Override

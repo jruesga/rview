@@ -41,6 +41,7 @@ public class CacheHelper {
     public static final String CACHE_COMMENTS_JSON = "comments.json";
     public static final String CACHE_DRAFT_JSON = "drafts.json";
     public static final String CACHE_CONTENT = "content";
+    public static final String CACHE_BLAME = "blame";
     public static final String CACHE_PARENT = "parent";
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

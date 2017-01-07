@@ -1114,11 +1114,11 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-blame"
      */
     @GET("changes/{change-id}/revisions/{revision-id}/files/{file-id}/blame")
-    Observable<BlameInfo> getChangeRevisionFileBlame(
+    Observable<List<BlameInfo>> getChangeRevisionFileBlames(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
             @NonNull @Path("file-id") String fileId,
-            @Nullable @Query("base") String base);
+            @Nullable @Query("base") BlameBaseType base);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-reviewed"

@@ -104,7 +104,13 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         public String baseLeft;
         public String baseRight;
 
-        public boolean hasCommentAction;
+        public boolean isLeftBlame;
+        public boolean isRightBlame;
+
+        public boolean hasLeftCommentAction;
+        public boolean hasRightCommentAction;
+        public boolean hasLeftBlameAction;
+        public boolean hasRightBlameAction;
         public boolean hasLeftDownloadAction;
         public boolean hasRightDownloadAction;
     }
@@ -131,6 +137,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             switch (v.getId()) {
                 case R.id.comment:
                     mFragment.performFileComment(v, isLeft);
+                    break;
+                case R.id.blame:
+                    mFragment.performShowBlameInfo(isLeft);
                     break;
                 case R.id.download:
                     mFragment.requestPermissionsOrDownloadFile(isLeft);
@@ -182,8 +191,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
             final FileDiffViewerFragment fragment = FileDiffViewerFragment.newInstance(
                     mRevisionId, mFile, mComment, base, revision, mMode, mWrap, mTextSizeFactor,
-                    mHighlightTabs, mHighlightTrailingWhitespaces, mHighlightIntralineDiffs,
-                    mScrollPosition, mSkipLinesHistory);
+                    mShowBlameA, mShowBlameB, mHighlightTabs, mHighlightTrailingWhitespaces,
+                    mHighlightIntralineDiffs, mScrollPosition, mSkipLinesHistory);
             mFragment = new WeakReference<>(fragment);
             return fragment;
         }
@@ -367,6 +376,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     private int mScrollPosition = -1;
     private String mSkipLinesHistory;
 
+    private boolean mShowBlameA;
+    private boolean mShowBlameB;
+
     private int mCurrentFile;
 
     private Account mAccount;
@@ -407,8 +419,13 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             mHasImagePreview = savedInstanceState.getBoolean("has_image_preview", false);
             mScrollPosition = savedInstanceState.getInt("scroll_position", -1);
             mSkipLinesHistory = savedInstanceState.getString("skip_lines_history");
+            mShowBlameA = savedInstanceState.getBoolean("show_blame_a", false);
+            mShowBlameB = savedInstanceState.getBoolean("show_blame_b", false);
 
             applyModeRestrictions();
+        } else {
+            mShowBlameA = false;
+            mShowBlameB = false;
         }
 
         setHasOptionsMenu(true);
@@ -546,6 +563,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         if (mResult != null) {
             outState.putParcelable(Constants.EXTRA_DATA, mResult);
         }
+        outState.putBoolean("show_blame_a", mShowBlameA);
+        outState.putBoolean("show_blame_b", mShowBlameB);
 
         FileDiffViewerFragment fragment = mFragment.get();
         if (fragment != null) {
@@ -619,8 +638,24 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             if (mChange.revisions.get(mRevisionId).files.containsKey(mFile)) {
                 status = mChange.revisions.get(mRevisionId).files.get(mFile).status;
             }
-            mModel.hasCommentAction =
-                    mAccount.hasAuthenticatedAccessMode() && mMode != DiffView.IMAGE_MODE;
+            mModel.hasLeftCommentAction =
+                    mAccount.hasAuthenticatedAccessMode()
+                    && mMode != DiffView.IMAGE_MODE
+                    && !status.equals(FileStatus.A);
+            mModel.hasRightCommentAction =
+                    mAccount.hasAuthenticatedAccessMode()
+                    && mMode != DiffView.IMAGE_MODE
+                    && !status.equals(FileStatus.D);
+            mModel.hasLeftBlameAction =
+                    mAccount.hasAuthenticatedAccessMode()
+                            && mMode != DiffView.IMAGE_MODE
+                            && !mFile.equals(Constants.COMMIT_MESSAGE)
+                            && !status.equals(FileStatus.A);
+            mModel.hasRightBlameAction =
+                    mAccount.hasAuthenticatedAccessMode()
+                            && mMode != DiffView.IMAGE_MODE
+                            && !mFile.equals(Constants.COMMIT_MESSAGE)
+                            && !status.equals(FileStatus.D);
             mModel.hasLeftDownloadAction = !status.equals(FileStatus.A);
             mModel.hasRightDownloadAction = !status.equals(FileStatus.D);
         }
@@ -652,6 +687,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
             // Change to the new file
             if (position != mCurrentFile) {
+                mShowBlameA = mShowBlameB = false;
+                mModel.isLeftBlame = mModel.isRightBlame = false;
+                updateModel();
+
                 mFile = mFiles.get(position);
                 mCurrentFile = position;
                 activity.getContentBinding().pagerController.currentPage(mCurrentFile, true, true);
@@ -759,6 +798,25 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         }
     }
 
+    private void performShowBlameInfo(boolean isLeft) {
+        ((BaseActivity) getActivity()).closeOptionsDrawer();
+
+        boolean blame;
+        if (isLeft) {
+            blame = mShowBlameA = !mShowBlameA;
+            mModel.isLeftBlame = blame;
+        } else {
+            blame = mShowBlameB = !mShowBlameB;
+            mModel.isRightBlame = blame;
+        }
+        updateModel();
+
+        FileDiffViewerFragment fragment = mFragment.get();
+        if (fragment != null) {
+            fragment.showBlame(isLeft, blame);
+        }
+    }
+
     private void performViewFile(boolean isLeft) {
         String revision = String.valueOf(mChange.revisions.get(mRevisionId).number);
         String fileHash = FowlerNollVo.fnv1a_64(mFile.getBytes()).toString();
@@ -828,6 +886,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     private void configurePageController(BaseActivity activity, boolean refresh) {
         activity.invalidatePages();
         activity.configurePages(mAdapter, (position, fromUser) -> {
+            if (position != mCurrentFile) {
+                mShowBlameA = mShowBlameB = false;
+                mModel.isLeftBlame = mModel.isRightBlame = false;
+                updateModel();
+            }
+
             mFile = mFiles.get(position);
             mCurrentFile = position;
             if (fromUser) {

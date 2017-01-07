@@ -574,4 +574,11 @@ public class Formatter {
             v.setText(R.string.empty_states_error);
         }
     }
+
+    public static String toShortenCommit(String commitHash) {
+        if (!TextUtils.isEmpty(commitHash) && commitHash.length() > 8) {
+            return commitHash.substring(0, 8);
+        }
+        return commitHash;
+    }
 }

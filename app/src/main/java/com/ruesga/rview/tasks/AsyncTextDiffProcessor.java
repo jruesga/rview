@@ -28,14 +28,21 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.gerrit.model.BlameInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
+import com.ruesga.rview.gerrit.model.RangeInfo;
+import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.widget.DiffView;
 import com.ruesga.rview.widget.DiffView.DiffInfoModel;
+import com.ruesga.rview.widget.DiffView.SkipLineModel;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +64,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     private final DiffContentInfo[] mDiffs;
     private final Pair<List<CommentInfo>, List<CommentInfo>> mComments;
     private final Pair<List<CommentInfo>, List<CommentInfo>> mDrafts;
+    private final Pair<List<BlameInfo>, List<BlameInfo>> mBlames;
     private final boolean mHighlightTabs;
     private final boolean mHighlightTrailingWhitespaces;
     private final boolean mHighlightIntralineDiffs;
@@ -65,6 +73,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     public AsyncTextDiffProcessor(Context context, int mode, DiffInfo diff,
             Pair<List<CommentInfo>, List<CommentInfo>> comments,
             Pair<List<CommentInfo>, List<CommentInfo>> drafts,
+            Pair<List<BlameInfo>, List<BlameInfo>> blames,
             boolean highlightTabs, boolean highlightTrailingWhitespaces,
             boolean highlightIntralineDiffs, OnTextDiffProcessEndedListener cb) {
         mContext = context;
@@ -73,6 +82,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         mDiffs = diff.content;
         mComments = comments;
         mDrafts = drafts;
+        mBlames = blames;
         mHighlightTabs = highlightTabs;
         mHighlightTrailingWhitespaces = highlightTrailingWhitespaces;
         mHighlightIntralineDiffs = highlightIntralineDiffs;
@@ -97,6 +107,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             model = processUnifiedDiffs();
         }
         if (!model.isEmpty()) {
+            // Process blames
+            processBlames(model);
+
             // Process hidden lines (show lines with non-visible comments)
             processHiddenLines(model);
 
@@ -362,7 +375,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     lineNumberA += skippedLines;
                     lineNumberB += skippedLines;
                     i += skippedLines;
-                    DiffView.SkipLineModel skip = new DiffView.SkipLineModel();
+                    SkipLineModel skip = new SkipLineModel();
                     skip.msg = mContext.getResources().getQuantityString(
                             R.plurals.skipped_lines, skippedLines, skippedLines);
                     skip.skippedLines = new DiffInfoModel[skippedLines];
@@ -698,8 +711,8 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         int count = model.size();
         for (int i = 0; i < count; i++) {
             DiffView.AbstractModel line = model.get(i);
-            if (line instanceof DiffView.SkipLineModel) {
-                DiffView.SkipLineModel skip = (DiffView.SkipLineModel) line;
+            if (line instanceof SkipLineModel) {
+                SkipLineModel skip = (SkipLineModel) line;
 
                 int c = skip.skippedLines.length;
                 for (int j = 0; j < c; j++) {
@@ -720,7 +733,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         if (next < skip.skippedLines.length) {
                             int length = skip.skippedLines.length - next;
                             DiffInfoModel[] copy = new DiffInfoModel[length];
-                            DiffView.SkipLineModel newSkip = new DiffView.SkipLineModel();
+                            SkipLineModel newSkip = new SkipLineModel();
                             System.arraycopy(skip.skippedLines, next, copy, 0, length);
                             newSkip.skippedLines = copy;
                             newSkip.msg = mContext.getResources().getQuantityString(
@@ -749,6 +762,64 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                 }
             }
         }
+    }
+
+    private void processBlames(List<DiffView.AbstractModel> model) {
+        if (mBlames == null) {
+            return;
+        }
+
+        final DateFormat df = DateFormat.getDateInstance(
+                DateFormat.SHORT, AndroidHelper.getCurrentLocale(mContext));
+
+        if (mBlames.first != null) {
+            for (BlameInfo blame : mBlames.first) {
+                for (RangeInfo range : blame.ranges) {
+                    DiffInfoModel m = findDiffModelByLine(model, range.start, true);
+                    if (m != null) {
+                        String commit = Formatter.toShortenCommit(blame.id);
+                        String date = df.format(new Date(blame.time * 1000L)); //Unix time
+                        m.blameA = mContext.getString(
+                                R.string.blame_format, commit, date, blame.author);
+                    }
+                }
+            }
+        }
+
+        if (mBlames.second != null) {
+            for (BlameInfo blame : mBlames.second) {
+                for (RangeInfo range : blame.ranges) {
+                    DiffInfoModel m = findDiffModelByLine(model, range.start, false);
+                    if (m != null) {
+                        String commit = Formatter.toShortenCommit(blame.id);
+                        String date = df.format(new Date(blame.time * 1000L)); //Unix time
+                        m.blameB = mContext.getString(
+                                R.string.blame_format, commit, date, blame.author);
+                    }
+                }
+            }
+        }
+    }
+
+    private DiffInfoModel findDiffModelByLine(
+            List<DiffView.AbstractModel> model, int line, boolean isLeft) {
+        for (DiffView.AbstractModel m : model) {
+            if (m instanceof DiffInfoModel) {
+                if ((isLeft && ((DiffInfoModel) m).a == line)
+                        || (!isLeft && ((DiffInfoModel) m).b == line)) {
+                    return (DiffInfoModel) m;
+                }
+            } else if (m instanceof SkipLineModel) {
+                if (((SkipLineModel) m).skippedLines != null) {
+                    for (DiffInfoModel m1 : ((SkipLineModel) m).skippedLines) {
+                        if ((isLeft && m1.a == line) || (!isLeft && m1.b == line)) {
+                            return m1;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @SuppressWarnings("RedundantIfStatement")
