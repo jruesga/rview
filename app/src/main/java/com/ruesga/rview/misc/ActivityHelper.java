@@ -50,6 +50,8 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -207,6 +209,19 @@ public class ActivityHelper {
         }
         request.allowScanningByMediaScanner();
         downloadManager.enqueue(request);
+    }
+
+    public static void downloadLocalFile(Context context, File src, String name) throws IOException {
+        File downloadFolder = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS);
+        File dst = new File(downloadFolder, name);
+        FileUtils.copyFile(src, dst);
+        String mimeType = StringHelper.getMimeType(dst);
+
+        DownloadManager downloadManager =
+                (DownloadManager) context.getSystemService(Activity.DOWNLOAD_SERVICE);
+        downloadManager.addCompletedDownload(
+                dst.getName(), dst.getName(), true, mimeType, dst.getPath(), dst.length(), true);
     }
 
     public static boolean performFinishActivity(Activity activity, boolean forceNavigateUp) {

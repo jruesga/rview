@@ -17,24 +17,17 @@ package com.ruesga.rview.fragments;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
@@ -74,8 +67,6 @@ import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DiffView;
 import com.ruesga.rview.widget.PagerControllerLayout.PagerControllerAdapter;
-
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -823,63 +814,16 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         File src = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
         if (src.exists()) {
             name = base + "_" + new File(mFile).getName().toLowerCase(Locale.US);
-
-            // Copy source file to download folder
-            File downloadFolder = Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS);
-            File dst = new File(downloadFolder, name);
-            int i = 0;
-            while(dst.exists()) {
-                i++;
-                dst = new File(downloadFolder, "(" + i + ") " + name);
-            }
             try {
-                FileUtils.copyFile(src, dst);
-                final String msg = getString(
-                        R.string.notification_file_download_text_success, dst.getName());
-
-                // Scan the file
-                MediaScannerConnection.scanFile(
-                        getContext(),
-                        new String[]{dst.getAbsolutePath()},
-                        null,
-                        (path, uri) ->
-                                mHandler.post(() -> showDownloadNotification(uri, msg)));
-
+                ActivityHelper.downloadLocalFile(getContext(), src, name);
             } catch (IOException ex) {
-                Log.e(TAG, "Failed to copy " + src + " to " + dst, ex);
+                Log.e(TAG, "Failed to download " + name, ex);
 
                 final String msg = getString(
-                        R.string.notification_file_download_text_failure, dst.getName());
+                        R.string.notification_file_download_text_failure, name);
                 Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    private void showDownloadNotification(Uri uri, String msg) {
-        final Context ctx = getContext();
-
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.setData(uri);
-        PendingIntent pi = PendingIntent.getActivity(ctx, 0, i, PendingIntent.FLAG_ONE_SHOT);
-
-        // Create a notification
-        Notification notification = new NotificationCompat.Builder(getContext())
-                .setContentTitle(getString(R.string.notification_file_download_title))
-                .setContentText(msg)
-                .setTicker(msg)
-                .setSmallIcon(R.drawable.ic_file_download)
-                .setAutoCancel(true)
-                .setContentIntent(pi)
-                .setGroup("rview-downloads")
-                .setWhen(System.currentTimeMillis())
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .build();
-        NotificationManagerCompat nm = NotificationManagerCompat.from(ctx);
-        nm.notify(notification.hashCode(), notification);
-
-        Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
     }
 
     private void configurePageController(BaseActivity activity, boolean refresh) {

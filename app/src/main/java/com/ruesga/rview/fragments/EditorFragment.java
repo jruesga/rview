@@ -34,7 +34,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 
 import com.google.gson.JsonParseException;
 import com.ruesga.rview.BaseActivity;
@@ -810,17 +809,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
             String file = mFiles.get(mFilesHashes.indexOf(hash));
 
             // Extract the mime/type of the file
-            String ext = StringHelper.getFileExtension(new File(file));
-            MediaType mediaType = null;
-            if (ext != null) {
-                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
-                if (mimeType != null) {
-                    mediaType = MediaType.parse(mimeType);
-                }
-            }
-            if (mediaType == null) {
-                mediaType = MediaType.parse("application/octet-stream");
-            }
+            MediaType mediaType = MediaType.parse(StringHelper.getMimeType(new File(file)));
 
             // Send the request
             RequestBody body = RequestBody.create(mediaType, readEditContent(file));

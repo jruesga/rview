@@ -17,10 +17,13 @@ package com.ruesga.rview.misc;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import okhttp3.MediaType;
 
 public class StringHelper {
 
@@ -171,12 +174,25 @@ public class StringHelper {
         return null;
     }
 
-    public static String getFileExtension(File path) {
-        final String name = path.getName();
+    public static String getFileExtension(File file) {
+        final String name = file.getName();
         int pos = name.lastIndexOf(".");
         if (pos != -1 && !name.endsWith(".")) {
             return name.substring(pos + 1);
         }
         return null;
+    }
+
+    public static String getMimeType(File file) {
+        // Extract the mime/type of the file
+        String ext = StringHelper.getFileExtension(file);
+        String mediaType = null;
+        if (ext != null) {
+            mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
+        }
+        if (mediaType == null) {
+            mediaType = "application/octet-stream";
+        }
+        return mediaType;
     }
 }

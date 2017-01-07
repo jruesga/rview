@@ -27,12 +27,12 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import com.ruesga.rview.R;
 import com.ruesga.rview.misc.BitmapUtils;
+import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.misc.VectorDrawableConverter;
 import com.ruesga.rview.widget.DiffView.ImageDiffModel;
 
@@ -45,7 +45,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Locale;
 
 public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffModel> {
 
@@ -244,24 +243,19 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
     }
 
     public static boolean hasImagePreview(File file, File content) {
-        String name = file.getName().toLowerCase(Locale.US);
-        String ext = "";
-        int p = name.lastIndexOf(".");
-        if (p != -1) {
-            ext = name.substring(p + 1);
+        String ext = StringHelper.getFileExtension(file);
+        if (TextUtils.isEmpty(ext)) {
+            ext = "";
         }
-        String mimeType = "";
-        if (!TextUtils.isEmpty(ext)) {
-            MimeTypeMap a = MimeTypeMap.getSingleton();
-            mimeType = a.getMimeTypeFromExtension(ext);
-        }
+        String mimeType = StringHelper.getMimeType(file);
         String header = readXmlHeader(content);
 
         // 1.- Any image
         // 2.- A svg
         // 3.- A xml with "svg" tag or "vector" tag
-        return (mimeType != null && mimeType.startsWith("image/")) || ext.equals("svg")
-                || (header != null && ext.equals("xml")
+        return (mimeType != null && mimeType.startsWith("image/"))
+                || ext.toLowerCase().equals("svg")
+                || (header != null && ext.toLowerCase().equals("xml")
                     && (hasXmlTag(header, "svg") || hasXmlTag(header, "vector")));
     }
 }
