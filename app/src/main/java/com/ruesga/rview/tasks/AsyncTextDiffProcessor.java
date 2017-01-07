@@ -764,64 +764,6 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         }
     }
 
-    private void processBlames(List<DiffView.AbstractModel> model) {
-        if (mBlames == null) {
-            return;
-        }
-
-        final DateFormat df = DateFormat.getDateInstance(
-                DateFormat.SHORT, AndroidHelper.getCurrentLocale(mContext));
-
-        if (mBlames.first != null) {
-            for (BlameInfo blame : mBlames.first) {
-                for (RangeInfo range : blame.ranges) {
-                    DiffInfoModel m = findDiffModelByLine(model, range.start, true);
-                    if (m != null) {
-                        String commit = Formatter.toShortenCommit(blame.id);
-                        String date = df.format(new Date(blame.time * 1000L)); //Unix time
-                        m.blameA = mContext.getString(
-                                R.string.blame_format, commit, date, blame.author);
-                    }
-                }
-            }
-        }
-
-        if (mBlames.second != null) {
-            for (BlameInfo blame : mBlames.second) {
-                for (RangeInfo range : blame.ranges) {
-                    DiffInfoModel m = findDiffModelByLine(model, range.start, false);
-                    if (m != null) {
-                        String commit = Formatter.toShortenCommit(blame.id);
-                        String date = df.format(new Date(blame.time * 1000L)); //Unix time
-                        m.blameB = mContext.getString(
-                                R.string.blame_format, commit, date, blame.author);
-                    }
-                }
-            }
-        }
-    }
-
-    private DiffInfoModel findDiffModelByLine(
-            List<DiffView.AbstractModel> model, int line, boolean isLeft) {
-        for (DiffView.AbstractModel m : model) {
-            if (m instanceof DiffInfoModel) {
-                if ((isLeft && ((DiffInfoModel) m).a == line)
-                        || (!isLeft && ((DiffInfoModel) m).b == line)) {
-                    return (DiffInfoModel) m;
-                }
-            } else if (m instanceof SkipLineModel) {
-                if (((SkipLineModel) m).skippedLines != null) {
-                    for (DiffInfoModel m1 : ((SkipLineModel) m).skippedLines) {
-                        if ((isLeft && m1.a == line) || (!isLeft && m1.b == line)) {
-                            return m1;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     @SuppressWarnings("RedundantIfStatement")
     private boolean hasCommentOrDraftInSkippedLine(DiffInfoModel diff) {
         if (mComments != null && mComments.first != null
@@ -850,5 +792,71 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             }
         }
         return false;
+    }
+
+    private void processBlames(List<DiffView.AbstractModel> model) {
+        if (mBlames == null) {
+            return;
+        }
+
+        final DateFormat df = DateFormat.getDateInstance(
+                DateFormat.SHORT, AndroidHelper.getCurrentLocale(mContext));
+
+        if (mBlames.first != null) {
+            for (BlameInfo blame : mBlames.first) {
+                int start = 0;
+                for (RangeInfo range : blame.ranges) {
+                    Pair<Integer, DiffInfoModel> p =
+                            findDiffModelByLine(model, range.start, start, true);
+                    if (p != null) {
+                        start = p.first;
+                        String commit = Formatter.toShortenCommit(blame.id);
+                        String date = df.format(new Date(blame.time * 1000L)); //Unix time
+                        p.second.blameA = mContext.getString(
+                                R.string.blame_format, commit, date, blame.author);
+                    }
+                }
+            }
+        }
+
+        if (mBlames.second != null) {
+            for (BlameInfo blame : mBlames.second) {
+                int start = 0;
+                for (RangeInfo range : blame.ranges) {
+                    Pair<Integer, DiffInfoModel> p =
+                            findDiffModelByLine(model, range.start, start, false);
+                    if (p != null) {
+                        start = p.first;
+                        String commit = Formatter.toShortenCommit(blame.id);
+                        String date = df.format(new Date(blame.time * 1000L)); //Unix time
+                        p.second.blameB = mContext.getString(
+                                R.string.blame_format, commit, date, blame.author);
+                    }
+                }
+            }
+        }
+    }
+
+    private Pair<Integer, DiffInfoModel> findDiffModelByLine(
+            List<DiffView.AbstractModel> model, int line, int start, boolean isLeft) {
+        int count = model.size();
+        for (int i = start; i < count; i++) {
+            DiffView.AbstractModel m = model.get(i);
+            if (m instanceof DiffInfoModel) {
+                if ((isLeft && ((DiffInfoModel) m).a == line)
+                        || (!isLeft && ((DiffInfoModel) m).b == line)) {
+                    return new Pair<>(i, (DiffInfoModel) m);
+                }
+            } else if (m instanceof SkipLineModel) {
+                if (((SkipLineModel) m).skippedLines != null) {
+                    for (DiffInfoModel m1 : ((SkipLineModel) m).skippedLines) {
+                        if ((isLeft && m1.a == line) || (!isLeft && m1.b == line)) {
+                            return new Pair<>(i, m1);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
