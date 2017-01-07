@@ -22,6 +22,7 @@
         <import type="android.view.View" />
         <import type="com.ruesga.rview.widget.DiffView" />
         <variable name="mode" type="java.lang.Integer" />
+        <variable name="processing" type="java.lang.Boolean" />
         <variable name="imageDiffModel" type="com.ruesga.rview.widget.DiffView.ImageDiffModel" />
     </data>
 
@@ -42,6 +43,12 @@
             layout="@layout/diff_image_layout"
             app:mode="@{mode}"
             app:imageDiffModel="@{imageDiffModel}" />
+
+        <ProgressBar
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:visibility="@{processing != null &amp;&amp; processing ? View.VISIBLE : View.GONE}"/>
     </FrameLayout>
 
 </layout>

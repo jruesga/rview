@@ -638,6 +638,9 @@ public class DiffView extends FrameLayout {
             mPendingScrollToPosition = -1;
             mPendingScrollToComment = null;
             mPendingSkipLinesOpHistory = null;
+
+            mBinding.setProcessing(false);
+            mBinding.executePendingBindings();
         }
     };
 
@@ -649,6 +652,9 @@ public class DiffView extends FrameLayout {
             mBinding.executePendingBindings();
             mPendingScrollToComment = null;
             mPendingScrollToPosition = -1;
+
+            mBinding.setProcessing(false);
+            mBinding.executePendingBindings();
         }
     };
 
@@ -896,6 +902,9 @@ public class DiffView extends FrameLayout {
                     mLeftContent, mRightContent, mImageProcessorListener);
             mImageDiffTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
+
+        mBinding.setProcessing(true);
+        mBinding.executePendingBindings();
     }
 
     public void refresh() {
