@@ -75,7 +75,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import io.reactivex.Observable;
@@ -813,7 +812,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         String name = base + "_" + fileHash + "_" + CacheHelper.CACHE_CONTENT;
         File src = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
         if (src.exists()) {
-            name = base + "_" + new File(mFile).getName().toLowerCase(Locale.US);
+            name = base + "_" + new File(mFile).getName();
             try {
                 ActivityHelper.downloadLocalFile(getContext(), src, name);
             } catch (IOException ex) {
