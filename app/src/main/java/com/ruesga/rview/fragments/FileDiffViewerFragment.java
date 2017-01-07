@@ -854,7 +854,8 @@ public class FileDiffViewerFragment extends Fragment {
 
     @SuppressWarnings("ConstantConditions")
     private File fetchCachedContent(String changeId, String revision, String base) {
-        String name = base + "_" + mFileHash + "_" + CacheHelper.CACHE_CONTENT;
+        String b = base == null ? "0" : base;
+        String name = b + "_" + mFileHash + "_" + CacheHelper.CACHE_CONTENT;
         File fetchedFile = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
         if (!fetchedFile.exists()) {
             try {
@@ -880,7 +881,8 @@ public class FileDiffViewerFragment extends Fragment {
 
     @SuppressWarnings("ConstantConditions")
     private File writeCachedContent(FileDiffResponse response, String base, boolean isA) {
-        String name = base + "_" + mFileHash + "_" + CacheHelper.CACHE_CONTENT;
+        String b = base == null ? "0" : base;
+        String name = b + "_" + mFileHash + "_" + CacheHelper.CACHE_CONTENT;
         File writtenFile = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
         if (!writtenFile.exists()) {
             if (writeDiffToFile(response, writtenFile, isA)) {
