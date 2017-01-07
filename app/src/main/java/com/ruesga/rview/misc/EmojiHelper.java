@@ -27,6 +27,7 @@ public final class EmojiHelper {
                     "-_-",
                     "o.O",
                     ">:O",
+                    "X(",
                     "\\o/",
                     "3:)",
                     "O:)",
@@ -38,6 +39,8 @@ public final class EmojiHelper {
                     ":P",
                     ":D",
                     ":'D",
+                    ":))",
+                    ":((",
                     ":O",
                     ";)",
                     ":/",
@@ -45,6 +48,10 @@ public final class EmojiHelper {
                     ":)",
                     ":(",
                     ":-(",
+                    ":-B",
+                    ":-?",
+                    "|-)",
+                    ":-&",
                     ":P",
                     ":D",
                     ":S"
@@ -56,6 +63,7 @@ public final class EmojiHelper {
                     Pattern.compile("^-_-", Pattern.MULTILINE),
                     Pattern.compile("^o.O", Pattern.MULTILINE),
                     Pattern.compile("^>:O", Pattern.MULTILINE),
+                    Pattern.compile("^X\\(", Pattern.MULTILINE),
                     Pattern.compile("^\\\\o/", Pattern.MULTILINE),
                     Pattern.compile("^3:\\)", Pattern.MULTILINE),
                     Pattern.compile("^O:\\)", Pattern.MULTILINE),
@@ -67,6 +75,8 @@ public final class EmojiHelper {
                     Pattern.compile("^:P", Pattern.MULTILINE),
                     Pattern.compile("^:D", Pattern.MULTILINE),
                     Pattern.compile("^:'D", Pattern.MULTILINE),
+                    Pattern.compile("^:\\)\\)", Pattern.MULTILINE),
+                    Pattern.compile("^:\\(\\(", Pattern.MULTILINE),
                     Pattern.compile("^:O", Pattern.MULTILINE),
                     Pattern.compile("^;\\)", Pattern.MULTILINE),
                     Pattern.compile("^:/", Pattern.MULTILINE),
@@ -74,6 +84,10 @@ public final class EmojiHelper {
                     Pattern.compile("^:\\)", Pattern.MULTILINE),
                     Pattern.compile("^:\\(", Pattern.MULTILINE),
                     Pattern.compile("^:-\\(", Pattern.MULTILINE),
+                    Pattern.compile("^:-B", Pattern.MULTILINE),
+                    Pattern.compile("^:-\\?", Pattern.MULTILINE),
+                    Pattern.compile("^\\|-\\)", Pattern.MULTILINE),
+                    Pattern.compile("^:-&", Pattern.MULTILINE),
                     Pattern.compile("^:P", Pattern.MULTILINE),
                     Pattern.compile("^:D", Pattern.MULTILINE),
                     Pattern.compile("^:S", Pattern.MULTILINE)
@@ -85,6 +99,7 @@ public final class EmojiHelper {
                     Pattern.compile(" -_-"),
                     Pattern.compile(" o.O"),
                     Pattern.compile(" >:O"),
+                    Pattern.compile(" X\\("),
                     Pattern.compile(" \\\\o/"),
                     Pattern.compile(" 3:\\)"),
                     Pattern.compile(" O:\\)"),
@@ -96,6 +111,8 @@ public final class EmojiHelper {
                     Pattern.compile(" :P"),
                     Pattern.compile(" :D"),
                     Pattern.compile(" :'D"),
+                    Pattern.compile(" :\\)\\)"),
+                    Pattern.compile(" :\\(\\("),
                     Pattern.compile(" :O"),
                     Pattern.compile(" ;\\)"),
                     Pattern.compile(" :/"),
@@ -103,38 +120,49 @@ public final class EmojiHelper {
                     Pattern.compile(" :\\)"),
                     Pattern.compile(" :\\("),
                     Pattern.compile(" :-\\("),
+                    Pattern.compile(" :-B"),
+                    Pattern.compile(" :-\\?"),
+                    Pattern.compile(" \\|-\\)"),
+                    Pattern.compile(" :-&"),
                     Pattern.compile(" :P"),
                     Pattern.compile(" :D"),
                     Pattern.compile(" :S")
             };
     private static final int[] CODES =
             {
-                    0x1F60D,
-                    0x1F60A,
-                    0x1F611,
-                    0x1F632,
-                    0x1F62C,
-                    0x1F64C,
-                    0x1F47F,
-                    0x1F607,
-                    0x1F620,
-                    0x1F60E,
-                    0x1F60E,
-                    0x1F622,
-                    0x1F61A,
-                    0x1F61B,
-                    0x1F601,
-                    0x1F602,
-                    0x1F62E,
-                    0x1F609,
-                    0x1F62E,
-                    0x1F600,
-                    0x1F600,
-                    0x1F641,
-                    0x1F641,
-                    0x1F61B,
-                    0x1F601,
-                    0x1F615
+                    0x1F60D, // <3
+                    0x1F60A, // ^_^
+                    0x1F611, // -_-
+                    0x1F632, // o.O
+                    0x1F62C, // >:O
+                    0x1F62C, // X(
+                    0x1F64C, // \o/
+                    0x1F47F, // 3:)
+                    0x1F607, // O:)
+                    0x1F620, // >:(
+                    0x1F60E, // B-)
+                    0x1F60E, // B|
+                    0x1F622, // :'(
+                    0x1F61A, // :*
+                    0x1F61B, // :P
+                    0x1F601, // :D
+                    0x1F602, // :'D
+                    0x1F606, // :))
+                    0x1F62D, // :((
+                    0x1F62E, // :O
+                    0x1F609, // ;)
+                    0x1F615, // :/
+                    0x1F600, // :-)
+                    0x1F600, // :)
+                    0x1F641, // :(
+                    0x1F641, // :-(
+                    0x1F913, // :-B
+                    0x1F914, // :-?
+                    0x1F634, // |-)
+                    0x1F912, // :-&
+                    0x1F61B, // :P
+                    0x1F601, // :D
+                    0x1F615  // :S
             };
 
     public static String createEmoji(String msg) {
