@@ -24,10 +24,10 @@ ext {
         okhttp3                     : '3.5.0',
         okio                        : '1.11.0',
         okhttp_digest               : 'cb8f915c35',
-        rxjava                      : '2.0.3',
+        rxjava                      : '2.0.4',
         rxandroid                   : '2.0.1',
         rxloader2                   : '3ee821c0e1',
-        commons_io                  : '1.3.2',
+        commons_io                  : '2.5',
         antlrv3                     : '3.5.2',
         smoothprogressbar           : '1.1.0',
         picasso2                    : '2.5.2',
@@ -48,7 +48,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '1.9.5'
+        mockito                     : '2.5.4'
     ]
 }
 

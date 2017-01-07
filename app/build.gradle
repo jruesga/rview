@@ -39,7 +39,7 @@ dependencies {
     compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     compile "com.github.jruesga:rxloader:${libraries.rxloader2}"
-    compile "org.apache.commons:commons-io:${libraries.commons_io}"
+    compile "commons-io:commons-io:${libraries.commons_io}"
     compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
     compile "com.squareup.picasso:picasso:${libraries.picasso2}"
     compile "com.jakewharton.picasso:picasso2-okhttp3-downloader:${libraries.picasso2_okhttp3_downloader}"
