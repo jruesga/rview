@@ -58,8 +58,9 @@ import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.EditorView;
 import com.ruesga.rview.widget.EditorView.OnContentChangedListener;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -567,26 +568,8 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
 
     @SuppressWarnings("ConstantConditions")
     private Observable<byte[]> fetchLocalContent() {
-        return SafeObservable.fromNullCallable(() -> {
-                    byte[] data = new byte[(int) new File(mContentFile).length()];
-                    FileInputStream is = null;
-                    try {
-                        is = new FileInputStream(mContentFile);
-                        int len = is.read(data, 0, data.length);
-                        if (len != data.length) {
-                            throw new IOException("Failed to fully read local content: " + mFile);
-                        }
-                    } finally {
-                        if (is != null) {
-                            try {
-                                is.close();
-                            } catch (IOException ex) {
-                                // Ignore
-                            }
-                        }
-                    }
-                    return data;
-                })
+        return SafeObservable.fromNullCallable(
+                    () -> FileUtils.readFileToByteArray(new File(mContentFile)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
