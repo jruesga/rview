@@ -38,6 +38,9 @@ public class EditorActivity extends BaseActivity {
     private int mLegacyChangeId;
     private String mChangeId;
 
+    private String mFileName;
+    private String mContentFile;
+
     @SuppressWarnings("Convert2streamapi")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,12 +65,16 @@ public class EditorActivity extends BaseActivity {
             finish();
             return;
         }
+        mFileName = getIntent().getStringExtra(Constants.EXTRA_FILE);
+        mContentFile = getIntent().getStringExtra(Constants.EXTRA_CONTENT_FILE);
+        boolean mReadOnly = !TextUtils.isEmpty(mContentFile);
 
         // Setup the title
         setupActivity();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(
-                    getString(R.string.change_edit_title, mLegacyChangeId));
+                    getString(mReadOnly ? R.string.change_view_title : R.string.change_edit_title,
+                            mLegacyChangeId));
         }
 
         setUseTwoPanel(false);
@@ -92,7 +99,8 @@ public class EditorActivity extends BaseActivity {
     private void createEditorFragment() {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
                 .setAllowOptimization(false);
-        Fragment fragment = EditorFragment.newInstance(mLegacyChangeId, mChangeId);
+        Fragment fragment = EditorFragment.newInstance(
+                mLegacyChangeId, mChangeId, mFileName, mContentFile);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG);
         tx.commit();
     }

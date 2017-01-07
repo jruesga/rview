@@ -262,6 +262,16 @@ public class ActivityHelper {
         fragment.startActivityForResult(intent, requestCode);
     }
 
+    public static void viewChangeFile(
+            Fragment fragment, int legacyChangeId, String changeId, String fileName, File content) {
+        Intent intent = new Intent(fragment.getContext(), EditorActivity.class);
+        intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
+        intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        intent.putExtra(Constants.EXTRA_FILE, fileName);
+        intent.putExtra(Constants.EXTRA_CONTENT_FILE, content.getAbsolutePath());
+        fragment.startActivity(intent);
+    }
+
     public static void openChangeListByFilterActivity(Activity activity, String title,
             ChangeQuery filter, boolean dirty, boolean clearStack) {
         Intent intent = new Intent(activity, ChangeListByFilterActivity.class);

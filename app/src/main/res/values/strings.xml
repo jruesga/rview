@@ -75,6 +75,7 @@
     <string name="menu_delete_all">Delete all</string>
     <string name="menu_mark_as_read">Mark as read</string>
     <string name="menu_edit_options">Edit options</string>
+    <string name="menu_view_options">View options</string>
 
     <!-- Exceptions -->
     <string name="exception_browser_not_found">No browser detected. Can\'t open <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
@@ -205,6 +206,7 @@
     <string name="change_edit_discard_message">This will discard the whole changes made to the current revision.</string>
     <string name="change_edit_publish_title">Publish changes</string>
     <string name="change_edit_publish_message">This will publish the changes made to the current revision.</string>
+    <string name="change_view_title">View #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>
 
     <!-- Actions -->
     <string name="change_action_cherrypick">Cherry-Pick</string>
@@ -218,6 +220,7 @@
     <string name="change_action_submit">Submit</string>
     <string name="change_action_comment">Comment</string>
     <string name="change_action_download">Download</string>
+    <string name="change_action_view">View</string>
 
     <!-- Revert -->
     <string name="revert_msg_template">Revert \"<xliff:g id="commit_msg">%1$s</xliff:g>\"\n\nThis reverts commit <xliff:g id="commit_id">%2$s</xliff:g>.</string>

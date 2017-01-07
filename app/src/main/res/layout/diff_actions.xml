@@ -63,5 +63,22 @@
             app:allCaps="true"
             android:textSize="12sp"/>
 
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:tag="@{isLeft != null &amp;&amp; isLeft}"
+            android:text="@string/change_action_view"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="@{(isLeft != null &amp;&amp; isLeft ? model.hasLeftDownloadAction : model.hasRightDownloadAction) ? View.VISIBLE : View.GONE}"
+            android:textColor="?attr/colorAccent"
+            app:font="condensed"
+            app:allCaps="true"
+            android:textSize="12sp"/>
+
     </com.ruesga.rview.widget.NonDebuggableFlowLayout>
 </layout>

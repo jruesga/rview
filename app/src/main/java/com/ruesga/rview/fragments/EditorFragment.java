@@ -24,6 +24,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListPopupWindow;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -58,6 +59,7 @@ import com.ruesga.rview.widget.EditorView;
 import com.ruesga.rview.widget.EditorView.OnContentChangedListener;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -274,6 +276,39 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         }
     };
 
+    private final RxLoaderObserver<byte[]> mLocalContentObserver = new RxLoaderObserver<byte[]>() {
+        @Override
+        public void onNext(byte[] content) {
+            byte[] data;
+            if (content == null || content.length == 0) {
+                data = new byte[]{};
+            } else {
+                data = content;
+            }
+
+            // The response is not encoded
+            mBinding.editor.scrollTo(0, 0);
+            mBinding.editor.loadContent(mFile, data);
+
+            showProgress(false);
+
+            mContentLoader.clear();
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error, null);
+            showProgress(false);
+
+            mContentLoader.clear();
+        }
+
+        @Override
+        public void onStarted() {
+            showProgress(true);
+        }
+    };
+
     private OnContentChangedListener mContentChangedListener = new OnContentChangedListener() {
         @Override
         public void onContentChanged() {
@@ -306,6 +341,9 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
     private int mCurrentFile;
     private boolean mIsDirty;
 
+    private String mContentFile;
+    private boolean mReadOnly;
+
     private RxLoader<byte[]> mContentLoader;
     private RxLoader<Boolean> mCancelLoader;
     private RxLoader<Boolean> mPublishLoader;
@@ -317,10 +355,21 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
     private Handler mUiHandler;
 
     public static EditorFragment newInstance(int legacyChangeId, String changeId) {
+        return newInstance(legacyChangeId, changeId, null, null);
+    }
+
+    public static EditorFragment newInstance(
+            int legacyChangeId, String changeId, String file, String content) {
         EditorFragment fragment = new EditorFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putString(Constants.EXTRA_CHANGE_ID, changeId);
+        if (!TextUtils.isEmpty(file)) {
+            arguments.putString(Constants.EXTRA_FILE, file);
+        }
+        if (!TextUtils.isEmpty(content)) {
+            arguments.putString(Constants.EXTRA_CONTENT_FILE, content);
+        }
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -334,6 +383,9 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
         mLegacyChangeId = state.getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         mChangeId = state.getString(Constants.EXTRA_CHANGE_ID);
+        mFile = state.getString(Constants.EXTRA_FILE);
+        mContentFile = state.getString(Constants.EXTRA_CONTENT_FILE);
+        mReadOnly = !TextUtils.isEmpty(mContentFile);
 
         setHasOptionsMenu(true);
     }
@@ -344,7 +396,9 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.editor_fragment, container, false);
-        mBinding.editor.listenOn(mContentChangedListener);
+        mBinding.editor
+                .setReadOnly(mReadOnly)
+                .listenOn(mContentChangedListener);
         return mBinding.getRoot();
     }
 
@@ -375,6 +429,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
 
         outState.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
         outState.putString(Constants.EXTRA_CHANGE_ID, mChangeId);
+        outState.putString(Constants.EXTRA_CONTENT_FILE, mContentFile);
 
         outState.putStringArrayList("files", mFiles);
         outState.putString(Constants.EXTRA_FILE, mFile);
@@ -383,42 +438,58 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
     }
 
     private void startLoadersWithValidContext(@Nullable Bundle savedInstanceState) {
+        boolean edit = TextUtils.isEmpty(mFile) && TextUtils.isEmpty(mContentFile);
+
         // Configure the diff_options menu
         BaseActivity activity = ((BaseActivity) getActivity());
-        activity.configureOptionsTitle(getString(R.string.menu_edit_options));
+        activity.configureOptionsTitle(getString(
+                edit ? R.string.menu_edit_options : R.string.menu_view_options));
         activity.configureOptionsMenu(R.menu.edit_options_menu, mOptionsItemListener);
 
         mAccount = Preferences.getAccount(getContext());
         mWrap = Preferences.getAccountWrapMode(getContext(), mAccount);
         mTextSizeFactor = Preferences.getAccountTextSizeFactor(getContext(), mAccount);
 
-        mFileChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
-                R.layout.edit_file_chooser_header, activity.getOptionsMenu(), false);
-        mFileChooserBinding.setHandlers(mEventHandlers);
-        activity.getOptionsMenu().addHeaderView(mFileChooserBinding.getRoot());
+        if (edit) {
+            // Edit mode
+            mFileChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
+                    R.layout.edit_file_chooser_header, activity.getOptionsMenu(), false);
+            mFileChooserBinding.setHandlers(mEventHandlers);
+            activity.getOptionsMenu().addHeaderView(mFileChooserBinding.getRoot());
 
-        mEditActionsBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
-            R.layout.edit_actions_header, activity.getOptionsMenu(), false);
-        mEditActionsBinding.setHandlers(mEventHandlers);
-        activity.getOptionsMenu().addHeaderView(mEditActionsBinding.getRoot());
+            mEditActionsBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
+                    R.layout.edit_actions_header, activity.getOptionsMenu(), false);
+            mEditActionsBinding.setHandlers(mEventHandlers);
+            activity.getOptionsMenu().addHeaderView(mEditActionsBinding.getRoot());
 
-        // Load the files
-        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-        mContentLoader = loaderManager.create("content", fetchContent(), mContentObserver);
-        mPublishLoader = loaderManager.create("publish", publishEdit(), mPublishObserver);
-        if (savedInstanceState != null) {
-            mFile = savedInstanceState.getString(Constants.EXTRA_FILE);
-            mFiles = savedInstanceState.getStringArrayList("files");
-            mCurrentFile = savedInstanceState.getInt("current_file");
-            mIsDirty = savedInstanceState.getBoolean("is_dirty");
-            createFileHashes();
+            // Load the files
+            RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mContentLoader = loaderManager.create("content", fetchContent(), mContentObserver);
+            mPublishLoader = loaderManager.create("publish", publishEdit(), mPublishObserver);
+
+            if (savedInstanceState != null) {
+                mFile = savedInstanceState.getString(Constants.EXTRA_FILE);
+                mFiles = savedInstanceState.getStringArrayList("files");
+                mCurrentFile = savedInstanceState.getInt("current_file");
+                mIsDirty = savedInstanceState.getBoolean("is_dirty");
+                createFileHashes();
+
+                updateModel();
+                requestFileContent();
+            } else {
+                // Cancel any previous edit and request files
+                mCancelLoader = loaderManager.create(
+                        "cancel", cancelEdit(), mCancelObserver).start();
+                loaderManager.create("files", fetchFiles(), mFilesObserver).start();
+            }
+        } else {
+            // Viewer mode
+            RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            mContentLoader = loaderManager.create(
+                    "local_content", fetchLocalContent(), mLocalContentObserver);
 
             updateModel();
             requestFileContent();
-        } else {
-            // Cancel any previous edit and request files
-            mCancelLoader = loaderManager.create("cancel", cancelEdit(), mCancelObserver).start();
-            loaderManager.create("files", fetchFiles(), mFilesObserver).start();
         }
     }
 
@@ -451,8 +522,10 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         menu.findItem(R.id.text_size_bigger).setChecked(
                 mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_BIGGER);
 
-        mEditActionsBinding.setIsDirty(mBinding.editor.isDirty());
-        mEditActionsBinding.setCanPublish(mIsDirty);
+        if (mEditActionsBinding != null) {
+            mEditActionsBinding.setIsDirty(mBinding.editor.isDirty());
+            mEditActionsBinding.setCanPublish(mIsDirty);
+        }
 
         // Open drawer
         activity.openOptionsDrawer();
@@ -490,6 +563,32 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
                 })).blockingFirst())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<byte[]> fetchLocalContent() {
+        return SafeObservable.fromNullCallable(() -> {
+                    byte[] data = new byte[(int) new File(mContentFile).length()];
+                    FileInputStream is = null;
+                    try {
+                        is = new FileInputStream(mContentFile);
+                        int len = is.read(data, 0, data.length);
+                        if (len != data.length) {
+                            throw new IOException("Failed to fully read local content: " + mFile);
+                        }
+                    } finally {
+                        if (is != null) {
+                            try {
+                                is.close();
+                            } catch (IOException ex) {
+                                // Ignore
+                            }
+                        }
+                    }
+                    return data;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -557,7 +656,9 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(mModel.file);
         }
 
-        mFileChooserBinding.setModel(mModel);
+        if (mFileChooserBinding != null) {
+            mFileChooserBinding.setModel(mModel);
+        }
     }
 
     private void requestFileContent() {

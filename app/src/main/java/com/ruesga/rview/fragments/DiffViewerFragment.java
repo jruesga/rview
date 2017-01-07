@@ -63,6 +63,7 @@ import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
@@ -143,6 +144,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                     break;
                 case R.id.download:
                     mFragment.requestPermissionsOrDownloadFile(isLeft);
+                    break;
+                case R.id.view:
+                    mFragment.performViewFile(isLeft);
                     break;
             }
         }
@@ -763,6 +767,16 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         if (fragment != null) {
             fragment.getCommentListener().onNewDraft(v, isLeft, null);
         }
+    }
+
+    private void performViewFile(boolean isLeft) {
+        String revision = String.valueOf(mChange.revisions.get(mRevisionId).number);
+        String fileHash = FowlerNollVo.fnv1a_64(mFile.getBytes()).toString();
+        String base = isLeft ? mBase == null ? "0" : String.valueOf(mBase) : revision;
+        String name = base + "_" + fileHash + "_" + CacheHelper.CACHE_CONTENT;
+        File content = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
+        ActivityHelper.viewChangeFile(this, mChange.legacyChangeId, mChange.changeId,
+                mFile, content);
     }
 
     private void requestPermissionsOrDownloadFile(boolean isLeft) {
