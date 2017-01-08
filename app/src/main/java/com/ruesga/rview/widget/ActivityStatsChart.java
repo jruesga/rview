@@ -277,8 +277,8 @@ public class ActivityStatsChart extends View {
 
             float gap = mViewArea.height() / (MAX_Y_TICKS_LABELS * 1f);
             for (int i = 0; i < MAX_Y_TICKS_LABELS; i++) {
-                float v = max - ((max - min) * (gap * (i + 1))) / mViewArea.height();
-                mYTicksLabels[i] = formatter.format(v);
+                float v = Math.max(max - ((max - min) * (gap * (i + 1))) / mViewArea.height(), 0);
+                mYTicksLabels[i] = formatter.format(Math.abs(v));
             }
 
             mDataAvailable = true;
