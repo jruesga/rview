@@ -231,15 +231,17 @@ public class ActivityHelper {
         boolean hasParent = activity.getIntent().getBooleanExtra(Constants.EXTRA_HAS_PARENT, false);
         if (forceNavigateUp || !hasParent) {
             Intent upIntent = NavUtils.getParentActivityIntent(activity);
-            if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
-                TaskStackBuilder.create(activity)
-                        .addNextIntentWithParentStack(upIntent)
-                        .startActivities();
-                activity.finish();
-            } else {
-                NavUtils.navigateUpTo(activity, upIntent);
+            if (upIntent == null) {
+                if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
+                    TaskStackBuilder.create(activity)
+                            .addNextIntentWithParentStack(upIntent)
+                            .startActivities();
+                    activity.finish();
+                } else {
+                    NavUtils.navigateUpTo(activity, upIntent);
+                }
+                return true;
             }
-            return true;
         }
         activity.finish();
         return true;
