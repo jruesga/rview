@@ -566,10 +566,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         outState.putBoolean("show_blame_a", mShowBlameA);
         outState.putBoolean("show_blame_b", mShowBlameB);
 
-        FileDiffViewerFragment fragment = mFragment.get();
-        if (fragment != null) {
-            outState.putInt("scroll_position", fragment.getScrollPosition());
-            outState.putString("skip_lines_history", fragment.getSkipLinesHistory());
+        if (mFragment != null) {
+            FileDiffViewerFragment fragment = mFragment.get();
+            if (fragment != null) {
+                outState.putInt("scroll_position", fragment.getScrollPosition());
+                outState.putString("skip_lines_history", fragment.getSkipLinesHistory());
+            }
         }
     }
 
