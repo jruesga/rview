@@ -120,6 +120,8 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private ContentBinding mBinding;
 
+    private booolean mIsSavedInstance;
+
     @SuppressWarnings("Convert2streamapi")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -257,6 +259,10 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private void performShowChange(Bundle savedInstanceState, int legacyChangeId,
             String changeId, String currentRevision, String base) {
+        if (mIsSavedInstance) {
+            return;
+        }
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(getString(R.string.change_details_title, legacyChangeId));
             getSupportActionBar().setSubtitle(changeId);
@@ -284,6 +290,9 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private void performShowDiffFile(
             ChangeInfo change, String base, String revisionId, String file) {
+        if (mIsSavedInstance) {
+            return;
+        }
         String current = String.valueOf(change.revisions.get(revisionId).number);
         ActivityHelper.openDiffViewerActivity(
                 this, change, /*files*/null, revisionId, base, current, file, null, 0);
@@ -318,6 +327,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         if (fragment != null) {
             getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG, fragment);
         }
+        mIsSavedInstance = true;
     }
 
     @Override
