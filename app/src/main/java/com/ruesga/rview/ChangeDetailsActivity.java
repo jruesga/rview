@@ -120,7 +120,7 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private ContentBinding mBinding;
 
-    private booolean mIsSavedInstance;
+    private boolean mIsSavedInstance;
 
     @SuppressWarnings("Convert2streamapi")
     @Override
