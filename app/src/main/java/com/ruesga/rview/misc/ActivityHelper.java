@@ -235,7 +235,7 @@ public class ActivityHelper {
         boolean hasParent = activity.getIntent().getBooleanExtra(Constants.EXTRA_HAS_PARENT, false);
         if (forceNavigateUp || !hasParent) {
             Intent upIntent = NavUtils.getParentActivityIntent(activity);
-            if (upIntent == null) {
+            if (upIntent != null) {
                 if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
                     TaskStackBuilder.create(activity)
                             .addNextIntentWithParentStack(upIntent)
