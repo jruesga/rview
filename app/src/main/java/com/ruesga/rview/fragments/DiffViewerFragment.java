@@ -874,7 +874,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         if (src.exists()) {
             name = base + "_" + new File(mFile).getName();
             try {
-                ActivityHelper.downloadLocalFile(getContext(), src, name);
+                ActivityHelper.downloadLocalFile(getContext(), src, name, false);
             } catch (IOException ex) {
                 Log.e(TAG, "Failed to download " + name, ex);
 

@@ -2226,6 +2226,6 @@ public class ChangeDetailsFragment extends Fragment {
                 String.valueOf(mLegacyChangeId), mCurrentRevision, downloadFormat);
         String fileName = mCurrentRevision + "." + downloadFormat.mExtension;
 
-        ActivityHelper.downloadUri(getContext(), uri, fileName, downloadFormat.mMimeType);
+        ActivityHelper.downloadUri(getContext(), uri, fileName, null);
     }
 }
