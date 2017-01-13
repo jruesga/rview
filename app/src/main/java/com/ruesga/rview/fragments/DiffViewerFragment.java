@@ -642,12 +642,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             }
             mModel.hasLeftCommentAction =
                     mAccount.hasAuthenticatedAccessMode()
-                    && mMode != DiffView.IMAGE_MODE
-                    && !status.equals(FileStatus.A);
+                    && mMode != DiffView.IMAGE_MODE;
             mModel.hasRightCommentAction =
                     mAccount.hasAuthenticatedAccessMode()
-                    && mMode != DiffView.IMAGE_MODE
-                    && !status.equals(FileStatus.D);
+                    && mMode != DiffView.IMAGE_MODE;
             mModel.hasLeftBlameAction =
                     mAccount.hasAuthenticatedAccessMode()
                             && mMode != DiffView.IMAGE_MODE
