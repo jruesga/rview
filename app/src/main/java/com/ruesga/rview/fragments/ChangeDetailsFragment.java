@@ -100,6 +100,7 @@ import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.EmptyState;
+import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
@@ -465,6 +466,7 @@ public class ChangeDetailsFragment extends Fragment {
         private final boolean mIsAuthenticated;
         private final boolean mIsFolded;
         private final Picasso mPicasso;
+        private final Repository mRepository;
 
         private final OnLineClickListener mLineClickListener = new OnLineClickListener() {
             @Override
@@ -474,12 +476,13 @@ public class ChangeDetailsFragment extends Fragment {
         };
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
-                boolean isAuthenticated, boolean isFolded) {
+                Repository repository, boolean isAuthenticated, boolean isFolded) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
             mIsAuthenticated = isAuthenticated;
             mIsFolded = isFolded;
             mPicasso = picasso;
+            mRepository = repository;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -491,11 +494,11 @@ public class ChangeDetailsFragment extends Fragment {
         }
 
         void update(ChangeMessageInfo[] messages,
-                    Map<String, LinkedHashMap<String, List<CommentInfo>>> messagesWithComments) {
-            mMessages = messages;
+                Map<String, LinkedHashMap<String, List<CommentInfo>>> messagesWithComments) {
+            mMessages = filterCiAccountsMessages(messages);
             mMessagesWithComments = messagesWithComments;
 
-            int count = messages.length;
+            int count = mMessages.length;
             boolean[] old = mFolded;
             mFolded = new boolean[count];
             for (int i = 0; i < count; i++) {
@@ -542,6 +545,21 @@ public class ChangeDetailsFragment extends Fragment {
             holder.mBinding.setFolded(mFolded[position]);
             holder.mBinding.setHandlers(mEventHandlers);
             holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
+        }
+
+        private ChangeMessageInfo[] filterCiAccountsMessages(ChangeMessageInfo[] messages) {
+            if (mRepository == null || TextUtils.isEmpty(mRepository.mCiAccounts)) {
+                return messages;
+            }
+
+            Pattern pattern = Pattern.compile(mRepository.mCiAccounts, Pattern.MULTILINE);
+            ArrayList<ChangeMessageInfo> msgs = new ArrayList<>();
+            for (ChangeMessageInfo msg : messages) {
+                if (msg.author.name == null || !pattern.matcher(msg.author.name).matches()) {
+                    msgs.add(msg);
+                }
+            }
+            return msgs.toArray(new ChangeMessageInfo[msgs.size()]);
         }
     }
 
@@ -1015,9 +1033,13 @@ public class ChangeDetailsFragment extends Fragment {
 
         if (mFileAdapter == null) {
             // Set authenticated mode
+            Repository repo = null;
             mAccount = Preferences.getAccount(getContext());
             if (mAccount != null) {
                 mModel.isAuthenticated = mAccount.hasAuthenticatedAccessMode();
+                if (Preferences.isAccountToggleCIAccountsMessages(getContext(), mAccount)) {
+                    repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
+                }
             }
             updateAuthenticatedAndOwnerStatus();
 
@@ -1034,8 +1056,9 @@ public class ChangeDetailsFragment extends Fragment {
             mBinding.fileInfo.list.setNestedScrollingEnabled(false);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
+
             mMessageAdapter = new MessageAdapter(this, mEventHandlers, mPicasso,
-                    mModel.isAuthenticated, isMessagesFolded);
+                    repo, mModel.isAuthenticated, isMessagesFolded);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(

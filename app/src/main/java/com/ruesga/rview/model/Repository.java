@@ -18,12 +18,14 @@ package com.ruesga.rview.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 
 public class Repository implements Parcelable, Comparable<Repository> {
     @SerializedName("name") public String mName;
     @SerializedName("url") public String mUrl;
+    @SerializedName("ci_accounts") public String mCiAccounts;
     @SerializedName("trustAllCertificates") public boolean mTrustAllCertificates;
 
     public Repository(String name, String url, boolean trustAllCertificates) {
@@ -36,6 +38,9 @@ public class Repository implements Parcelable, Comparable<Repository> {
         mName = in.readString();
         mUrl = in.readString();
         mTrustAllCertificates = in.readInt() == 1;
+        if (in.readInt() == 1) {
+            mCiAccounts = in.readString();
+        }
     }
 
     public static final Creator<Repository> CREATOR = new Creator<Repository>() {
@@ -60,6 +65,12 @@ public class Repository implements Parcelable, Comparable<Repository> {
         parcel.writeString(mName);
         parcel.writeString(mUrl);
         parcel.writeInt(mTrustAllCertificates ? 1 : 0);
+        if (!TextUtils.isEmpty(mCiAccounts)) {
+            parcel.writeInt(1);
+            parcel.writeString(mCiAccounts);
+        } else {
+            parcel.writeInt(0);
+        }
     }
 
     @Override

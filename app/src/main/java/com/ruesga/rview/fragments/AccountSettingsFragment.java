@@ -36,6 +36,7 @@ import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
+import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -52,12 +53,14 @@ import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_EXTERNAL_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_ADVISE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_CATEGORY;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_CI_MESSAGES;
 
 public class AccountSettingsFragment extends PreferenceFragmentCompat
         implements OnPreferenceChangeListener, OnPreferenceClickListener {
@@ -126,6 +129,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         setPreferencesFromResource(R.xml.account_preferences, rootKey);
 
         configureHomePage();
+        configureToggleCI();
         configureFetchItems();
         configureNotifications();
         configureHandleLinks();
@@ -168,6 +172,18 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         mHomePage.setValue(value);
         updateHomePageSummary(mHomePage.getValue());
         mHomePage.setOnPreferenceChangeListener(this);
+    }
+
+    private void configureToggleCI() {
+        PreferenceCategory displayCategory =
+                (PreferenceCategory) findPreference(PREF_ACCOUNT_DISPLAY_CATEGORY);
+        Preference toggleCI = findPreference(PREF_ACCOUNT_TOGGLE_CI_MESSAGES);
+        if (toggleCI != null) {
+            Repository repository = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
+            if (repository == null || TextUtils.isEmpty(repository.mCiAccounts)) {
+                displayCategory.removePreference(toggleCI);
+            }
+        }
     }
 
     private void configureFetchItems() {

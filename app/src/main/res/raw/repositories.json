@@ -20,7 +20,7 @@
   {"name":"MediaWiki", "url":"https://gerrit.wikimedia.org/r/"},
   {"name":"msm7x30", "url":"http://review.msm7x30.org/"},
   {"name":"OmniROM", "url":"https://gerrit.omnirom.org/"},
-  {"name":"OpenStack", "url":"https://review.openstack.org/"},
+  {"name":"OpenStack", "url":"https://review.openstack.org/", "ci_accounts": "^(.* CI|Jenkins|Zuul|Elastic Recheck)$"},
   {"name":"Qt", "url":"https://codereview.qt-project.org/"},
   {"name":"SlimRoms", "url":"https://review.slimroms.org/"},
   {"name":"Tipo3", "url":"https://review.typo3.org/"},

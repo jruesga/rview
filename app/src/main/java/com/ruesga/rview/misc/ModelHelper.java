@@ -19,6 +19,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -466,15 +467,10 @@ public class ModelHelper {
     }
 
     public static boolean canAccountHandleUrls(Context ctx, Account account) {
-        for (Repository repository : getPredefinedRepositories(ctx)) {
-            if (repository.mUrl.equals(account.mRepository.mUrl)) {
-                return true;
-            }
-        }
-        return false;
+        return findRepositoryForAccount(ctx, account) != null;
     }
 
-    private static Repository findRepositoryForAccount(Context ctx, Account account) {
+    public static Repository findRepositoryForAccount(Context ctx, Account account) {
         for (Repository repository : getPredefinedRepositories(ctx)) {
             if (repository.mUrl.equals(account.mRepository.mUrl)) {
                 return repository;

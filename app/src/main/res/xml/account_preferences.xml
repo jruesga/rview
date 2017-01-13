@@ -17,6 +17,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
+        android:key="account_display_category"
         android:title="@string/account_settings_display_category">
 
         <ListPreference
@@ -52,6 +53,13 @@
             android:key="account_inline_comment_in_messages"
             android:title="@string/account_settings_inline_comment_in_messages"
             android:defaultValue="true" />
+
+        <SwitchPreference
+            android:key="account_toggle_ci_messages"
+            android:title="@string/account_settings_toggle_ci_messages_title"
+            android:summaryOn="@string/account_settings_toggle_ci_messages_summary_on"
+            android:summaryOff="@string/account_settings_toggle_ci_messages_summary_off"
+            android:defaultValue="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
