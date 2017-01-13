@@ -63,6 +63,15 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="account_search_category"
+        android:title="@string/account_settings_search_category">
+
+        <Preference
+            android:key="account_search_clear"
+            android:title="@string/account_settings_search_clear"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="account_notifications_category"
         android:title="@string/account_settings_notifications_category">
 

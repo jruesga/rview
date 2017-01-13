@@ -83,6 +83,7 @@ public class Constants {
     public static final int SEARCH_MODE_USER = 3;
     public static final int SEARCH_MODE_COMMIT_MESSAGE = 4;
     public static final int SEARCH_MODE_CUSTOM = 5;
+    public static final int SEARCH_LAST_MODE = SEARCH_MODE_CUSTOM;
 
     public static final int MY_FILTERS_GROUP_BASE_ID = 1000;
     public static final int OTHER_ACCOUNTS_GROUP_BASE_ID = 2000;
@@ -90,6 +91,8 @@ public class Constants {
     public static final float DEFAULT_TEXT_SIZE_SMALLER = 0.8f;
     public static final float DEFAULT_TEXT_SIZE_NORMAL = 1.f;
     public static final float DEFAULT_TEXT_SIZE_BIGGER = 1.2f;
+
+    public static final int MAX_SEARCH_HISTORY = 5;
 
     // --- Preference keys
     public static final String PREF_IS_FIRST_RUN = "first_run";
@@ -126,4 +129,6 @@ public class Constants {
     public static final String PREF_ACCOUNT_NOTIFICATIONS_EVENTS = "account_notifications_events";
     public static final String PREF_ACCOUNT_EXTERNAL_CATEGORY = "account_external_category";
 
+    public static final String PREF_ACCOUNT_SEARCH_HISTORY = "account_search_history";
+    public static final String PREF_ACCOUNT_SEARCH_CLEAR = "account_search_clear";
 }

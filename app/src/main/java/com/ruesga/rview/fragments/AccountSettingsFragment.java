@@ -27,6 +27,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.ruesga.rview.R;
@@ -60,6 +61,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_ADVISE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_CATEGORY;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_CLEAR;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_CI_MESSAGES;
 
 public class AccountSettingsFragment extends PreferenceFragmentCompat
@@ -85,6 +87,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     private Account mAccount;
 
     private ListPreference mHomePage;
+    private Preference mSearchHistoryClear;
     private PreferenceCategory mNotificationsCategory;
     private Preference mNotificationsAdvise;
     private Preference mNotificationsEnabled;
@@ -108,6 +111,13 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         if (preference.equals(mNotificationsAdvise)) {
             ActivityHelper.openUriInCustomTabs(
                     getActivity(), getString(R.string.link_cloud_notifications_plugin));
+            return true;
+        } else if (preference.equals(mSearchHistoryClear)) {
+            Preferences.clearAccountSearchHistory(getContext(), mAccount);
+            mSearchHistoryClear.setEnabled(false);
+            Toast.makeText(getContext(), R.string.account_settings_search_clear_message,
+                    Toast.LENGTH_SHORT).show();
+            return true;
         }
         return false;
     }
@@ -130,6 +140,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
 
         configureHomePage();
         configureToggleCI();
+        configureSearch();
         configureFetchItems();
         configureNotifications();
         configureHandleLinks();
@@ -184,6 +195,12 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
                 displayCategory.removePreference(toggleCI);
             }
         }
+    }
+
+    private void configureSearch() {
+        mSearchHistoryClear = findPreference(PREF_ACCOUNT_SEARCH_CLEAR);
+        mSearchHistoryClear.setOnPreferenceClickListener(this);
+        mSearchHistoryClear.setEnabled(Preferences.hasAccountSearchHistory(getContext(), mAccount));
     }
 
     private void configureFetchItems() {

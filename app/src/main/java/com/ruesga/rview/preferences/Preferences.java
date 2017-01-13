@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.ruesga.rview.R;
@@ -28,6 +29,7 @@ import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,6 +41,7 @@ import static com.ruesga.rview.preferences.Constants.DEFAULT_ANONYMOUS_HOME;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_AUTHENTICATED_HOME;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.MAX_SEARCH_HISTORY;
 import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
@@ -47,6 +50,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DOWNLOAD_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_INTRALINE_DIFFS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TABS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES;
@@ -56,13 +60,15 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_INLINE_COMMENT
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_FOLDED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_EVENTS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_HISTORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_MODE;
-import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TEXT_SIZE_FACTOR;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_CI_MESSAGES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_WRAP_MODE;
-import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TEXT_SIZE_FACTOR;
 import static com.ruesga.rview.preferences.Constants.PREF_IS_FIRST_RUN;
+import static com.ruesga.rview.preferences.Constants.SEARCH_LAST_MODE;
+import static com.ruesga.rview.preferences.Constants.SEARCH_MODE_CHANGE;
 
 public class Preferences {
 
@@ -505,5 +511,76 @@ public class Preferences {
             }
         }
         return events;
+    }
+
+    public static String[] getAccountSearchHistory(Context context, Account account, int type) {
+        if (account == null) {
+            return null;
+        }
+
+        String v = getAccountPreferences(
+                context, account).getString(PREF_ACCOUNT_SEARCH_HISTORY + type, null);
+        if (TextUtils.isEmpty(v)) {
+            return null;
+        }
+
+        final Gson gson = SerializationManager.getInstance();
+        return gson.fromJson(v, String[].class);
+    }
+
+    public static void addAccountSearchHistory(
+            Context context, Account account, int type, String query) {
+        if (account == null) {
+            return;
+        }
+
+        // Obtain the list
+        String[] prev = getAccountSearchHistory(context, account, type);
+        List<String> list = new ArrayList<>();
+        if (prev != null) {
+            list.addAll(Arrays.asList(prev));
+        }
+        int index = list.indexOf(query);
+        if (index != -1) {
+            list.remove(index);
+        }
+        list.add(0, query);
+
+        // Trim array
+        int size = list.size();
+        if (size > MAX_SEARCH_HISTORY) {
+            list.subList(MAX_SEARCH_HISTORY, size).clear();
+        }
+
+        final Gson gson = SerializationManager.getInstance();
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putString(PREF_ACCOUNT_SEARCH_HISTORY + type, gson.toJson(list));
+        editor.apply();
+    }
+
+    public static void clearAccountSearchHistory(Context context, Account account) {
+        if (account == null) {
+            return;
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        for (int i = SEARCH_MODE_CHANGE; i <= SEARCH_LAST_MODE; i++) {
+            editor.remove(PREF_ACCOUNT_SEARCH_HISTORY + i);
+        }
+        editor.apply();
+    }
+
+    public static boolean hasAccountSearchHistory(Context context, Account account) {
+        if (account == null) {
+            return false;
+        }
+
+        for (int i = SEARCH_MODE_CHANGE; i <= SEARCH_LAST_MODE; i++) {
+            String[] history = getAccountSearchHistory(context, account, i);
+            if (history != null && history.length > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -83,6 +83,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private static final int MAX_SUGGESTIONS = 5;
 
     private static final int FETCH_SUGGESTIONS_MESSAGE = 1;
+    private static final int SHOW_HISTORY_MESSAGE = 2;
 
     private static final String EXTRA_REVEALED = "revealed";
 
@@ -106,12 +107,15 @@ public class SearchActivity extends AppCompatDelegateActivity {
         private final String mPartial;
         private final String mSuggestionText;
         private final int mSuggestionIcon;
+        private final boolean mHistory;
 
-        Suggestion(String filter, String partial, String suggestion, @DrawableRes int icon) {
+        Suggestion(String filter, String partial, String suggestion,
+                   @DrawableRes int icon, boolean history) {
             mFilter = filter;
             mPartial = partial;
             mSuggestionText = suggestion;
             mSuggestionIcon = icon;
+            mHistory = history;
         }
 
         Suggestion(Parcel in) {
@@ -119,6 +123,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             mPartial = in.readString();
             mSuggestionText = in.readString();
             mSuggestionIcon = in.readInt();
+            mHistory = in.readInt() == 1;
         }
 
         @Override
@@ -132,6 +137,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             parcel.writeString(mPartial);
             parcel.writeString(mSuggestionText);
             parcel.writeInt(mSuggestionIcon);
+            parcel.writeInt(mHistory ? 1 : 0);
         }
 
         @Override
@@ -174,7 +180,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                     String suggestion = getString(
                             R.string.account_suggest_format, account.name, account.email);
                     suggestions.add(new Suggestion(response.mFilter, response.mPartial,
-                            suggestion, R.drawable.ic_search));
+                            suggestion, R.drawable.ic_search, false));
                 }
                 mBinding.searchView.swapSuggestions(suggestions);
             }
@@ -193,7 +199,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                         suggestions.add(new Suggestion(
                                 result.mFilter, result.mPartial,
                                 URLDecoder.decode(project, "UTF-8"),
-                                R.drawable.ic_search));
+                                R.drawable.ic_search, false));
                     } catch (UnsupportedEncodingException ex) {
                         // Ignore
                     }
@@ -206,6 +212,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private Handler.Callback mMessenger = message -> {
         if (message.what == FETCH_SUGGESTIONS_MESSAGE) {
             performFilter((String) message.obj);
+        } else if (message.what == SHOW_HISTORY_MESSAGE) {
+            performShowHistory();
         }
         return false;
     };
@@ -215,7 +223,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private SearchActivityBinding mBinding;
     private int mCurrentOption;
     private int[] mIcons;
-    private Drawable mSuggestionIcon;
 
     private RxLoader2<String, String, AccountInfoResult> mAccountSuggestionsLoader;
     private RxLoader2<String, String, ProjectInfoResult> mProjectSuggestionsLoader;
@@ -226,9 +233,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler(mMessenger);
-        mSuggestionIcon = ContextCompat.getDrawable(this, R.drawable.ic_search);
-        DrawableCompat.setTint(mSuggestionIcon, ContextCompat.getColor(
-                this, R.color.gray_active_icon));
 
         fillSuggestions();
 
@@ -254,12 +258,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mBinding.searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
             public boolean onSuggestionClicked(SearchSuggestion suggestion) {
-                if (mCurrentOption == Constants.SEARCH_MODE_CUSTOM) {
+                final Suggestion s = (Suggestion) suggestion;
+
+                // Let type more
+                if (!s.mHistory && mCurrentOption == Constants.SEARCH_MODE_CUSTOM) {
                     return true;
                 }
 
                 // Directly complete the search
-                final Suggestion s = (Suggestion) suggestion;
                 performSearch(s.mSuggestionText);
                 return false;
             }
@@ -270,6 +276,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             }
         });
         mBinding.searchView.setOnQueryChangeListener((oldFilter, newFilter) -> {
+            mHandler.removeMessages(SHOW_HISTORY_MESSAGE);
             mHandler.removeMessages(FETCH_SUGGESTIONS_MESSAGE);
             final Message msg = Message.obtain(mHandler, FETCH_SUGGESTIONS_MESSAGE, newFilter);
             msg.arg1 = mCurrentOption;
@@ -281,7 +288,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             textView.setText(performFilterHighlight(s));
             if (s.mSuggestionIcon != 0) {
                 Drawable dw = ContextCompat.getDrawable(this, s.mSuggestionIcon);
-                DrawableCompat.setTint(mSuggestionIcon, ContextCompat.getColor(
+                DrawableCompat.setTint(dw, ContextCompat.getColor(
                         this, R.color.gray_active_icon));
                 imageView.setImageDrawable(dw);
             } else {
@@ -289,6 +296,20 @@ public class SearchActivity extends AppCompatDelegateActivity {
             }
         });
         mBinding.searchView.setOnMenuItemClickListener(item -> performShowOptions());
+        mBinding.searchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
+            @Override
+            public void onFocus() {
+                mHandler.removeMessages(FETCH_SUGGESTIONS_MESSAGE);
+                mHandler.removeMessages(SHOW_HISTORY_MESSAGE);
+                final Message msg = Message.obtain(mHandler, SHOW_HISTORY_MESSAGE);
+                mHandler.sendMessageDelayed(msg, 500L);
+            }
+
+            @Override
+            public void onFocusCleared() {
+                // Ignore
+            }
+        });
         clearSuggestions();
 
         mCurrentOption = Preferences.getAccountSearchMode(this, Preferences.getAccount(this));
@@ -386,9 +407,30 @@ public class SearchActivity extends AppCompatDelegateActivity {
             configureSearchHint();
             mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[position]));
             clearSuggestions();
+
+            mHandler.removeMessages(FETCH_SUGGESTIONS_MESSAGE);
+            mHandler.removeMessages(SHOW_HISTORY_MESSAGE);
+            final Message msg = Message.obtain(mHandler, SHOW_HISTORY_MESSAGE);
+            mHandler.sendMessageDelayed(msg, 500L);
         });
         popupWindow.setModal(true);
         popupWindow.show();
+    }
+
+    private void performShowHistory() {
+        if (!TextUtils.isEmpty(mBinding.searchView.getText())) {
+            return;
+        }
+
+        String[] history = Preferences.getAccountSearchHistory(
+                this, Preferences.getAccount(this), mCurrentOption);
+        ArrayList<Suggestion> suggestions = new ArrayList<>();
+        if (history != null) {
+            for (String s : history) {
+                suggestions.add(new Suggestion("", "", s, R.drawable.ic_history, true));
+            }
+        }
+        mBinding.searchView.swapSuggestions(suggestions);
     }
 
     private void performFilter(String filter) {
@@ -479,6 +521,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
         // Open the activity
         ActivityHelper.openChangeListByFilterActivity(this, null, filter, true, false);
+        Preferences.addAccountSearchHistory(
+                this, Preferences.getAccount(this), mCurrentOption, String.valueOf(filter));
     }
 
     private int[] loadSearchIcons() {
@@ -599,7 +643,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
         for (String s : mSuggestions) {
             if (s.startsWith(f) && !s.trim().equals(f)) {
-                suggestions.add(new Suggestion(f, partial, s, R.drawable.ic_search));
+                suggestions.add(new Suggestion(f, partial, s, R.drawable.ic_search, false));
             }
         }
         mBinding.searchView.swapSuggestions(suggestions);
