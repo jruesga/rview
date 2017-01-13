@@ -31,6 +31,7 @@ import com.ruesga.rview.preferences.Preferences;
 import java.io.IOException;
 import java.util.List;
 
+import me.tatarka.rxloader2.safe.Empty;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class DeviceRegistrationService extends IntentService {
@@ -86,10 +87,11 @@ public class DeviceRegistrationService extends IntentService {
 
         GerritApi api = ModelHelper.getGerritApi(ctx, account);
         try {
-            SafeObservable.fromNullCallable(() ->
-                    api.registerCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, input)
-                            .blockingFirst()
-                    ).blockingFirst();
+            SafeObservable.fromNullCallable(() -> {
+                        api.registerCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, input)
+                                .blockingFirst();
+                        return Empty.NULL;
+                    }).blockingFirst();
 
         } catch (Exception ex) {
             Log.e(TAG, "Failed to register device: " + deviceId + "/" + input.token, ex);
@@ -105,10 +107,11 @@ public class DeviceRegistrationService extends IntentService {
         final String accountToken = account.getAccountHash();
         GerritApi api = ModelHelper.getGerritApi(ctx, account);
         try {
-            SafeObservable.fromNullCallable(() ->
-                    api.unregisterCloudNotification(GerritApi.SELF_ACCOUNT, deviceId, accountToken)
-                            .blockingFirst()
-                    ).blockingFirst();
+            SafeObservable.fromNullCallable(() -> {
+                        api.unregisterCloudNotification(
+                                GerritApi.SELF_ACCOUNT, deviceId, accountToken).blockingFirst();
+                        return Empty.NULL;
+                    }).blockingFirst();
         } catch (Exception ex) {
             Log.e(TAG, "Failed to unregister device: " + deviceId + "/" + accountToken, ex);
         }
