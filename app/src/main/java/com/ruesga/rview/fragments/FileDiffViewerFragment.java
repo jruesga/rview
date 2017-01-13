@@ -410,6 +410,14 @@ public class FileDiffViewerFragment extends Fragment {
                 && mChange.revisions.get(mRevisionId).files.get(mFile).binary;
         final boolean isSameBase =
                 (base != null && base == mChange.revisions.get(mRevisionId).number);
+        final FileStatus fileStatus;
+        if (!mFile.equals(Constants.COMMIT_MESSAGE)
+                && mChange.revisions.get(mRevisionId).files.get(mFile) != null
+                && mChange.revisions.get(mRevisionId).files.containsKey(mFile)) {
+            fileStatus = mChange.revisions.get(mRevisionId).files.get(mFile).status;
+        } else {
+            fileStatus = null;
+        }
 
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -500,6 +508,7 @@ public class FileDiffViewerFragment extends Fragment {
                             if (api.supportsFeature(Features.BLAME)
                                     && !mFile.equals(Constants.COMMIT_MESSAGE)
                                     && !isBinary
+                                    && (fileStatus != null && !fileStatus.equals(FileStatus.A))
                                     && mAccount.hasAuthenticatedAccessMode()) {
                                 BlameBaseType baseType = mBase == null
                                         ? BlameBaseType.t : BlameBaseType.f;
@@ -520,6 +529,7 @@ public class FileDiffViewerFragment extends Fragment {
                             if (api.supportsFeature(Features.BLAME)
                                     && !mFile.equals(Constants.COMMIT_MESSAGE)
                                     && !isBinary
+                                    && (fileStatus != null && !fileStatus.equals(FileStatus.D))
                                     && mAccount.hasAuthenticatedAccessMode()) {
                                 return api.getChangeRevisionFileBlames(
                                             String.valueOf(mChange.legacyChangeId),
