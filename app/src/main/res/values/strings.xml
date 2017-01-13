@@ -246,8 +246,8 @@
     <string name="account_settings_messages_folded">Fold messages</string>
     <string name="account_settings_inline_comment_in_messages">Display inline comments in messages</string>
     <string name="account_settings_toggle_ci_messages_title">Toggle CI accounts messages</string>
-    <string name="account_settings_toggle_ci_messages_summary_off">Show comment messages from CI accounts</string>
-    <string name="account_settings_toggle_ci_messages_summary_on">Hide comment messages from CI accounts</string>
+    <string name="account_settings_toggle_ci_messages_summary_off">Show messages from CI accounts</string>
+    <string name="account_settings_toggle_ci_messages_summary_on">Hide messages from CI accounts</string>
     <string name="account_settings_notifications_category">Notifications</string>
     <string name="account_settings_notifications_advise">Push notifications requires \u0027cloud-notifications\u0027 plugin to be installed in the Gerrit server instance. Tap here to navigate to the plugin source repository.</string>
     <string name="account_settings_notifications_title">Enable notifications</string>

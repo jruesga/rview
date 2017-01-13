@@ -53,8 +53,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class ModelHelper {
 
@@ -509,5 +511,26 @@ public class ModelHelper {
             }
         }
         return sPredefinedRepositories;
+    }
+
+    public static List<AccountInfo> filterCIAccounts(Context ctx, List<AccountInfo> src) {
+        Account account = Preferences.getAccount(ctx);
+        boolean hideCIAccounts = Preferences.isAccountToggleCIAccountsMessages(ctx, account);
+        if (hideCIAccounts) {
+            Repository repository = findRepositoryForAccount(ctx, account);
+            if (repository != null && !TextUtils.isEmpty(repository.mCiAccounts)) {
+                Pattern pattern = Pattern.compile(repository.mCiAccounts, Pattern.MULTILINE);
+                List<AccountInfo> dst = new ArrayList<>(src);
+                Iterator<AccountInfo> it = dst.iterator();
+                while (it.hasNext()) {
+                    AccountInfo acct = it.next();
+                    if (acct.name != null && pattern.matcher(acct.name).matches()) {
+                        it.remove();
+                    }
+                }
+                return dst;
+            }
+        }
+        return src;
     }
 }

@@ -1143,6 +1143,7 @@ public class ChangeDetailsFragment extends Fragment {
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnAccountChipRemovedListener)
                 .withRemovableReviewers(true)
+                .withFilterCIAccounts(true)
                 .from(response.mChange);
         mBinding.changeInfo.labels
                 .with(mPicasso)

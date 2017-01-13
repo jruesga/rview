@@ -40,6 +40,7 @@ import java.util.List;
 public class ReviewersView extends NonDebuggableFlowLayout {
     private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
+    private boolean mIsFilterCIAccounts;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
     private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
 
@@ -65,7 +66,9 @@ public class ReviewersView extends NonDebuggableFlowLayout {
         int margin = (int) getContext().getResources().getDimension(R.dimen.chips_margin);
         boolean rtl = ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL;
 
-        int count = reviewers.size();
+        List<AccountInfo> filteredReviewers = mIsFilterCIAccounts
+                ? ModelHelper.filterCIAccounts(getContext(), reviewers) : reviewers;
+        int count = filteredReviewers.size();
         int children = getChildCount();
         if (count > children) {
             for (int i = children; i < count; i++) {
@@ -80,10 +83,10 @@ public class ReviewersView extends NonDebuggableFlowLayout {
             AccountChipView view = (AccountChipView) getChildAt(i);
             view.with(mPicasso)
                     .removable(mIsRemovableReviewers &&
-                            removableReviewers.contains(reviewers.get(i).accountId))
+                            removableReviewers.contains(filteredReviewers.get(i).accountId))
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnAccountChipRemovedListener)
-                    .from(reviewers.get(i));
+                    .from(filteredReviewers.get(i));
             view.setVisibility(View.VISIBLE);
         }
         for (int i = count; i < children; i++) {
@@ -114,6 +117,11 @@ public class ReviewersView extends NonDebuggableFlowLayout {
 
     public ReviewersView withRemovableReviewers(boolean removable) {
         mIsRemovableReviewers = removable;
+        return this;
+    }
+
+    public ReviewersView withFilterCIAccounts(boolean filter) {
+        mIsFilterCIAccounts = filter;
         return this;
     }
 
