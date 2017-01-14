@@ -161,6 +161,7 @@ public abstract class WizardActivity extends AppCompatActivity {
     private String mCurrentChooserFragmentTag;
     private int mCurrentPage = 0;
     private boolean mHasStateSaved;
+    private boolean mHasStateRestored;
 
     private Animator mHeaderAnimator;
     private boolean mIsHeaderAnimatorRunning;
@@ -191,16 +192,7 @@ public abstract class WizardActivity extends AppCompatActivity {
             return;
         }
         if (savedInstanceState != null) {
-            mCurrentPage = savedInstanceState.getInt(STATE_CURRENT_PAGE, 0);
-            mCurrentChooserFragmentTag = savedInstanceState.getString(STATE_CURRENT_CHOOSER);
-            mWorkflow.isInProgress = savedInstanceState.getBoolean(STATE_IS_IN_PROGRESS, false);
-            for (WizardPageFragment page : mPages) {
-                page.restoreState(this, savedInstanceState);
-                final Bundle bundle = page.savedState();
-                if (bundle != null) {
-                    mData.putAll(bundle);
-                }
-            }
+            restoreInstance(savedInstanceState);
         }
 
         if (mCurrentPage < 0 || mCurrentPage >= mPages.size()) {
@@ -275,12 +267,30 @@ public abstract class WizardActivity extends AppCompatActivity {
         mHasStateSaved = false;
     }
 
+    private void restoreInstance(Bundle savedInstanceState) {
+        if (mHasStateRestored) {
+            return;
+        }
+        mCurrentPage = savedInstanceState.getInt(STATE_CURRENT_PAGE, 0);
+        mCurrentChooserFragmentTag = savedInstanceState.getString(STATE_CURRENT_CHOOSER);
+        mWorkflow.isInProgress = savedInstanceState.getBoolean(STATE_IS_IN_PROGRESS, false);
+        for (WizardPageFragment page : mPages) {
+            page.restoreState(this, savedInstanceState);
+            final Bundle bundle = page.savedState();
+            if (bundle != null) {
+                mData.putAll(bundle);
+            }
+        }
+        mHasStateSaved = false;
+        mHasStateRestored = true;
+    }
+
     @Override
     protected void onRestoreInstanceState(Bundle savedState) {
         if (savedState != null) {
             super.onRestoreInstanceState(savedState);
+            restoreInstance(savedState);
         }
-        mHasStateSaved = false;
     }
 
     @Override
@@ -291,6 +301,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         outState.putBoolean(STATE_IS_IN_PROGRESS, mWorkflow.isInProgress);
         savePagesState(outState);
         mHasStateSaved = true;
+        mHasStateRestored = false;
     }
 
     public abstract void setupPages();
