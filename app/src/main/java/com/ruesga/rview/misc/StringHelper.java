@@ -30,7 +30,7 @@ public class StringHelper {
     public static final String NON_PRINTABLE_CHAR = "\u0001";
 
     private static final Pattern A_NON_WORD_CHARACTER_AT_END
-            = Pattern.compile(".*[^([a-zA-Z],;)]", Pattern.MULTILINE);
+            = Pattern.compile(".*[^[a-zA-Z],;]", Pattern.MULTILINE);
     private static final Pattern A_NON_WORD_CHARACTER_AT_START
             = Pattern.compile("[^\\w].*", Pattern.MULTILINE);
 
@@ -65,7 +65,7 @@ public class StringHelper {
                     A_NON_WORD_CHARACTER_AT_END.matcher(line).matches()) {
                 sb.append("\n");
             } else if (i < (count - 1)) {
-                String next =  lines[i + 1].trim();
+                String next = lines[i + 1].trim();
                 if (next.isEmpty()
                         || A_NON_WORD_CHARACTER_AT_START.matcher(next).matches()) {
                     sb.append("\n");
