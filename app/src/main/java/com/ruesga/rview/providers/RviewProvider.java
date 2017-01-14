@@ -109,26 +109,27 @@ public class RviewProvider extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues initialValues) {
-        long rowId;
+        long rowId = -1;
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        Uri contentUri;
+        Uri contentUri = null;
         switch (sURLMatcher.match(uri)) {
             case NOTIFICATIONS_DATA:
                 rowId = db.insert(NotificationEntity.TABLE_NAME, null, initialValues);
                 contentUri = NotificationEntity.CONTENT_URI;
                 break;
-            default:
-                throw new IllegalArgumentException("Cannot insert from URL: " + uri);
         }
 
-        Uri ret = ContentUris.withAppendedId(contentUri, rowId);
-        notifyChange(ret, null);
-        return ret;
+        if (contentUri != null) {
+            Uri newUri = ContentUris.withAppendedId(contentUri, rowId);
+            notifyChange(newUri, null);
+            return newUri;
+        }
+        return null;
     }
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String where, String[] args) {
-        int count;
+        int count = 0;
         String id = uri.getLastPathSegment();
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         switch (sURLMatcher.match(uri)) {
@@ -139,9 +140,6 @@ public class RviewProvider extends ContentProvider {
                 count = db.update(NotificationEntity.TABLE_NAME, values,
                         NotificationEntity._ID + " = ?", new String[]{id});
                 break;
-            default: {
-                throw new UnsupportedOperationException("Cannot update URL: " + uri);
-            }
         }
 
         if (count > 0) {
@@ -152,7 +150,7 @@ public class RviewProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, String where, String[] args) {
-        int count;
+        int count = 0;
         String pk;
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         switch (sURLMatcher.match(uri)) {
@@ -167,8 +165,6 @@ public class RviewProvider extends ContentProvider {
                 }
                 count = db.delete(NotificationEntity.TABLE_NAME, where, args);
                 break;
-            default:
-                throw new IllegalArgumentException("Cannot delete from URL: " + uri);
         }
 
         if (count > 0) {
