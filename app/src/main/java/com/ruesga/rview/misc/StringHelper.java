@@ -23,8 +23,6 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import okhttp3.MediaType;
-
 public class StringHelper {
 
     public static final String NON_PRINTABLE_CHAR = "\u0001";
