@@ -506,26 +506,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
         }
 
         private String getFieldText(Tree tree) {
-            // Extract default fields
-            StringBuilder sb = new StringBuilder();
-            /*Tree parent = tree.getParent();
-            if (parent != null && tree.getParent().getType() == QueryLexer.AND
-                    && parent.getChildCount() > 1) {
-                int count = parent.getChildCount();
-                for (int i = 1; i < count; i++) {
-                    Tree child = parent.getChild(i);
-                    if (child.getType() == QueryLexer.DEFAULT_FIELD) {
-                        sb.append(" ").append(child.getChild(0).getText());
-                    }
-                }
-            }*/
-
-            // Get text
-            String value = tree.getChild(0).getText();
-            if (sb.length() != 0) {
-                value += sb.toString();
-            }
-            return value;
+            return tree.getChild(0).getText();
         }
     }
 }

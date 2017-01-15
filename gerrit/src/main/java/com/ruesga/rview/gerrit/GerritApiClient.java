@@ -265,6 +265,14 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Uri getPatchFileRevisionUri(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull PatchFileFormat format) {
+        return Uri.parse(String.format(Locale.US, "%schanges/%s/revisions/%s/patch?%s",
+                toUnauthenticatedEndpoint(mEndPoint),
+                changeId, revisionId, format.mOption.toLowerCase()));
+    }
+
+    @Override
     public Uri getAvatarUri(String accountId, int size) {
         return Uri.parse(String.format(Locale.US, "%saccounts/%s/avatar?s=%d",
                 toUnauthenticatedEndpoint(mEndPoint), accountId, size));

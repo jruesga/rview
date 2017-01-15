@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <variable name="model" type="com.ruesga.rview.fragments.DownloadDialogFragment.Model" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.DownloadDialogFragment.EventHandlers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingStart="24dp"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{model.hasDownloadType != null &amp;&amp; model.hasDownloadType ? View.VISIBLE : View.GONE}"
+            android:orientation="horizontal">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/download_commands_dialog_download_type"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:padding="8dp"
+                android:onClick="@{handlers::onDownloadTypeChooserPressed}"
+                android:background="?attr/selectableItemBackgroundBorderless">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:text="@{model.downloadType}"
+                    android:gravity="center"
+                    android:textSize="12sp"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_arrow_drop_down"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.ruesga.rview.widget.DownloadCommandsView
+            android:id="@+id/download_commands"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@color/primaryBackgroundColor" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:text="@string/download_commands_dialog_patch_file"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+
+            <org.apmem.tools.layouts.FlowLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/patch_file_base64"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:gravity="center_horizontal"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="@string/download_commands_dialog_patch_file_base64"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onDownloadActionPressed}"
+                    app:font="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/patch_file_zip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:padding="5dp"
+                    android:gravity="center_horizontal"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="@string/download_commands_dialog_patch_file_zip"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onDownloadActionPressed}"
+                    app:font="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"
+                    tools:ignore="RtlSymmetry"/>
+
+            </org.apmem.tools.layouts.FlowLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:gravity="center_vertical">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="wrap_content"
+                android:text="@string/download_commands_dialog_archive"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="12sp" />
+
+            <org.apmem.tools.layouts.FlowLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/archive_tgz"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:gravity="center_horizontal"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="@string/download_commands_dialog_archive_tgz"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onDownloadActionPressed}"
+                    app:font="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/archive_tar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:padding="5dp"
+                    android:gravity="center_horizontal"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="@string/download_commands_dialog_archive_tar"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onDownloadActionPressed}"
+                    app:font="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"
+                    tools:ignore="RtlSymmetry"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/archive_tbz2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:padding="5dp"
+                    android:gravity="center_horizontal"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="@string/download_commands_dialog_archive_tbz2"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onDownloadActionPressed}"
+                    app:font="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"
+                    tools:ignore="RtlSymmetry"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:id="@+id/archive_txz"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:padding="5dp"
+                    android:gravity="center_horizontal"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:text="@string/download_commands_dialog_archive_txz"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    android:onClick="@{handlers::onDownloadActionPressed}"
+                    app:font="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"
+                    tools:ignore="RtlSymmetry"/>
+            </org.apmem.tools.layouts.FlowLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" />
+        <variable name="type" type="java.lang.String" />
+        <variable name="command" type="java.lang.String" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.DownloadDialogFragment.EventHandlers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:gravity="center_vertical">
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="@dimen/label_min_width"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@{type}"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:orientation="horizontal">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textIsSelectable="true"
+                android:text="@{command}"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="12sp"
+                tools:ignore="Deprecated" />
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                app:srcCompat="@drawable/ic_copy"
+                android:tint="?attr/colorPrimaryDark"
+                android:tag='@{type + "|" + command}'
+                android:onClick="@{handlers::onCommandCopyPressed}"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                tools:ignore="ContentDescription"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</layout>

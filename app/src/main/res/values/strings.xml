@@ -308,9 +308,9 @@
     <string name="delete_draft_change_title">Delete Draft</string>
     <string name="delete_draft_change_confirm">Delete draft change?</string>
 
-    <!-- Download patchset -->
-    <string name="download_patchset_metered_network_title">Download patchset</string>
-    <string name="download_patchset_metered_network_confirm">Download a patchset over a metered or roaming network could incurs in expensive billing charges. Do you want to proceed with the download?</string>
+    <!-- Download -->
+    <string name="download_metered_network_title">Download</string>
+    <string name="download_metered_network_confirm">Download over a metered or roaming network could incurs in expensive billing charges. Do you want to proceed with the download?</string>
 
     <!-- Actions dialog -->
     <string name="actions_message_hint">Commit message</string>
@@ -319,6 +319,19 @@
     <string name="actions_change_base">Change parent revision</string>
     <string name="actions_base_hint">Subject, change number, or leave empty</string>
     <string name="actions_confirm_submit">Submit this patchset?</string>
+
+    <!-- Download commands dialog -->
+    <string name="download_commands_dialog_title">Download</string>
+    <string name="download_commands_dialog_download_type">Download type:</string>
+    <string name="download_commands_dialog_patch_file">Patch-File</string>
+    <string name="download_commands_dialog_patch_file_base64">diff.base64</string>
+    <string name="download_commands_dialog_patch_file_zip">diff.zip</string>
+    <string name="download_commands_dialog_archive">Archive</string>
+    <string name="download_commands_dialog_archive_tgz">tgz</string>
+    <string name="download_commands_dialog_archive_tar">tar</string>
+    <string name="download_commands_dialog_archive_tbz2">tbz2</string>
+    <string name="download_commands_dialog_archive_txz">txz</string>
+    <string name="download_commands_dialog_copy_message">Download <xliff:g id="type" example="Format Patch">%1$s</xliff:g> command copied to clipboard</string>
 
     <!-- Move branch dialog -->
     <string name="move_branch_title">Move branch</string>
@@ -424,8 +437,6 @@
     <string name="project_details_status_hidden">Hidden</string>
 
     <!-- NotificationEntity -->
-    <string name="notification_file_download_title">Download completed</string>
-    <string name="notification_file_download_text_success">File <xliff:g id="height">%1$s</xliff:g> downloaded successfully</string>
     <string name="notification_file_download_text_failure">File <xliff:g id="height">%1$s</xliff:g> download failed</string>
 
     <!-- Empty states -->

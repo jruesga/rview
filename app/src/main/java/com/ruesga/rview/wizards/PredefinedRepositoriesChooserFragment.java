@@ -24,7 +24,6 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.wizard.choosers.ListChooserFragment;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;

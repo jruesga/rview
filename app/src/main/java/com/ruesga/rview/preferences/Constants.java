@@ -107,7 +107,6 @@ public class Constants {
     public static final String PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED = "account_highlight_unreviewed";
     public static final String PREF_ACCOUNT_HANDLE_LINKS = "account_handle_links";
     public static final String PREF_ACCOUNT_USE_CUSTOM_TABS = "account_use_custom_tabs";
-    public static final String PREF_ACCOUNT_DOWNLOAD_FORMAT = "account_download_format";
     public static final String PREF_ACCOUNT_DIFF_MODE = "account_diff_mode";
     public static final String PREF_ACCOUNT_WRAP_MODE = "account_wrap_mode";
     public static final String PREF_ACCOUNT_TEXT_SIZE_FACTOR = "account_text_size_factor";

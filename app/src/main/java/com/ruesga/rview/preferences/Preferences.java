@@ -23,7 +23,6 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.ruesga.rview.R;
-import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
@@ -48,7 +47,6 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
-import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DOWNLOAD_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_INTRALINE_DIFFS;
@@ -267,15 +265,6 @@ public class Preferences {
     public static boolean isAccountUseCustomTabs(Context context, Account account) {
         return account == null || getAccountPreferences(context, account)
                 .getBoolean(PREF_ACCOUNT_USE_CUSTOM_TABS, true);
-    }
-
-    public static DownloadFormat getAccountDownloadFormat(Context context, Account account) {
-        if (account == null) {
-            return DownloadFormat.TBZ2;
-        }
-        return DownloadFormat.valueOf(
-                getAccountPreferences(context, account).getString(
-                        PREF_ACCOUNT_DOWNLOAD_FORMAT, DownloadFormat.TBZ2.toString()));
     }
 
     public static String getAccountDiffMode(Context context, Account account) {

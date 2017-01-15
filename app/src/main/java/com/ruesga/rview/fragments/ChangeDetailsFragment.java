@@ -15,23 +15,17 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.net.ConnectivityManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
@@ -72,7 +66,6 @@ import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.gerrit.model.CherryPickInput;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
-import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
@@ -147,6 +140,7 @@ public class ChangeDetailsFragment extends Fragment {
         add(ChangeOptions.CHANGE_ACTIONS);
         add(ChangeOptions.CHECK);
         add(ChangeOptions.WEB_LINKS);
+        add(ChangeOptions.DOWNLOAD_COMMANDS);
     }};
     private static final List<ChangeOptions> MESSAGES_OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.DETAILED_ACCOUNTS);
@@ -158,13 +152,6 @@ public class ChangeDetailsFragment extends Fragment {
 
     private static final int DIFF_REQUEST_CODE = 99;
     private static final int EDIT_REQUEST_CODE = 98;
-
-
-    private static final int REQUEST_DOWNLOAD_PATCHSET_PERMISSION = 100;
-    private static final String[] STORAGE_PERMISSIONS  = {
-            "android.permission.READ_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE"
-    };
 
     @ProguardIgnored
     public static class ListModel {
@@ -255,7 +242,7 @@ public class ChangeDetailsFragment extends Fragment {
         }
 
         public void onDownloadPatchSetPressed(View v) {
-            mFragment.performDownloadPatchSet();
+            mFragment.performOpenDownloadDialog();
         }
 
         public void onViewPatchSetPressed(View v) {
@@ -842,22 +829,6 @@ public class ChangeDetailsFragment extends Fragment {
         }
     };
 
-    private final RxLoaderObserver<Integer> mDownloadPatchSetObserver
-            = new RxLoaderObserver<Integer>() {
-        @Override
-        public void onNext(Integer status) {
-            switch (status) {
-                case 0: // Ready
-                    requestPermissionsOrDownloadPatchSet();
-                    break;
-                case 1: // No network available
-                case 2: // Metered network
-                    askDownloadPatchSet(status);
-                    break;
-            }
-        }
-    };
-
     @ProguardIgnored
     public static class EmptyEventHandlers extends EmptyState.EventHandlers {
         private ChangeDetailsFragment mFragment;
@@ -903,7 +874,6 @@ public class ChangeDetailsFragment extends Fragment {
     private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
     private RxLoader1<String, ChangeInfo> mMoveBranchLoader;
-    private RxLoader<Integer> mDownloadPatchSetLoader;
     private int mLegacyChangeId;
 
     private Map<String, Integer> savedReview;
@@ -1103,8 +1073,6 @@ public class ChangeDetailsFragment extends Fragment {
                     "move_branch", this::doMoveBranch, mMoveBranchObserver);
             mDraftsRefreshLoader = loaderManager.create(
                     "drafts_refresh", fetchDrafts(), mDraftsRefreshObserver);
-            mDownloadPatchSetLoader = loaderManager.create(
-                    "download_patch_set", doDownloadPatchSet(), mDownloadPatchSetObserver);
             mChangeLoader.start(String.valueOf(mLegacyChangeId));
         }
     }
@@ -1427,27 +1395,6 @@ public class ChangeDetailsFragment extends Fragment {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private Observable<Integer> doDownloadPatchSet() {
-        return SafeObservable.fromNullCallable(() -> {
-                if (getActivity() != null) {
-                    ConnectivityManager cm =  (ConnectivityManager) getActivity()
-                            .getSystemService(Activity.CONNECTIVITY_SERVICE);
-                    NetworkInfo ni = cm.getActiveNetworkInfo();
-                    if (ni == null) {
-                        return 1;
-                    }
-                    if (ConnectivityManagerCompat.isActiveNetworkMetered(cm) || ni.isRoaming()) {
-                        return 2;
-                    }
-                    return 0;
-                }
-                throw new IllegalStateException();
-            })
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread());
     }
 
     private void setupSwipeToRefresh() {
@@ -1781,9 +1728,10 @@ public class ChangeDetailsFragment extends Fragment {
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
-    private void performDownloadPatchSet() {
-        mDownloadPatchSetLoader.clear();
-        mDownloadPatchSetLoader.restart();
+    private void performOpenDownloadDialog() {
+        DownloadDialogFragment fragment = DownloadDialogFragment.newInstance(
+                mResponse.mChange, mCurrentRevision);
+        fragment.show(getChildFragmentManager(), DownloadDialogFragment.TAG);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -2180,76 +2128,4 @@ public class ChangeDetailsFragment extends Fragment {
         return mResponse == null || mResponse.mChange == null || mModel.isLocked;
     }
 
-    private void askDownloadPatchSet(int status) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-                .setTitle(R.string.download_patchset_metered_network_title);
-        if (status == 1) {
-            // No network available
-            builder.setMessage(R.string.empty_states_not_connectivity);
-            builder.setPositiveButton(R.string.action_close, (dialog, which) -> dialog.dismiss());
-        } else {
-            // Metered or Roaming connection
-            builder.setMessage(R.string.download_patchset_metered_network_confirm);
-            builder.setPositiveButton(R.string.action_continue, (dialog, which) -> {
-                requestPermissionsOrDownloadPatchSet();
-                dialog.dismiss();
-            });
-            builder.setNegativeButton(R.string.action_cancel, null);
-        }
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private void requestPermissionsOrDownloadPatchSet() {
-        ((BaseActivity) getActivity()).closeOptionsDrawer();
-
-        int readPermissionCheck = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.READ_EXTERNAL_STORAGE);
-        int writePermissionCheck = ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (readPermissionCheck !=  PackageManager.PERMISSION_GRANTED ||
-                writePermissionCheck !=  PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(STORAGE_PERMISSIONS, REQUEST_DOWNLOAD_PATCHSET_PERMISSION);
-        } else {
-            // Permissions granted
-            downloadPatchSet();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_DOWNLOAD_PATCHSET_PERMISSION) {
-            boolean granted = true;
-            for (int permissionGrant : grantResults) {
-                if (permissionGrant !=  PackageManager.PERMISSION_GRANTED) {
-                    granted = false;
-                    break;
-                }
-            }
-
-            // Now, download the file
-            if (granted) {
-                downloadPatchSet();
-            }
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    private void downloadPatchSet() {
-        if (getActivity() == null) {
-            return;
-        }
-
-        DownloadFormat downloadFormat = Preferences.getAccountDownloadFormat(
-                getContext(), mAccount);
-        final Context ctx = getActivity();
-        final GerritApi api = ModelHelper.getGerritApi(ctx);
-        Uri uri = api.getDownloadRevisionUri(
-                String.valueOf(mLegacyChangeId), mCurrentRevision, downloadFormat);
-        String fileName = mCurrentRevision + "." + downloadFormat.mExtension;
-
-        ActivityHelper.downloadUri(getContext(), uri, fileName, null);
-    }
 }

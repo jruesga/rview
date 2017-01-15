@@ -89,6 +89,14 @@ public interface GerritApi {
             @NonNull DownloadFormat format);
 
     /**
+     * Return the uri for download a patch file of a change's revision
+     */
+    Uri getPatchFileRevisionUri(
+            @NonNull String changeId,
+            @NonNull String revisionId,
+            @NonNull PatchFileFormat format);
+
+    /**
      * Return an implementation of ApiVersionMediator
      */
     ApiVersionMediator getApiVersionMediator();
