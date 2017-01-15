@@ -589,8 +589,11 @@ public class ChangeDetailsFragment extends Fragment {
                 mModel.filesListModel.selector = resolveDiffAgainstSelectorText();
                 mModel.filesListModel.visible = result.mFiles != null && !result.mFiles.isEmpty();
                 mModel.filesListModel.actions.clear();
-                if (mModel.isAuthenticated &&
-                        mCurrentRevision.equals(result.mChange.currentRevision)) {
+                ChangeStatus status = result.mChange.status;
+                if (mModel.isAuthenticated
+                        && !ChangeStatus.MERGED.equals(status)
+                        && !ChangeStatus.ABANDONED.equals(status)
+                        && mCurrentRevision.equals(result.mChange.currentRevision)) {
                     mModel.filesListModel.actions.put("action1", getString(R.string.action_edit));
                 }
                 mFileAdapter.update(result.mFiles, result.mInlineComments, result.mDraftComments);
