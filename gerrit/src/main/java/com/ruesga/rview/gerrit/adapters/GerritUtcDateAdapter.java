@@ -44,7 +44,9 @@ public class GerritUtcDateAdapter implements JsonDeserializer<Date>, JsonSeriali
     public Date deserialize(JsonElement json, Type typeof, JsonDeserializationContext ctx)
             throws JsonParseException {
         try {
-            return mDateFormat.parse(json.getAsString());
+            synchronized (mDateFormat) {
+                return mDateFormat.parse(json.getAsString());
+            }
         } catch (ParseException e) {
             throw new JsonParseException(e);
         }
@@ -52,6 +54,8 @@ public class GerritUtcDateAdapter implements JsonDeserializer<Date>, JsonSeriali
 
     @Override
     public JsonElement serialize(Date src, Type typeof, JsonSerializationContext ctx) {
-        return new JsonPrimitive(mDateFormat.format(src));
+        synchronized (mDateFormat) {
+            return new JsonPrimitive(mDateFormat.format(src));
+        }
     }
 }
