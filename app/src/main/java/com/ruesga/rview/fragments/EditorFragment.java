@@ -495,13 +495,13 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.diff_options, menu);
+        inflater.inflate(R.menu.edit_options, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_diff_options:
+            case R.id.menu_edit_options:
                 openOptionsMenu();
                 AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
                 break;
