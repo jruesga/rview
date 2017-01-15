@@ -29,7 +29,7 @@ public class ChangeQueryTest {
     @Test
     public void testParseQuery() {
         Date now = new Date();
-        String nowFormatted = ChangeQuery.getTimeFormatter().format(now);
+        String nowFormatted = new ChangeQuery().getTimeFormatter().format(now);
 
         testInvalidParseQuery("AND");
         testInvalidParseQuery("AND status:open");

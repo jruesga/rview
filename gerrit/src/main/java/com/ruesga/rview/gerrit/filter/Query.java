@@ -22,7 +22,7 @@ import java.util.TimeZone;
 
 public abstract class Query {
 
-    private static SimpleDateFormat sTimeFormatter;
+    private SimpleDateFormat mTimeFormatter;
 
     private final ArrayList<String> mQueries = new ArrayList<>();
 
@@ -46,12 +46,14 @@ public abstract class Query {
         return "\"" + val.trim().replace("\"", "\"\"") + "\"";
     }
 
-    static SimpleDateFormat getTimeFormatter() {
-        if (sTimeFormatter == null) {
-            sTimeFormatter = new SimpleDateFormat("'\"'yyyy-MM-dd HH:mm:ss.SSS Z'\"'", Locale.US);
-            sTimeFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+    // NOTE: This reference is not thread-safe so caller must ensure reference synchronization
+    // it this reference is used from difference threads
+    SimpleDateFormat getTimeFormatter() {
+        if (mTimeFormatter == null) {
+            mTimeFormatter = new SimpleDateFormat("'\"'yyyy-MM-dd HH:mm:ss.SSS Z'\"'", Locale.US);
+            mTimeFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
         }
-        return sTimeFormatter;
+        return mTimeFormatter;
     }
 
     @Override

@@ -441,12 +441,12 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                 } else if (type.equals(Date.class)) {
                     Date date;
                     try {
-                        date = getTimeFormatter().parse("\"" + text + "\"");
+                        date = query.getTimeFormatter().parse("\"" + text + "\"");
                     } catch (ParseException e) {
                         throw new QueryParseException("Illegal value for field " + fieldName
                                 +  " at " + tree.getCharPositionInLine() + ": " + text);
                     }
-                    text = getTimeFormatter().format(date);
+                    text = query.getTimeFormatter().format(date);
 
                 } else if (type.equals(Label.class)) {
                     String[] v = text.split("=");
