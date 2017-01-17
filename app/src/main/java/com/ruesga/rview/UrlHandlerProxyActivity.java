@@ -145,13 +145,17 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
         finish();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void handleUri(String type, Uri uri) {
         // Open the change details
         switch (type) {
             case Constants.CUSTOM_URI_CHANGE_ID:
-                ActivityHelper.openChangeDetailsByUri(
-                        this, UriHelper.createCustomUri(this, Constants.CUSTOM_URI_CHANGE_ID,
-                                UriHelper.extractChangeId(uri)));
+                Account acct = Preferences.getAccount(this);
+                if (acct != null) {
+                    ActivityHelper.openChangeDetailsByUri(
+                            this, UriHelper.createCustomUri(this, Constants.CUSTOM_URI_CHANGE_ID,
+                                    UriHelper.extractChangeId(uri, acct.mRepository)));
+                }
                 break;
 
             case Constants.CUSTOM_URI_QUERY:

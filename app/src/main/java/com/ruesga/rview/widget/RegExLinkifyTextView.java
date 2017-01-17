@@ -110,7 +110,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
                 Constants.CUSTOM_URI_CHANGE_ID,
                 "http(s)?://" + uri + "((#/)?c/)?(\\d)+(/(((\\d)+\\.\\.)?(\\d)+)?(/(\\S)*+)?)?",
                 "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
-                        UriHelper::extractChangeId));
+                group -> UriHelper.extractChangeId(group, repository)));
 
         // Queries
         regexLinks.add(new RegExLink(

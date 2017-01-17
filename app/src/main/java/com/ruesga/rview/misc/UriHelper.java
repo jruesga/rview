@@ -18,6 +18,8 @@ package com.ruesga.rview.misc;
 import android.content.Context;
 import android.net.Uri;
 
+import com.ruesga.rview.model.Repository;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -45,20 +47,26 @@ public class UriHelper {
         return null;
     }
 
-    public static String extractChangeId(Uri uri) {
-        return extractChangeId(uri.toString());
+    public static String extractChangeId(Uri uri, Repository repository) {
+        return extractChangeId(uri.toString(), repository);
     }
 
-    public static String extractChangeId(String q) {
-        int pos = q.indexOf("/c/");
+    public static String extractChangeId(String q, Repository repository) {
+        String repoUrl = repository.mUrl.substring(repository.mUrl.indexOf("://") + 3);
+        int idx = q.indexOf(repoUrl);
+        if (idx == -1) {
+            return "-1";
+        }
+        String query = q.substring(idx + repoUrl.length() - 1);
+
         String target = "-1";
-        if (pos != -1) {
-            int start = q.indexOf("/c/") + 3;
-            target = q.substring(start);
+        if (query.startsWith("/#/c/") || query.startsWith("/c/")) {
+            int start = query.indexOf("/c/") + 3;
+            target = query.substring(start);
         } else {
-            int start = q.indexOf("/", 9) + 1;
-            if (start != -1) {
-                target = q.substring(start);
+            int start = query.indexOf("/") + 1;
+            if (start > 0) {
+                target = query.substring(start);
             }
         }
 
