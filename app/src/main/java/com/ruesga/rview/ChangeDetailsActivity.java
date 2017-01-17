@@ -218,9 +218,7 @@ public class ChangeDetailsActivity extends BaseActivity {
                         // Ignore. Not a valid change-id
                     }
 
-                    Toast.makeText(this, R.string.exception_cannot_handle_link,
-                            Toast.LENGTH_SHORT).show();
-                    finish();
+                    notifyInvalidArgsAndFinish();
                     break;
             }
         } else {
