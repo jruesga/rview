@@ -155,8 +155,13 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                     ActivityHelper.openChangeDetailsByUri(
                             this, UriHelper.createCustomUri(this, Constants.CUSTOM_URI_CHANGE_ID,
                                     UriHelper.extractChangeId(uri, acct.mRepository)));
+                    break;
                 }
+
+                // We cannot handle this
+                openExternalHttpLinkAndFinish(uri);
                 break;
+
 
             case Constants.CUSTOM_URI_QUERY:
                 String query = UriHelper.extractQuery(uri);
