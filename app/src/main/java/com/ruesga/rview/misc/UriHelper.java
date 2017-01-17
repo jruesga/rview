@@ -57,7 +57,10 @@ public class UriHelper {
         if (idx == -1) {
             return "-1";
         }
-        String query = q.substring(idx + repoUrl.length() - 1);
+        String query = q.substring(idx + repoUrl.length());
+        if (!query.startsWith("/")) {
+            query = "/" + query;
+        }
 
         String target = "-1";
         if (query.startsWith("/#/c/") || query.startsWith("/c/")) {
