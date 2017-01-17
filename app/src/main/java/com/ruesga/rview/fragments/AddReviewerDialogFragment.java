@@ -15,9 +15,11 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -43,8 +45,8 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
         public String reviewer;
     }
 
-    public interface OnReviewerSelected {
-        void onReviewerSelected(String reviewer);
+    public interface OnReviewerAdded {
+        void onReviewerAdded(String reviewer);
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -78,15 +80,10 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
 
     private AddReviewerDialogBinding mBinding;
     private final Model mModel = new Model();
-    private OnReviewerSelected mCallback;
 
     private int mLegacyChangeId;
 
     public AddReviewerDialogFragment() {
-    }
-
-    public void setOnReviewerSelected(OnReviewerSelected cb) {
-        mCallback = cb;
     }
 
     @Override
@@ -132,7 +129,13 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
     }
 
     private void performAddReviewer() {
-        mCallback.onReviewerSelected(mModel.reviewer);
+        final Activity a = getActivity();
+        final Fragment f = getParentFragment();
+        if (f != null && f instanceof OnReviewerAdded) {
+            ((OnReviewerAdded) f).onReviewerAdded(mModel.reviewer);
+        } else if (a != null && a instanceof OnReviewerAdded) {
+            ((OnReviewerAdded) a).onReviewerAdded(mModel.reviewer);
+        }
     }
 
     private void enabledOrDisableButtons(String query) {

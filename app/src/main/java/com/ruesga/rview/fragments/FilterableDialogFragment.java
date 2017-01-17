@@ -15,11 +15,13 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -38,8 +40,10 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
 
     public static final String TAG = "FilterableDialogFragment";
 
+    public static final String EXTRA_REQUEST_CODE = "request_code";
+
     public interface OnFilterSelectedListener {
-        void onFilterSelected(Object o);
+        void onFilterSelected(int requestCode, Object o);
     }
 
     @ProguardIgnored
@@ -47,15 +51,11 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         public String filter;
     }
 
-    private OnFilterSelectedListener mCallback;
     private boolean mIsUserSelection;
     private String mUserSelection;
+    private int mRequestCode;
 
     public FilterableDialogFragment() {
-    }
-
-    public void setOnFilterSelectedListener(OnFilterSelectedListener cb) {
-        mCallback = cb;
     }
 
     public abstract FilterableAdapter getAdapter();
@@ -78,6 +78,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE, 0);
 
         if (savedInstanceState != null) {
             mUserSelection = savedInstanceState.getString("userSelection");
@@ -138,7 +139,13 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
             mIsUserSelection = false;
             enabledOrDisableButtons();
         } else {
-            mCallback.onFilterSelected(result);
+            Activity a = getActivity();
+            Fragment f = getParentFragment();
+            if (f != null && f instanceof OnFilterSelectedListener) {
+                ((OnFilterSelectedListener) f).onFilterSelected(mRequestCode, result);
+            } else if (a != null && a instanceof OnFilterSelectedListener) {
+                ((OnFilterSelectedListener) a).onFilterSelected(mRequestCode, result);
+            }
         }
     }
 

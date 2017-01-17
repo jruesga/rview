@@ -15,9 +15,11 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -38,6 +40,8 @@ public class TagEditDialogFragment extends RevealDialogFragment {
     private static final String EXTRA_TAGS = "tags";
     private static final String EXTRA_ACTION = "action";
 
+    private static final String EXTRA_REQUEST_CODE = "request_code";
+
     @ProguardIgnored
     public static class Model {
         public String subtitle;
@@ -45,13 +49,13 @@ public class TagEditDialogFragment extends RevealDialogFragment {
         public String hint;
     }
 
-    public interface OnEditChanged {
-        void onEditChanged(Tag[] newTags);
+    public interface OnTagEditChanged {
+        void onTagEditChanged(int requestCode, Tag[] newTags);
     }
 
 
     public static TagEditDialogFragment newInstance(
-            String title, Tag[] tags, String action, View anchor) {
+            String title, Tag[] tags, String action, View anchor, int requestCode) {
         TagEditDialogFragment fragment = new TagEditDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_TITLE, title);
@@ -62,19 +66,17 @@ public class TagEditDialogFragment extends RevealDialogFragment {
         arguments.putStringArrayList(EXTRA_TAGS, serializedTags);
         arguments.putString(EXTRA_ACTION, action);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
+        arguments.putInt(EXTRA_REQUEST_CODE, requestCode);
         fragment.setArguments(arguments);
         return fragment;
     }
 
+    private int mRequestCode;
+
     private TagEditDialogBinding mBinding;
     private final Model mModel = new Model();
-    private OnEditChanged mCallback;
 
     public TagEditDialogFragment() {
-    }
-
-    public void setOnEditChanged(OnEditChanged cb) {
-        mCallback = cb;
     }
 
     @Override
@@ -99,6 +101,7 @@ public class TagEditDialogFragment extends RevealDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE);
         ArrayList<String> tags = getArguments().getStringArrayList(EXTRA_TAGS);
         mModel.tags.clear();
         if (tags != null) {
@@ -124,8 +127,12 @@ public class TagEditDialogFragment extends RevealDialogFragment {
 
     private void performEditChanged() {
         mBinding.tagsEditor.computeTags(null);
-        if (mCallback != null) {
-            mCallback.onEditChanged(mBinding.tagsEditor.getTags());
+        Activity a = getActivity();
+        Fragment f = getParentFragment();
+        if (f != null && f instanceof OnTagEditChanged) {
+            ((OnTagEditChanged) f).onTagEditChanged(mRequestCode, mBinding.tagsEditor.getTags());
+        } else if (a != null && a instanceof OnTagEditChanged) {
+            ((OnTagEditChanged) a).onTagEditChanged(mRequestCode, mBinding.tagsEditor.getTags());
         }
     }
 }

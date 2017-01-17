@@ -47,9 +47,6 @@ import com.ruesga.rview.databinding.FileInfoItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
 import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
 import com.ruesga.rview.exceptions.OperationFailedException;
-import com.ruesga.rview.fragments.ConfirmDialogFragment.OnActionConfirmed;
-import com.ruesga.rview.fragments.EditDialogFragment.OnEditChanged;
-import com.ruesga.rview.fragments.FilterableDialogFragment.OnFilterSelectedListener;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.AbandonInput;
@@ -125,7 +122,11 @@ import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.Empty;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
-public class ChangeDetailsFragment extends Fragment {
+public class ChangeDetailsFragment extends Fragment implements
+        AddReviewerDialogFragment.OnReviewerAdded,
+        FilterableDialogFragment.OnFilterSelectedListener,
+        EditDialogFragment.OnEditChanged,
+        ConfirmDialogFragment.OnActionConfirmed {
 
     private static final String TAG = "ChangeDetailsFragment";
 
@@ -152,6 +153,17 @@ public class ChangeDetailsFragment extends Fragment {
 
     private static final int DIFF_REQUEST_CODE = 99;
     private static final int EDIT_REQUEST_CODE = 98;
+
+    private static final int REQUEST_CODE_REBASE = 0;
+    private static final int REQUEST_CODE_CHERRY_PICK = 1;
+    private static final int REQUEST_CODE_MOVE_BRANCH = 2;
+    private static final int REQUEST_CODE_EDIT_MESSAGE = 3;
+    private static final int REQUEST_CODE_CHANGE_TOPIC = 4;
+    private static final int REQUEST_CODE_ABANDON_CHANGE = 5;
+    private static final int REQUEST_CODE_RESTORE_CHANGE = 6;
+    private static final int REQUEST_CODE_REVERT_CHANGE = 7;
+    private static final int REQUEST_CODE_FOLLOW_UP_CHANGE = 8;
+    private static final int REQUEST_CODE_SUBMIT_CHANGE = 9;
 
     @ProguardIgnored
     public static class ListModel {
@@ -225,7 +237,7 @@ public class ChangeDetailsFragment extends Fragment {
         public void onAddMeAsReviewerPressed(View v) {
             Account account = Preferences.getAccount(v.getContext());
             if (account != null) {
-                mFragment.performAddReviewer(String.valueOf(account.mAccount.accountId));
+                mFragment.onReviewerAdded(String.valueOf(account.mAccount.accountId));
             }
         }
 
@@ -1608,22 +1620,6 @@ public class ChangeDetailsFragment extends Fragment {
         }
     }
 
-    private void performChangeTopic(String newTopic) {
-        if (!isLocked()) {
-            mChangeTopicLoader.clear();
-            mChangeTopicLoader.restart(newTopic);
-        }
-    }
-
-    private void performEditMessage(String newMessage) {
-        if (!isLocked()) {
-            ChangeEditMessageInput input = new ChangeEditMessageInput();
-            input.message = newMessage;
-            mChangeEditMessageLoader.clear();
-            mChangeEditMessageLoader.restart(input);
-        }
-    }
-
     private void performAccountClicked(AccountInfo account) {
         ChangeQuery filter = new ChangeQuery().owner(ModelHelper.getSafeAccountOwner(account));
         String title = getString(R.string.account_details);
@@ -1631,13 +1627,6 @@ public class ChangeDetailsFragment extends Fragment {
         String extra = SerializationManager.getInstance().toJson(account);
         ActivityHelper.openStatsActivity(getContext(), title, displayName,
                 StatsFragment.ACCOUNT_STATS, String.valueOf(account.accountId), filter, extra);
-    }
-
-    private void performAddReviewer(String reviewer) {
-        if (!isLocked()) {
-            mAddReviewerLoader.clear();
-            mAddReviewerLoader.restart(reviewer);
-        }
     }
 
     private void performRemoveAccount(AccountInfo account) {
@@ -1725,9 +1714,8 @@ public class ChangeDetailsFragment extends Fragment {
 
         String message = mResponse.mChange.revisions.get(mCurrentRevision).commit.message;
 
-        EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, null, message, action, hint, false, true, true, v);
-        fragment.setOnEditChanged(this::performEditMessage);
+        EditDialogFragment fragment = EditDialogFragment.newInstance(title, null, message,
+                action, hint, false, true, true, v, REQUEST_CODE_EDIT_MESSAGE, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
@@ -1751,18 +1739,13 @@ public class ChangeDetailsFragment extends Fragment {
     private void performShowAddReviewerDialog(View v) {
         AddReviewerDialogFragment fragment =
                 AddReviewerDialogFragment.newInstance(mLegacyChangeId, v);
-        fragment.setOnReviewerSelected(this::performAddReviewer);
         fragment.show(getChildFragmentManager(), AddReviewerDialogFragment.TAG);
     }
 
     private void performShowMoveBranchDialog(View v) {
         BranchChooserDialogFragment fragment = BranchChooserDialogFragment.newInstance(
-                R.string.move_branch_title, R.string.action_move,
-                mResponse.mChange.project, mResponse.mChange.branch, null, v);
-        fragment.setOnFilterSelectedListener(o -> {
-            mMoveBranchLoader.clear();
-            mMoveBranchLoader.restart((String) o);
-        });
+                R.string.move_branch_title, R.string.action_move, mResponse.mChange.project,
+                mResponse.mChange.branch, null, v, REQUEST_CODE_MOVE_BRANCH);
         fragment.show(getChildFragmentManager(), BranchChooserDialogFragment.TAG);
     }
 
@@ -1771,39 +1754,37 @@ public class ChangeDetailsFragment extends Fragment {
         String action = getString(R.string.action_change);
         String hint = getString(R.string.change_topic_hint);
 
-        EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, null, mResponse.mChange.topic, action, hint, true, true, false, v);
-        fragment.setOnEditChanged(this::performChangeTopic);
+        EditDialogFragment fragment = EditDialogFragment.newInstance(title, null,
+                mResponse.mChange.topic, action, hint, true, true, false, v,
+                REQUEST_CODE_CHANGE_TOPIC, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
-    private void performShowChooseBaseDialog(View v, OnFilterSelectedListener cb) {
+    private void performShowRebaseDialog(View v) {
         BaseChooserDialogFragment fragment = BaseChooserDialogFragment.newInstance(
-                mLegacyChangeId, mResponse.mChange.project, mResponse.mChange.branch, v);
-        fragment.setOnFilterSelectedListener(cb);
+                mLegacyChangeId, mResponse.mChange.project, mResponse.mChange.branch, v,
+                REQUEST_CODE_REBASE);
         fragment.show(getChildFragmentManager(), BaseChooserDialogFragment.TAG);
     }
 
-    private void performShowCherryPickDialog(View v, OnFilterSelectedListener cb) {
+    private void performShowCherryPickDialog(View v) {
         String message = mResponse.mChange.revisions.get(mCurrentRevision).commit.message;
         BranchChooserDialogFragment fragment = BranchChooserDialogFragment.newInstance(
                 R.string.change_action_cherrypick, R.string.change_action_cherrypick,
-                mResponse.mChange.project, mResponse.mChange.branch, message, v);
-        fragment.setOnFilterSelectedListener(cb);
+                mResponse.mChange.project, mResponse.mChange.branch, message, v,
+                REQUEST_CODE_CHERRY_PICK);
         fragment.show(getChildFragmentManager(), BranchChooserDialogFragment.TAG);
     }
 
     private void performShowRequestMessageDialog(View v, String title,
-            String action, String hint, String text, boolean canBeEmpty, OnEditChanged cb) {
+            String action, String hint, String text, boolean canBeEmpty, int requestCode) {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, null, text, action, hint, canBeEmpty, true, true, v);
-        fragment.setOnEditChanged(cb);
+                title, null, text, action, hint, canBeEmpty, true, true, v, requestCode, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
-    private void performConfirmDialog(View v, String message, OnActionConfirmed cb) {
-        ConfirmDialogFragment fragment = ConfirmDialogFragment.newInstance(message, v);
-        fragment.setOnActionConfirmed(cb);
+    private void performConfirmDialog(View v, String message, int requestCode) {
+        ConfirmDialogFragment fragment = ConfirmDialogFragment.newInstance(message, v, requestCode);
         fragment.show(getChildFragmentManager(), ConfirmDialogFragment.TAG);
     }
 
@@ -1845,42 +1826,25 @@ public class ChangeDetailsFragment extends Fragment {
             String hint;
             switch (v.getId()) {
                 case R.id.cherrypick:
-                    performShowCherryPickDialog(v, o -> {
-                          String[] result = (String[]) o;
-                          mActionLoader.clear();
-                          mActionLoader.restart(ModelHelper.ACTION_CHERRY_PICK,
-                                  new String[]{result[0], result[1]});
-                    });
+                    performShowCherryPickDialog(v);
                     break;
 
                 case R.id.rebase:
-                    performShowChooseBaseDialog(v, o -> {
-                            mActionLoader.clear();
-                            mActionLoader.restart(
-                                ModelHelper.ACTION_REBASE, new String[]{(String) o});
-                            });
+                    performShowRebaseDialog(v);
                     break;
 
                 case R.id.abandon:
                     action = getString(R.string.change_action_abandon);
                     hint = getString(R.string.actions_comment_hint);
-                    performShowRequestMessageDialog(v, action, action, hint, null, true,
-                            newValue -> {
-                                mActionLoader.clear();
-                                mActionLoader.restart(
-                                    ModelHelper.ACTION_ABANDON, new String[]{newValue});
-                            });
+                    performShowRequestMessageDialog(
+                            v, action, action, hint, null, true, REQUEST_CODE_ABANDON_CHANGE);
                     break;
 
                 case R.id.restore:
                     action = getString(R.string.change_action_restore);
                     hint = getString(R.string.actions_comment_hint);
-                    performShowRequestMessageDialog(v, action, action, hint, null, true,
-                            newValue -> {
-                                mActionLoader.clear();
-                                mActionLoader.restart(
-                                    ModelHelper.ACTION_RESTORE, new String[]{newValue});
-                            });
+                    performShowRequestMessageDialog(
+                            v, action, action, hint, null, true, REQUEST_CODE_RESTORE_CHANGE);
                     break;
 
                 case R.id.revert: {
@@ -1889,12 +1853,8 @@ public class ChangeDetailsFragment extends Fragment {
                     String message = getString(R.string.revert_msg_template,
                             mResponse.mChange.revisions.get(mCurrentRevision).commit.subject,
                             mCurrentRevision);
-                    performShowRequestMessageDialog(v, action, action, hint, message, true,
-                            newValue -> {
-                                mActionLoader.clear();
-                                mActionLoader.restart(
-                                    ModelHelper.ACTION_REVERT, new String[]{newValue});
-                            });
+                    performShowRequestMessageDialog(
+                            v, action, action, hint, message, true, REQUEST_CODE_REVERT_CHANGE);
                     break;
                 }
 
@@ -1919,20 +1879,13 @@ public class ChangeDetailsFragment extends Fragment {
                 case R.id.follow_up:
                     action = getString(R.string.change_action_follow_up);
                     hint = getString(R.string.actions_message_hint);
-                    performShowRequestMessageDialog(v, action, action, hint, null, false,
-                            newValue -> {
-                                mActionLoader.clear();
-                                mActionLoader.restart(
-                                    ModelHelper.ACTION_FOLLOW_UP, new String[]{newValue});
-                            });
+                    performShowRequestMessageDialog(
+                            v, action, action, hint, null, false, REQUEST_CODE_FOLLOW_UP_CHANGE);
                     break;
 
                 case R.id.submit:
                     String message = getString(R.string.actions_confirm_submit);
-                    performConfirmDialog(v, message, () -> {
-                        mActionLoader.clear();
-                        mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
-                    });
+                    performConfirmDialog(v, message, REQUEST_CODE_SUBMIT_CHANGE);
                     break;
             }
         }
@@ -2131,4 +2084,88 @@ public class ChangeDetailsFragment extends Fragment {
         return mResponse == null || mResponse.mChange == null || mModel.isLocked;
     }
 
+    @Override
+    public void onReviewerAdded(String reviewer) {
+        if (!isLocked()) {
+            mAddReviewerLoader.clear();
+            mAddReviewerLoader.restart(reviewer);
+        }
+    }
+
+    @Override
+    public void onFilterSelected(int requestCode, Object o) {
+        if (!isLocked()) {
+            switch (requestCode) {
+                case REQUEST_CODE_REBASE:
+                    mActionLoader.clear();
+                    mActionLoader.restart(ModelHelper.ACTION_REBASE, new String[]{(String) o});
+                    break;
+                case REQUEST_CODE_CHERRY_PICK:
+                    String[] result = (String[]) o;
+                    mActionLoader.clear();
+                    mActionLoader.restart(ModelHelper.ACTION_CHERRY_PICK,
+                            new String[]{result[0], result[1]});
+                    break;
+                case REQUEST_CODE_MOVE_BRANCH:
+                    mMoveBranchLoader.clear();
+                    mMoveBranchLoader.restart((String) o);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onEditChanged(int requestCode, Bundle requestData, String newValue) {
+        if (!isLocked()) {
+            switch (requestCode) {
+                case REQUEST_CODE_EDIT_MESSAGE:
+                    ChangeEditMessageInput input = new ChangeEditMessageInput();
+                    input.message = newValue;
+                    mChangeEditMessageLoader.clear();
+                    mChangeEditMessageLoader.restart(input);
+                    break;
+
+                case REQUEST_CODE_CHANGE_TOPIC:
+                    mChangeTopicLoader.clear();
+                    mChangeTopicLoader.restart(newValue);
+                    break;
+
+                case REQUEST_CODE_ABANDON_CHANGE:
+                    mActionLoader.clear();
+                    mActionLoader.restart(
+                            ModelHelper.ACTION_ABANDON, new String[]{newValue});
+                    break;
+
+                case REQUEST_CODE_RESTORE_CHANGE:
+                    mActionLoader.clear();
+                    mActionLoader.restart(
+                            ModelHelper.ACTION_RESTORE, new String[]{newValue});
+                    break;
+
+                case REQUEST_CODE_REVERT_CHANGE:
+                    mActionLoader.clear();
+                    mActionLoader.restart(
+                            ModelHelper.ACTION_REVERT, new String[]{newValue});
+                    break;
+
+                case REQUEST_CODE_FOLLOW_UP_CHANGE:
+                    mActionLoader.clear();
+                    mActionLoader.restart(
+                            ModelHelper.ACTION_FOLLOW_UP, new String[]{newValue});
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onActionConfirmed(int requestCode) {
+        if (!isLocked()) {
+            switch (requestCode) {
+                case REQUEST_CODE_SUBMIT_CHANGE:
+                    mActionLoader.clear();
+                    mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
+                    break;
+            }
+        }
+    }
 }

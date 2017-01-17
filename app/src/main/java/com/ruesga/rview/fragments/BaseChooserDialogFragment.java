@@ -38,13 +38,14 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment implemen
     public static final String TAG = "BaseChooserDialogFragment";
 
     public static BaseChooserDialogFragment newInstance(
-            int legacyChangeId, String projectId, String branch, View anchor) {
+            int legacyChangeId, String projectId, String branch, View anchor, int requestCode) {
         BaseChooserDialogFragment fragment = new BaseChooserDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putString(Constants.EXTRA_PROJECT_ID, projectId);
         arguments.putString(Constants.EXTRA_BRANCH, branch);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
+        arguments.putInt(EXTRA_REQUEST_CODE, requestCode);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -135,5 +136,4 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment implemen
             return null;
         }
     }
-
 }

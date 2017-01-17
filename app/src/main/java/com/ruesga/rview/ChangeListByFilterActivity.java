@@ -37,7 +37,8 @@ import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
-public class ChangeListByFilterActivity extends ChangeListBaseActivity {
+public class ChangeListByFilterActivity extends ChangeListBaseActivity implements
+        EditDialogFragment.OnEditChanged {
 
     private int mSelectedChangeId = INVALID_ITEM;
 
@@ -176,29 +177,25 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity {
         closeOptionsDrawer();
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                getString(R.string.custom_filter_title),
-                null,
-                null,
-                getString(R.string.action_save),
-                getString(R.string.custom_filter_hint),
-                false,
-                false,
-                false,
-                v);
-        fragment.setOnEditChanged(newValue -> {
-            final Context ctx = ChangeListByFilterActivity.this;
-            CustomFilter cf = new CustomFilter(newValue, mQuery);
-            Account account = Preferences.getAccount(ctx);
-            Preferences.saveAccountCustomFilter(ctx, account, cf);
-
-            mDirty = false;
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().setTitle(newValue);
-            }
-            invalidateOptionsMenu();
-
-            setResult(RESULT_OK);
-        });
+                getString(R.string.custom_filter_title), null, null,
+                getString(R.string.action_save), getString(R.string.custom_filter_hint),
+                false, false, false, v, 0, null);
         fragment.show(getSupportFragmentManager(), EditDialogFragment.TAG);
+    }
+
+    @Override
+    public void onEditChanged(int requestCode, Bundle requestData, String newValue) {
+        final Context ctx = ChangeListByFilterActivity.this;
+        CustomFilter cf = new CustomFilter(newValue, mQuery);
+        Account account = Preferences.getAccount(ctx);
+        Preferences.saveAccountCustomFilter(ctx, account, cf);
+
+        mDirty = false;
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(newValue);
+        }
+        invalidateOptionsMenu();
+
+        setResult(RESULT_OK);
     }
 }

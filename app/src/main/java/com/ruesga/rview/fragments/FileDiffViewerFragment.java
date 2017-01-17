@@ -84,9 +84,13 @@ import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 import okhttp3.ResponseBody;
 
-public class FileDiffViewerFragment extends Fragment {
+public class FileDiffViewerFragment extends Fragment implements EditDialogFragment.OnEditChanged {
 
     private static final String TAG = "FileDiffViewerFragment";
+
+    private static final int REQUEST_CODE_NEW_DRAFT = 0;
+    private static final int REQUEST_CODE_REPLY = 1;
+    private static final int REQUEST_CODE_EDIT = 2;
 
     public interface OnDiffCompleteListener {
         void onDiffComplete(boolean isBinary, boolean hasImagePreview);
@@ -152,25 +156,22 @@ public class FileDiffViewerFragment extends Fragment {
         public void onNewDraft(View v, boolean left, Integer line) {
             final String baseRevision = mBase == null ? "0" : mBase;
             String rev = left ? baseRevision : mRevision;
-            performShowDraftMessageDialog(v, line, left, null,
-                    newValue -> {
-                        mActionLoader.clear();
-                        mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
-                            new String[]{rev, null,
-                                    line == null ? null : String.valueOf(line), newValue});
-                    });
+
+            Bundle data = new Bundle();
+            data.putString("line", line == null ? null : String.valueOf(line));
+            data.putString("revisionId", rev);
+            performShowDraftMessageDialog(v, line, left, null, REQUEST_CODE_NEW_DRAFT, data);
         }
 
         @Override
         public void onReply(View v, String revisionId, String commentId, Integer line) {
             boolean left = !(revisionId.equals(mRevision));
-            performShowDraftMessageDialog(v, line, left, null,
-                    newValue -> {
-                        mActionLoader.clear();
-                        mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
-                            new String[]{revisionId, commentId,
-                                    line == null ? null : String.valueOf(line), newValue}) ;
-                    });
+
+            Bundle data = new Bundle();
+            data.putString("line", line == null ? null : String.valueOf(line));
+            data.putString("revisionId", revisionId);
+            data.putString("commentId", commentId);
+            performShowDraftMessageDialog(v, line, left, null, REQUEST_CODE_REPLY, data);
         }
 
         @Override
@@ -186,13 +187,13 @@ public class FileDiffViewerFragment extends Fragment {
         public void onEditDraft(View v, String revisionId, String draftId,
                 String inReplyTo, Integer line, String msg) {
             boolean left = !(revisionId.equals(mRevision));
-            performShowDraftMessageDialog(v, line, left, msg,
-                    newValue -> {
-                        mActionLoader.clear();
-                        mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
-                            new String[]{revisionId, draftId, inReplyTo,
-                                    line == null ? null : String.valueOf(line), newValue});
-                    });
+
+            Bundle data = new Bundle();
+            data.putString("line", line == null ? null : String.valueOf(line));
+            data.putString("revisionId", revisionId);
+            data.putString("draftId", draftId);
+            data.putString("inReplyTo", inReplyTo);
+            performShowDraftMessageDialog(v, line, left, msg, REQUEST_CODE_EDIT, data);
         }
 
         @Override
@@ -754,7 +755,7 @@ public class FileDiffViewerFragment extends Fragment {
     }
 
     private void performShowDraftMessageDialog(View v, Integer line, boolean isLeftSide,
-            String comment, EditDialogFragment.OnEditChanged cb) {
+            String comment, int requestCode, Bundle requestData) {
         final String side = isLeftSide
                 ? getString(R.string.options_base_left)
                 : getString(R.string.options_base_right);
@@ -768,9 +769,8 @@ public class FileDiffViewerFragment extends Fragment {
         }
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                getString(R.string.draft_title), subtitle, comment,
-                    getString(R.string.action_save), getString(R.string.draft_hint), false, true, true, v);
-        fragment.setOnEditChanged(cb);
+                getString(R.string.draft_title), subtitle, comment, getString(R.string.action_save),
+                getString(R.string.draft_hint), false, true, true, v, requestCode, requestData);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
@@ -1075,5 +1075,36 @@ public class FileDiffViewerFragment extends Fragment {
             mShowBlameB = blame;
         }
         mBinding.diff.refresh();
+    }
+
+    @Override
+    public void onEditChanged(int requestCode, Bundle requestData, String newValue) {
+        String line = requestData.getString("line");
+        String revisionId = requestData.getString("revisionId");
+        String commentId = requestData.getString("commentId");
+        String draftId = requestData.getString("draftId");
+        String inReplyTo = requestData.getString("inReplyTo");
+        switch (requestCode) {
+            case REQUEST_CODE_NEW_DRAFT:
+                mActionLoader.clear();
+                mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
+                        new String[]{revisionId, null,
+                                line == null ? null : String.valueOf(line), newValue});
+                break;
+
+            case REQUEST_CODE_REPLY:
+                mActionLoader.clear();
+                mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
+                        new String[]{revisionId, commentId,
+                                line == null ? null : String.valueOf(line), newValue});
+                break;
+
+            case REQUEST_CODE_EDIT:
+                mActionLoader.clear();
+                mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
+                        new String[]{revisionId, draftId, inReplyTo,
+                                line == null ? null : String.valueOf(line), newValue});
+                break;
+        }
     }
 }

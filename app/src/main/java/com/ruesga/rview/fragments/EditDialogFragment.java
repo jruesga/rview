@@ -15,9 +15,11 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
@@ -44,6 +46,9 @@ public class EditDialogFragment extends RevealDialogFragment {
     private static final String EXTRA_ALLOW_SUGGESTIONS = "allow_suggestions";
     private static final String EXTRA_USE_MULTI_LINE = "multi_line";
 
+    private static final String EXTRA_REQUEST_CODE = "request_code";
+    private static final String EXTRA_REQUEST_DATA= "request_data";
+
     @ProguardIgnored
     public static class Model {
         public String subtitle;
@@ -54,7 +59,7 @@ public class EditDialogFragment extends RevealDialogFragment {
     }
 
     public interface OnEditChanged {
-        void onEditChanged(String newValue);
+        void onEditChanged(int requestCode, @Nullable Bundle requestData, String newValue);
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -74,8 +79,8 @@ public class EditDialogFragment extends RevealDialogFragment {
 
 
     public static EditDialogFragment newInstance(String title, String subtitle, String value,
-                String action, String hint, boolean allowEmpty,
-                boolean allowSuggestions, boolean multiLine, View anchor) {
+                String action, String hint, boolean allowEmpty, boolean allowSuggestions,
+                boolean multiLine, View anchor, int requestCode, @Nullable Bundle data) {
         EditDialogFragment fragment = new EditDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_TITLE, title);
@@ -89,21 +94,23 @@ public class EditDialogFragment extends RevealDialogFragment {
         arguments.putBoolean(EXTRA_ALLOW_SUGGESTIONS, allowSuggestions);
         arguments.putBoolean(EXTRA_USE_MULTI_LINE, multiLine);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
+        arguments.putInt(EXTRA_REQUEST_CODE, requestCode);
+        if (data != null) {
+            arguments.putBundle(EXTRA_REQUEST_DATA, data);
+        }
         fragment.setArguments(arguments);
         return fragment;
     }
 
+    private int mRequestCode;
+    private Bundle mRequestData;
+
     private EditDialogBinding mBinding;
     private final Model mModel = new Model();
-    private OnEditChanged mCallback;
 
     private String mOriginalValue;
 
     public EditDialogFragment() {
-    }
-
-    public void setOnEditChanged(OnEditChanged cb) {
-        mCallback = cb;
     }
 
     @Override
@@ -134,6 +141,10 @@ public class EditDialogFragment extends RevealDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE);
+        if (getArguments().containsKey(EXTRA_REQUEST_DATA)) {
+            mRequestData = getArguments().getBundle(EXTRA_REQUEST_DATA);
+        }
         mModel.subtitle = getArguments().getString(EXTRA_SUBTITLE);
         mModel.value = getArguments().getString(EXTRA_VALUE);
         mModel.hint = getArguments().getString(EXTRA_HINT);
@@ -157,8 +168,12 @@ public class EditDialogFragment extends RevealDialogFragment {
     }
 
     private void performEditChanged() {
-        if (mCallback != null) {
-            mCallback.onEditChanged(mModel.value);
+        Activity a = getActivity();
+        Fragment f = getParentFragment();
+        if (f != null && f instanceof OnEditChanged) {
+            ((OnEditChanged) f).onEditChanged(mRequestCode, mRequestData, mModel.value);
+        } else if (a != null && a instanceof OnEditChanged) {
+            ((OnEditChanged) a).onEditChanged(mRequestCode, mRequestData, mModel.value);
         }
     }
 

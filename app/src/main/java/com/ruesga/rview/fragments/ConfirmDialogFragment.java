@@ -15,7 +15,10 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 
@@ -26,18 +29,21 @@ public class ConfirmDialogFragment extends RevealDialogFragment {
     public static final String TAG = "ConfirmDialogFragment";
 
     public interface OnActionConfirmed {
-        void onActionConfirmed();
+        void onActionConfirmed(int requestCode);
     }
 
     private static final String EXTRA_MESSAGE = "message";
 
-    private OnActionConfirmed mCallback;
+    private static final String EXTRA_REQUEST_CODE = "request_code";
 
-    public static ConfirmDialogFragment newInstance(String message, View anchor) {
+    private int mRequestCode;
+
+    public static ConfirmDialogFragment newInstance(String message, View anchor, int requestCode) {
         ConfirmDialogFragment fragment = new ConfirmDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_MESSAGE, message);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
+        arguments.putInt(EXTRA_REQUEST_CODE, requestCode);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -45,8 +51,10 @@ public class ConfirmDialogFragment extends RevealDialogFragment {
     public ConfirmDialogFragment() {
     }
 
-    public void setOnActionConfirmed(OnActionConfirmed cb) {
-        mCallback = cb;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE);
     }
 
     @Override
@@ -58,8 +66,12 @@ public class ConfirmDialogFragment extends RevealDialogFragment {
     }
 
     private void performConfirmAction() {
-        if (mCallback != null) {
-            mCallback.onActionConfirmed();
+        Activity a = getActivity();
+        Fragment f = getParentFragment();
+        if (f != null & f instanceof OnActionConfirmed) {
+            ((OnActionConfirmed) f).onActionConfirmed(mRequestCode);
+        } else if (a != null & a instanceof OnActionConfirmed) {
+            ((OnActionConfirmed) a).onActionConfirmed(mRequestCode);
         }
     }
 

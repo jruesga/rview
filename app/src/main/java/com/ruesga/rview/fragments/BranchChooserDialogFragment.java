@@ -39,7 +39,7 @@ public class BranchChooserDialogFragment extends FilterableDialogFragment {
     public static final String TAG = "BranchChooserDialogFragment";
 
     public static BranchChooserDialogFragment newInstance(int title, int action,
-            String projectId, String branch, String message, View anchor) {
+            String projectId, String branch, String message, View anchor, int requestCode) {
         BranchChooserDialogFragment fragment = new BranchChooserDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_TITLE, title);
@@ -50,6 +50,7 @@ public class BranchChooserDialogFragment extends FilterableDialogFragment {
             arguments.putString(Constants.EXTRA_MESSAGE, message);
         }
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
+        arguments.putInt(EXTRA_REQUEST_CODE, requestCode);
         fragment.setArguments(arguments);
         return fragment;
     }
