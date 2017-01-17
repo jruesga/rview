@@ -122,7 +122,7 @@ public class EditDialogFragment extends RevealDialogFragment {
         }
 
         boolean allowSuggestions = getArguments().getBoolean(EXTRA_ALLOW_SUGGESTIONS, false);
-        int inputType =
+        int inputType = InputType.TYPE_CLASS_TEXT |
                 (mModel.isMultiLine ? InputType.TYPE_TEXT_FLAG_MULTI_LINE : 0) |
                 (allowSuggestions ? 0 : InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
