@@ -554,7 +554,8 @@ public class ChangeDetailsFragment extends Fragment implements
             Pattern pattern = Pattern.compile(mRepository.mCiAccounts, Pattern.MULTILINE);
             ArrayList<ChangeMessageInfo> msgs = new ArrayList<>();
             for (ChangeMessageInfo msg : messages) {
-                if (msg.author.name == null || !pattern.matcher(msg.author.name).matches()) {
+                if (msg.author == null || msg.author.name == null ||
+                        !pattern.matcher(msg.author.name).matches()) {
                     msgs.add(msg);
                 }
             }
