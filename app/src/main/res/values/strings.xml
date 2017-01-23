@@ -456,6 +456,7 @@
 
     <!-- Blame -->
     <string name="blame_format"><xliff:g id="commit" example="05eb62a0">%1$s</xliff:g> <xliff:g id="date" example="1/20/15">%2$s</xliff:g> <xliff:g id="author" example="John Dow">%3$s</xliff:g></string>
+    <string name="fetching_blames">Fetching file blames\u2026</string>
 
     <!-- Chips -->
     <string name="chip_remove" translatable="false">X</string>

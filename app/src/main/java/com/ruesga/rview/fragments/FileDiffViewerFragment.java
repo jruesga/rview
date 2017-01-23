@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -130,6 +131,45 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         }
     };
 
+    private final RxLoaderObserver<FileDiffResponse> mBlamesObserver
+            = new RxLoaderObserver<FileDiffResponse>() {
+        @Override
+        public void onNext(FileDiffResponse response) {
+            mResponse = response;
+            update();
+            showProgress(false);
+
+            if (mDialog != null) {
+                mDialog.dismiss();
+            }
+            mDialog = null;
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+            showProgress(false);
+
+            if (mDialog != null) {
+                mDialog.dismiss();
+            }
+            mDialog = null;
+        }
+
+        @Override
+        public void onStarted() {
+            showProgress(true);
+
+            if (mDialog != null) {
+                mDialog.dismiss();
+            }
+            mDialog = new ProgressDialog(getActivity());
+            mDialog.setMessage(getString(R.string.fetching_blames));
+            mDialog.setCancelable(false);
+            mDialog.show();
+        }
+    };
+
     private final RxLoaderObserver<Object> mActionObserver = new RxLoaderObserver<Object>() {
         @Override
         public void onNext(Object value) {
@@ -212,6 +252,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
     private RxLoader2<String, String[], Object> mActionLoader;
     private RxLoader<Boolean> mReviewedLoader;
     private RxLoader<FileDiffResponse> mDraftsLoader;
+    private RxLoader<FileDiffResponse> mBlamesLoader;
 
     private ChangeInfo mChange;
 
@@ -234,6 +275,8 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
     private String mSkipLinesHistory;
     private boolean mShowBlameA;
     private boolean mShowBlameB;
+
+    private ProgressDialog mDialog;
 
     public static FileDiffViewerFragment newInstance(String revisionId, String file,
             String comment, int base, int revision, int mode, boolean wrap, float textSizeFactor,
@@ -388,6 +431,8 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                     "file-reviewed" + hashCode(), performReviewedStatus(), mReviewedObserver);
             mDraftsLoader = loaderManager.create(
                     "file-drafts" + hashCode(), fetchDrafts(), mObserver);
+            mBlamesLoader = loaderManager.create(
+                    "file-blames" + hashCode(), fetchBlames(), mBlamesObserver);
             mLoader.start();
         }
     }
@@ -396,6 +441,10 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
     public final void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
+        if (mDialog != null) {
+            mDialog.dismiss();
+        }
+        mDialog = null;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -405,20 +454,11 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         final String diffCacheId = baseRevision + "_" + mRevision + "_" + mFileHash + "_";
         final Integer base = mBase == null ? null : Integer.valueOf(mBase);
         final Type commentType = new TypeToken<Map<String, List<CommentInfo>>>(){}.getType();
-        final Type blameType = new TypeToken<List<BlameInfo>>(){}.getType();
         final boolean isBinary = !mFile.equals(Constants.COMMIT_MESSAGE)
                 && mChange.revisions.get(mRevisionId).files.get(mFile) != null
                 && mChange.revisions.get(mRevisionId).files.get(mFile).binary;
         final boolean isSameBase =
                 (base != null && base == mChange.revisions.get(mRevisionId).number);
-        final FileStatus fileStatus;
-        if (!mFile.equals(Constants.COMMIT_MESSAGE)
-                && mChange.revisions.get(mRevisionId).files.get(mFile) != null
-                && mChange.revisions.get(mRevisionId).files.containsKey(mFile)) {
-            fileStatus = mChange.revisions.get(mRevisionId).files.get(mFile).status;
-        } else {
-            fileStatus = null;
-        }
 
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -504,45 +544,6 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                         }),
                         commentType,
                         mRevision + "_" + CacheHelper.CACHE_DRAFT_JSON),
-                withCached(
-                        SafeObservable.fromNullCallable(() -> {
-                            if (api.supportsFeature(Features.BLAME)
-                                    && !mFile.equals(Constants.COMMIT_MESSAGE)
-                                    && !isBinary
-                                    && (fileStatus != null && !fileStatus.equals(FileStatus.A))
-                                    && mAccount.hasAuthenticatedAccessMode()) {
-                                BlameBaseType baseType = mBase == null
-                                        ? BlameBaseType.t : BlameBaseType.f;
-                                String rev = mBase == null ? mRevisionId : baseRevision;
-                                return api.getChangeRevisionFileBlames(
-                                            String.valueOf(mChange.legacyChangeId),
-                                            rev,
-                                            mFile,
-                                            baseType)
-                                        .blockingFirst();
-                            }
-                            return new ArrayList<>();
-                        }),
-                        blameType,
-                        baseRevision + "_" + CacheHelper.CACHE_BLAME),
-                withCached(
-                        SafeObservable.fromNullCallable(() -> {
-                            if (api.supportsFeature(Features.BLAME)
-                                    && !mFile.equals(Constants.COMMIT_MESSAGE)
-                                    && !isBinary
-                                    && (fileStatus != null && !fileStatus.equals(FileStatus.D))
-                                    && mAccount.hasAuthenticatedAccessMode()) {
-                                return api.getChangeRevisionFileBlames(
-                                            String.valueOf(mChange.legacyChangeId),
-                                            mRevisionId,
-                                            mFile,
-                                            BlameBaseType.f)
-                                        .blockingFirst();
-                            }
-                            return new ArrayList<>();
-                        }),
-                        blameType,
-                        mRevision + "_" + CacheHelper.CACHE_BLAME),
                 this::combine
             )
             .subscribeOn(Schedulers.io())
@@ -585,6 +586,71 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
     }
 
     @SuppressWarnings("ConstantConditions")
+    private Observable<FileDiffResponse> fetchBlames() {
+        // Generate ids
+        final String baseRevision = mBase == null ? "0" : mBase;
+        final Type blameType = new TypeToken<List<BlameInfo>>(){}.getType();
+        final boolean isBinary = !mFile.equals(Constants.COMMIT_MESSAGE)
+                && mChange.revisions.get(mRevisionId).files.get(mFile) != null
+                && mChange.revisions.get(mRevisionId).files.get(mFile).binary;
+        final FileStatus fileStatus;
+        if (!mFile.equals(Constants.COMMIT_MESSAGE)
+                && mChange.revisions.get(mRevisionId).files.get(mFile) != null
+                && mChange.revisions.get(mRevisionId).files.containsKey(mFile)) {
+            fileStatus = mChange.revisions.get(mRevisionId).files.get(mFile).status;
+        } else {
+            fileStatus = null;
+        }
+
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return Observable.zip(
+                withCached(
+                        SafeObservable.fromNullCallable(() -> {
+                            if (api.supportsFeature(Features.BLAME)
+                                    && !mFile.equals(Constants.COMMIT_MESSAGE)
+                                    && !isBinary
+                                    && (fileStatus != null && !fileStatus.equals(FileStatus.A))
+                                    && mAccount.hasAuthenticatedAccessMode()) {
+                                BlameBaseType baseType = mBase == null
+                                        ? BlameBaseType.t : BlameBaseType.f;
+                                String rev = mBase == null ? mRevisionId : baseRevision;
+                                return api.getChangeRevisionFileBlames(
+                                            String.valueOf(mChange.legacyChangeId),
+                                            rev,
+                                            mFile,
+                                            baseType)
+                                        .blockingFirst();
+                            }
+                            return new ArrayList<>();
+                        }),
+                        blameType,
+                        baseRevision + "_" + CacheHelper.CACHE_BLAME),
+                withCached(
+                        SafeObservable.fromNullCallable(() -> {
+                            if (api.supportsFeature(Features.BLAME)
+                                    && !mFile.equals(Constants.COMMIT_MESSAGE)
+                                    && !isBinary
+                                    && (fileStatus != null && !fileStatus.equals(FileStatus.D))
+                                    && mAccount.hasAuthenticatedAccessMode()) {
+                                return api.getChangeRevisionFileBlames(
+                                            String.valueOf(mChange.legacyChangeId),
+                                            mRevisionId,
+                                            mFile,
+                                            BlameBaseType.f)
+                                        .blockingFirst();
+                            }
+                            return new ArrayList<>();
+                        }),
+                        blameType,
+                        mRevision + "_" + CacheHelper.CACHE_BLAME),
+                this::combineBlames
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private Observable<Boolean> performReviewedStatus() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -600,7 +666,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
 
     private FileDiffResponse combine(DiffInfo diff, Map<String, List<CommentInfo>> commentsA,
             Map<String, List<CommentInfo>> commentsB, Map<String, List<CommentInfo>> draftsA,
-            Map<String, List<CommentInfo>> draftsB, List<BlameInfo> blameA, List<BlameInfo> blameB) {
+            Map<String, List<CommentInfo>> draftsB) {
         int base = mBase == null ? 0 : Integer.parseInt(mBase);
         int revision = Integer.parseInt(mRevision);
 
@@ -612,7 +678,6 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         response.draftComments = new Pair<>(
                 mapCommentsToList(draftsA, base == 0 ? draftsB : null, base, base, true),
                 mapCommentsToList(draftsB, null, revision, base, false));
-        response.blames =  new Pair<>(blameA, blameB);
 
         // Cache the fetched data
         try {
@@ -662,6 +727,8 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             mReviewedLoader.restart();
         }
 
+        response.blames = new Pair<>(new ArrayList<>(), new ArrayList<>());
+
         return response;
     }
 
@@ -689,6 +756,11 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             Log.e(TAG, "Failed to save drafts cached data", ex);
         }
 
+        return mResponse;
+    }
+
+    private FileDiffResponse combineBlames(List<BlameInfo> blameA, List<BlameInfo> blameB) {
+        mResponse.blames =  new Pair<>(blameA, blameB);
         return mResponse;
     }
 
@@ -1074,7 +1146,8 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             mBinding.diff.showBlameB(blame);
             mShowBlameB = blame;
         }
-        mBinding.diff.refresh();
+
+        performRequestBlames();
     }
 
     @Override
@@ -1105,6 +1178,17 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                         new String[]{revisionId, draftId, inReplyTo,
                                 line == null ? null : String.valueOf(line), newValue});
                 break;
+        }
+    }
+
+    private void performRequestBlames() {
+        if (mResponse != null && mResponse.blames != null) {
+            if (mResponse.blames.first.isEmpty() || mResponse.blames.first.isEmpty()) {
+                mBlamesLoader.clear();
+                mBlamesLoader.restart();
+            } else {
+                mBinding.diff.refresh();
+            }
         }
     }
 }
