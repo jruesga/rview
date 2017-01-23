@@ -46,10 +46,8 @@ public class ScoresView extends LinearLayout {
 
     private OnScoreChanged mCallback;
 
-    private OnClickListener mClickListener = v -> {
-        int score = Integer.valueOf(((TextView) v).getText().toString());
-        changeScore(score);
-    };
+    private OnClickListener mClickListener = v ->
+            changeScore(getSafeScore(((TextView) v).getText().toString()));
 
     public ScoresView(Context context) {
         this(context, null);
@@ -126,7 +124,7 @@ public class ScoresView extends LinearLayout {
         int children = getChildCount();
         for (int i = 0; i < children; i++) {
             ReviewScoreItemBinding binding = mBindings.get(i);
-            int s = Integer.valueOf(binding.scoreItem.getText().toString());
+            int s = getSafeScore(binding.scoreItem.getText().toString());
             binding.scoreItem.setSupportBackgroundTintList(
                     ContextCompat.getColorStateList(getContext(), toBackgroundColor(s)));
         }
@@ -141,5 +139,11 @@ public class ScoresView extends LinearLayout {
             return score < 0 ? R.color.rejected : score > 0 ? R.color.approved : R.color.noscore;
         }
         return R.color.unscored;
+    }
+
+    private int getSafeScore(String score) {
+        // Java 1.6 doesn't recognize +1 as a valid positive number, so just
+        // trim the score appropriately.
+        return Integer.valueOf(score.trim().replaceAll("\\+", ""));
     }
 }
