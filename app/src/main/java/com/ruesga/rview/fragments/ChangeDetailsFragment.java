@@ -644,6 +644,10 @@ public class ChangeDetailsFragment extends Fragment implements
     private final RxLoaderObserver<Boolean> mStarredObserver = new RxLoaderObserver<Boolean>() {
         @Override
         public void onNext(Boolean value) {
+            if (mResponse == null) {
+                return;
+            }
+
             mResponse.mChange.starred = value;
             updateChangeInfo(mResponse);
         }
@@ -689,6 +693,10 @@ public class ChangeDetailsFragment extends Fragment implements
     private final RxLoaderObserver<String> mChangeTopicObserver = new RxLoaderObserver<String>() {
         @Override
         public void onNext(String newTopic) {
+            if (mResponse == null) {
+                return;
+            }
+
             mResponse.mChange.topic = newTopic;
             updateChangeInfo(mResponse);
 
@@ -706,6 +714,10 @@ public class ChangeDetailsFragment extends Fragment implements
             = new RxLoaderObserver<ChangeMessageInfo[]>() {
         @Override
         public void onNext(ChangeMessageInfo[] messages) {
+            if (mResponse == null) {
+                return;
+            }
+
             // We don't fetch messages's comments from this observer, but this
             // only happens from topic change, which implies a partial refresh
             // and the possibility that we are out-of-sync is low, compared to
@@ -743,6 +755,10 @@ public class ChangeDetailsFragment extends Fragment implements
             = new RxLoaderObserver<AccountInfo>() {
         @Override
         public void onNext(AccountInfo account) {
+            if (mResponse == null) {
+                return;
+            }
+
             // Update internal objects
             if (mResponse.mChange.reviewers != null) {
                 for (ReviewerStatus status : mResponse.mChange.reviewers.keySet()) {
@@ -774,6 +790,10 @@ public class ChangeDetailsFragment extends Fragment implements
             = new RxLoaderObserver<AddReviewerResultInfo>() {
         @Override
         public void onNext(AddReviewerResultInfo result) {
+            if (mResponse == null) {
+                return;
+            }
+
             if (!TextUtils.isEmpty(result.error) || result.confirm) {
                 onError(new OperationFailedException(String.format(Locale.US,
                         "error: %s; confirm: %s", result.error, String.valueOf(result.confirm))));
