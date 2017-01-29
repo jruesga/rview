@@ -48,7 +48,7 @@ public interface GerritApi {
     /**
      * The current supported Gerrit api version.
      */
-    double API_VERSION = 2.12;
+    double API_VERSION = 2.13;
 
     /**
      * The uri of the page where to obtain the http password.
