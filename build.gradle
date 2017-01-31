@@ -23,7 +23,7 @@ ext {
         retrofit2_rxjava2_adapter   : '1.0.0',
         okhttp3                     : '3.5.0',
         okio                        : '1.11.0',
-        okhttp_digest               : '6a3fc9d55d',
+        okhttp_digest               : 'cb8f915c35',
         rxjava                      : '2.0.5',
         rxandroid                   : '2.0.1',
         rxloader2                   : '3ee821c0e1',
