@@ -150,7 +150,9 @@ public abstract class WizardPageFragment extends Fragment {
     }
 
     public void openChooserPage(WizardChooserFragment chooser) {
-        ((WizardActivity) getActivity()).performOpenChooserPage(chooser);
+        if (getActivity() != null) {
+            ((WizardActivity) getActivity()).performOpenChooserPage(chooser);
+        }
     }
 
     public void onChooserResult(int resultCode, Intent data) {
