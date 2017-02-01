@@ -18,6 +18,7 @@
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/", "ci_accounts": "^(Jenkins)$"},
   {"name":"LineageOS", "url":"https://review.lineageos.org/"},
   {"name":"MediaWiki", "url":"https://gerrit.wikimedia.org/r/", "ci_accounts": "^(jenkins-bot)$"},
+  {"name":"MoKee", "url":"https://review.mfunz.com/"},
   {"name":"msm7x30", "url":"http://review.msm7x30.org/"},
   {"name":"OmniROM", "url":"https://gerrit.omnirom.org/"},
   {"name":"OpenStack", "url":"https://review.openstack.org/", "ci_accounts": "^(.* CI|Jenkins|Zuul|Elastic Recheck)$"},
