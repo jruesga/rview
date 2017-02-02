@@ -380,9 +380,19 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     @Override
     public void onBackPressed() {
         if (getContentBinding() != null && getContentBinding().drawerLayout != null) {
-            if (getContentBinding().drawerLayout.isDrawerOpen(
-                    getContentBinding().drawerOptionsView)) {
+            final DrawerLayout drawer = getContentBinding().drawerLayout;
+            final DrawerNavigationView optionsView = getContentBinding().drawerOptionsView;
+            final DrawerNavigationView navigationView = getContentBinding().drawerNavigationView;
+            if (optionsView != null && drawer.isDrawerOpen(optionsView)) {
                 closeOptionsDrawer();
+                return;
+            }
+            if (mMiniDrawerLayout == null && navigationView != null
+                    && drawer.isDrawerOpen(navigationView)) {
+                drawer.closeDrawer(navigationView);
+                return;
+            } else if (mMiniDrawerLayout != null && mMiniDrawerLayout.isOpen()) {
+                mMiniDrawerLayout.closePane();
                 return;
             }
         }
