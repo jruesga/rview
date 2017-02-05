@@ -25,6 +25,7 @@
 
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="isLocked" type="java.lang.Boolean" />
+        <variable name="isProcessing" type="java.lang.Boolean" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="isCurrentRevision" type="java.lang.Boolean" />
 
@@ -60,6 +61,7 @@
                 <com.ruesga.rview.widget.ReviewLabelsView
                     android:id="@+id/review_labels"
                     android:layout_width="wrap_content"
+                    android:enabled="@{isLocked == null || !isLocked}"
                     android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                     android:layout_height="wrap_content"/>
 
@@ -78,19 +80,31 @@
                     android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                     android:background="?android:attr/listDivider"/>
 
-                <ImageButton
-                    android:id="@+id/review"
+                <FrameLayout
+                    android:id="@+id/review_block"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentBottom="true"
-                    app:srcCompat="@drawable/ic_send"
-                    android:tint="?attr/colorAccent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:onClick="@{handlers::onReviewPressed}"
-                    android:scaleType="centerInside"
-                    tools:ignore="ContentDescription"/>
+                    android:layout_alignParentBottom="true">
+                    <ImageButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_send"
+                        android:tint="?attr/colorAccent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:onClick="@{handlers::onReviewPressed}"
+                        android:scaleType="centerInside"
+                        android:enabled="@{isLocked == null || !isLocked}"
+                        android:visibility="@{isProcessing == null || !isProcessing ? View.VISIBLE : View.GONE}"
+                        tools:ignore="ContentDescription"/>
+                    <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:layout_gravity="center"
+                        android:visibility="@{isProcessing != null &amp;&amp; isProcessing ? View.VISIBLE : View.GONE}"/>
+                </FrameLayout>
 
                 <android.support.v7.widget.AppCompatEditText
                     android:id="@+id/review_comment"
@@ -100,13 +114,14 @@
                     android:layout_marginEnd="8dp"
                     android:layout_toRightOf="@id/divider"
                     android:layout_toEndOf="@id/divider"
-                    android:layout_toLeftOf="@id/review"
-                    android:layout_toStartOf="@id/review"
+                    android:layout_toLeftOf="@id/review_block"
+                    android:layout_toStartOf="@id/review_block"
                     android:background="@android:color/transparent"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="14sp"
                     android:inputType="textMultiLine"
+                    android:enabled="@{isLocked == null || !isLocked}"
                     android:hint="@string/change_details_review_hint" />
 
             </RelativeLayout>

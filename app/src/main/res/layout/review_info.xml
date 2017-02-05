@@ -25,6 +25,7 @@
 
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="isLocked" type="java.lang.Boolean" />
+        <variable name="isProcessing" type="java.lang.Boolean" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="isCurrentRevision" type="java.lang.Boolean" />
 
@@ -55,6 +56,7 @@
                 android:id="@+id/review_labels"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="@{isLocked == null || !isLocked}"
                 android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
@@ -89,17 +91,31 @@
                     android:inputType="textMultiLine"
                     android:imeOptions="flagNoFullscreen"
                     android:hint="@string/change_details_review_hint"
+                    android:enabled="@{isLocked == null || !isLocked}"
                     tools:ignore="RtlSymmetry"/>
 
-                <ImageButton
+                <FrameLayout
+                    android:id="@+id/review_block"
                     android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    app:srcCompat="@drawable/ic_send"
-                    android:tint="?attr/colorAccent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:onClick="@{handlers::onReviewPressed}"
-                    android:scaleType="centerInside"
-                    tools:ignore="ContentDescription"/>
+                    android:layout_height="48dp">
+                    <ImageButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:srcCompat="@drawable/ic_send"
+                        android:tint="?attr/colorAccent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:onClick="@{handlers::onReviewPressed}"
+                        android:scaleType="centerInside"
+                        android:enabled="@{isLocked == null || !isLocked}"
+                        android:visibility="@{isProcessing == null || !isProcessing ? View.VISIBLE : View.GONE}"
+                        tools:ignore="ContentDescription"/>
+                    <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:layout_gravity="center"
+                        android:visibility="@{isProcessing != null &amp;&amp; isProcessing ? View.VISIBLE : View.GONE}"/>
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>

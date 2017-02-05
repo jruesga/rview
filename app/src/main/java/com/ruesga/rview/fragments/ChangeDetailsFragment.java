@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -578,9 +579,11 @@ public class ChangeDetailsFragment extends Fragment implements
             new RxLoaderObserver<DataResponse>() {
         @Override
         public void onNext(DataResponse result) {
+            mResponse = result;
+
             mModel.isLocked = false;
             updateLocked();
-            mResponse = result;
+
             updateAuthenticatedAndOwnerStatus();
 
             ChangeInfo change = null;
@@ -625,6 +628,9 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            mModel.isLocked = false;
+            updateLocked();
+
             mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
             mBinding.setEmpty(mEmptyState);
             mChangeLoader.clear();
@@ -674,10 +680,14 @@ public class ChangeDetailsFragment extends Fragment implements
     };
 
     private final RxLoaderObserver<ReviewInfo> mReviewObserver = new RxLoaderObserver<ReviewInfo>() {
+
+        private Runnable mUiDelayedProcessingNotification = () -> internalSetProcessing(true);
+
         @Override
         public void onNext(ReviewInfo review) {
             // Fetch the whole change
             forceRefresh();
+            setProcessing(false);
 
             // Clean the message box
             mBinding.reviewInfo.reviewComment.setText(null);
@@ -686,7 +696,29 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            setProcessing(false);
+
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+        }
+
+        @Override
+        public void onStarted() {
+            setProcessing(true);
+        }
+
+        private void setProcessing(boolean locked) {
+            mUiHandler.removeCallbacks(mUiDelayedProcessingNotification);
+            if (locked) {
+                mUiHandler.postDelayed(mUiDelayedProcessingNotification, 300L);
+            } else {
+                internalSetProcessing(false);
+            }
+        }
+
+        private void internalSetProcessing(boolean locked) {
+            mBinding.reviewInfo.setIsProcessing(locked);
+            mModel.isLocked = locked;
+            updateLocked();
         }
     };
 
@@ -878,6 +910,8 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
+    private Handler mUiHandler;
+
     private final OnAccountChipClickedListener mOnAccountChipClickedListener
             = this::performAccountClicked;
     private final OnAccountChipRemovedListener mOnAccountChipRemovedListener
@@ -935,6 +969,7 @@ public class ChangeDetailsFragment extends Fragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mUiHandler = new Handler();
         mLegacyChangeId = getArguments().getInt(
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mCurrentRevision = getArguments().getString(Constants.EXTRA_REVISION);
@@ -1117,6 +1152,7 @@ public class ChangeDetailsFragment extends Fragment implements
     public final void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
+        mUiHandler.removeCallbacksAndMessages(null);
     }
 
     private void updatePatchSetInfo(DataResponse response) {
