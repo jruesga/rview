@@ -42,6 +42,10 @@ public abstract class ChangeListBaseActivity extends BaseActivity implements OnC
 
     @Override
     public void onChangeItemPressed(ChangeInfo change) {
+        if (hasStateSaved()) {
+            return;
+        }
+
         if (!mIsTwoPane) {
             // Open activity
             ActivityHelper.openChangeDetails(this, change, true, false);
@@ -53,6 +57,10 @@ public abstract class ChangeListBaseActivity extends BaseActivity implements OnC
 
     @Override
     public void onChangeItemRestored(int changeId) {
+        if (hasStateSaved()) {
+            return;
+        }
+
         if (mIsTwoPane && changeId != getSelectedChangeId()) {
             loadChangeDetailsFragment(changeId);
         }
@@ -60,6 +68,10 @@ public abstract class ChangeListBaseActivity extends BaseActivity implements OnC
 
     @Override
     public void onChangeItemSelected(int changeId) {
+        if (hasStateSaved()) {
+            return;
+        }
+
         // This event is only interesting for the two pane layout
         if (mIsTwoPane) {
             if (changeId == ChangeListFragment.NO_SELECTION) {
