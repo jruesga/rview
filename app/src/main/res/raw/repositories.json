@@ -24,7 +24,7 @@
   {"name":"OpenStack", "url":"https://review.openstack.org/", "ci_accounts": "^(.* CI|Jenkins|Zuul|Elastic Recheck)$"},
   {"name":"Qt", "url":"https://codereview.qt-project.org/", "ci_accounts": "^(Qt CI Bot)$"},
   {"name":"SlimRoms", "url":"https://review.slimroms.org/"},
-  {"name":"Tipo3", "url":"https://review.typo3.org/", "ci_accounts": "^(TYPO3com)$"},
+  {"name":"Typo3", "url":"https://review.typo3.org/", "ci_accounts": "^(TYPO3com)$"},
   {"name":"Tizen", "url":"https://review.tizen.org/gerrit/"},
   {"name":"TWRP", "url":"https://gerrit.twrp.me/"},
   {"name":"Unlegacy Android", "url":"http://gerrit.unlegacy-android.cf/"},
