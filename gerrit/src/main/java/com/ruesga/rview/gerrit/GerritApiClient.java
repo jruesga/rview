@@ -367,7 +367,9 @@ class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<String> isAccountActive(@NonNull String accountId) {
-        return withVersionRequestCheck(mService.isAccountActive(accountId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.isAccountActive(accountId));
     }
 
     @Override
