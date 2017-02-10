@@ -250,43 +250,39 @@ public class Formatter {
 
     @BindingAdapter("regexpLinkify")
     public static void toRegExLinkify(RegExLinkifyTextView view, ConfigInfo info) {
-        if (info == null || info.commentLinks == null || info.commentLinks.isEmpty()) {
-            return;
-        }
-
         List<RegExLink> linksScanners = new ArrayList<>();
+        linksScanners.add(RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX);
+        linksScanners.add(RegExLinkifyTextView.GERRIT_COMMIT_REGEX);
         if (mAccount != null) {
             linksScanners.addAll(
                     RegExLinkifyTextView.createRepositoryRegExpLinks(mAccount.mRepository));
         }
-        for (String key : info.commentLinks.keySet()) {
-            switch (key) {
-                case "changeid":
-                    linksScanners.add(RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX);
-                    break;
-                case "commit":
-                    linksScanners.add(RegExLinkifyTextView.GERRIT_COMMIT_REGEX);
-                    break;
-                default:
-                    String link = info.commentLinks.get(key).link;
-                    if (TextUtils.isEmpty(link) &&
-                            !TextUtils.isEmpty(info.commentLinks.get(key).html)) {
-                        Matcher matcher = RegExLinkifyTextView.WEB_LINK_REGEX.mPattern.matcher(
-                                info.commentLinks.get(key).html);
-                        if (matcher.find()) {
-                            link = matcher.group();
-                            linksScanners.add(new RegExLink(
-                                    RegExLinkifyTextView.WEB_LINK_REGEX.mType,
-                                    info.commentLinks.get(key).match, link));
+
+        if (info != null && info.commentLinks != null && info.commentLinks.isEmpty()) {
+            for (String key : info.commentLinks.keySet()) {
+                switch (key) {
+                    case "changeid":
+                    case "commit":
+                        break;
+                    default:
+                        String link = info.commentLinks.get(key).link;
+                        if (TextUtils.isEmpty(link) &&
+                                !TextUtils.isEmpty(info.commentLinks.get(key).html)) {
+                            Matcher matcher = RegExLinkifyTextView.WEB_LINK_REGEX.mPattern.matcher(
+                                    info.commentLinks.get(key).html);
+                            if (matcher.find()) {
+                                link = matcher.group();
+                                linksScanners.add(new RegExLink(
+                                        RegExLinkifyTextView.WEB_LINK_REGEX.mType,
+                                        info.commentLinks.get(key).match, link));
+                            }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
         }
 
-        if (!linksScanners.isEmpty()) {
-            view.addRegEx(linksScanners.toArray(new RegExLink[linksScanners.size()]));
-        }
+        view.addRegEx(linksScanners.toArray(new RegExLink[linksScanners.size()]));
     }
 
     @BindingAdapter("committer")
