@@ -57,10 +57,11 @@ public class StringHelper {
         StringBuilder sb = new StringBuilder();
         int count = lines.length;
         for (int i = 0; i < count; i++) {
-            String line = lines[i].trim();
+            String line = lines[i];
+            String trimmed = line.trim();
             sb.append(line);
-            if (line.isEmpty() ||
-                    A_NON_WORD_CHARACTER_AT_END.matcher(line).matches()) {
+            if (trimmed.isEmpty() ||
+                    A_NON_WORD_CHARACTER_AT_END.matcher(trimmed).matches()) {
                 sb.append("\n");
             } else if (i < (count - 1)) {
                 String next = lines[i + 1].trim();
