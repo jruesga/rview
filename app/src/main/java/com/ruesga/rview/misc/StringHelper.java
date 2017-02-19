@@ -26,11 +26,13 @@ import java.util.regex.Pattern;
 public class StringHelper {
 
     public static final String NON_PRINTABLE_CHAR = "\u0001";
+    public static final String NON_PRINTABLE_CHAR2 = "\u0002";
 
     private static final Pattern A_NON_WORD_CHARACTER_AT_END
             = Pattern.compile(".*[^[a-zA-Z],;]", Pattern.MULTILINE);
     private static final Pattern A_NON_WORD_CHARACTER_AT_START
             = Pattern.compile("[^\\w].*", Pattern.MULTILINE);
+    private static final Pattern NON_WHITESPACE = Pattern.compile("\\w");
 
     private static final String QUOTE_START_TAG = "[QUOTE]";
     private static final String QUOTE_END_TAG = "[/QUOTE]";
@@ -51,6 +53,25 @@ public class StringHelper {
     public static final Pattern GERRIT_CHANGE = Pattern.compile("I[0-9a-f]{8,40}");
     public static final Pattern GERRIT_CHANGE_ID = Pattern.compile("\\d+");
     public static final Pattern GERRIT_COMMIT = Pattern.compile("[0-9a-f]{7,40}");
+
+    public static String[] obtainParagraphs(String message) {
+        return message.split("\\r?\\n\\r?\\n");
+    }
+
+    public static boolean isQuote(String p) {
+        return p.startsWith("> ") || p.startsWith(" > ");
+    }
+
+    public static boolean isPreFormat(final String p) {
+        return p.contains("\n ") || p.contains("\n\t") || p.startsWith(" ")
+                || p.startsWith("\t");
+    }
+
+    public static boolean isList(final String p) {
+        return p.contains("\n- ") || p.contains("\n* ") || p.startsWith("- ")
+                || p.startsWith("* ") || p.startsWith(NON_PRINTABLE_CHAR + "- ")
+                || p.startsWith(NON_PRINTABLE_CHAR + "* ");
+    }
 
     public static String removeLineBreaks(String message) {
         String[] lines = message.split("\\r?\\n");
@@ -76,7 +97,7 @@ public class StringHelper {
         return sb.toString().trim();
     }
 
-    public static String obtainMessageFromQuote(String message) {
+    public static String obtainQuote(String message) {
         String msg = QUOTE1.matcher(message).replaceAll(NON_PRINTABLE_CHAR);
         msg = QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
         do {
@@ -129,8 +150,21 @@ public class StringHelper {
         return msg;
     }
 
+    public static String obtainPreFormatMessage(String msg) {
+        // Remove any pre-formated whitespace
+        final Matcher matcher = NON_WHITESPACE.matcher(msg);
+        if (matcher.find() && matcher.start() > 0) {
+            final String r = (String.format("%1$-" + matcher.start() + "s", " "));
+            final String t = (String.format("%1$-" + matcher.start() + "s", "\t"));
+            msg = msg.replaceFirst(r, "").replaceAll("\n" + r, "\n")
+                    .replaceFirst(t, "").replaceAll("\n" + t, "\n");
+        }
+
+        return NON_PRINTABLE_CHAR2 + msg + NON_PRINTABLE_CHAR2;
+    }
+
     public static String quoteMessage(String prev, String msg) {
-        msg = QUOTE_START_TAG + StringHelper.obtainMessageFromQuote(
+        msg = QUOTE_START_TAG + StringHelper.obtainQuote(
                 StringHelper.removeLineBreaks(msg))  + QUOTE_END_TAG + "\n";
         if (!TextUtils.isEmpty(prev) && !prev.endsWith("\n")) {
             msg = prev + "\n" + msg;
@@ -138,6 +172,17 @@ public class StringHelper {
             msg = prev + msg;
         }
         return msg;
+    }
+
+    public static String removeExtraLines(String msg) {
+        if (msg.length() == 0) {
+            return msg;
+        }
+        int p = msg.length();
+        while (msg.charAt(p - 1) == '\n' || msg.charAt(p - 1) == '\r') {
+            p--;
+        }
+        return msg.substring(0, p);
     }
 
     public static int countOccurrences(String find, String in) {

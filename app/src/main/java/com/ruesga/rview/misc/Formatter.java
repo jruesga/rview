@@ -25,6 +25,8 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.LeadingMarginSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.TypefaceSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -194,12 +196,31 @@ public class Formatter {
         }
 
         String message = EmojiHelper.createEmoji(msg);
-        String preparedQuote = StringHelper.obtainMessageFromQuote(
-                StringHelper.removeLineBreaks(message));
-        if (!preparedQuote.contains(StringHelper.NON_PRINTABLE_CHAR)
-                && !preparedQuote.contains("- ") && !preparedQuote.contains("* ")) {
-            // there is not quoted messages or list here, just a simple message
-            view.setText(preparedQuote);
+
+        // Split message into paragraphs
+        String[] paragraphs = StringHelper.obtainParagraphs(message);
+        StringBuilder sb = new StringBuilder();
+        boolean formattedMessage = false;
+        for (String p : paragraphs) {
+            if (StringHelper.isQuote(p)) {
+                sb.append(StringHelper.obtainQuote(
+                        StringHelper.removeLineBreaks(message)));
+                formattedMessage = true;
+            } else if (StringHelper.isList(p)) {
+                sb.append(p);
+                formattedMessage = true;
+            } else if (StringHelper.isPreFormat(p)) {
+                sb.append(StringHelper.obtainPreFormatMessage(p));
+                formattedMessage = true;
+            } else {
+                sb.append(p);
+            }
+            sb.append("\n\n");
+        }
+
+        String userMessage = StringHelper.removeExtraLines(sb.toString());
+        if (!formattedMessage) {
+            view.setText(userMessage);
             return;
         }
 
@@ -209,10 +230,32 @@ public class Formatter {
             sQuoteMargin = (int) view.getContext().getResources().getDimension(R.dimen.quote_margin);
         }
 
-        String[] lines = preparedQuote.split("\n");
+        String[] lines = userMessage.split("\n");
         SpannableStringBuilder spannable = new SpannableStringBuilder(
-                preparedQuote.replaceAll(StringHelper.NON_PRINTABLE_CHAR, ""));
+                userMessage.replaceAll(StringHelper.NON_PRINTABLE_CHAR, "")
+                        .replaceAll(StringHelper.NON_PRINTABLE_CHAR2, ""));
+
+        // Pre-Format
         int start = 0;
+        int spans = 0;
+        while ((start = userMessage.indexOf(StringHelper.NON_PRINTABLE_CHAR2, start)) != -1) {
+            int end = userMessage.indexOf(StringHelper.NON_PRINTABLE_CHAR2, start + 1);
+            if (end == -1) {
+                //¿? This is supposed to be formatted by us. Skip it
+                break;
+            }
+
+            int spanStart = start - spans;
+            int spanEnd = end - spans - 1;
+            spannable.setSpan(new RelativeSizeSpan(0.8f), spanStart,
+                    Math.min(spanEnd, spannable.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new TypefaceSpan("monospace"), spanStart,
+                    Math.min(spanEnd, spannable.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            start = end;
+            spans++;
+        }
+
+        start = 0;
         for (String line : lines) {
             // Quotes
             int maxIndent = StringHelper.countOccurrences(StringHelper.NON_PRINTABLE_CHAR, line);
@@ -224,9 +267,7 @@ public class Formatter {
             }
 
             // List
-            if (line.startsWith("- ") || line.startsWith("* ")
-                    || line.contains(StringHelper.NON_PRINTABLE_CHAR + "- ")
-                    || line.contains(StringHelper.NON_PRINTABLE_CHAR + "* ")) {
+            if (StringHelper.isList(line)) {
                 spannable.replace(start, start + 1, "\u2022");
                 spannable.setSpan(new LeadingMarginSpan.Standard(sQuoteMargin),
                         start, Math.min(start + line.length(), spannable.length()),
