@@ -197,6 +197,9 @@ public class Formatter {
 
         String message = EmojiHelper.createEmoji(msg);
 
+        // This process mimics the Gerrit formatting process done in class
+        // ./gerrit-gwtexpui/src/main/java/com/google/gwtexpui/safehtml/client/SafeHtml.java
+
         // Split message into paragraphs
         String[] paragraphs = StringHelper.obtainParagraphs(message);
         StringBuilder sb = new StringBuilder();
