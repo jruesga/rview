@@ -179,7 +179,7 @@ public final class EmojiHelper {
             int count = TEXT.length;
             for (int i = 0; i < count; i++) {
                 if (msg.contains(TEXT[i])) {
-                    String emoji = getEmijoByUnicode(CODES[i]);
+                    String emoji = getEmojiByUnicode(CODES[i]);
                     msg = REGEXP1[i].matcher(msg).replaceAll(emoji);
                     msg = REGEXP2[i].matcher(msg).replaceAll(" " + emoji);
                 }
@@ -188,7 +188,7 @@ public final class EmojiHelper {
         return msg;
     }
 
-    public static String getEmijoByUnicode(int unicode){
+    public static String getEmojiByUnicode(int unicode){
         return new String(Character.toChars(unicode));
     }
 }
