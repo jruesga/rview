@@ -207,7 +207,7 @@
                         android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                         android:ellipsize="none"
                         android:textIsSelectable="true"
-                        android:text="@{model.commentA.message}"
+                        app:inlineComment="@{model.commentA.message}"
                         android:gravity="center_vertical"/>
 
                     <include
@@ -347,7 +347,7 @@
                         android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
                         android:ellipsize="none"
                         android:textIsSelectable="true"
-                        android:text="@{model.commentB.message}"
+                        app:inlineComment="@{model.commentB.message}"
                         android:gravity="center_vertical"/>
 
                     <include
