@@ -206,8 +206,7 @@ public class Formatter {
         boolean formattedMessage = false;
         for (String p : paragraphs) {
             if (StringHelper.isQuote(p)) {
-                sb.append(StringHelper.obtainQuote(
-                        StringHelper.removeLineBreaks(message)));
+                sb.append(StringHelper.obtainQuote(StringHelper.removeLineBreaks(p)));
                 formattedMessage = true;
             } else if (StringHelper.isList(p)) {
                 sb.append(p);
