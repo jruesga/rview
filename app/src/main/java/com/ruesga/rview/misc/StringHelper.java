@@ -43,6 +43,8 @@ public class StringHelper {
 
     private static final Pattern QUOTE1 = Pattern.compile("^> ", Pattern.MULTILINE);
     private static final Pattern QUOTE2 = Pattern.compile("^>", Pattern.MULTILINE);
+    private static final Pattern QUOTE3 = Pattern.compile("^ > ", Pattern.MULTILINE);
+    private static final Pattern QUOTE4 = Pattern.compile("^ >", Pattern.MULTILINE);
     private static final Pattern REPLACED_QUOTE1 = Pattern.compile(NON_PRINTABLE_CHAR + ">");
     private static final Pattern REPLACED_QUOTE2 = Pattern.compile(NON_PRINTABLE_CHAR + " > ");
     private static final Pattern REPLACED_QUOTE3 = Pattern.compile(NON_PRINTABLE_CHAR + " ");
@@ -100,6 +102,8 @@ public class StringHelper {
     public static String obtainQuote(String message) {
         String msg = QUOTE1.matcher(message).replaceAll(NON_PRINTABLE_CHAR);
         msg = QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
+        msg = QUOTE3.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
+        msg = QUOTE4.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
         do {
             final String m = msg;
             msg = REPLACED_QUOTE1.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + NON_PRINTABLE_CHAR);
