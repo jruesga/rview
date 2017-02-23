@@ -180,10 +180,18 @@ public class StringHelper {
     }
 
     public static int countOccurrences(String find, String in) {
+        return countOccurrences(find, in, 0, in.length());
+    }
+
+    public static int countOccurrences(String find, String in, int start, int end) {
         int count = 0;
         Pattern pattern = Pattern.compile(find);
         Matcher matcher = pattern.matcher(in);
-        while (matcher.find()) count++;
+        while (matcher.find()) {
+            if (matcher.start() >= start && matcher.end() <= end) {
+                count++;
+            }
+        }
         return count;
     }
 

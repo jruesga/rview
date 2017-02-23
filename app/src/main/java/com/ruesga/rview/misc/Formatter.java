@@ -247,6 +247,16 @@ public class Formatter {
                 break;
             }
 
+            // Find quote token occurrences
+            int offset = StringHelper.countOccurrences(
+                    StringHelper.NON_PRINTABLE_CHAR, userMessage, 0, start);
+            start -= offset;
+            end -= offset;
+            if (start < 0) {
+                //Something was wrong. Skip it
+                break;
+            }
+
             int spanStart = start - spans;
             int spanEnd = end - spans - 1;
             spannable.setSpan(new RelativeSizeSpan(0.8f), spanStart,
