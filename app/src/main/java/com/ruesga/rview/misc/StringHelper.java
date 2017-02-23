@@ -49,8 +49,6 @@ public class StringHelper {
     private static final Pattern REPLACED_QUOTE2 = Pattern.compile(NON_PRINTABLE_CHAR + " > ");
     private static final Pattern REPLACED_QUOTE3 = Pattern.compile(NON_PRINTABLE_CHAR + " ");
     private static final Pattern REPLACED_QUOTE4 = Pattern.compile(NON_PRINTABLE_CHAR + "\n");
-    private static final Pattern REPLACED_QUOTE5 = Pattern.compile(
-            "(\\w)(\n" + NON_PRINTABLE_CHAR +")(\\w)", Pattern.MULTILINE);
 
     public static final Pattern GERRIT_CHANGE = Pattern.compile("I[0-9a-f]{8,40}");
     public static final Pattern GERRIT_CHANGE_ID = Pattern.compile("\\d+");
@@ -104,20 +102,10 @@ public class StringHelper {
         msg = QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
         msg = QUOTE3.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
         msg = QUOTE4.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
-        do {
-            final String m = msg;
-            msg = REPLACED_QUOTE1.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + NON_PRINTABLE_CHAR);
-            msg = REPLACED_QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + NON_PRINTABLE_CHAR);
-            msg = REPLACED_QUOTE3.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
-            msg = REPLACED_QUOTE4.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + " \n");
-            Matcher matcher = REPLACED_QUOTE5.matcher(msg);
-            if (matcher.find()) {
-                msg = matcher.replaceAll("$1 $3");
-            }
-            if (msg.equals(m)) {
-                break;
-            }
-        } while (true);
+        msg = REPLACED_QUOTE1.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + NON_PRINTABLE_CHAR);
+        msg = REPLACED_QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + NON_PRINTABLE_CHAR);
+        msg = REPLACED_QUOTE3.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
+        msg = REPLACED_QUOTE4.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + " \n");
         return msg;
     }
 
@@ -168,8 +156,10 @@ public class StringHelper {
     }
 
     public static String quoteMessage(String prev, String msg) {
-        msg = QUOTE_START_TAG + StringHelper.obtainQuote(
-                StringHelper.removeLineBreaks(msg))  + QUOTE_END_TAG + "\n";
+        if (msg.contains("\n\n")) {
+            msg = msg.substring(msg.indexOf("\n\n") + 2);
+        }
+        msg = QUOTE_START_TAG + StringHelper.obtainQuote(msg)  + QUOTE_END_TAG + "\n\n";
         if (!TextUtils.isEmpty(prev) && !prev.endsWith("\n")) {
             msg = prev + "\n" + msg;
         } else {
