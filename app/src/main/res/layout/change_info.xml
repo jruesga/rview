@@ -43,7 +43,7 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="@{hasData != null &amp;&amp; hasData ? View.VISIBLE : View.GONE}">
+        android:visibility="@{safeUnbox(hasData) ? View.VISIBLE : View.GONE}">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -70,7 +70,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{safeUnbox(isAuthenticated) ? View.VISIBLE : View.GONE}"
                     app:bindSelected="@{model.starred}"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     app:srcCompat="@drawable/selector_starred"
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:visibility="@{isTwoPane != null &amp;&amp; isTwoPane ? View.VISIBLE : View.GONE}"
+                android:visibility="@{safeUnbox(isTwoPane) ? View.VISIBLE : View.GONE}"
                 android:orientation="horizontal">
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="@dimen/label_min_width"
@@ -134,7 +134,7 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     app:changeStatus="@{model}"
-                    app:currentRevision="@{isCurrentRevision != null &amp;&amp; isCurrentRevision}"
+                    app:currentRevision="@{safeUnbox(isCurrentRevision)}"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
                     app:allCaps="true"
@@ -198,7 +198,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp"
-                            android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{safeUnbox(isAuthenticated) ? View.VISIBLE : View.GONE}"
                             android:onClick="@{handlers::onAddReviewerPressed}"
                             android:background="?attr/selectableItemBackground"
                             android:text="@string/change_details_add_reviewer"
@@ -212,7 +212,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp"
-                            android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; !isOwner &amp;&amp; (isReviewer == null || !isReviewer) ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; !safeUnbox(isOwner) &amp;&amp; !safeUnbox(isReviewer) ? View.VISIBLE : View.GONE}"
                             android:onClick="@{handlers::onAddMeAsReviewerPressed}"
                             android:background="?attr/selectableItemBackground"
                             android:text="@string/change_details_add_me_as_reviewer"
@@ -283,7 +283,7 @@
                     android:tint="@color/accent"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onBranchEditPressed}"
-                    app:bindToBoolean="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; isOwner &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT))}"
+                    app:bindToBoolean="@{safeUnbox(isAuthenticated) &amp;&amp; safeUnbox(isOwner) &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT))}"
                     app:bindToFeature="@{Features.MOVE}"
                     tools:ignore="ContentDescription"/>
             </LinearLayout>
@@ -324,7 +324,7 @@
                     android:tint="@color/accent"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onTopicEditPressed}"
-                    android:visibility="@{isAuthenticated != null &amp;&amp; isAuthenticated &amp;&amp; isOwner != null &amp;&amp; isOwner &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; safeUnbox(isOwner) &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
                     tools:ignore="ContentDescription"/>
             </LinearLayout>
             <LinearLayout
@@ -332,7 +332,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || submitType == null || !(model.status.equals(ChangeStatus.NEW))) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(!safeUnbox(isCurrentRevision) || submitType == null || !(model.status.equals(ChangeStatus.NEW))) ? View.GONE : View.VISIBLE}"
                 android:orientation="horizontal">
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="@dimen/label_min_width"
@@ -436,7 +436,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || submitType == null) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(!safeUnbox(isCurrentRevision) || submitType == null) ? View.GONE : View.VISIBLE}"
                 android:orientation="vertical">
                 <View
                     android:layout_width="match_parent"

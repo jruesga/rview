@@ -24,7 +24,7 @@
 
     <FrameLayout
         android:layout_width="0dp"
-        app:wrapLayoutWidth="@{wrap != null &amp;&amp; wrap}"
+        app:wrapLayoutWidth="@{safeUnbox(wrap)}"
         android:layout_height="wrap_content">
         <View
             android:layout_width="0dp"

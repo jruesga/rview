@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
-            android:visibility="@{removable ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(removable) ? View.VISIBLE : View.GONE}"
             android:background="?android:attr/listDivider" />
 
         <com.ruesga.rview.widget.StyleableTextView
@@ -81,7 +81,7 @@
             android:textColor="?android:attr/textColorPrimary"
             android:textStyle="bold"
             android:textSize="12sp"
-            android:visibility="@{removable ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(removable) ? View.VISIBLE : View.GONE}"
             android:onClick="@{handlers::onRemovePressed}"
             android:text="@string/chip_remove" />
     </LinearLayout>

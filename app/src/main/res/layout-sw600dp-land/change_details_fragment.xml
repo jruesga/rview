@@ -97,7 +97,7 @@
             </android.support.v4.widget.NestedScrollView>
 
             <include
-                android:id="@+id/empty_state"
+                android:id="@+id/empty_state_info"
                 layout="@layout/empty_state"
                 app:model="@{empty}"
                 app:handlers="@{emptyHandlers}"/>

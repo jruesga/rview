@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="5dp"
-        android:visibility="@{(canEdit == null || !canEdit) ? View.GONE : View.VISIBLE}">
+        android:visibility="@{!safeUnbox(canEdit) ? View.GONE : View.VISIBLE}">
         <ImageView
             android:id="@+id/reply"
             android:layout_width="20dp"
@@ -40,7 +40,7 @@
             app:srcCompat="@drawable/ic_reply"
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{(isDraft == null || isDraft) ? View.GONE : View.VISIBLE}"
+            android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
             android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
             android:onClick="@{handlers::onReplyPressed}"
             tools:ignore="ContentDescription"/>
@@ -53,7 +53,7 @@
             app:srcCompat="@drawable/ic_done"
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{(isDraft == null || isDraft) ? View.GONE : View.VISIBLE}"
+            android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
             android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
             android:onClick="@{handlers::onDonePressed}"
             tools:ignore="ContentDescription"/>
@@ -66,7 +66,7 @@
             app:srcCompat="@drawable/ic_edit"
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{(isDraft == null || isDraft) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(isDraft) ? View.VISIBLE : View.GONE}"
             android:tag='@{model.patchSet + "/" + model.id + "/" + (model.inReplyTo == null ? "" : model.inReplyTo) + "/" + model.line}'
             android:onClick="@{handlers::onEditPressed}"
             tools:ignore="ContentDescription"/>
@@ -79,7 +79,7 @@
             app:srcCompat="@drawable/ic_delete"
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{(isDraft == null || isDraft) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(isDraft) ? View.VISIBLE : View.GONE}"
             android:onClick="@{handlers::onDeletePressed}"
             android:tag='@{model.patchSet + "/" + model.id}'
             tools:ignore="ContentDescription"/>

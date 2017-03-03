@@ -94,7 +94,7 @@
             android:ellipsize="end"
             app:bindUnwrappedText="@{model.message}"
             android:textAppearance="@style/TextAppearance.VerySmall"
-            android:visibility="@{folded ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(folded) ? View.VISIBLE : View.GONE}"
             android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true"
             tools:ignore="Deprecated"/>
@@ -111,7 +111,7 @@
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:onClick="@{handlers::onReplyCommentPressed}"
-            android:visibility="@{!folded &amp;&amp; isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}"
+            android:visibility="@{!safeUnbox(folded) &amp;&amp; safeUnbox(isAuthenticated) ? View.VISIBLE : View.GONE}"
             android:tag="@{index}"
             tools:ignore="ContentDescription"/>
 
@@ -128,7 +128,7 @@
             android:layout_alignWithParentIfMissing="true"
             app:userMessage="@{model.message}"
             app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
-            android:visibility="@{!folded ? View.VISIBLE : View.GONE}"
+            android:visibility="@{!safeUnbox(folded) ? View.VISIBLE : View.GONE}"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true" />
@@ -143,7 +143,7 @@
             android:layout_toEndOf="@id/avatar"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:visibility="@{!folded ? View.VISIBLE : View.GONE}" />
+            android:visibility="@{!safeUnbox(folded) ? View.VISIBLE : View.GONE}" />
 
     </RelativeLayout>
 </layout>

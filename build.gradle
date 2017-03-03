@@ -59,7 +59,7 @@ allprojects {
             maven { url 'https://maven.fabric.io/public' }
         }
         dependencies {
-            classpath 'com.android.tools.build:gradle:2.2.3'
+            classpath 'com.android.tools.build:gradle:2.3.0'
             classpath 'me.tatarka:gradle-retrolambda:3.4.0'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.2'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml

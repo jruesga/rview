@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_item"
-            app:bindSelected="@{isSelected != null &amp;&amp; isSelected}"
+            app:bindSelected="@{safeUnbox(isSelected)}"
             android:padding="8dp"
             android:minHeight="?attr/listPreferredItemHeightSmall"
             android:gravity="center_vertical"

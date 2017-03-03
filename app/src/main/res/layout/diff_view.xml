@@ -34,7 +34,7 @@
             android:id="@+id/diff_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="@{mode == null || mode != DiffView.IMAGE_MODE ? View.VISIBLE : View.GONE}" />
+            android:visibility="@{safeUnbox(mode) != DiffView.IMAGE_MODE ? View.VISIBLE : View.GONE}" />
 
         <include
             android:id="@+id/diff_image_layout"
@@ -48,7 +48,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_gravity="center"
-            android:visibility="@{processing != null &amp;&amp; processing ? View.VISIBLE : View.GONE}"/>
+            android:visibility="@{safeUnbox(processing) ? View.VISIBLE : View.GONE}"/>
     </FrameLayout>
 
 </layout>

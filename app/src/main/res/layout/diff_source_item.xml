@@ -36,7 +36,7 @@
     <LinearLayout
         android:id="@+id/item"
         android:layout_width="0dp"
-        app:wrapLayoutWidth="@{wrap != null &amp;&amp; wrap}"
+        app:wrapLayoutWidth="@{safeUnbox(wrap)}"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -65,7 +65,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:padding="@dimen/diff_line_text_padding"
                 android:textColor="?attr/colorPrimaryDark"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
                 app:font="monospace"
                 android:text="@{model.lineNumberA}"/>
@@ -74,7 +74,7 @@
         <LinearLayout
             android:layout_width="@dimen/diff_line_blame_width"
             android:layout_height="match_parent"
-            android:visibility="@{showBlameA != null &amp;&amp; showBlameA ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(showBlameA) ? View.VISIBLE : View.GONE}"
             android:background="@color/diffLineBackgroundColor">
 
             <com.ruesga.rview.widget.StyleableTextView
@@ -83,7 +83,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
                 android:padding="@dimen/diff_line_text_padding"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:maxLines="1"
                 android:ellipsize="end"
                 app:font="boldMonospace"
@@ -103,7 +103,7 @@
             android:background="@color/diffLineBackgroundColor"
             android:tag='@{model.lineNumberB != null ? "false/" + model.lineNumberB : null}'
             android:onClick="@{handlers::onNewDraftPressed}"
-            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
             tools:ignore="Suspicious0dp">
 
             <View
@@ -121,7 +121,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
                 android:padding="@dimen/diff_line_text_padding"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
                 app:font="monospace"
                 android:text="@{model.lineNumberB}"/>
@@ -130,7 +130,7 @@
         <LinearLayout
             android:layout_width="@dimen/diff_line_blame_width"
             android:layout_height="match_parent"
-            android:visibility="@{showBlameB != null &amp;&amp; showBlameB &amp;&amp; mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(showBlameB) &amp;&amp; safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
             android:background="@color/diffLineBackgroundColor">
 
             <com.ruesga.rview.widget.StyleableTextView
@@ -139,7 +139,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
                 android:padding="@dimen/diff_line_text_padding"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:maxLines="1"
                 android:ellipsize="end"
                 app:font="boldMonospace"
@@ -150,12 +150,12 @@
         <View
             android:layout_width="@dimen/diff_line_separator_width"
             android:layout_height="match_parent"
-            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
             android:background="?android:attr/listDivider"/>
 
         <LinearLayout
             android:layout_width="0dp"
-            app:wrapLayoutWidth="@{wrap != null &amp;&amp; wrap}"
+            app:wrapLayoutWidth="@{safeUnbox(wrap)}"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@{model.colorA}"
@@ -168,10 +168,10 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 app:font="monospace"
                 android:gravity="center_horizontal"
-                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
+                android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
                 android:text='@{model.lineNumberA != null &amp;&amp; model.lineNumberB != null ? " " : model.lineNumberA != null ? "-" : "+"}'/>
 
             <com.ruesga.rview.widget.StyleableTextView
@@ -186,10 +186,10 @@
                 android:paddingBottom="@dimen/diff_line_text_padding"
                 android:paddingLeft="2dp"
                 android:paddingStart="2dp"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:ellipsize="none"
                 android:textIsSelectable="true"
-                android:maxLines="@{wrap != null &amp;&amp; wrap ? Integer.MAX_VALUE : 1}"
+                android:maxLines="@{safeUnbox(wrap) ? Integer.MAX_VALUE : 1}"
                 android:gravity="center_vertical"
                 tools:ignore="RtlSymmetry"/>
         </LinearLayout>
@@ -197,7 +197,7 @@
         <View
             android:layout_width="@dimen/diff_line_separator_width"
             android:layout_height="match_parent"
-            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
+            android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
             android:background="?android:attr/listDivider"/>
 
         <FrameLayout
@@ -207,7 +207,7 @@
             android:background="@color/diffLineBackgroundColor"
             android:tag='@{model.lineNumberB != null ? "false/" + model.lineNumberB : null}'
             android:onClick="@{handlers::onNewDraftPressed}"
-            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
+            android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
             tools:ignore="Suspicious0dp">
 
             <View
@@ -225,7 +225,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
                 android:padding="@dimen/diff_line_text_padding"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
                 app:font="monospace"
                 android:text="@{model.lineNumberB}"/>
@@ -234,7 +234,7 @@
         <LinearLayout
             android:layout_width="@dimen/diff_line_blame_width"
             android:layout_height="match_parent"
-            android:visibility="@{showBlameB != null &amp;&amp; showBlameB &amp;&amp; mode != null &amp;&amp; mode == DiffView.SIDE_BY_SIDE_MODE ? View.VISIBLE : View.GONE}"
+            android:visibility="@{safeUnbox(showBlameB) &amp;&amp; safeUnbox(mode) == DiffView.SIDE_BY_SIDE_MODE ? View.VISIBLE : View.GONE}"
             android:background="@color/diffLineBackgroundColor">
 
             <com.ruesga.rview.widget.StyleableTextView
@@ -243,7 +243,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
                 android:padding="@dimen/diff_line_text_padding"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:maxLines="1"
                 android:ellipsize="end"
                 app:font="boldMonospace"
@@ -254,15 +254,15 @@
         <View
             android:layout_width="@dimen/diff_line_separator_width"
             android:layout_height="match_parent"
-            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
+            android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
             android:background="?android:attr/listDivider"/>
 
         <LinearLayout
             android:layout_width="0dp"
-            app:wrapLayoutWidth="@{wrap != null &amp;&amp; wrap}"
+            app:wrapLayoutWidth="@{safeUnbox(wrap)}"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
+            android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.GONE : View.VISIBLE}"
             android:background="@{model.colorB}"
             android:orientation="horizontal">
 
@@ -273,9 +273,9 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="center_horizontal"
-                android:visibility="@{mode != null &amp;&amp; mode == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"/>
+                android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"/>
 
             <com.ruesga.rview.widget.StyleableTextView
                 android:id="@+id/diffB"
@@ -289,10 +289,10 @@
                 android:paddingBottom="@dimen/diff_line_text_padding"
                 android:paddingLeft="2dp"
                 android:paddingStart="2dp"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:ellipsize="none"
                 android:textIsSelectable="true"
-                android:maxLines="@{wrap != null &amp;&amp; wrap ? Integer.MAX_VALUE : 1}"
+                android:maxLines="@{safeUnbox(wrap) ? Integer.MAX_VALUE : 1}"
                 android:gravity="center_vertical"
                 tools:ignore="RtlSymmetry"/>
         </LinearLayout>

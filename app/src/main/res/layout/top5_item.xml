@@ -28,7 +28,7 @@
         android:layout_height="36dp"
         android:minHeight="?attr/listPreferredItemHeightSmall"
         android:gravity="center_vertical"
-        android:background="@{even ? @color/selectedItem : @android:color/transparent}"
+        android:background="@{safeUnbox(even) ? @color/selectedItem : @android:color/transparent}"
         android:onClick="@{handlers::onItemPressed}"
         android:tag="@{model.tag}"
         android:orientation="horizontal">

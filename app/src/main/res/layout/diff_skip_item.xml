@@ -32,7 +32,7 @@
 
     <FrameLayout
         android:layout_width="0dp"
-        app:wrapLayoutWidth="@{wrap != null &amp;&amp; wrap}"
+        app:wrapLayoutWidth="@{safeUnbox(wrap)}"
         android:layout_height="wrap_content"
         android:background="@color/diffSkipBackgroundColor">
 
@@ -49,10 +49,10 @@
                 android:layout_weight="1"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:onClick="@{handlers::onSkipLineUpPressed}"
                 android:tag="@{index}"
-                android:visibility="@{hasSkipUp != null &amp;&amp; hasSkipUp ? View.VISIBLE : View.INVISIBLE}"
+                android:visibility="@{safeUnbox(hasSkipUp) ? View.VISIBLE : View.INVISIBLE}"
                 android:ellipsize="none"
                 android:textStyle="bold"
                 android:padding="5dp"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:onClick="@{handlers::onSkipLinePressed}"
                 android:tag="@{index}"
                 android:ellipsize="none"
@@ -80,10 +80,10 @@
                 android:layout_weight="1"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?attr/colorPrimaryDark"
-                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : textSizeFactor)}"
+                android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:onClick="@{handlers::onSkipLineDownPressed}"
                 android:tag="@{index}"
-                android:visibility="@{hasSkipDown != null &amp;&amp; hasSkipDown ? View.VISIBLE : View.INVISIBLE}"
+                android:visibility="@{safeUnbox(hasSkipDown) ? View.VISIBLE : View.INVISIBLE}"
                 android:ellipsize="none"
                 android:textStyle="bold"
                 android:padding="5dp"

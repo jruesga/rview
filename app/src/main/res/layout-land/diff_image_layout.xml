@@ -28,7 +28,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="@{mode != null &amp;&amp; mode == DiffView.IMAGE_MODE ? View.VISIBLE : View.GONE}"
+        android:visibility="@{safeUnbox(mode) == DiffView.IMAGE_MODE ? View.VISIBLE : View.GONE}"
         android:orientation="horizontal">
 
         <android.support.v7.widget.CardView

@@ -149,7 +149,7 @@
                     android:text="@string/action_publish"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorPrimaryDark"
-                    android:visibility="@{canPublish != null &amp;&amp; canPublish ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{safeUnbox(canPublish) ? View.VISIBLE : View.GONE}"
                     app:font="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"/>

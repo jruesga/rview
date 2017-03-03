@@ -39,7 +39,7 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="@{hasData != null &amp;&amp; hasData ? View.VISIBLE : View.GONE}">
+        android:visibility="@{safeUnbox(hasData) ? View.VISIBLE : View.GONE}">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -323,7 +323,7 @@
                     android:text="@string/change_details_edit_message"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorPrimaryDark"
-                    android:visibility="@{(isAuthenticated != null &amp;&amp; isAuthenticated) &amp;&amp; (isCurrentRevision != null &amp;&amp; isCurrentRevision) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{(safeUnbox(isAuthenticated) &amp;&amp; safeUnbox(isCurrentRevision)) ? View.VISIBLE : View.GONE}"
                     app:font="boldCondensed"
                     app:allCaps="true"
                     android:textSize="12sp"

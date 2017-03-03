@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/selector_item"
-            app:bindSelected="@{isSelected != null &amp;&amp; isSelected}"
+            app:bindSelected="@{safeUnbox(isSelected)}"
             android:padding="8dp"
             android:minHeight="?attr/listPreferredItemHeightSmall"
             android:gravity="center_vertical"
@@ -44,7 +44,7 @@
                 android:layout_height="20dp"
                 app:bindResourceDrawable="@{icon}"
                 android:tint="?attr/colorAccent"
-                android:visibility="@{icon == null || icon == 0 ? View.GONE : View.VISIBLE}"
+                android:visibility="@{safeUnbox(icon) == 0 ? View.GONE : View.VISIBLE}"
                 tools:ignore="ContentDescription" />
             <com.ruesga.rview.widget.StyleableTextView
                 android:id="@+id/item"

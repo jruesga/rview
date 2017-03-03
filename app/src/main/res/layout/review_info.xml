@@ -36,7 +36,7 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="@{hasData != null &amp;&amp; hasData &amp;&amp; isAuthenticated != null &amp;&amp; isAuthenticated ? View.VISIBLE : View.GONE}">
+        android:visibility="@{safeUnbox(hasData) &amp;&amp; safeUnbox(isAuthenticated) ? View.VISIBLE : View.GONE}">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -56,15 +56,15 @@
                 android:id="@+id/review_labels"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:enabled="@{isLocked == null || !isLocked}"
-                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
+                android:enabled="@{!safeUnbox(isLocked)}"
+                android:visibility="@{(!safeUnbox(isCurrentRevision) || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:visibility="@{(isCurrentRevision == null || !isCurrentRevision || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
+                android:visibility="@{(!safeUnbox(isCurrentRevision) || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                 android:background="?android:attr/listDivider"/>
 
             <LinearLayout
@@ -91,7 +91,7 @@
                     android:inputType="textMultiLine"
                     android:imeOptions="flagNoFullscreen"
                     android:hint="@string/change_details_review_hint"
-                    android:enabled="@{isLocked == null || !isLocked}"
+                    android:enabled="@{!safeUnbox(isLocked)}"
                     tools:ignore="RtlSymmetry"/>
 
                 <FrameLayout
@@ -106,15 +106,15 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:onClick="@{handlers::onReviewPressed}"
                         android:scaleType="centerInside"
-                        android:enabled="@{isLocked == null || !isLocked}"
-                        android:visibility="@{isProcessing == null || !isProcessing ? View.VISIBLE : View.GONE}"
+                        android:enabled="@{!safeUnbox(isLocked)}"
+                        android:visibility="@{!safeUnbox(isProcessing) ? View.VISIBLE : View.GONE}"
                         tools:ignore="ContentDescription"/>
                     <ProgressBar
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="8dp"
                         android:layout_gravity="center"
-                        android:visibility="@{isProcessing != null &amp;&amp; isProcessing ? View.VISIBLE : View.GONE}"/>
+                        android:visibility="@{safeUnbox(isProcessing) ? View.VISIBLE : View.GONE}"/>
                 </FrameLayout>
             </LinearLayout>
         </LinearLayout>
