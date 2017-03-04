@@ -171,11 +171,11 @@ def registerAddActivityAliases(task, build) {
                     .replace(":", ""))
 
     def addActivityAliasesTaskName = "addActivityAliases${buildName.capitalize()}"
-    project.task(addActivityAliasesTaskName) << {
+    project.task(addActivityAliasesTaskName).doLast({
         description = 'Include extra activity-alias to final AndroidManifest.xml'
         addActivityAliases(manifestFull)
         addActivityAliases(manifestInstantRun)
-    }
+    })
 
     task.dependsOn(addActivityAliasesTaskName)
     def processTask = "process${buildName.capitalize()}Manifest"
