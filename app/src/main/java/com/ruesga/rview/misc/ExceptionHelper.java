@@ -49,7 +49,7 @@ public class ExceptionHelper {
         return null;
     }
 
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions", "deprecation"})
     public static @StringRes int exceptionToMessage(Context context, String tag, Throwable cause) {
         int message;
         if (isException(cause, retrofit2.adapter.rxjava.HttpException.class)) {
@@ -127,7 +127,7 @@ public class ExceptionHelper {
                 || isException(cause, SocketTimeoutException.class));
     }
 
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions"})
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions", "deprecation"})
     private static boolean isHttpException(Throwable cause, int httpCode) {
         if (isException(cause, retrofit2.adapter.rxjava.HttpException.class)) {
             retrofit2.adapter.rxjava.HttpException httpException =

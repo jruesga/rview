@@ -403,6 +403,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             return Query.sanitizeValue(val);
         }
 
+        @SuppressWarnings("unchecked")
         private void addField(Tree tree, ChangeQuery query) throws QueryParseException {
             String fieldName = tree.getText();
             String text = getFieldText(tree);

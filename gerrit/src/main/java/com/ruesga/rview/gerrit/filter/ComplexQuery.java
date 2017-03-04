@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
 
+    @SuppressWarnings("unchecked")
     public T and(T query) {
         if (queries().size() == 0) {
             throw new IllegalArgumentException("Can't use operator here");
@@ -32,10 +33,10 @@ public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
         } else {
             add("AND " + query);
         }
-        //noinspection unchecked
         return (T)this;
     }
 
+    @SuppressWarnings("unchecked")
     public T or(T query) {
         if (queries().size() == 0) {
             throw new IllegalArgumentException("Can't use operator here");
@@ -49,16 +50,15 @@ public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
         } else {
             add("OR " + query);
         }
-        //noinspection unchecked
         return (T)this;
     }
 
+    @SuppressWarnings("unchecked")
     public T negate(T query) {
         if (query.queries().size() == 0) {
             throw new IllegalArgumentException("Empty query");
         }
         add("-(" + query + ")");
-        //noinspection unchecked
         return (T)this;
     }
 

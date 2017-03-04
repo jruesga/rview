@@ -177,6 +177,7 @@ public abstract class WizardActivity extends AppCompatActivity {
     protected WizardActivity() {
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected final void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,7 +221,6 @@ public abstract class WizardActivity extends AppCompatActivity {
         }
 
         // Prepared the back and forward loaders
-        //noinspection unchecked
         mLoaders = new Pair[mPages.size()];
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
         int i = 0;
