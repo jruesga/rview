@@ -698,34 +698,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void enterReveal() {
         if (AndroidHelper.isLollipopOrGreater()) {
-            final View target = mBinding.searchView;
-            final View bounds = mBinding.toolbar;
-            ViewCompat.postOnAnimation(bounds, () -> {
-                int cx = bounds.getMeasuredWidth();
-                int cy = bounds.getMeasuredHeight() / 2;
-                Animator anim = ViewAnimationUtils.createCircularReveal(target, cx, cy, 0, cx);
-                anim.setInterpolator(new AccelerateInterpolator());
-                anim.setDuration(350L);
-                anim.addListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mBinding.toolbar.setVisibility(View.VISIBLE);
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                });
-                anim.start();
-            });
+            ViewCompat.postOnAnimation(mBinding.toolbar,
+                    new RevelAnimationRunnable(mBinding.toolbar, mBinding.searchView, true));
         }
     }
 
@@ -736,24 +710,44 @@ public class SearchActivity extends AppCompatDelegateActivity {
             return;
         }
 
-        final View target = mBinding.searchView;
-        final View bounds = mBinding.toolbar;
-        ViewCompat.postOnAnimation(bounds, () -> {
-            int cx = bounds.getMeasuredWidth();
-            int cy = bounds.getMeasuredHeight() / 2;
-            Animator anim = ViewAnimationUtils.createCircularReveal(target, cx, cy, cx, 0);
+        ViewCompat.postOnAnimation(mBinding.toolbar,
+                new RevelAnimationRunnable(mBinding.toolbar, mBinding.searchView, false));
+    }
+
+    private class RevelAnimationRunnable implements Runnable {
+        private final View mTarget;
+        private final View mParent;
+        private final boolean mIn;
+
+        RevelAnimationRunnable(View parent, View target, boolean in) {
+            mTarget = target;
+            mParent = parent;
+            mIn = in;
+        }
+
+        @Override
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        public void run() {
+            int cx = mParent.getMeasuredWidth();
+            int cy = mParent.getMeasuredHeight() / 2;
+            Animator anim = ViewAnimationUtils.createCircularReveal(
+                    mTarget, cx, cy, mIn ? 0 : cx, mIn ? cx : 0);
             anim.setInterpolator(new AccelerateInterpolator());
-            anim.setDuration(250L);
+            anim.setDuration(mIn ? 350L : 250L);
             anim.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    mBinding.toolbar.setVisibility(View.GONE);
+                    if (!mIn) {
+                        mBinding.toolbar.setVisibility(View.GONE);
+                    }
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mBinding.searchView.setVisibility(View.INVISIBLE);
-                    finish();
+                    mBinding.searchView.setVisibility(mIn ? View.VISIBLE : View.INVISIBLE);
+                    if (!mIn) {
+                        finish();
+                    }
                 }
 
                 @Override
@@ -765,6 +759,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 }
             });
             anim.start();
-        });
+        }
     }
 }
