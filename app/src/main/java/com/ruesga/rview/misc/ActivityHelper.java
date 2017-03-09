@@ -211,16 +211,12 @@ public class ActivityHelper {
         downloadManager.enqueue(request);
     }
 
-    public static void downloadLocalFile(
-            Context context, File src, String name, boolean resolveMimeType) throws IOException {
+    public static void downloadLocalFile(Context context, File src, String name) throws IOException {
         File downloadFolder = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DOWNLOADS);
         File dst = new File(downloadFolder, name);
         FileUtils.copyFile(src, dst);
-        String mimeType = null;
-        if (resolveMimeType) {
-            mimeType = StringHelper.getMimeType(dst);
-        }
+        String mimeType = StringHelper.getMimeType(dst);
 
         DownloadManager downloadManager =
                 (DownloadManager) context.getSystemService(Activity.DOWNLOAD_SERVICE);
