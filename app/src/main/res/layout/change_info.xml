@@ -192,7 +192,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:visibility="@{(model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"
                         android:padding="5dp">
                         <com.ruesga.rview.widget.StyleableTextView
                             android:layout_width="wrap_content"
