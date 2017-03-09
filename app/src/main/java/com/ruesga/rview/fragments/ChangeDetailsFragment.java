@@ -1174,6 +1174,9 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     private void updateChangeInfo(DataResponse response) {
+        boolean open = !ChangeStatus.MERGED.equals(response.mChange.status) &&
+            !ChangeStatus.ABANDONED.equals(response.mChange.status);
+
         mBinding.changeInfo.owner
                 .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
@@ -1182,7 +1185,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnAccountChipRemovedListener)
-                .withRemovableReviewers(true)
+                .withRemovableReviewers(open)
                 .withFilterCIAccounts(true)
                 .from(response.mChange);
         mBinding.changeInfo.labels
