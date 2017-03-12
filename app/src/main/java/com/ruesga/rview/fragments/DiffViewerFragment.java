@@ -24,6 +24,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -45,7 +46,6 @@ import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.DiffActionsHeaderBinding;
 import com.ruesga.rview.databinding.DiffBaseChooserHeaderBinding;
 import com.ruesga.rview.databinding.DiffFileChooserHeaderBinding;
@@ -97,7 +97,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             "android.permission.WRITE_EXTERNAL_STORAGE"
     };
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public String file;
 
@@ -115,7 +115,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         public boolean hasRightDownloadAction;
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class EventHandlers {
         private final DiffViewerFragment mFragment;

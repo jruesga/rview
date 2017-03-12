@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -41,7 +42,6 @@ import android.view.View;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.util.Colors;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
 import com.ruesga.rview.drawer.DrawerNavigationMenu;
@@ -79,7 +79,7 @@ public class MainActivity extends ChangeListBaseActivity {
     private static final int MESSAGE_NAVIGATE_TO = 0;
     private static final int MESSAGE_DELETE_ACCOUNT = 1;
 
-    @ProguardIgnored
+    @Keep
     public static class Model implements Parcelable {
         public String accountName;
         public String accountRepository;
@@ -138,7 +138,7 @@ public class MainActivity extends ChangeListBaseActivity {
         };
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings({"UnusedParameters", "unused"})
     public static class EventHandlers {
         private final MainActivity mActivity;

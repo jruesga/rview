@@ -18,6 +18,7 @@ package com.ruesga.rview.wizard.choosers;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,7 +30,6 @@ import android.view.ViewGroup;
 import com.ruesga.rview.wizard.R;
 import com.ruesga.rview.wizard.WizardActivity;
 import com.ruesga.rview.wizard.WizardChooserFragment;
-import com.ruesga.rview.wizard.annotations.ProguardIgnored;
 import com.ruesga.rview.wizard.databinding.ListChooserBinding;
 import com.ruesga.rview.wizard.databinding.ListChooserItemBinding;
 
@@ -56,19 +56,19 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         }
     }
 
-    @ProguardIgnored
+    @Keep
     public static class ItemModel {
         public String title;
         public String summary;
         public boolean trustAllCertificates;
     }
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public boolean hasData = true;
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class ItemEventHandlers {
         ListChooserFragment mFragment;

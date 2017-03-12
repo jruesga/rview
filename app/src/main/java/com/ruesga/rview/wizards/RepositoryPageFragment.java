@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
@@ -35,7 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.WizardRepositoryPageFragmentBinding;
 import com.ruesga.rview.exceptions.NoActivityAttachedException;
 import com.ruesga.rview.exceptions.UnsupportedServerVersionException;
@@ -68,7 +68,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
     public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCertificates";
     private static final String STATE_REPO_CONFIRMED_URL = "repo.confirmed.url";
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class Model {
         public String name;

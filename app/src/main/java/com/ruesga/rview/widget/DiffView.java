@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Keep;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,7 +37,6 @@ import android.widget.TextView;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.DiffAdviseItemBinding;
 import com.ruesga.rview.databinding.DiffCommentItemBinding;
 import com.ruesga.rview.databinding.DiffDecoratorItemBinding;
@@ -73,7 +73,7 @@ public class DiffView extends FrameLayout {
     private static final int ADVISE_VIEW_TYPE = 3;
     private static final int DECORATOR_VIEW_TYPE = 4;
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings({"UnusedParameters", "unused"})
     public static class EventHandlers {
         private final DiffView mView;
@@ -205,7 +205,7 @@ public class DiffView extends FrameLayout {
     public static abstract class AbstractModel {
     }
 
-    @ProguardIgnored
+    @Keep
     public static class DiffInfoModel extends AbstractModel {
         public int a = -1;
         public int b = -1;
@@ -219,7 +219,7 @@ public class DiffView extends FrameLayout {
         public String blameB;
     }
 
-    @ProguardIgnored
+    @Keep
     public static class CommentModel extends AbstractModel {
         public CommentInfo commentA;
         public CommentInfo commentB;
@@ -227,22 +227,22 @@ public class DiffView extends FrameLayout {
         public DiffInfoModel diff;
     }
 
-    @ProguardIgnored
+    @Keep
     public static class SkipLineModel extends AbstractModel {
         public String msg;
         public DiffInfoModel[] skippedLines;
     }
 
-    @ProguardIgnored
+    @Keep
     public static class AdviseModel extends AbstractModel {
         public String msg;
     }
 
-    @ProguardIgnored
+    @Keep
     public static class DecoratorModel extends AbstractModel {
     }
 
-    @ProguardIgnored
+    @Keep
     public static class DiffViewMeasurement {
         public float width = -1;
         public float lineWidth = -1;
@@ -255,7 +255,7 @@ public class DiffView extends FrameLayout {
         }
     }
 
-    @ProguardIgnored
+    @Keep
     public static class ImageDiffModel {
         public Drawable left;
         public String sizeLeft;
@@ -265,7 +265,7 @@ public class DiffView extends FrameLayout {
         public String dimensionsRight;
     }
 
-    @ProguardIgnored
+    @Keep
     public static class SkipLinesOpHistory {
         private static final int SKIP_ALL = 0;
         private static final int SKIP_UP = -1;

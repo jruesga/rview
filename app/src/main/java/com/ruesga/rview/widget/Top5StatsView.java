@@ -18,6 +18,7 @@ package com.ruesga.rview.widget;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -25,7 +26,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.Top5ItemBinding;
 import com.ruesga.rview.misc.ValueComparator;
 import com.ruesga.rview.model.Stats;
@@ -62,14 +62,14 @@ public class Top5StatsView extends LinearLayout {
         }
     }
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public String count;
         public String item;
         public String tag;
     }
 
-    @ProguardIgnored
+    @Keep
     public static class EventHandlers {
         private Top5StatsView mView;
 

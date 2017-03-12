@@ -21,6 +21,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Keep;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -29,7 +30,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ScoreItemBinding;
 import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.misc.AndroidHelper;
@@ -44,7 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScoreLabelsView extends NonDebuggableFlowLayout {
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public boolean visible = false;
         public String label;

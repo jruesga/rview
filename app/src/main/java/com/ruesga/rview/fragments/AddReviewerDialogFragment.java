@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -30,7 +31,6 @@ import android.widget.Button;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.ReviewersAdapter;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.AddReviewerDialogBinding;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.misc.AndroidHelper;
@@ -40,7 +40,7 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
 
     public static final String TAG = "AddReviewerDialogFragment";
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public String reviewer;
     }

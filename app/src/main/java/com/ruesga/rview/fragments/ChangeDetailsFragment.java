@@ -23,6 +23,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -42,7 +43,6 @@ import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.PatchSetsAdapter;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
 import com.ruesga.rview.databinding.FileInfoItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
@@ -166,7 +166,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private static final int REQUEST_CODE_FOLLOW_UP_CHANGE = 8;
     private static final int REQUEST_CODE_SUBMIT_CHANGE = 9;
 
-    @ProguardIgnored
+    @Keep
     public static class ListModel {
         @StringRes
         public int header;
@@ -180,7 +180,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         boolean isLocked = false;
         boolean isAuthenticated = false;
@@ -188,7 +188,7 @@ public class ChangeDetailsFragment extends Fragment implements
         public ListModel msgListModel = new ListModel(R.string.change_details_header_messages);
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings({"UnusedParameters", "unused"})
     public static class EventHandlers {
         private final ChangeDetailsFragment mFragment;
@@ -310,7 +310,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
-    @ProguardIgnored
+    @Keep
     public static class FileItemModel {
         public String file;
         public FileInfo info;
@@ -897,7 +897,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
-    @ProguardIgnored
+    @Keep
     public static class EmptyEventHandlers extends EmptyState.EventHandlers {
         private ChangeDetailsFragment mFragment;
 

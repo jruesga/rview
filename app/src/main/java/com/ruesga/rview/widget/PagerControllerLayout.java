@@ -19,6 +19,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.IdRes;
+import android.support.annotation.Keep;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,7 +29,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.PagerControllerLayoutBinding;
 
 public class PagerControllerLayout extends FrameLayout {
@@ -65,13 +65,13 @@ public class PagerControllerLayout extends FrameLayout {
         void onPageSelected(int position, boolean fromUser);
     }
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public CharSequence prev;
         public CharSequence next;
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("UnusedParameters")
     public static class EventHandlers {
         private PagerControllerLayout mView;

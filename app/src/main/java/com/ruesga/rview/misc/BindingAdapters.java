@@ -17,6 +17,7 @@ package com.ruesga.rview.misc;
 
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Keep;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -29,14 +30,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.Features;
 
 import java.util.List;
 import java.util.Map;
 
-@ProguardIgnored
+@Keep
 @SuppressWarnings("unused")
 public class BindingAdapters {
 

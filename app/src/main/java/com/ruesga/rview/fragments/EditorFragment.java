@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -39,7 +40,6 @@ import com.google.gson.JsonParseException;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.EditActionsHeaderBinding;
 import com.ruesga.rview.databinding.EditFileChooserHeaderBinding;
 import com.ruesga.rview.databinding.EditorFragmentBinding;
@@ -87,12 +87,12 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         void onContentSaved();
     }
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public String file;
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class EventHandlers {
         private final EditorFragment mFragment;

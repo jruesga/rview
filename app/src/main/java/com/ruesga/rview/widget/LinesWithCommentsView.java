@@ -17,13 +17,13 @@ package com.ruesga.rview.widget;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.Keep;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.LineWithCommentViewBinding;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 
@@ -35,7 +35,7 @@ public class LinesWithCommentsView extends LinearLayout {
         void onLineClick(View v);
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings({"UnusedParameters", "unused"})
     public static class EventHandlers {
         private final LinesWithCommentsView mView;

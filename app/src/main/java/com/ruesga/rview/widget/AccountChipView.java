@@ -17,13 +17,13 @@ package com.ruesga.rview.widget;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.Keep;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.AccountChipBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.PicassoHelper;
@@ -39,7 +39,7 @@ public class AccountChipView extends FrameLayout {
         void onAccountChipRemoved(AccountInfo account);
     }
 
-    @ProguardIgnored
+    @Keep
     public static class EventHandlers {
         private AccountChipView mView;
 

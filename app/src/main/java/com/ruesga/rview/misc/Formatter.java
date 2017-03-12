@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.Keep;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.SpannableStringBuilder;
@@ -32,7 +33,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
@@ -67,7 +67,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 
-@ProguardIgnored
+@Keep
 @SuppressWarnings("unused")
 public class Formatter {
     private static Account mAccount;

@@ -21,6 +21,7 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -35,7 +36,6 @@ import android.view.ViewGroup;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.NotificationItemBinding;
 import com.ruesga.rview.databinding.NotificationsFragmentBinding;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
@@ -89,7 +89,7 @@ public class NotificationsFragment extends Fragment {
         }
     }
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public CharSequence subject;
         public CharSequence notification;
@@ -98,7 +98,7 @@ public class NotificationsFragment extends Fragment {
         public boolean read;
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class ItemEventHandlers {
         NotificationsFragment mFragment;

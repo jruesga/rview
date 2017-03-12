@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.app.Activity;
 import android.databinding.ViewDataBinding;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -32,7 +33,6 @@ import android.widget.Button;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.FilterableAdapter;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.widget.DelayedAutocompleteTextView;
 
@@ -46,7 +46,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         void onFilterSelected(int requestCode, Object o);
     }
 
-    @ProguardIgnored
+    @Keep
     public static class Model {
         public String filter;
     }

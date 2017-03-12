@@ -28,6 +28,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
@@ -48,7 +49,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
-import com.ruesga.rview.wizard.annotations.ProguardIgnored;
 import com.ruesga.rview.wizard.databinding.ActivityWizardBinding;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
 
 public abstract class WizardActivity extends AppCompatActivity {
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class WizardWorkflow {
         public String title;
@@ -98,7 +98,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         }
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class WorkFlowHandlers {
         private final WizardActivity mActivity;

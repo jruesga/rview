@@ -2,8 +2,6 @@
 -dontwarn rx.internal.util.unsafe.*
 -dontwarn java.lang.invoke**
 
--keep @com.ruesga.rview.wizard.annotations.ProguardIgnored public class *
-
 ##---------------Begin: proguard configuration for RxJava  ----------
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
    long producerIndex;

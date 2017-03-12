@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Parcel;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -46,7 +47,6 @@ import android.view.animation.AccelerateInterpolator;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.SearchActivityBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
@@ -87,8 +87,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private static final String EXTRA_REVEALED = "revealed";
 
+    @Keep
     @SuppressWarnings({"UnusedParameters", "unused"})
-    @ProguardIgnored
     public static class EventHandlers {
         private SearchActivity mActivity;
 

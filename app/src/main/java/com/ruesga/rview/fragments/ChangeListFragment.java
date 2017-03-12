@@ -20,6 +20,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -32,7 +33,6 @@ import android.view.ViewGroup;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.OnChangeItemListener;
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ChangesFragmentBinding;
 import com.ruesga.rview.databinding.ChangesItemBinding;
 import com.ruesga.rview.databinding.FetchingMoreItemBinding;
@@ -88,7 +88,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         }
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class ItemEventHandlers {
         ChangeListFragment mFragment;
@@ -227,7 +227,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         return false;
     };
 
-    @ProguardIgnored
+    @Keep
     public static class EmptyEventHandlers extends EmptyState.EventHandlers {
         private ChangeListFragment mFragment;
 

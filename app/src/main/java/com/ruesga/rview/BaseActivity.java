@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Keep;
 import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -36,7 +37,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView;
 import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
@@ -62,7 +62,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     public static final String FRAGMENT_TAG_LIST = "list";
     public static final String FRAGMENT_TAG_DETAILS = "details";
 
-    @ProguardIgnored
+    @Keep
     public static class Model implements Parcelable {
         public boolean isInProgress = false;
         public boolean hasTabs = false;

@@ -15,14 +15,13 @@
  */
 package com.ruesga.rview.model;
 
+import android.support.annotation.Keep;
 import android.view.View;
 
-import com.ruesga.rview.annotations.ProguardIgnored;
-
-@ProguardIgnored
+@Keep
 public class EmptyState {
 
-    @ProguardIgnored
+    @Keep
     public static abstract class EventHandlers {
         public abstract void onRetry(View v);
     }

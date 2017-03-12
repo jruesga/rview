@@ -18,6 +18,7 @@ package com.ruesga.rview.wizards;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -35,7 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.annotations.ProguardIgnored;
 import com.ruesga.rview.databinding.WizardAccountPageFragmentBinding;
 import com.ruesga.rview.exceptions.NoActivityAttachedException;
 import com.ruesga.rview.gerrit.Authorization;
@@ -73,7 +73,7 @@ public class AccountPageFragment extends WizardPageFragment {
     private static final String STATE_REPO_URL = "repo.url";
     public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCertificates";
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class Model {
         public Spanned message;
@@ -102,7 +102,7 @@ public class AccountPageFragment extends WizardPageFragment {
         }
     }
 
-    @ProguardIgnored
+    @Keep
     @SuppressWarnings("unused")
     public static class EventHandlers {
         AccountPageFragment mFragment;
