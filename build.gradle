@@ -20,11 +20,10 @@ ext {
         firebase                    : '10.2.0',
         gson                        : '2.8.0',
         retrofit2                   : '2.2.0',
-        retrofit2_rxjava2_adapter   : '1.0.0',
         okhttp3                     : '3.6.0',
         okio                        : '1.11.0',
-        okhttp_digest               : 'b6af981e59',
-        rxjava                      : '2.0.6',
+        okhttp_digest               : 'f8af82f343',
+        rxjava                      : '2.0.7',
         rxandroid                   : '2.0.1',
         rxloader2                   : '1c07294ba2',
         commons_io                  : '2.5',
@@ -36,7 +35,7 @@ ext {
         flowlayout                  : '1.10',
         floatingsearchview          : '626a7971b0',
         androidsvg                  : '91e06d8a3a',
-        aboutlibraries              : '5.9.3',
+        aboutlibraries              : '5.9.4',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.6.7',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
@@ -48,7 +47,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.6.9'
+        mockito                     : '2.7.15'
     ]
 }
 

@@ -27,7 +27,7 @@ dependencies {
         exclude group: 'io.reactivex', module: 'rxjava'
     }
     compile "com.squareup.retrofit2:converter-gson:${libraries.retrofit2}"
-    compile "com.squareup.retrofit2:adapter-rxjava:${libraries.retrofit2}"
+    compile "com.squareup.retrofit2:adapter-rxjava2:${libraries.retrofit2}"
     compile "com.squareup.okhttp3:okhttp:${libraries.okhttp3}"
     compile "com.squareup.okhttp3:logging-interceptor:${libraries.okhttp3}"
     compile "com.squareup.okio:okio:${libraries.okio}"
@@ -35,7 +35,6 @@ dependencies {
     compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     compile "com.github.jruesga:rxloader:${libraries.rxloader2}"
-    compile "com.jakewharton.retrofit:retrofit2-rxjava2-adapter:${libraries.retrofit2_rxjava2_adapter}"
     compile "org.antlr:antlr-runtime:${libraries.antlrv3}"
 
     testCompile "junit:junit:${testLibraries.junit}"

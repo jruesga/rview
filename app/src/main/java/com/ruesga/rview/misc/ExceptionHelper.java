@@ -52,16 +52,16 @@ public class ExceptionHelper {
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions", "deprecation"})
     public static @StringRes int exceptionToMessage(Context context, String tag, Throwable cause) {
         int message;
-        if (isException(cause, retrofit2.adapter.rxjava.HttpException.class)) {
-            retrofit2.adapter.rxjava.HttpException httpException =
-                    (retrofit2.adapter.rxjava.HttpException)
-                            getCause(cause, retrofit2.adapter.rxjava.HttpException.class);
+        if (isException(cause, retrofit2.HttpException.class)) {
+            retrofit2.HttpException httpException =
+                    (retrofit2.HttpException)
+                            getCause(cause, retrofit2.HttpException.class);
             message = httpCode2MessageResource(httpException.code());
 
-        } else if (isException(cause, com.jakewharton.retrofit2.adapter.rxjava2.HttpException.class)) {
-            com.jakewharton.retrofit2.adapter.rxjava2.HttpException httpException =
-                    (com.jakewharton.retrofit2.adapter.rxjava2.HttpException)
-                        getCause(cause, com.jakewharton.retrofit2.adapter.rxjava2.HttpException.class);
+        } else if (isException(cause, retrofit2.adapter.rxjava2.HttpException.class)) {
+            retrofit2.adapter.rxjava2.HttpException httpException =
+                    (retrofit2.adapter.rxjava2.HttpException)
+                            getCause(cause, retrofit2.adapter.rxjava2.HttpException.class);
             message = httpCode2MessageResource(httpException.code());
 
         } else if (isException(cause, OperationFailedException.class)) {
@@ -129,16 +129,16 @@ public class ExceptionHelper {
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions", "deprecation"})
     private static boolean isHttpException(Throwable cause, int httpCode) {
-        if (isException(cause, retrofit2.adapter.rxjava.HttpException.class)) {
-            retrofit2.adapter.rxjava.HttpException httpException =
-                    (retrofit2.adapter.rxjava.HttpException)
-                            getCause(cause, retrofit2.adapter.rxjava.HttpException.class);
+        if (isException(cause, retrofit2.HttpException.class)) {
+            retrofit2.HttpException httpException =
+                    (retrofit2.HttpException)
+                            getCause(cause, retrofit2.HttpException.class);
             return httpCode == httpException.code();
         }
-        if (isException(cause, com.jakewharton.retrofit2.adapter.rxjava2.HttpException.class)) {
-            com.jakewharton.retrofit2.adapter.rxjava2.HttpException httpException =
-                    (com.jakewharton.retrofit2.adapter.rxjava2.HttpException)
-                            getCause(cause, com.jakewharton.retrofit2.adapter.rxjava2.HttpException.class);
+        if (isException(cause, retrofit2.adapter.rxjava2.HttpException.class)) {
+            retrofit2.adapter.rxjava2.HttpException httpException =
+                    (retrofit2.adapter.rxjava2.HttpException)
+                            getCause(cause, retrofit2.adapter.rxjava2.HttpException.class);
             return httpCode == httpException.code();
         }
         return false;
