@@ -16,7 +16,7 @@
 
 ext {
     libraries = [
-        support                     : '25.2.0',
+        support                     : '25.3.0',
         firebase                    : '10.2.0',
         gson                        : '2.8.0',
         retrofit2                   : '2.2.0',
