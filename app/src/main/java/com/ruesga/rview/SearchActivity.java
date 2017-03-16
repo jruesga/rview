@@ -521,8 +521,12 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
         // Open the activity
         ActivityHelper.openChangeListByFilterActivity(this, null, filter, true, false);
+
+        // Persist history
+        String history = mCurrentOption != Constants.SEARCH_MODE_CUSTOM
+                ? query : String.valueOf(filter);
         Preferences.addAccountSearchHistory(
-                this, Preferences.getAccount(this), mCurrentOption, String.valueOf(filter));
+                this, Preferences.getAccount(this), mCurrentOption, history);
     }
 
     private int[] loadSearchIcons() {
