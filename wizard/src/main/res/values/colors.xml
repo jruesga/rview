@@ -16,4 +16,5 @@
  -->
 <resources>
     <color name="wizard_navbar">#e0e0e0</color>
+    <color name="wizard_text_secondary">@android:color/secondary_text_light</color>
 </resources>
