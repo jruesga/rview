@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{model.message}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/secondary_text_light"/>
+                android:textColor="@color/wizard_text_secondary"/>
         </com.ruesga.rview.widget.FixedSizeLayout>
     </ScrollView>
 

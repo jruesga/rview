@@ -72,4 +72,10 @@
         <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
+
+    <style name="SearchView">
+        <item name="floatingSearch_suggestionRightIconColor">?attr/colorAccent</item>
+        <item name="floatingSearch_searchBarTextSize">12sp</item>
+        <item name="floatingSearch_searchSuggestionTextSize">10sp</item>
+    </style>
 </resources>
