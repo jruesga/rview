@@ -13,7 +13,7 @@
   {"name":"Exynos5420", "url":"https://review.exynos5420.com/"},
   {"name":"Fuchsia", "url":"https://fuchsia-review.googlesource.com/"},
   {"name":"Gerrit", "url":"https://gerrit-review.googlesource.com/", "ci_accounts": "^(GerritForge CI|Diffy Cuckoo.*)$"},
-  {"name":"GerritHub", "url":"https://gerrithub.io/"},
+  {"name":"GerritHub", "url":"https://review.gerrithub.io/"},
   {"name":"Kitware", "url":"http://review.source.kitware.com/"},
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/", "ci_accounts": "^(Jenkins)$"},
   {"name":"LineageOS", "url":"https://review.lineageos.org/"},
