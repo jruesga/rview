@@ -122,7 +122,7 @@ public abstract class WizardActivity extends AppCompatActivity {
             new RxLoaderObserver<Boolean>() {
                 @Override
                 public void onNext(Boolean result) {
-                    if (result && !mHasStateSaved) {
+                    if (mIsActivityConfigured && result && !mHasStateSaved) {
                         doPerformActionPressed(false);
                     }
                 }
@@ -136,7 +136,7 @@ public abstract class WizardActivity extends AppCompatActivity {
             new RxLoaderObserver<Boolean>() {
                 @Override
                 public void onNext(Boolean result) {
-                    if (result && !mHasStateSaved) {
+                    if (mIsActivityConfigured && result && !mHasStateSaved) {
                         doPerformActionPressed(true);
                     }
                 }
@@ -153,6 +153,7 @@ public abstract class WizardActivity extends AppCompatActivity {
 
     private final ArrayList<WizardPageFragment> mPages = new ArrayList<>();
     private boolean mArePagesConfigured;
+    private boolean mIsActivityConfigured;
 
     private ActivityWizardBinding mBinding;
     private final WizardWorkflow mWorkflow = new WizardWorkflow();
@@ -249,6 +250,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         } else {
             performNavigateToPage(mCurrentPage);
         }
+        mIsActivityConfigured = true;
     }
 
     @Override
