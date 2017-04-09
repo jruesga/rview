@@ -153,6 +153,7 @@ public class Preferences {
             accounts.add(account);
         }
 
+        Collections.sort(accounts);
         saveAccounts(context, accounts);
         return accounts;
     }
