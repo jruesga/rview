@@ -495,6 +495,9 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
         if (!getContext().getTheme().resolveAttribute(baseColorThemeAttr, value, true)) {
             return null;
         }
+        if (value.resourceId == 0) {
+            return null;
+        }
         ColorStateList baseColor = getResources().getColorStateList(value.resourceId);
         if (!getContext().getTheme().resolveAttribute(
                 android.support.v7.appcompat.R.attr.colorPrimary, value, true)) {
