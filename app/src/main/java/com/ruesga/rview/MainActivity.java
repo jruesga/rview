@@ -410,7 +410,8 @@ public class MainActivity extends ChangeListBaseActivity {
 
     private void internalPerformShowAccount(boolean show) {
         final boolean auth = mAccount != null && mAccount.hasAuthenticatedAccessMode();
-        final boolean supportNotifications = mAccount != null && mAccount.hasNotificationsSupport();
+        final boolean supportNotifications = mAccount != null && mAccount.hasNotificationsSupport()
+                && Preferences.isAccountNotificationsEnabled(this, mAccount);
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
         menu.setGroupVisible(R.id.category_my_menu, !show && auth);
