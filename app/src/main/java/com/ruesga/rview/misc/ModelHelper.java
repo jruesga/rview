@@ -124,8 +124,9 @@ public class ModelHelper {
         sTemporaryTrustAllCertificates.put(account.getAccountHash(), granted);
     }
 
-    public static List<String> getAvatarUrl(Context context, AccountInfo account) {
-        String accountKey = account.accountId + "/" + getAccountDisplayName(account);
+    public static List<String> getAvatarUrl(Context context, Account acct, AccountInfo account) {
+        String accountKey = (acct == null ? "" : acct.getRepositoryHash()) + "/"
+                + account.accountId + "/" + getAccountDisplayName(account);
 
         List<String> urls = sAvatarUrlCache.get(accountKey);
         if (urls != null && !urls.isEmpty()) {

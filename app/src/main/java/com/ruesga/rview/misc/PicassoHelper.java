@@ -32,12 +32,13 @@ import android.widget.ImageView;
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Preferences;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class PicassoHelper {
     private static Picasso sPicasso;
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private final static Set<WeakReference<Target>> sTargets = new HashSet<>();
+    private final static Set<Target> sTargets = new HashSet<>();
 
     public static Picasso getPicassoClient(Context context) {
         if (sPicasso == null) {
@@ -80,14 +81,28 @@ public class PicassoHelper {
     }
 
     public static void bindAvatar(Context context, Picasso picasso, AccountInfo account,
-            ImageView view, Drawable placeholder) {
-        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, account);
+                ImageView view, Drawable placeholder) {
+        final Account acct = Preferences.getAccount(context);
+        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
+        loadWithFallbackUrls(context, picasso, view, placeholder, avatarUrls);
+    }
+
+    public static void bindAvatar(Context context, Picasso picasso, Account acct,
+            AccountInfo account, ImageView view, Drawable placeholder) {
+        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
         loadWithFallbackUrls(context, picasso, view, placeholder, avatarUrls);
     }
 
     public static void bindAvatar(Context context, Picasso picasso, AccountInfo account,
             MenuItem item, Drawable placeholder) {
-        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, account);
+        final Account acct = Preferences.getAccount(context);
+        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
+        loadWithFallbackUrls(context, picasso, item, placeholder, avatarUrls);
+    }
+
+    public static void bindAvatar(Context context, Picasso picasso, Account acct,
+            AccountInfo account, MenuItem item, Drawable placeholder) {
+        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
         loadWithFallbackUrls(context, picasso, item, placeholder, avatarUrls);
     }
 
@@ -101,6 +116,8 @@ public class PicassoHelper {
         final Target target = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom loadedFrom) {
+                sTargets.remove(this);
+
                 synchronized (urls) {
                     urls.clear();
                     urls.add(nextUrl);
@@ -112,6 +129,8 @@ public class PicassoHelper {
 
             @Override
             public void onBitmapFailed(Drawable drawable) {
+                sTargets.remove(this);
+
                 // Next url
                 synchronized (urls) {
                     if (urls.contains(nextUrl)) {
@@ -142,7 +161,7 @@ public class PicassoHelper {
                 }
             }
         };
-        sTargets.add(new WeakReference<>(target));
+        sTargets.add(target);
 
         if (nextUrl != null) {
             picasso.load(nextUrl)
