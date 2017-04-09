@@ -257,12 +257,13 @@ public class Formatter {
                 break;
             }
 
-            int spanStart = start - spans;
-            int spanEnd = end - spans - 1;
-            spannable.setSpan(new RelativeSizeSpan(0.8f), spanStart,
-                    Math.min(spanEnd, spannable.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            spannable.setSpan(new TypefaceSpan("monospace"), spanStart,
-                    Math.min(spanEnd, spannable.length()), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            // Ensure bounds
+            int spanStart = Math.max(0, start - spans);
+            int spanEnd = Math.min(end - spans - 1, spannable.length());
+            spannable.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new TypefaceSpan("monospace"), spanStart, spanEnd,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             start = end;
             spans++;
         }
