@@ -21,21 +21,26 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.jakewharton.picasso.OkHttp3Downloader;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.AccountInfo;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -45,6 +50,9 @@ public class PicassoHelper {
 
     @SuppressLint("StaticFieldLeak")
     private static Picasso sPicasso;
+
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private final static Set<WeakReference<Target>> sTargets = new HashSet<>();
 
     public static Picasso getPicassoClient(Context context) {
         if (sPicasso == null) {
@@ -74,42 +82,76 @@ public class PicassoHelper {
     public static void bindAvatar(Context context, Picasso picasso, AccountInfo account,
             ImageView view, Drawable placeholder) {
         final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, account);
-        loadWithFallbackUrls(picasso, view, placeholder, avatarUrls);
+        loadWithFallbackUrls(context, picasso, view, placeholder, avatarUrls);
     }
 
-    private static void loadWithFallbackUrls(final Picasso picasso, final ImageView view,
-            final Drawable placeholder, final List<String> urls) {
+    public static void bindAvatar(Context context, Picasso picasso, AccountInfo account,
+            MenuItem item, Drawable placeholder) {
+        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, account);
+        loadWithFallbackUrls(context, picasso, item, placeholder, avatarUrls);
+    }
+
+    private static void loadWithFallbackUrls(final Context context, final Picasso picasso,
+            final Object into, final Drawable placeholder, final List<String> urls) {
         final String nextUrl;
         synchronized (urls) {
             nextUrl = urls.isEmpty() ? null : urls.get(0);
         }
+
+        final Target target = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom loadedFrom) {
+                synchronized (urls) {
+                    urls.clear();
+                    urls.add(nextUrl);
+                }
+
+                BitmapDrawable dw = new BitmapDrawable(context.getResources(), bitmap);
+                drawInto(dw);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable drawable) {
+                // Next url
+                synchronized (urls) {
+                    if (urls.contains(nextUrl)) {
+                        urls.remove(nextUrl);
+                    }
+                }
+                loadWithFallbackUrls(context, picasso, into, placeholder, urls);
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable drawable) {
+                drawInto(drawable);
+            }
+
+            private void drawInto(Drawable dw) {
+                if (into instanceof ImageView) {
+                    ((ImageView) into).setImageDrawable(dw);
+
+                } else if (into instanceof MenuItem) {
+                    // Resize to fit into menu icon
+                    int size = context.getResources().getDimensionPixelSize(
+                            com.ruesga.rview.drawer.R.dimen.drawer_navigation_icon_size);
+                    Bitmap resized = Bitmap.createScaledBitmap(
+                            BitmapUtils.convertToBitmap(dw), size, size, false);
+                    Drawable icon = new BitmapDrawable(context.getResources(), resized);
+                    dw.setBounds(0, 0, size, size);
+                    ((MenuItem) into).setIcon(icon);
+                }
+            }
+        };
+        sTargets.add(new WeakReference<>(target));
+
         if (nextUrl != null) {
             picasso.load(nextUrl)
                     .placeholder(placeholder)
                     .transform(new CircleTransform())
-                    .into(view, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            synchronized (urls) {
-                                urls.clear();
-                                urls.add(nextUrl);
-                            }
-                        }
-
-                        @Override
-                        public void onError() {
-                            // Next url
-                            synchronized (urls) {
-                                if (urls.contains(nextUrl)) {
-                                    urls.remove(nextUrl);
-                                }
-                            }
-                            loadWithFallbackUrls(picasso, view, placeholder, urls);
-                        }
-                    });
+                    .into(target);
         } else {
             // Placeholder
-            view.setImageDrawable(placeholder);
+            target.onPrepareLoad(placeholder);
         }
     }
 

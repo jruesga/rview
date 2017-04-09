@@ -607,9 +607,15 @@ public class MainActivity extends ChangeListBaseActivity {
                     + DrawerNavigationView.SEPARATOR
                     + account.getRepositoryDisplayName()
                     + DrawerNavigationView.SEPARATOR
-                    + "ic_delete";
+                    + "ic_delete"
+                    + DrawerNavigationView.SEPARATOR
+                    + "false";
             MenuItem item = otherAccountsSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
-            item.setIcon(R.drawable.ic_account_circle);
+
+            PicassoHelper.bindAvatar(this, PicassoHelper.getPicassoClient(this),
+                    account.mAccount,
+                    item,
+                    PicassoHelper.getDefaultAvatar(this, R.color.primaryDark));
             i++;
         }
     }

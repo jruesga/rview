@@ -48,6 +48,7 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
 
     private final int mIconSize;
+    private boolean mShouldTintedIcon = true;
 
     private final ImageView mIcon;
     private final ImageView mButton;
@@ -151,6 +152,8 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         String s1 = null;
         String s2 = null;
         String s3 = null;
+        String s4 = null;
+        mShouldTintedIcon = true;
         if (!TextUtils.isEmpty(title)) {
             s1 = title.toString();
             if (s1.contains(DrawerNavigationView.SEPARATOR)) {
@@ -160,11 +163,15 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
                 if (s.length >= 3) {
                     s3 = s[2];
                 }
+                if (s.length >= 4) {
+                    mShouldTintedIcon = Boolean.parseBoolean(s[3]);
+                }
             }
         }
         mTextView.setText(s1);
         mSubTextView.setText(s2);
         mSubTextView.setVisibility(TextUtils.isEmpty(s2) ? View.GONE : View.VISIBLE);
+        setIcon(mIcon.getDrawable());
         setActionIcon(s3);
     }
 
@@ -189,10 +196,12 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     @Override
     public void setIcon(Drawable icon) {
         if (icon != null) {
-            Drawable.ConstantState state = icon.getConstantState();
-            icon = DrawableCompat.wrap(state == null ? icon : state.newDrawable()).mutate();
-            icon.setBounds(0, 0, mIconSize, mIconSize);
-            DrawableCompat.setTintList(icon, mIconTintList);
+            if (mShouldTintedIcon) {
+                Drawable.ConstantState state = icon.getConstantState();
+                icon = DrawableCompat.wrap(state == null ? icon : state.newDrawable()).mutate();
+                icon.setBounds(0, 0, mIconSize, mIconSize);
+                DrawableCompat.setTintList(icon, mIconTintList);
+            }
             mIcon.setImageDrawable(icon);
         } else {
             mIcon.setImageDrawable(null);
