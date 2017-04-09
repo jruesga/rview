@@ -845,7 +845,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
     private void onNavigationMenuItemClick(int menuId) {
         if (mCustomFilters != null &&
-                menuId >= MY_FILTERS_GROUP_BASE_ID && menuId <= OTHER_ACCOUNTS_GROUP_BASE_ID) {
+                menuId >= MY_FILTERS_GROUP_BASE_ID && menuId < OTHER_ACCOUNTS_GROUP_BASE_ID) {
             performDeleteCustomFilter(menuId);
         } else if (menuId >= OTHER_ACCOUNTS_GROUP_BASE_ID) {
             int accountIndex = menuId - OTHER_ACCOUNTS_GROUP_BASE_ID;
