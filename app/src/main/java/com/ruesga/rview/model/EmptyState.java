@@ -27,10 +27,11 @@ public class EmptyState {
     }
 
     public static final int NORMAL_STATE = 0;
-    public static final int EMPTY_STATE = 1;
-    public static final int NOT_CONNECTIVITY_STATE = 2;
-    public static final int SERVER_CANNOT_BE_REACHED = 3;
-    public static final int ERROR_STATE = 4;
+    public static final int NO_RESULTS_STATE = 1;
+    public static final int ALL_DONE_STATE = 2;
+    public static final int NOT_CONNECTIVITY_STATE = 3;
+    public static final int SERVER_CANNOT_BE_REACHED = 4;
+    public static final int ERROR_STATE = 5;
 
     public int state = NORMAL_STATE;
 }

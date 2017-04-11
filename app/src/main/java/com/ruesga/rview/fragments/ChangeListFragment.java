@@ -195,7 +195,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mAdapter.addAll(result);
             mAdapter.notifyDataSetChanged();
             mEmptyState.state = result != null && !result.isEmpty()
-                    ? EmptyState.NORMAL_STATE : EmptyState.EMPTY_STATE;
+                    ? EmptyState.NORMAL_STATE : EmptyState.NO_RESULTS_STATE;
             mBinding.setEmpty(mEmptyState);
             showProgress(false);
         }

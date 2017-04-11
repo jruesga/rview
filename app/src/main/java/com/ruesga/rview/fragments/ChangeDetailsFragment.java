@@ -588,7 +588,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
             ChangeInfo change = null;
             mEmptyState.state = result != null
-                    ? EmptyState.NORMAL_STATE : EmptyState.EMPTY_STATE;
+                    ? EmptyState.NORMAL_STATE : EmptyState.NO_RESULTS_STATE;
             mBinding.setEmpty(mEmptyState);
             if (result != null) {
                 change = result.mChange;

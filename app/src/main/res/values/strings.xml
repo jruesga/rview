@@ -439,7 +439,8 @@
     <string name="notification_file_download_text_failure">File <xliff:g id="height">%1$s</xliff:g> download failed</string>
 
     <!-- Empty states -->
-    <string name="empty_states_empty">No results found</string>
+    <string name="empty_states_no_results">No results found</string>
+    <string name="empty_states_all_done">Relax. All done!</string>
     <string name="empty_states_not_connectivity">No network connectivity detected</string>
     <string name="empty_states_server_not_reached">Server is down or not reached</string>
     <string name="empty_states_error">Something went wrong</string>

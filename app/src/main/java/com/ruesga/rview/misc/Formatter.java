@@ -605,9 +605,12 @@ public class Formatter {
     public static void toEmptyStateDrawable(ImageView v, EmptyState state) {
         if (state == null || state.state == EmptyState.NORMAL_STATE) {
             v.setImageDrawable(null);
-        } else if (state.state == EmptyState.EMPTY_STATE) {
+        } else if (state.state == EmptyState.NO_RESULTS_STATE) {
             v.setImageDrawable(ContextCompat.getDrawable(
-                    v.getContext(), R.drawable.ic_empty));
+                    v.getContext(), R.drawable.ic_empty_results));
+        } else if (state.state == EmptyState.ALL_DONE_STATE) {
+            v.setImageDrawable(ContextCompat.getDrawable(
+                    v.getContext(), R.drawable.ic_empty_all_done));
         } else if (state.state == EmptyState.NOT_CONNECTIVITY_STATE) {
             v.setImageDrawable(ContextCompat.getDrawable(
                     v.getContext(), R.drawable.ic_cloud_off));
@@ -624,8 +627,10 @@ public class Formatter {
     public static void toEmptyStateDescription(TextView v, EmptyState state) {
         if (state == null || state.state == EmptyState.NORMAL_STATE) {
             v.setText(null);
-        } else if (state.state == EmptyState.EMPTY_STATE) {
-            v.setText(R.string.empty_states_empty);
+        } else if (state.state == EmptyState.NO_RESULTS_STATE) {
+            v.setText(R.string.empty_states_no_results);
+        } else if (state.state == EmptyState.ALL_DONE_STATE) {
+            v.setText(R.string.empty_states_all_done);
         } else if (state.state == EmptyState.NOT_CONNECTIVITY_STATE) {
             v.setText(R.string.empty_states_not_connectivity);
         } else if (state.state == EmptyState.SERVER_CANNOT_BE_REACHED) {

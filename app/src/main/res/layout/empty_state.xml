@@ -33,10 +33,10 @@
 
         <ImageView
             android:id="@+id/empty_icon"
-            android:layout_width="124dp"
-            android:layout_height="124dp"
+            android:layout_width="148dp"
+            android:layout_height="148dp"
             android:layout_gravity="center"
-            android:layout_marginTop="-74dp"
+            android:layout_marginTop="-80dp"
             android:tint="@color/empty_state"
             app:emptyStateDrawable="@{model}"
             tools:ignore="ContentDescription"/>
@@ -47,8 +47,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:textSize="20sp"
+            android:layout_marginTop="20dp"
+            android:textSize="24sp"
             android:textColor="?android:attr/textColorSecondary"
             android:maxLines="2"
             android:paddingLeft="16dp"

@@ -194,7 +194,7 @@ public class NotificationsFragment extends Fragment {
             mAdapter.addAll(result);
             mAdapter.notifyDataSetChanged();
             mEmptyState.state = result != null && !result.isEmpty()
-                    ? EmptyState.NORMAL_STATE : EmptyState.EMPTY_STATE;
+                    ? EmptyState.NORMAL_STATE : EmptyState.ALL_DONE_STATE;
             mBinding.setEmpty(mEmptyState);
 
             if (getActivity() != null) {
