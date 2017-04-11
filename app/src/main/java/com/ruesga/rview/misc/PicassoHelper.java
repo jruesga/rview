@@ -34,6 +34,7 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
@@ -84,26 +85,49 @@ public class PicassoHelper {
                 ImageView view, Drawable placeholder) {
         final Account acct = Preferences.getAccount(context);
         final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
-        loadWithFallbackUrls(context, picasso, view, placeholder, avatarUrls);
-    }
-
-    public static void bindAvatar(Context context, Picasso picasso, Account acct,
-            AccountInfo account, ImageView view, Drawable placeholder) {
-        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
-        loadWithFallbackUrls(context, picasso, view, placeholder, avatarUrls);
-    }
-
-    public static void bindAvatar(Context context, Picasso picasso, AccountInfo account,
-            MenuItem item, Drawable placeholder) {
-        final Account acct = Preferences.getAccount(context);
-        final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
-        loadWithFallbackUrls(context, picasso, item, placeholder, avatarUrls);
+        loadWithFallbackUrls(picasso, view, placeholder, avatarUrls);
     }
 
     public static void bindAvatar(Context context, Picasso picasso, Account acct,
             AccountInfo account, MenuItem item, Drawable placeholder) {
         final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
         loadWithFallbackUrls(context, picasso, item, placeholder, avatarUrls);
+    }
+
+    private static void loadWithFallbackUrls(final Picasso picasso, final ImageView view,
+            final Drawable placeholder, final List<String> urls) {
+        final String nextUrl;
+        synchronized (urls) {
+            nextUrl = urls.isEmpty() ? null : urls.get(0);
+        }
+        if (nextUrl != null) {
+            picasso.load(nextUrl)
+                    .placeholder(placeholder)
+                    .transform(new CircleTransform())
+                    .into(view, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            synchronized (urls) {
+                                urls.clear();
+                                urls.add(nextUrl);
+                            }
+                        }
+
+                        @Override
+                        public void onError() {
+                            // Next url
+                            synchronized (urls) {
+                                if (urls.contains(nextUrl)) {
+                                    urls.remove(nextUrl);
+                                }
+                            }
+                            loadWithFallbackUrls(picasso, view, placeholder, urls);
+                        }
+                    });
+        } else {
+            // Placeholder
+            view.setImageDrawable(placeholder);
+        }
     }
 
     private static void loadWithFallbackUrls(final Context context, final Picasso picasso,
