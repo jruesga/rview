@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
@@ -46,6 +47,7 @@ import java.util.Set;
 
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
 
 public class PicassoHelper {
@@ -63,6 +65,19 @@ public class PicassoHelper {
                     .addNetworkInterceptor(chain -> {
                         Response originalResponse = chain.proceed(chain.request());
                         return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();
+                    })
+                    .addInterceptor(chain -> {
+                        Request request = chain.request();
+                        Response response = chain.proceed(request);
+
+                        // Skip Gravatars identicons. They are ugly.
+                        String url = response.request().url().toString();
+                        String contentDisposition = response.header("Content-Disposition");
+                        if (isGravatarIdenticonUrl(url) && TextUtils.isEmpty(contentDisposition)) {
+                            // Gravatars identicons doesn't have an inline content disposition
+                            return null;
+                        }
+                        return response;
                     })
                     .cache(new Cache(cacheDir, CacheHelper.MAX_DISK_CACHE))
                     .build();
@@ -237,4 +252,7 @@ public class PicassoHelper {
         }
     }
 
+    private static boolean isGravatarIdenticonUrl(String url) {
+        return url.contains("www.gravatar.com") && url.contains("identicon");
+    }
 }
