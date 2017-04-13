@@ -16,6 +16,7 @@
 package com.ruesga.rview.services;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -31,6 +32,7 @@ import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class NotificationService extends FirebaseMessagingService {
 
@@ -39,9 +41,20 @@ public class NotificationService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage message) {
         // Process the message
-        final String messageId = message.getMessageId();
+        String messageId = message.getMessageId();
+        if (TextUtils.isEmpty(messageId)) {
+            // Some old samsung devices return a null message id
+            // http://stackoverflow.com/questions/38007894/fcm-android-null-message-id
+            // Since we only need a unique identifier, just generate a random one for this cases
+            messageId = UUID.randomUUID().toString();
+        }
         final long notificationId = FowlerNollVo.fnv1_64(messageId.getBytes()).longValue();
         final Notification notification = createNotification(message.getData());
+        if (notification == null) {
+            // Skip this message. It was an unparseable message
+            Log.w(TAG, "Received an unparseable messsage. Skip it.");
+            return;
+        }
         String serializedNotification = SerializationManager.getInstance().toJson(notification);
         Log.i(TAG, "Received notification: " + serializedNotification);
 
@@ -79,6 +92,9 @@ public class NotificationService extends FirebaseMessagingService {
     }
 
     private Notification createNotification(Map<String, String> data) {
+        if (data == null || data.isEmpty()) {
+            return null;
+        }
         Notification notification = new Notification();
         notification.when = Long.valueOf(data.get("when")) * 1000L;
         notification.who = SerializationManager.getInstance().fromJson(
