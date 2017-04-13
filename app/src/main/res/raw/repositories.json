@@ -16,7 +16,7 @@
   {"name":"GerritHub", "url":"https://review.gerrithub.io/"},
   {"name":"Kitware", "url":"http://review.source.kitware.com/"},
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/", "ci_accounts": "^(Jenkins)$"},
-  {"name":"LineageOS", "url":"https://review.lineageos.org/"},
+  {"name":"LineageOS", "url":"https://review.lineageos.org/", "ci_accounts": "^(Jenkins)$"},
   {"name":"MediaWiki", "url":"https://gerrit.wikimedia.org/r/", "ci_accounts": "^(jenkins-bot)$"},
   {"name":"MoKee", "url":"https://review.mfunz.com/"},
   {"name":"msm7x30", "url":"http://review.msm7x30.org/"},
