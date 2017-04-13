@@ -195,6 +195,7 @@
     <string name="change_details_comment_line_number">L<xliff:g id="line_number" example="1">%1$d</xliff:g>:</string>
     <string name="change_details_comment_base_line_number">B,L<xliff:g id="line_number" example="1">%1$d</xliff:g>:</string>
     <string name="change_details_comment_file">File:</string>
+    <string name="change_details_fast_scroll_msg">Scroll to last message</string>
 
     <!-- Change edit -->
     <string name="change_edit_title">Edit #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>

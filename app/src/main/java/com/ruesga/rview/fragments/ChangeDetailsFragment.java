@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
@@ -1110,6 +1111,33 @@ public class ChangeDetailsFragment extends Fragment implements
             mBinding.messageInfo.list.addItemDecoration(messageDivider);
             mBinding.messageInfo.list.setNestedScrollingEnabled(false);
             mBinding.messageInfo.list.setAdapter(mMessageAdapter);
+
+            mBinding.fastScroller.listenTo(() -> {
+                mBinding.nestedScroll.fullScroll(View.FOCUS_DOWN);
+                mBinding.fastScroller.hide();
+            });
+
+            mBinding.nestedScroll.setOnScrollChangeListener(
+                    new NestedScrollView.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(NestedScrollView v,
+                        int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    float h = mBinding.nestedScroll.getHeight();
+                    float h14 = h / 4;
+                    float mt = mBinding.messageInfo.getRoot().getTop();
+                    float mh = mBinding.messageInfo.getRoot().getHeight();
+                    float rt = mBinding.reviewInfo.getRoot().getTop() == 0
+                            ? mt + mh : mBinding.reviewInfo.getRoot().getTop();
+
+                    if ((mh / h) >= 2.5) {
+                        if (scrollY < mt || (scrollY + h + h14) > rt) {
+                            mBinding.fastScroller.hide();
+                        } else if (scrollY > mt) {
+                            mBinding.fastScroller.show(R.string.change_details_fast_scroll_msg);
+                        }
+                    }
+                }
+            });
 
             // Restore user temporary review state
             if (savedInstanceState != null) {
