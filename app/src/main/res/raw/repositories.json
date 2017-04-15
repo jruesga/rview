@@ -28,5 +28,6 @@
   {"name":"Tizen", "url":"https://review.tizen.org/gerrit/"},
   {"name":"TWRP", "url":"https://gerrit.twrp.me/"},
   {"name":"Unlegacy Android", "url":"http://gerrit.unlegacy-android.cf/"},
+  {"name":"Wireshark", "url":"https://code.wireshark.org/review/", "ci_accounts": "^(.* Buildbot)$"},
   {"name":"Zephyr", "url":"https://gerrit.zephyrproject.org/r/", "ci_accounts": "^(Zephyr JobBuilder)$"}
 ]
