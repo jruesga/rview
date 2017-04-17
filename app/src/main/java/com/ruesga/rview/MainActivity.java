@@ -614,7 +614,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
             PicassoHelper.bindAvatar(this, PicassoHelper.getPicassoClient(this),
                     account, account.mAccount, item,
-                    PicassoHelper.getDefaultAvatar(this, R.color.primaryDark));
+                    PicassoHelper.getDefaultAvatar(this, R.color.primaryDarkForeground));
             i++;
         }
     }

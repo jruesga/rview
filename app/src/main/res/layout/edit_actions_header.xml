@@ -148,7 +148,7 @@
                     android:tag="publish"
                     android:text="@string/action_publish"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?attr/colorPrimaryDark"
+                    android:textColor="@color/primaryDarkForeground"
                     android:visibility="@{safeUnbox(canPublish) ? View.VISIBLE : View.GONE}"
                     app:font="condensed"
                     app:allCaps="true"

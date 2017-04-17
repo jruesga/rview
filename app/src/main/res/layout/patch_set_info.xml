@@ -322,7 +322,7 @@
                     android:onClick="@{handlers::onEditMessagePressed}"
                     android:text="@string/change_details_edit_message"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="?attr/colorPrimaryDark"
+                    android:textColor="@color/primaryDarkForeground"
                     android:visibility="@{(safeUnbox(isAuthenticated) &amp;&amp; safeUnbox(isCurrentRevision)) ? View.VISIBLE : View.GONE}"
                     app:font="boldCondensed"
                     app:allCaps="true"

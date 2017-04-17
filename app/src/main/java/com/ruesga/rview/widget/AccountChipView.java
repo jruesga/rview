@@ -102,7 +102,7 @@ public class AccountChipView extends FrameLayout {
 
     public AccountChipView from(AccountInfo account) {
         PicassoHelper.bindAvatar(getContext(), mPicasso, account, mBinding.avatar,
-                PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDark));
+                PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDarkForeground));
         mBinding.setModel(account);
         return this;
     }

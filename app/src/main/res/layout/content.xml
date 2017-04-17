@@ -64,9 +64,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
-                        app:tabTextColor="?android:attr/textColorSecondaryInverse"
-                        app:tabSelectedTextColor="@android:color/white"
-                        app:tabIndicatorColor="@android:color/white"
+                        app:tabTextColor="@color/tab_text"
+                        app:tabSelectedTextColor="@color/tab_selected_text"
+                        app:tabIndicatorColor="@color/tab_indicator"
                         app:tabIndicatorHeight="3dp"/>
                     <com.ruesga.rview.widget.PagerControllerLayout
                         android:id="@+id/pagerController"

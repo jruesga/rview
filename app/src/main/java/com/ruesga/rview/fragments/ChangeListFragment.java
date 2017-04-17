@@ -164,7 +164,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
                 itemViewHolder.mBinding.setHandlers(mHandlers);
                 PicassoHelper.bindAvatar(mContext, mPicasso, item.owner,
                         itemViewHolder.mBinding.avatar,
-                        PicassoHelper.getDefaultAvatar(mContext, R.color.primaryDark));
+                        PicassoHelper.getDefaultAvatar(mContext, R.color.primaryDarkForeground));
             }
         }
 
