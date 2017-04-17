@@ -68,7 +68,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 app:srcCompat="@drawable/ic_copy"
-                android:tint="?attr/colorPrimaryDark"
+                android:tint="@color/primaryDarkForeground"
                 android:tag='@{type + "|" + command}'
                 android:onClick="@{handlers::onCommandCopyPressed}"
                 android:background="?attr/selectableItemBackgroundBorderless"

@@ -209,6 +209,7 @@ public class ActivityStatsChart extends View {
 
         mGridLinesPaint = new Paint();
         mGridLinesPaint.setStyle(Paint.Style.STROKE);
+        mGridLinesPaint.setColor(textColor);
         mGridLinesPaint.setStrokeWidth(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0.5f, r.getDisplayMetrics()));
         mGridLinesPaint.setAlpha(90);

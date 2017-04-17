@@ -122,7 +122,7 @@
                             android:layout_width="match_parent"
                             android:visibility="@{!safeUnbox(loading)  &amp;&amp; !safeUnbox(empty) ? View.VISIBLE : View.INVISIBLE}"
                             app:charLineColor="@color/stats_open"
-                            app:charLineTextColor="@android:color/black"
+                            app:charLineTextColor="@color/stats_line_text"
                             android:layout_height="96dp"/>
 
                         <com.ruesga.rview.widget.StyleableTextView

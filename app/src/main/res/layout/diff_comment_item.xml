@@ -61,7 +61,7 @@
                 android:layout_height="match_parent"
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?attr/colorPrimaryDark"
+                android:textColor="@color/primaryDarkForeground"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
                 app:font="monospace"/>
@@ -94,7 +94,7 @@
                 android:layout_height="match_parent"
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?attr/colorPrimaryDark"
+                android:textColor="@color/primaryDarkForeground"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
                 app:font="monospace"/>
@@ -251,7 +251,7 @@
                 android:layout_height="match_parent"
                 android:padding="@dimen/diff_line_text_padding"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="?attr/colorPrimaryDark"
+                android:textColor="@color/primaryDarkForeground"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
                 android:textStyle="bold"/>

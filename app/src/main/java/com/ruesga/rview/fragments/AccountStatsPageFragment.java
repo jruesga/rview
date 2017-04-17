@@ -159,7 +159,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     @Override
     public void bindDetails(AccountDetailInfo result) {
         PicassoHelper.bindAvatar(getContext(), mPicasso, result, mBinding.avatar,
-                PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDark));
+                PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDarkForeground));
         mBinding.setModel(result);
         mBinding.executePendingBindings();
     }

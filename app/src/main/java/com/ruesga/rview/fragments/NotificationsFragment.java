@@ -163,7 +163,7 @@ public class NotificationsFragment extends Fragment {
             itemViewHolder.mBinding.setHandlers(mHandlers);
             PicassoHelper.bindAvatar(mContext, mPicasso, model.who,
                     itemViewHolder.mBinding.avatar,
-                    PicassoHelper.getDefaultAvatar(mContext, R.color.primaryDark));
+                    PicassoHelper.getDefaultAvatar(mContext, R.color.primaryDarkForeground));
         }
 
         @Override

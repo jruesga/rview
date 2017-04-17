@@ -60,7 +60,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             app:bindToFeature="@{Features.BLAME}"
             app:bindToBoolean="@{(safeUnbox(isLeft) ? model.hasLeftBlameAction : model.hasRightBlameAction)}"
-            android:textColor="@{((safeUnbox(isLeft) &amp;&amp; model.isLeftBlame) || ((!safeUnbox(isLeft)) &amp;&amp; model.isRightBlame)) ? @color/primaryDark : @color/accent}"
+            android:textColor="@{((safeUnbox(isLeft) &amp;&amp; model.isLeftBlame) || ((!safeUnbox(isLeft)) &amp;&amp; model.isRightBlame)) ? @color/primaryDarkForeground : @color/accent}"
             app:font="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>

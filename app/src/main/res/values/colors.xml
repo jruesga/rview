@@ -17,6 +17,7 @@
 <resources>
     <color name="primary">#05668d</color>
     <color name="primaryDark">#044c69</color>
+    <color name="primaryDarkForeground">@color/primaryDark</color>
     <color name="accent">#8d2205</color>
     <color name="alert">#ceab56</color>
     <color name="secondaryIconColor">#757575</color>
@@ -41,6 +42,11 @@
     <color name="stats_open">#90caf9</color>
     <color name="stats_merged">#aed581</color>
     <color name="stats_abandoned">#a1887f</color>
+    <color name="stats_line_text">@android:color/black</color>
+
+    <color name="tab_text">#b3ffffff</color>
+    <color name="tab_selected_text">@android:color/white</color>
+    <color name="tab_indicator">@android:color/white</color>
 
     <color name="toastTextColor">@android:color/white</color>
     <color name="toastBackgroundColor">#b24d4c4c</color>

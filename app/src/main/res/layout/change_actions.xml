@@ -182,7 +182,7 @@
             android:onClick="@{handlers::onActionPressed}"
             android:text="@string/change_action_submit"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorPrimaryDark"
+            android:textColor="@color/primaryDarkForeground"
             app:font="boldCondensed"
             android:visibility='@{actions[ModelHelper.ACTION_SUBMIT] != null ? View.VISIBLE : View.GONE}'
             app:allCaps="true"
@@ -201,7 +201,7 @@
             android:onClick="@{handlers::onActionPressed}"
             android:text="@string/change_action_publish_draft"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorPrimaryDark"
+            android:textColor="@color/primaryDarkForeground"
             app:font="boldCondensed"
             android:visibility="@{actions[ModelHelper.ACTION_PUBLISH_DRAFT] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
             app:allCaps="true"

@@ -96,7 +96,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 app:srcCompat="@drawable/ic_comment"
-                android:tint="?attr/colorPrimaryDark"
+                android:tint="@color/primaryDarkForeground"
                 android:visibility="@{model.inlineComments &gt; 0 ? View.VISIBLE : View.GONE}"
                 tools:ignore="ContentDescription" />
             <com.ruesga.rview.widget.StyleableTextView
