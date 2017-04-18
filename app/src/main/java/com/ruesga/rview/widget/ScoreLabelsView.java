@@ -142,11 +142,8 @@ public class ScoreLabelsView extends NonDebuggableFlowLayout {
                 final LabelInfo info = scores.get(label);
                 final Model model = new Model();
                 model.label = (mIsShortLabels ? toShortLabel(label) : label) + ": ";
-                if (info.blocking) {
+                if (info.blocking || info.rejected != null) {
                     model.score = "\u2717";
-                    model.color = mRejectedColor;
-                } else if (info.rejected != null) {
-                    model.score = "-2";
                     model.color = mRejectedColor;
                 } else if (info.disliked != null) {
                     model.score = "-1";
