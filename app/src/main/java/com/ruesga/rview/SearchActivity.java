@@ -310,6 +310,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 // Ignore
             }
         });
+        mBinding.searchView.setOnClearSearchActionListener(this::performShowHistory);
         clearSuggestions();
 
         mCurrentOption = Preferences.getAccountSearchMode(this, Preferences.getAccount(this));
