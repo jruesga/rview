@@ -52,8 +52,8 @@ dependencies {
 
 android {
     defaultConfig {
-        versionCode 15
-        versionName '1.3.6'
+        versionCode 16
+        versionName '1.3.7'
         vectorDrawables.useSupportLibrary = true
 
         applicationId 'com.ruesga.rview'
@@ -111,7 +111,7 @@ android {
             signingConfig signingConfigs.release
 
             // IMP! Enable your Crashlytics api key in a file called fabric.properties
-            // and add the value apiKey=<your key> in this project folder
+            // and add the value apiKey=<your key> to that file
             ext.enableCrashlytics = project.file('fabric.properties').exists()
 
             return void;
