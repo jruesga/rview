@@ -67,14 +67,14 @@ public class PicassoHelper {
                         return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();
                     })
                     .addInterceptor(chain -> {
-                        Request request = chain.request();
-                        Response response = chain.proceed(request);
+                        Response response = chain.proceed(chain.request());
 
                         // Skip Gravatars identicons. They are ugly.
                         String url = response.request().url().toString();
                         String contentDisposition = response.header("Content-Disposition");
                         if (isGravatarIdenticonUrl(url) && TextUtils.isEmpty(contentDisposition)) {
                             // Gravatars identicons doesn't have an inline content disposition
+                            response.close();
                             return null;
                         }
                         return response;
