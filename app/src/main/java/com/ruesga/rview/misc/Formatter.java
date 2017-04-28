@@ -252,14 +252,14 @@ public class Formatter {
                     StringHelper.NON_PRINTABLE_CHAR, userMessage, 0, start);
             start -= offset;
             end -= offset;
-            if (start < 0) {
+
+            // Ensure bounds
+            int spanStart = start - spans;
+            int spanEnd = Math.min(end - spans - 1, spannable.length());
+            if (spanStart < 0 || spanEnd < 0) {
                 //Something was wrong. Skip it
                 break;
             }
-
-            // Ensure bounds
-            int spanStart = Math.max(0, start - spans);
-            int spanEnd = Math.min(end - spans - 1, spannable.length());
             spannable.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd,
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             spannable.setSpan(new TypefaceSpan("monospace"), spanStart, spanEnd,
