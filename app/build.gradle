@@ -130,7 +130,7 @@ def addActivityAliases(manifest) {
             (project.path + "/src/main/res/raw/repositories.json")
                     .replace(":", ""))
 
-    def json = new JsonSlurper().parseText(repositories.text)
+   def json = new JsonSlurper().parseText(repositories.text)
     def activityAlias = "\n\n<!-- Repositories url handling activity-aliases -->\n"
     json.each {
         def url = new URL(it.url.toString())
