@@ -38,15 +38,19 @@ import android.view.ViewGroup;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.WizardAccountPageFragmentBinding;
 import com.ruesga.rview.exceptions.NoActivityAttachedException;
+import com.ruesga.rview.exceptions.UnsupportedServerVersionException;
 import com.ruesga.rview.gerrit.Authorization;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.NoConnectivityException;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ServerInfo;
+import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.wizard.WizardActivity;
 import com.ruesga.rview.wizard.WizardPageFragment;
 import com.ruesga.rview.wizard.misc.TextChangedWatcher;
@@ -285,24 +289,23 @@ public class AccountPageFragment extends WizardPageFragment {
             if (mModel.wasConfirmed && mModel.accountInfo != null) {
                 return Boolean.TRUE;
             }
-
-            if (!mModel.authenticatedAccess) {
-                String anonymousCowardName = getAnonymousCowardName();
-                if (anonymousCowardName == null) {
-                    anonymousCowardName = getString(R.string.account_anonymous_coward);
-                }
-                mModel.accountInfo = new AccountInfo();
-                mModel.accountInfo.accountId = Account.ANONYMOUS_ACCOUNT_ID;
-                mModel.accountInfo.name = anonymousCowardName;
-                return true;
-            }
-
             try {
+                if (!mModel.authenticatedAccess) {
+                    String anonymousCowardName = getAnonymousCowardName();
+                    if (anonymousCowardName == null) {
+                        anonymousCowardName = getString(R.string.account_anonymous_coward);
+                    }
+                    mModel.accountInfo = new AccountInfo();
+                    mModel.accountInfo.accountId = Account.ANONYMOUS_ACCOUNT_ID;
+                    mModel.accountInfo.name = anonymousCowardName;
+                    return checkServerVersion();
+                }
+
                 // Check if the activity is attached
                 if (getActivity() == null) {
                     throw new NoActivityAttachedException();
                 }
-                return logIn();
+                return logIn() && checkServerVersion();
             } catch (Exception ex) {
                 postUpdateErrorMessage(ex);
                 mModel.wasConfirmed = false;
@@ -320,7 +323,19 @@ public class AccountPageFragment extends WizardPageFragment {
         return mModel.accountInfo != null;
     }
 
-    private String getAnonymousCowardName() {
+    private boolean checkServerVersion() throws UnsupportedServerVersionException {
+        Context ctx = getActivity().getApplicationContext();
+        Authorization authorization = new Authorization(
+                mModel.username, mModel.password, mModel.repoTrustAllCertificates);
+        GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
+        ServerVersion version = client.getServerVersion().blockingFirst();
+        if (version.getVersion() < Constants.MINIMAL_SUPPORTED_VERSION) {
+            throw new UnsupportedServerVersionException();
+        }
+        return true;
+    }
+
+    private String getAnonymousCowardName() throws Exception {
         try {
             Context ctx = getActivity().getApplicationContext();
             Authorization authorization = new Authorization(
@@ -329,6 +344,10 @@ public class AccountPageFragment extends WizardPageFragment {
             ServerInfo serverInfo = client.getServerInfo().blockingFirst();
             return serverInfo.user.anonymousCowardName;
         } catch (Exception ex) {
+            if (ExceptionHelper.isAuthenticationException(ex)) {
+                // Unauthorized. We can't access this gerrit instance in anonymous mode
+                throw ex;
+            }
             Log.w(TAG, "Gerrit repository doesn't provided server configuration.");
         }
         return null;
@@ -337,16 +356,31 @@ public class AccountPageFragment extends WizardPageFragment {
     private void postUpdateErrorMessage(final Exception cause) {
         if (mBinding != null) {
             mBinding.accountUsername.post(() -> {
-                final Context context = mBinding.accountUsername.getContext();
-                if (isException(cause, NoConnectivityException.class)) {
-                    ((WizardActivity) getActivity()).showMessage(context.getString(
-                            R.string.exception_no_network_available));
-                } else {
-                    // Just ignore it if we don't have a valid context
-                    if (!(cause instanceof NoActivityAttachedException)) {
-                        Log.e(TAG, "Invalid user or password", cause);
-                        mBinding.accountUsername.setError(context.getString(
-                                R.string.exception_invalid_user_password));
+                // Just ignore it if we don't have a valid context
+                if (!(cause instanceof NoActivityAttachedException)) {
+                    final Context context = mBinding.accountUsername.getContext();
+                    if (isException(cause, UnsupportedServerVersionException.class)) {
+                        ((WizardActivity) getActivity()).showMessage(context.getString(
+                                R.string.exception_unsupported_server_version));
+                    } else if (isException(cause, NoConnectivityException.class)) {
+                        ((WizardActivity) getActivity()).showMessage(context.getString(
+                                R.string.exception_no_network_available));
+                    } else {
+                        if (!mModel.authenticatedAccess &&
+                                ExceptionHelper.isAuthenticationException(cause)) {
+                            Log.e(TAG, "Server request authentication access", cause);
+                            ((WizardActivity) getActivity()).showMessage(context.getString(
+                                    R.string.exception_unsupported_guess_mode));
+                        } else if (!mModel.authenticatedAccess &&
+                                ExceptionHelper.isResourceNotFoundException(cause)) {
+                            Log.e(TAG, "Server request not found", cause);
+                            ((WizardActivity) getActivity()).showMessage(context.getString(
+                                    R.string.exception_invalid_endpoint));
+                        } else {
+                            Log.e(TAG, "Invalid user or password", cause);
+                            mBinding.accountUsername.setError(context.getString(
+                                    R.string.exception_invalid_user_password));
+                        }
                     }
                 }
             });

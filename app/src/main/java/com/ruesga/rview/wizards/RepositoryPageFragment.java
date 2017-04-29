@@ -43,6 +43,7 @@ import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.NoConnectivityException;
 import com.ruesga.rview.gerrit.model.ServerVersion;
+import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.wizard.WizardActivity;
@@ -222,6 +223,10 @@ public class RepositoryPageFragment extends WizardPageFragment {
                 }
                 return checkServerVersion();
             } catch (Exception ex) {
+                if (ExceptionHelper.isAuthenticationException(ex)) {
+                    // Unauthorized. We will check the access later
+                    return Boolean.TRUE;
+                }
                 postUpdateErrorMessage(ex);
                 mModel.urlConfirmed = null;
                 mModel.wasConfirmed = false;

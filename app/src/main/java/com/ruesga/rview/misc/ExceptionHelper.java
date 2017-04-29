@@ -127,6 +127,14 @@ public class ExceptionHelper {
                 || isException(cause, SocketTimeoutException.class));
     }
 
+    public static boolean isAuthenticationException(Throwable cause) {
+        return isHttpException(cause, 401);
+    }
+
+    public static boolean isResourceNotFoundException(Throwable cause) {
+        return isHttpException(cause, 404);
+    }
+
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions", "deprecation"})
     private static boolean isHttpException(Throwable cause, int httpCode) {
         if (isException(cause, retrofit2.HttpException.class)) {
