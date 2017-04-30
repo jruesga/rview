@@ -17,7 +17,7 @@
 ext {
     libraries = [
         support                     : '25.3.1',
-        firebase                    : '10.2.1',
+        firebase                    : '10.2.4',
         gson                        : '2.8.0',
         retrofit2                   : '2.2.0',
         okhttp3                     : '3.7.0',
@@ -84,7 +84,7 @@ subprojects {
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
             android {
                 compileSdkVersion 25
-                buildToolsVersion '25.0.2'
+                buildToolsVersion '25.0.3'
 
                 defaultConfig {
                     minSdkVersion 16
