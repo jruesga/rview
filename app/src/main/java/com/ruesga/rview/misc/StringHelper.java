@@ -29,9 +29,9 @@ public class StringHelper {
     public static final String NON_PRINTABLE_CHAR2 = "\u0002";
 
     private static final Pattern A_NON_WORD_CHARACTER_AT_END
-            = Pattern.compile(".*[^[a-zA-Z],;]", Pattern.MULTILINE);
+            = Pattern.compile(".*[^[0-9a-zA-Z],;]", Pattern.MULTILINE);
     private static final Pattern A_NON_WORD_CHARACTER_AT_START
-            = Pattern.compile("[^\\w].*", Pattern.MULTILINE);
+            = Pattern.compile("[^[a-zA-Z]].*", Pattern.MULTILINE);
     private static final Pattern NON_WHITESPACE = Pattern.compile("\\w");
 
     private static final String QUOTE_START_TAG = "[QUOTE]";
@@ -81,13 +81,11 @@ public class StringHelper {
             String line = lines[i];
             String trimmed = line.trim();
             sb.append(line);
-            if (trimmed.isEmpty() ||
-                    A_NON_WORD_CHARACTER_AT_END.matcher(trimmed).matches()) {
+            if (trimmed.isEmpty() || A_NON_WORD_CHARACTER_AT_END.matcher(trimmed).matches()) {
                 sb.append("\n");
             } else if (i < (count - 1)) {
                 String next = lines[i + 1].trim();
-                if (next.isEmpty()
-                        || A_NON_WORD_CHARACTER_AT_START.matcher(next).matches()) {
+                if (next.isEmpty() || A_NON_WORD_CHARACTER_AT_START.matcher(next).matches()) {
                     sb.append("\n");
                 } else {
                     sb.append(" ");
