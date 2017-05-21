@@ -52,12 +52,18 @@ public class UriHelper {
     }
 
     public static String extractChangeId(String q, Repository repository) {
+        // Sanitize urls with polygerrit flags
+        String u = q.replaceAll("/\\?polygerrit=\\d", "/");
+        if (u.endsWith("?polygerrit=0") || u.endsWith("?polygerrit=1")) {
+            u = u.substring(0, u.length() - 13);
+        }
+
         String repoUrl = repository.mUrl.substring(repository.mUrl.indexOf("://") + 3);
-        int idx = q.indexOf(repoUrl);
+        int idx = u.indexOf(repoUrl);
         if (idx == -1) {
             return "-1";
         }
-        String query = q.substring(idx + repoUrl.length());
+        String query = u.substring(idx + repoUrl.length());
         if (!query.startsWith("/")) {
             query = "/" + query;
         }

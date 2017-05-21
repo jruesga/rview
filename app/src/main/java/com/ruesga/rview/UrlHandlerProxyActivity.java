@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -117,8 +116,7 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                             d.dismiss();
 
                             // Change to the selected account.
-                            final Context ctx = UrlHandlerProxyActivity.this;
-                            Preferences.setAccount(ctx, targetAccounts.get(which));
+                            Preferences.setAccount(this, targetAccounts.get(which));
 
                             // An now handle the dialog
                             handleUri(t, uri);

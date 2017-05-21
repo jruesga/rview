@@ -108,14 +108,14 @@ public class RegExLinkifyTextView extends StyleableTextView {
         // Changes
         regexLinks.add(new RegExLink(
                 Constants.CUSTOM_URI_CHANGE_ID,
-                "http(s)?://" + uri + "((#/)?c/)?(\\d)+(/(((\\d)+\\.\\.)?(\\d)+)?(/(\\S)*+)?)?",
+                "http(s)?://" + uri + "((\\?polygerrit=\\d)?(#/)?c/)?(\\d)+(/(((\\d)+\\.\\.)?(\\d)+)?(/(\\S)*+)?)?",
                 "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
                 group -> UriHelper.extractChangeId(group, repository)));
 
         // Queries
         regexLinks.add(new RegExLink(
                 Constants.CUSTOM_URI_QUERY,
-                "http(s)?://" + uri + "(#/)?q/.*(\\\\s|$)",
+                "http(s)?://" + uri + "(\\?polygerrit=\\d)?(#/)?q/.*(\\\\s|$)",
                 "$1",
                 null));
 
