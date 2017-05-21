@@ -15,18 +15,19 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-vote-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#robot-comment-info"
  */
-public class DeleteVoteInput {
-    @Nullable @SerializedName("label") public String label;
-    @Nullable @SerializedName("notify") public NotifyType notify;
-    @Nullable @SerializedName("notify_details") public Map<RecipientType, NotifyInfo> notifyDetails;
+public class RobotCommentInfo extends CommentInfo {
+    @SerializedName("robot_id") public String robotId;
+    @SerializedName("robot_run_id") public String robotRunId;
+    @SerializedName("url") public String url;
+    @SerializedName("properties") public Map<String, String> properties;
+    @SerializedName("fix_suggestions") public List<FixSuggestionInfo> fixSuggestions;
 }
-

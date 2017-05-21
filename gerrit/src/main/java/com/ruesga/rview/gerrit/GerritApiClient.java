@@ -52,6 +52,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Path;
 
 class GerritApiClient implements GerritApi {
 
@@ -355,6 +356,17 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<String> getAccountStatus(@NonNull String accountId) {
+        return withVersionRequestCheck(mService.getAccountStatus(accountId));
+    }
+
+    @Override
+    public Observable<String> setAccountStatus(
+            @NonNull String accountId, @NonNull AccountStatusInput input) {
+        return withVersionRequestCheck(mService.setAccountStatus(accountId, input));
+    }
+
+    @Override
     public Observable<String> getAccountUsername(@NonNull String accountId) {
         return withVersionRequestCheck(mService.getAccountUsername(accountId));
     }
@@ -573,6 +585,19 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<List<AccountExternalIdInfo>> getAccountExternalIds(@NonNull String accountId) {
+        return withVersionRequestCheck(mService.getAccountExternalIds(accountId));
+    }
+
+    @Override
+    public Observable<Void> deleteAccountExternalIds(
+            @NonNull String accountId, @NonNull List<String> externalIds) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteAccountExternalIds(accountId, externalIds)));
+    }
+
+    @Override
     public Observable<List<ChangeInfo>> getDefaultStarredChanges(@NonNull String accountId) {
         return withVersionRequestCheck(mService.getDefaultStarredChanges(accountId));
     }
@@ -657,6 +682,12 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<ChangeInfo> createMergePathSetForChange(
+            @NonNull String changeId, @NonNull MergePatchSetInput input) {
+        return withVersionRequestCheck(mService.createMergePathSetForChange(changeId, input));
+    }
+
+    @Override
     public Observable<ChangeInfo> getChangeDetail(
             @NonNull String changeId, @Nullable List<ChangeOptions> options) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(
@@ -679,6 +710,27 @@ class GerritApiClient implements GerritApi {
         return withVersionRequestCheck(
                 withEmptyObservable(
                         mService.deleteChangeTopic(changeId)));
+    }
+
+    @Override
+    public Observable<AccountInfo> getChangeAssignee(@NonNull String changeId) {
+        return withVersionRequestCheck(mService.getChangeAssignee(changeId));
+    }
+
+    @Override
+    public Observable<List<AccountInfo>> getChangePastAssignees(@NonNull String changeId) {
+        return withVersionRequestCheck(mService.getChangePastAssignees(changeId));
+    }
+
+    @Override
+    public Observable<AccountInfo> setChangeAssignee(
+            @NonNull String changeId, @NonNull AssigneeInput input) {
+        return withVersionRequestCheck(mService.setChangeAssignee(changeId, input));
+    }
+
+    @Override
+    public Observable<AccountInfo> deleteChangeAssignee(@NonNull String changeId) {
+        return withVersionRequestCheck(mService.deleteChangeAssignee(changeId));
     }
 
     @Override
@@ -752,6 +804,12 @@ class GerritApiClient implements GerritApi {
     @Override
     public Observable<Map<String, List<CommentInfo>>> getChangeComments(@NonNull String changeId) {
         return withVersionRequestCheck(mService.getChangeComments(changeId));
+    }
+
+    @Override
+    public Observable<Map<String, List<RobotCommentInfo>>> getChangeRobotComments(
+            @NonNull String changeId) {
+        return withVersionRequestCheck(mService.getChangeRobotComments(changeId));
     }
 
     @Override
@@ -916,6 +974,25 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<String> getChangeRevisionDescription(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return withVersionRequestCheck(mService.getChangeRevisionDescription(changeId, revisionId));
+    }
+
+    @Override
+    public Observable<String> setChangeRevisionDescription(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull DescriptionInput input) {
+        return withVersionRequestCheck(
+                mService.setChangeRevisionDescription(changeId, revisionId, input));
+    }
+
+    @Override
+    public Observable<List<CommentInfo>> getChangeRevisionMergeList(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return withVersionRequestCheck(mService.getChangeRevisionMergeList(changeId, revisionId));
+    }
+
+    @Override
     public Observable<Map<String, ActionInfo>> getChangeRevisionActions(
             @NonNull String changeId, @NonNull String revisionId) {
         return withVersionRequestCheck(mService.getChangeRevisionActions(changeId, revisionId));
@@ -973,6 +1050,11 @@ class GerritApiClient implements GerritApi {
             @NonNull String revisionId, @Nullable Option zip, @Nullable Option download) {
         return withVersionRequestCheck(
                 mService.getChangeRevisionPatch(changeId, revisionId, zip, download));
+    }
+
+    @Override
+    public Observable<ResponseBody> getChangeRevisionSubmitPreview(@NonNull String changeId, @NonNull String revisionId) {
+        return withVersionRequestCheck(mService.getChangeRevisionSubmitPreview(changeId, revisionId));
     }
 
     @Override
@@ -1042,6 +1124,20 @@ class GerritApiClient implements GerritApi {
     public Observable<Map<String, List<CommentInfo>>> getChangeRevisionComments(
             @NonNull String changeId, @NonNull String revisionId) {
         return withVersionRequestCheck(mService.getChangeRevisionComments(changeId, revisionId));
+    }
+
+    @Override
+    public Observable<List<RobotCommentInfo>> getChangeRevisionRobotComments(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return withVersionRequestCheck(
+                mService.getChangeRevisionRobotComments(changeId, revisionId));
+    }
+
+    @Override
+    public Observable<RobotCommentInfo> getChangeRevisionRobotComment(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull String commentId) {
+        return withVersionRequestCheck(
+                mService.getChangeRevisionRobotComment(changeId, revisionId, commentId));
     }
 
     @Override
@@ -1117,6 +1213,28 @@ class GerritApiClient implements GerritApi {
                 mService.cherryPickChangeRevision(changeId, revisionId, input));
     }
 
+    @Override
+    public Observable<List<ReviewerInfo>> getChangeRevisionReviewers(
+            @NonNull String changeId, @NonNull String revisionId) {
+        return withVersionRequestCheck(mService.getChangeRevisionReviewers(changeId, revisionId));
+    }
+
+    @Override
+    public Observable<List<ReviewerInfo>> getChangeRevisionReviewersVotes(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull String accountId) {
+        return withVersionRequestCheck(mService.getChangeRevisionReviewersVotes(
+                changeId, revisionId, accountId));
+    }
+
+    @Override
+    public Observable<Void> deleteChangeRevisionReviewersVote(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull String accountId,
+            @NonNull String labelId, @NonNull DeleteVoteInput input) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.deleteChangeRevisionReviewersVote(
+                                changeId, revisionId, accountId, labelId, input)));
+    }
 
 
 
@@ -1313,6 +1431,11 @@ class GerritApiClient implements GerritApi {
     @Override
     public Observable<List<GroupAuditEventInfo>> getGroupAuditLog(@NonNull String groupId) {
         return withVersionRequestCheck(mService.getGroupAuditLog(groupId));
+    }
+
+    @Override
+    public Observable<Void> indexGroup(@NonNull @Path("group-id") String groupId) {
+        return withVersionRequestCheck(withEmptyObservable(mService.indexGroup(groupId)));
     }
 
     @Override
@@ -1620,6 +1743,19 @@ class GerritApiClient implements GerritApi {
     public Observable<TagInfo> createProjectTag(
             @NonNull String projectName, @NonNull String tagId, @NonNull TagInput input) {
         return withVersionRequestCheck(mService.createProjectTag(projectName, tagId, input));
+    }
+
+    @Override
+    public Observable<Void> deleteProjectTag(@NonNull String projectName, @NonNull String tagId) {
+        return withVersionRequestCheck(
+                withEmptyObservable(mService.deleteProjectTag(projectName, tagId)));
+    }
+
+    @Override
+    public Observable<Void> deleteProjectTags(
+            @NonNull String projectName, @NonNull DeleteTagsInput input) {
+        return withVersionRequestCheck(
+                withEmptyObservable(mService.deleteProjectTags(projectName, input)));
     }
 
     @Override

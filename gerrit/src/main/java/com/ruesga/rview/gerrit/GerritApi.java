@@ -48,7 +48,7 @@ public interface GerritApi {
     /**
      * The current supported Gerrit api version.
      */
-    double API_VERSION = 2.13;
+    double API_VERSION = 2.14;
 
     /**
      * The uri of the page where to obtain the http password.
@@ -201,6 +201,21 @@ public interface GerritApi {
      */
     @DELETE("accounts/{account-id}/name")
     Observable<Void> deleteAccountName(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account-status"
+     */
+    @GET("accounts/{account-id}/status")
+    Observable<String> getAccountStatus(@NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-account-status"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/status")
+    Observable<String> setAccountStatus(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body AccountStatusInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-username"
@@ -475,6 +490,22 @@ public interface GerritApi {
             @NonNull @Body List<DeleteProjectWatchInput> input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account-external-ids"
+     */
+    @GET("accounts/{account-id}/external.ids")
+    Observable<List<AccountExternalIdInfo>> getAccountExternalIds(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account-external-ids"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/external.ids:delete")
+    Observable<Void> deleteAccountExternalIds(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body List<String> externalIds);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-changes-with-default-star"
      */
     @GET("accounts/{account-id}/starred.changes")
@@ -579,6 +610,15 @@ public interface GerritApi {
             @Nullable @Query("o") List<ChangeOptions> options);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#create-merge-patch-set-for-change"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("changes/{change-id}/merge")
+    Observable<ChangeInfo> createMergePathSetForChange(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Body MergePatchSetInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-detail"
      */
     @GET("changes/{change-id}/detail")
@@ -606,6 +646,33 @@ public interface GerritApi {
      */
     @DELETE("changes/{change-id}/topic")
     Observable<Void> deleteChangeTopic(@NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-assignee"
+     */
+    @GET("changes/{change-id}/assignee")
+    Observable<AccountInfo> getChangeAssignee(@NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-past-assignees"
+     */
+    @GET("changes/{change-id}/past_assignees")
+    Observable<List<AccountInfo>> getChangePastAssignees(@NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-assignee"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("changes/{change-id}/assignee")
+    Observable<AccountInfo> setChangeAssignee(
+            @NonNull @Path("assignee") String changeId,
+            @NonNull @Body AssigneeInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-assignee"
+     */
+    @DELETE("changes/{change-id}/assignee")
+    Observable<AccountInfo> deleteChangeAssignee(@NonNull @Path("change-id") String changeId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#abandon-change"
@@ -698,6 +765,13 @@ public interface GerritApi {
      */
     @GET("changes/{change-id}/comments")
     Observable<Map<String, List<CommentInfo>>> getChangeComments(
+            @NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-change-robot-comments"
+     */
+    @GET("changes/{change-id}/robotcomments")
+    Observable<Map<String, List<RobotCommentInfo>>> getChangeRobotComments(
             @NonNull @Path("change-id") String changeId);
 
     /**
@@ -896,6 +970,32 @@ public interface GerritApi {
             @Nullable @Query("links") Option links);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-description"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/description")
+    Observable<String> getChangeRevisionDescription(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-description"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("changes/{change-id}/revisions/{revision-id}/description")
+    Observable<String> setChangeRevisionDescription(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Body DescriptionInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-merge-list"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/mergelist")
+    Observable<List<CommentInfo>> getChangeRevisionMergeList(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-revision-actions"
      */
     @GET("changes/{change-id}/revisions/{revision-id}/actions")
@@ -972,6 +1072,14 @@ public interface GerritApi {
             @NonNull @Path("revision-id") String revisionId,
             @Nullable @Query("zip") Option zip,
             @Nullable @Query("download") Option download);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#submit-preview"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/preview_submit")
+    Observable<ResponseBody> getChangeRevisionSubmitPreview(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-mergeable"
@@ -1073,6 +1181,23 @@ public interface GerritApi {
             @NonNull @Path("comment-id") String commentId);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-robot-comments"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/robotcomments/")
+    Observable<List<RobotCommentInfo>> getChangeRevisionRobotComments(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-robot-comment"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/robotcomments/{comment-id}")
+    Observable<RobotCommentInfo> getChangeRevisionRobotComment(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Path("comment-id") String commentId);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-files"
      */
     @GET("changes/{change-id}/revisions/{revision-id}/files/")
@@ -1156,6 +1281,33 @@ public interface GerritApi {
             @NonNull @Path("revision-id") String revisionId,
             @NonNull @Body CherryPickInput input);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-revision-reviewers"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/reviewers/")
+    Observable<List<ReviewerInfo>> getChangeRevisionReviewers(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-revision-votes"
+     */
+    @GET("changes/{change-id}/revisions/{revision-id}/reviewers/{account-id}/votes/")
+    Observable<List<ReviewerInfo>> getChangeRevisionReviewersVotes(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-revision-vote"
+     */
+    @DELETE("changes/{change-id}/revisions/{revision-id} /reviewers/{account-id}/votes/{label-id}")
+    Observable<Void> deleteChangeRevisionReviewersVote(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("revision-id") String revisionId,
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Path("label-id") String labelId,
+            @NonNull @Body DeleteVoteInput input);
 
 
 
@@ -1303,6 +1455,10 @@ public interface GerritApi {
             @Nullable @Query("verbose") Option verbose,
             @Nullable @Query("o") List<GroupOptions> options);
 
+    //
+    // TODO Implement QueryGroups => https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#query-groups
+    //
+
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group"
      */
@@ -1395,6 +1551,13 @@ public interface GerritApi {
      */
     @GET("groups/{group-id}/log.audit")
     Observable<List<GroupAuditEventInfo>> getGroupAuditLog(@NonNull @Path("group-id") String groupId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#index-group"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("groups/{group-id}/index")
+    Observable<Void> indexGroup(@NonNull @Path("group-id") String groupId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#group-members"
@@ -1798,6 +1961,23 @@ public interface GerritApi {
             @NonNull @Body TagInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#delete-tag"
+     */
+    @DELETE("projects/{project-name}/tags/{tag-id}")
+    Observable<Void> deleteProjectTag(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("tag-id") String tagId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#delete-tags"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/tags:delete")
+    Observable<Void> deleteProjectTags(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body DeleteTagsInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-commit"
      */
     @GET("projects/{project-name}/commits/{commit-id}")
@@ -1854,16 +2034,16 @@ public interface GerritApi {
     // ===============================
 
     // -- Cloud Notifications Plugin --
-    // https://github.com/jruesga/gerrit-cloud-notifications-plugin
+    // https://gerrit.googlesource.com/plugins/cloud-notifications/
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#get-cloud-notifications-config"
+     * @link "https://gerrit.googlesource.com/plugins/cloud-notifications/+/master/src/main/resources/Documentation/api.md#get-cloud-notifications-config"
      */
     @GET("config/server/cloud-notifications")
     Observable<CloudNotificationsConfigInfo> getCloudNotificationsConfig();
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#list-cloud-notifications"
+     * @link "https://gerrit.googlesource.com/plugins/cloud-notifications/+/master/src/main/resources/Documentation/api.md#list-cloud-notifications"
      */
     @GET("accounts/{account-id}/devices/{device-id}/tokens")
     Observable<List<CloudNotificationInfo>> listCloudNotifications(
@@ -1871,7 +2051,7 @@ public interface GerritApi {
             @NonNull @Path("device-id") String deviceId);
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#get-cloud-notification"
+     * @link "https://gerrit.googlesource.com/plugins/cloud-notifications/+/master/src/main/resources/Documentation/api.md#get-cloud-notification"
      */
     @GET("accounts/{account-id}/devices/{device-id}/tokens/{token}")
     Observable<CloudNotificationInfo> getCloudNotification(
@@ -1880,7 +2060,7 @@ public interface GerritApi {
             @NonNull @Path("token") String token);
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#register-cloud-notification"
+     * @link "https://gerrit.googlesource.com/plugins/cloud-notifications/+/master/src/main/resources/Documentation/api.md#register-cloud-notification"
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("accounts/{account-id}/devices/{device-id}/tokens")
@@ -1890,7 +2070,7 @@ public interface GerritApi {
             @NonNull @Body CloudNotificationInput input);
 
     /**
-     * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/api.md#unregister-cloud-notification"
+     * @link "https://gerrit.googlesource.com/plugins/cloud-notifications/+/master/src/main/resources/Documentation/api.md#unregister-cloud-notification"
      */
     @DELETE("accounts/{account-id}/devices/{device-id}/tokens/{token}")
     Observable<Void> unregisterCloudNotification(

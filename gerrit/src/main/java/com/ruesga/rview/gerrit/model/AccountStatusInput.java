@@ -19,14 +19,10 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Map;
-
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-vote-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#account-status-input"
  */
-public class DeleteVoteInput {
-    @Nullable @SerializedName("label") public String label;
-    @Nullable @SerializedName("notify") public NotifyType notify;
-    @Nullable @SerializedName("notify_details") public Map<RecipientType, NotifyInfo> notifyDetails;
+public class AccountStatusInput {
+    @Nullable @SerializedName("status") public String status;
 }
 
