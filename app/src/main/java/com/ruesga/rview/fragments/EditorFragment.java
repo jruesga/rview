@@ -799,9 +799,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
     private void publishEditChanges() throws IOException {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         File dir = CacheHelper.getAccountDiffCacheDir(getContext());
-        File[] edits = dir.listFiles((dir1, name) -> {
-            return name.endsWith(".edit");
-        });
+        File[] edits = dir.listFiles((dir1, name) -> name.endsWith(".edit"));
 
         // Send every edit to the server
         for (File edit : edits) {

@@ -152,7 +152,6 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         String s1 = null;
         String s2 = null;
         String s3 = null;
-        String s4 = null;
         mShouldTintedIcon = true;
         if (!TextUtils.isEmpty(title)) {
             s1 = title.toString();

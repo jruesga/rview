@@ -37,6 +37,7 @@ import android.support.v4.os.ParcelableCompat;
 import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v4.view.AbsSavedState;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.AppCompatEditText;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.SpannableStringBuilder;
@@ -56,7 +57,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
@@ -74,7 +74,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public class TagEditTextView extends LinearLayout {
 
-    private class TagEditText extends EditText {
+    private class TagEditText extends AppCompatEditText {
         public TagEditText(Context context, AttributeSet attrs) {
             super(context, attrs);
         }

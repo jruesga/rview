@@ -47,7 +47,6 @@ import java.util.Set;
 
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
 public class PicassoHelper {
