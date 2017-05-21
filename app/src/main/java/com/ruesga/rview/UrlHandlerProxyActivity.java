@@ -22,6 +22,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
@@ -97,6 +98,7 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
             }
         }
 
+        final Account prevAccount = Preferences.getAccount(this);
         if (!isSameAccount) {
             // Open a dialog to ask the user which of the configure accounts wants
             // to use to open the uri
@@ -119,7 +121,7 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                             Preferences.setAccount(this, targetAccounts.get(which));
 
                             // An now handle the dialog
-                            handleUri(t, uri);
+                            handleUri(t, uri, prevAccount);
                             finish();
                         })
                         .setPositiveButton(R.string.action_cancel, (d, which) -> {
@@ -139,20 +141,29 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
         }
 
         // Open the change details
-        handleUri(type, uri);
+        handleUri(type, uri, prevAccount);
         finish();
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void handleUri(String type, Uri uri) {
+    private void handleUri(String type, Uri uri, Account prevAccount) {
         // Open the change details
         switch (type) {
             case Constants.CUSTOM_URI_CHANGE_ID:
                 Account acct = Preferences.getAccount(this);
                 if (acct != null) {
-                    ActivityHelper.openChangeDetailsByUri(
-                            this, UriHelper.createCustomUri(this, Constants.CUSTOM_URI_CHANGE_ID,
-                                    UriHelper.extractChangeId(uri, acct.mRepository)));
+                    String changeId = UriHelper.extractChangeId(uri, acct.mRepository);
+                    if (changeId.equals("-1") || !(isChange(changeId) || isChangeId(changeId))) {
+                        Toast.makeText(this, getString(
+                                R.string.exception_cannot_handle_link, getIntent().getData().toString()),
+                                Toast.LENGTH_SHORT).show();
+                        Preferences.setAccount(this, prevAccount);
+                        return;
+                    }
+
+                    boolean hasParent = acct.getAccountHash().equals(prevAccount.getAccountHash());
+                    ActivityHelper.openChangeDetailsByUri(this, UriHelper.createCustomUri(
+                            this, Constants.CUSTOM_URI_CHANGE_ID, changeId), hasParent);
                     break;
                 }
 

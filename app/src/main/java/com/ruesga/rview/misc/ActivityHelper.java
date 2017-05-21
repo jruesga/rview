@@ -157,6 +157,7 @@ public class ActivityHelper {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
+            intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
             intent.putExtra(Constants.EXTRA_SOURCE, ctx.getPackageName());
             intent.setPackage(ctx.getPackageName());
             ctx.startActivity(intent);
@@ -247,10 +248,11 @@ public class ActivityHelper {
         return true;
     }
 
-    public static void openChangeDetailsByUri(Context context, Uri uri) {
+    public static void openChangeDetailsByUri(Context context, Uri uri, boolean hasParent) {
         Intent intent = new Intent(context, ChangeDetailsActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, hasParent);
         intent.setData(uri);
         context.startActivity(intent);
     }

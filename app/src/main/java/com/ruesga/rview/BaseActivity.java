@@ -397,7 +397,9 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
                 return;
             }
         }
-        super.onBackPressed();
+        if (!ActivityHelper.performFinishActivity(this, false)) {
+            super.onBackPressed();
+        }
     }
 
     public void showError(@StringRes int message) {
