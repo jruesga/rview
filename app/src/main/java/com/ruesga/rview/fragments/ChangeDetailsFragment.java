@@ -771,6 +771,10 @@ public class ChangeDetailsFragment extends Fragment implements
             = new RxLoaderObserver<Map<String, Integer>>() {
         @Override
         public void onNext(Map<String, Integer> drafts) {
+            if (mResponse == null) {
+                return;
+            }
+
             mResponse.mDraftComments = drafts;
 
             mModel.filesListModel.visible = mResponse.mFiles != null && !mResponse.mFiles.isEmpty();
