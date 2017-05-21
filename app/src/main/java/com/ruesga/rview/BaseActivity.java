@@ -262,8 +262,8 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         getContentBinding().setModel(mModel);
     }
 
-    public void setForceSinglePanel(boolean useTwoPanel) {
-        mModel.useTowPane = useTwoPanel;
+    public void setForceSinglePanel(boolean singlePanel) {
+        mModel.hasForceSinglePanel = singlePanel;
         getContentBinding().setModel(mModel);
     }
 
@@ -379,7 +379,8 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
 
     @Override
     public void onBackPressed() {
-        if (getContentBinding() != null && getContentBinding().drawerLayout != null) {
+        if (!mModel.hasForceSinglePanel &&
+                getContentBinding() != null && getContentBinding().drawerLayout != null) {
             final DrawerLayout drawer = getContentBinding().drawerLayout;
             final DrawerNavigationView optionsView = getContentBinding().drawerOptionsView;
             final DrawerNavigationView navigationView = getContentBinding().drawerNavigationView;
