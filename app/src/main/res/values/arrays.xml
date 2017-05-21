@@ -126,6 +126,7 @@
         <item>@string/account_settings_notifications_events_512</item>
         <item>@string/account_settings_notifications_events_1024</item>
         <item>@string/account_settings_notifications_events_2048</item>
+        <item>@string/account_settings_notifications_events_4096</item>
     </string-array>
     <string-array name="notifications_events_values" translatable="false">
         <item>1</item>
@@ -139,6 +140,7 @@
         <item>512</item>
         <item>1024</item>
         <item>2048</item>
+        <item>4096</item>
     </string-array>
     <string-array name="notifications_events_defaults" translatable="false">
         <item>1</item>
@@ -147,10 +149,12 @@
         <item>8</item>
         <item>16</item>
         <item>32</item>
+        <item>64</item>
         <item>128</item>
         <item>512</item>
         <item>1024</item>
         <item>2048</item>
+        <item>4096</item>
     </string-array>
 
 

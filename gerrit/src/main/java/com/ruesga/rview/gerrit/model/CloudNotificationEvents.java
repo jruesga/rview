@@ -31,4 +31,5 @@ public final class CloudNotificationEvents {
     public static final int PATCHSET_CREATED_EVENT = 0x200;
     public static final int TOPIC_CHANGED_EVENT = 0x400;
     public static final int ASSIGNEE_CHANGED_EVENT = 0x800;
+    public static final int VOTE_DELETED_EVENT = 0x1000;
 }

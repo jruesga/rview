@@ -101,6 +101,7 @@ public class NotificationsHelper {
             case CloudNotificationEvents.PATCHSET_CREATED_EVENT:
             case CloudNotificationEvents.TOPIC_CHANGED_EVENT:
             case CloudNotificationEvents.ASSIGNEE_CHANGED_EVENT:
+            case CloudNotificationEvents.VOTE_DELETED_EVENT:
                 return true;
 
             case CloudNotificationEvents.REVIEWER_ADDED_EVENT:
@@ -431,6 +432,8 @@ public class NotificationsHelper {
                         entity.mNotification.extra, AccountInfo.class);
                 return ctx.getString(R.string.notification_content_title_2048,
                         ModelHelper.getAccountDisplayName(assignee));
+            case CloudNotificationEvents.VOTE_DELETED_EVENT:
+                return ctx.getString(R.string.notification_content_title_4096);
         }
         return null;
     }
