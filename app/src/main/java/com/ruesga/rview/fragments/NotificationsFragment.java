@@ -25,6 +25,7 @@ import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -245,6 +246,8 @@ public class NotificationsFragment extends Fragment {
 
     private boolean mMenuInflated = false;
 
+    private AlertDialog mDialog;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -267,6 +270,17 @@ public class NotificationsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         startLoadersWithValidContext();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Dismiss confirmation dialog
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
     }
 
     private void startLoadersWithValidContext() {
@@ -385,7 +399,15 @@ public class NotificationsFragment extends Fragment {
                 performMarkAsReadAccountNotifications();
                 return true;
             case R.id.menu_delete_all:
-                performDeleteAccountNotifications();
+                mDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.account_notifications_delete_title)
+                        .setMessage(R.string.account_notifications_delete_message)
+                        .setPositiveButton(R.string.action_yes,
+                                (dialog, which) -> performDeleteAccountNotifications())
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setOnDismissListener(dialogInterface -> mDialog = null)
+                        .create();
+                mDialog.show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
