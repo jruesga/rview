@@ -623,6 +623,7 @@ public class MainActivity extends ChangeListBaseActivity {
         mModel.accountName = mAccount.getAccountDisplayName();
         mModel.accountRepository = mAccount.getRepositoryDisplayName();
         mHeaderDrawerBinding.setModel(mModel);
+        mHeaderDrawerBinding.executePendingBindings();
 
         PicassoHelper.bindAvatar(this, PicassoHelper.getPicassoClient(this),
                 mAccount.mAccount, mHeaderDrawerBinding.accountAvatar,
