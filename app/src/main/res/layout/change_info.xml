@@ -34,8 +34,10 @@
         <variable name="isCurrentRevision" type="java.lang.Boolean" />
 
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
+        <!--suppress AndroidDomInspection -->
         <variable name="actions" type="java.util.Map&lt;String, com.ruesga.rview.gerrit.model.ActionInfo&gt;" />
         <variable name="submitType" type="com.ruesga.rview.gerrit.model.SubmitType" />
+        <!--suppress AndroidDomInspection -->
         <variable name="tags" type="java.util.List&lt;String&gt;" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
