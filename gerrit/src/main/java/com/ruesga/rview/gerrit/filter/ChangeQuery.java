@@ -432,7 +432,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                     int value = 0;
                     TimeUnit unit = null;
                     for (TimeUnit u : TimeUnit.values()) {
-                        if (text.toLowerCase().endsWith(u.mUnit)) {
+                        if (text.toLowerCase(Locale.US).endsWith(u.mUnit)) {
                             try {
                                 value = Integer.valueOf(text.substring(
                                         0, text.length() - u.mUnit.length()));
@@ -478,7 +478,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                     int value = 0;
                     Relation relation = null;
                     for (Relation r : Relation.values()) {
-                        if (text.toLowerCase().startsWith(r.mRelation)) {
+                        if (text.toLowerCase(Locale.US).startsWith(r.mRelation)) {
                             try {
                                 value = Integer.valueOf(text.substring(r.mRelation.length()));
                                 relation = r;

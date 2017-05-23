@@ -239,8 +239,8 @@ public class RepositoryPageFragment extends WizardPageFragment {
         Context ctx = getActivity().getApplicationContext();
         ServerVersion version;
         String endpoint;
-        if (!mModel.url.toLowerCase().startsWith("http://")
-                && !mModel.url.toLowerCase().startsWith("https://")) {
+        String urlLower = mModel.url.toLowerCase(Locale.US);
+        if (!urlLower.startsWith("http://") && !urlLower.startsWith("https://")) {
             // Test first with HTTPS and HTTP
             Log.i(TAG, "Gerrit endpoint \"" + mModel.url + "\" doesn't provide any"
                     + " schema information. Trying HTTPS and HTTP endpoints.");

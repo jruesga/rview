@@ -39,6 +39,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 public class SuggestedReviewersAdapter extends BaseAdapter implements Filterable {
 
@@ -113,12 +114,12 @@ public class SuggestedReviewersAdapter extends BaseAdapter implements Filterable
     }
 
     private Spannable highlightOccurrences(String s) {
-        String constraint = mFilter.mConstraint.toString().toLowerCase();
+        String constraint = mFilter.mConstraint.toString().toLowerCase(Locale.US);
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(s);
 
         int index = 0;
         int len = constraint.length();
-        String s1 = s.toLowerCase();
+        String s1 = s.toLowerCase(Locale.US);
         while (true) {
             index = s1.indexOf(constraint, index);
             if (index == -1) {
