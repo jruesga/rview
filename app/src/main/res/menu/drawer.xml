@@ -98,6 +98,10 @@
             android:icon="@drawable/ic_stats"
             android:title="@string/menu_account_stats"/>
         <item
+            android:id="@+id/menu_account_password"
+            android:icon="@drawable/ic_password"
+            android:title="@string/menu_account_password"/>
+        <item
             android:id="@+id/menu_delete_account"
             android:icon="@drawable/ic_delete"
             android:title="@string/menu_delete_account"/>

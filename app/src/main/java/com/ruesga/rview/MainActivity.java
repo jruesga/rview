@@ -64,6 +64,7 @@ import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
+import com.ruesga.rview.wizards.AuthorizationAccountSetupActivity;
 import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
@@ -478,6 +479,9 @@ public class MainActivity extends ChangeListBaseActivity {
             case R.id.menu_account_stats:
                 openAccountStats();
                 break;
+            case R.id.menu_account_password:
+                openAccountSetup();
+                break;
             case R.id.menu_delete_account:
                 requestAccountDeletion(mAccount);
                 break;
@@ -748,6 +752,16 @@ public class MainActivity extends ChangeListBaseActivity {
         } else {
             updateAccountsDrawerInfo();
         }
+    }
+
+    private void openAccountSetup() {
+        mUiHandler.post(() -> {
+            if (mAccount != null) {
+                Intent i = new Intent(this, AuthorizationAccountSetupActivity.class);
+                startActivity(i);
+                internalPerformShowAccount(false);
+            }
+        });
     }
 
     private void openAccountSettings() {

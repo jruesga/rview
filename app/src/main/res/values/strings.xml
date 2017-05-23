@@ -60,6 +60,7 @@
     <string name="menu_account_settings">Account settings</string>
     <string name="menu_account_notifications">Notifications</string>
     <string name="menu_account_stats">Account stats</string>
+    <string name="menu_account_password">Change password</string>
     <string name="menu_delete_account">Delete account</string>
     <string name="menu_other_accounts_category">Other accounts</string>
     <string name="menu_add_account">Add account</string>
