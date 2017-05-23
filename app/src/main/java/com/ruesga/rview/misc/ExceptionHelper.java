@@ -23,14 +23,23 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.exceptions.IllegalQueryExpressionException;
 import com.ruesga.rview.exceptions.OperationFailedException;
 import com.ruesga.rview.gerrit.NoConnectivityException;
+import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.EmptyState;
+import com.ruesga.rview.preferences.Preferences;
 
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ExceptionHelper {
+    private static final Set<String> sPreviousAccountAuthenticationFailures = new HashSet<>();
+
+    public static final String EXTRA_AUTHENTICATION_FAILURE = "authentication_failure";
+
     @SuppressWarnings("SimplifiableIfStatement")
     public static <T extends Throwable> boolean isException(Throwable cause, Class<T> c) {
         if (c.isInstance(cause)) {
@@ -96,6 +105,8 @@ public class ExceptionHelper {
         switch (code) {
             case 400: //Bad request
                 return R.string.exception_invalid_request;
+            case 401: //Unauthorized
+                return R.string.exception_invalid_user_password;
             case 403: //Forbidden
                 return R.string.exception_insufficient_permissions;
             case 404: //Not found
@@ -160,5 +171,25 @@ public class ExceptionHelper {
             return EmptyState.SERVER_CANNOT_BE_REACHED;
         }
         return EmptyState.ERROR_STATE;
+    }
+
+    public static synchronized boolean hasPreviousAuthenticationFailure(Context context) {
+        Account account = Preferences.getAccount(context);
+        return account != null &&
+                sPreviousAccountAuthenticationFailures.contains(account.getAccountHash());
+    }
+
+    public static synchronized void markAsAuthenticationFailure(Context context) {
+        Account account = Preferences.getAccount(context);
+        if (account != null) {
+            sPreviousAccountAuthenticationFailures.add(account.getAccountHash());
+        }
+    }
+
+    public static synchronized void clearAuthenticationFailure(Context context) {
+        Account account = Preferences.getAccount(context);
+        if (account != null) {
+            sPreviousAccountAuthenticationFailures.remove(account.getAccountHash());
+        }
     }
 }

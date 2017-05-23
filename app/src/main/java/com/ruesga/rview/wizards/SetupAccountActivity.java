@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.Repository;
@@ -79,9 +80,13 @@ public class SetupAccountActivity extends WizardActivity {
         // We have an account, so assume that we ended the "first run" experience
         Preferences.setFirstRun(this);
 
+        // Remove any authentication flag
+        ExceptionHelper.clearAuthenticationFailure(this);
+
         // Send the information of the new account
         Intent intent = new Intent();
         intent.putExtra(EXTRA_ACCOUNT, account);
         return intent;
     }
+
 }

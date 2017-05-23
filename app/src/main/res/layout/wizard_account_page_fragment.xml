@@ -96,6 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
+                    android:enabled="@{!model.singlePage}"
                     android:visibility="@{model.authenticatedAccess ? View.VISIBLE : View.GONE}"
                     app:errorTextAppearance="@style/AppTheme.WizardErrorTextAppearance"
                     app:errorEnabled="true">

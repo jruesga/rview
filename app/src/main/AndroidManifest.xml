@@ -135,6 +135,12 @@
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:exported="false" />
 
+        <activity
+            android:name=".wizards.AuthorizationAccountSetupActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/AppTheme.NoStatusBarColor"
+            android:exported="false" />
+
         <provider
             android:name=".providers.RviewProvider"
             android:authorities="com.ruesga.rview"

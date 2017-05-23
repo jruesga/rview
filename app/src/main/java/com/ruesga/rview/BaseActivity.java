@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
@@ -52,6 +53,7 @@ import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.PagerControllerLayout;
 import com.ruesga.rview.widget.PagerControllerLayout.OnPageSelectionListener;
 import com.ruesga.rview.widget.PagerControllerLayout.PagerControllerAdapter;
+import com.ruesga.rview.wizards.AuthorizationAccountSetupActivity;
 
 import java.util.List;
 
@@ -422,6 +424,18 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             showError(res);
         } else {
             showWarning(res);
+        }
+
+        // Handle authentication denied
+        if (ExceptionHelper.isAuthenticationException(cause)) {
+            if (!ExceptionHelper.hasPreviousAuthenticationFailure(this)) {
+                //  Handle Unauthorized exception
+                ExceptionHelper.markAsAuthenticationFailure(this);
+                Intent i = new Intent(BaseActivity.this, AuthorizationAccountSetupActivity.class);
+                i.putExtra(ExceptionHelper.EXTRA_AUTHENTICATION_FAILURE, true);
+                startActivity(i);
+                return;
+            }
         }
 
         // Handle SSL exceptions, so we can ask the user for temporary trust the server connection

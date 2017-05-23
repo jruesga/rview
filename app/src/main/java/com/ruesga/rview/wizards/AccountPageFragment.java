@@ -73,9 +73,11 @@ public class AccountPageFragment extends WizardPageFragment {
     public static final String STATE_ACCOUNT_PASSWORD = "account.password";
     public static final String STATE_ACCOUNT_INFO = "account.info";
     private static final String STATE_ACCOUNT_CONFIRMED = "account.confirmed";
-    private static final String STATE_REPO_NAME = "repo.name";
-    private static final String STATE_REPO_URL = "repo.url";
+    public static final String STATE_REPO_NAME = "repo.name";
+    public static final String STATE_REPO_URL = "repo.url";
     public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCertificates";
+    public static final String STATE_SINGLE_PAGE = "page.single.page";
+    public static final String STATE_AUTHENTICATION_FAILURE = "page.authentication.failure";
 
     @Keep
     @SuppressWarnings("unused")
@@ -83,11 +85,14 @@ public class AccountPageFragment extends WizardPageFragment {
         public Spanned message;
         public String username;
         public String password;
-        public AccountInfo accountInfo;
+        private AccountInfo accountInfo;
         public boolean authenticatedAccess;
+        private String repoName;
         private String repoUrl;
         private boolean repoTrustAllCertificates;
         private boolean wasConfirmed;
+        public boolean singlePage;
+        private boolean authenticationFailure;
 
         public String getUsername() {
             return username;
@@ -195,24 +200,44 @@ public class AccountPageFragment extends WizardPageFragment {
         bundle.putString(STATE_ACCOUNT_INFO,
                 SerializationManager.getInstance().toJson(mModel.accountInfo));
         bundle.putBoolean(STATE_ACCOUNT_CONFIRMED, mModel.wasConfirmed);
+
+        bundle.putString(STATE_REPO_NAME, mModel.repoName);
+        bundle.putString(STATE_REPO_URL, mModel.repoUrl);
+        bundle.putBoolean(STATE_REPO_TRUST_ALL_CERTIFICATES, mModel.repoTrustAllCertificates);
+
+        bundle.putBoolean(STATE_AUTHENTICATION_FAILURE, mModel.authenticationFailure);
+        bundle.putBoolean(STATE_SINGLE_PAGE, mModel.singlePage);
         return bundle;
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void restoreState(Context context, Bundle savedState) {
+        if (savedState.containsKey(STATE_AUTHENTICATION_FAILURE)) {
+            mModel.authenticationFailure = savedState.getBoolean(STATE_AUTHENTICATION_FAILURE);
+            mModel.singlePage = true;
+        } else if (savedState.containsKey(STATE_SINGLE_PAGE)) {
+            mModel.singlePage = savedState.getBoolean(STATE_SINGLE_PAGE);
+        }
         mModel.message = Html.fromHtml(context.getString(
-                R.string.account_wizard_account_page_message,
+                mModel.authenticationFailure
+                        ? R.string.account_wizard_account_authentication_failure_page_message
+                        : R.string.account_wizard_account_page_message,
                 savedState.getString(STATE_REPO_NAME)));
+        mModel.repoName = savedState.getString(STATE_REPO_NAME);
         mModel.repoUrl = savedState.getString(STATE_REPO_URL);
         mModel.repoTrustAllCertificates =
                 savedState.getBoolean(STATE_REPO_TRUST_ALL_CERTIFICATES, false);
         mModel.authenticatedAccess = savedState.getBoolean(STATE_ACCOUNT_ACCESS_MODE, false);
         mModel.username = savedState.getString(STATE_ACCOUNT_USERNAME);
         mModel.password = savedState.getString(STATE_ACCOUNT_PASSWORD);
-        mModel.accountInfo = SerializationManager.getInstance().fromJson(
-                savedState.getString(STATE_ACCOUNT_INFO), AccountInfo.class);
-        mModel.wasConfirmed = savedState.getBoolean(STATE_ACCOUNT_CONFIRMED);
+        if (savedState.containsKey(STATE_ACCOUNT_INFO)) {
+            mModel.accountInfo = SerializationManager.getInstance().fromJson(
+                    savedState.getString(STATE_ACCOUNT_INFO), AccountInfo.class);
+        }
+        if (savedState.containsKey(STATE_ACCOUNT_CONFIRMED)) {
+            mModel.wasConfirmed = savedState.getBoolean(STATE_ACCOUNT_CONFIRMED);
+        }
         if (mBinding != null) {
             mBinding.setModel(mModel);
         }
@@ -220,7 +245,9 @@ public class AccountPageFragment extends WizardPageFragment {
 
     @Override
     public int getPageTitle() {
-        return R.string.account_wizard_account_page_title;
+        return mModel.authenticationFailure
+                ? R.string.account_wizard_account_authentication_failure_page_title
+                : R.string.account_wizard_account_page_title;
     }
 
     @Override
@@ -229,12 +256,12 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     public boolean canRequireKeyboard() {
-        return true;
+        return !mModel.singlePage;
     }
 
     @Override
     public boolean hasBackAction() {
-        return true;
+        return !mModel.singlePage;
     }
 
     @Override
@@ -254,12 +281,12 @@ public class AccountPageFragment extends WizardPageFragment {
 
     @Override
     public int getForwardActionLabel() {
-        return R.string.action_next;
+        return mModel.singlePage ? R.string.action_done : R.string.action_next;
     }
 
     @Override
     public int getForwardActionDrawable() {
-        return R.drawable.ic_chevron_right;
+        return mModel.singlePage ? 0 : R.drawable.ic_chevron_right;
     }
 
     @Override
