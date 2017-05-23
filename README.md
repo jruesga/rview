@@ -30,4 +30,4 @@ Visit [Github](https://github.com/jruesga/rview) to get the source, request feat
 
 ### Licenses
 
-This source was released under the terms of [Apache 2.0] (http://www.apache.org/licenses/LICENSE-2.0.html) license.
+This source was released under the terms of [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0.html) license.
