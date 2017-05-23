@@ -268,7 +268,7 @@ class GerritApiClient implements GerritApi {
             @NonNull String changeId, @NonNull String revisionId, @NonNull DownloadFormat format) {
         return Uri.parse(String.format(Locale.US, "%schanges/%s/revisions/%s/archive?format=%s",
                 toUnauthenticatedEndpoint(mEndPoint),
-                changeId, revisionId, format.toString().toLowerCase()));
+                changeId, revisionId, format.toString().toLowerCase(Locale.US)));
     }
 
     @Override
@@ -276,7 +276,7 @@ class GerritApiClient implements GerritApi {
             @NonNull String changeId, @NonNull String revisionId, @NonNull PatchFileFormat format) {
         return Uri.parse(String.format(Locale.US, "%schanges/%s/revisions/%s/patch?%s",
                 toUnauthenticatedEndpoint(mEndPoint),
-                changeId, revisionId, format.mOption.toLowerCase()));
+                changeId, revisionId, format.mOption.toLowerCase(Locale.US)));
     }
 
     @Override

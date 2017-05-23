@@ -31,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.security.auth.x500.X500Principal;
@@ -147,13 +148,15 @@ public class GerritServiceFactory {
 
     private static String sanitizeEndpoint(String endpoint) {
         // Sanitize endpoint
-        if (!endpoint.toLowerCase().startsWith("http://")
-                && !endpoint.toLowerCase().startsWith("https://")) {
+        String endpointLower = endpoint.toLowerCase(Locale.US);
+        if (!endpointLower.startsWith("http://") && !endpointLower.startsWith("https://")) {
             endpoint = "http://" + endpoint;
         }
+
         if (!endpoint.endsWith("/")) {
             endpoint += "/";
         }
+
         return endpoint;
     }
 }

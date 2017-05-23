@@ -45,6 +45,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Locale;
 
 public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffModel> {
 
@@ -253,9 +254,10 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
         // 1.- Any image
         // 2.- A svg
         // 3.- A xml with "svg" tag or "vector" tag
+        ext = ext.toLowerCase(Locale.US);
         return (mimeType != null && mimeType.startsWith("image/"))
-                || ext.toLowerCase().equals("svg")
-                || (header != null && ext.toLowerCase().equals("xml")
+                || ext.equals("svg")
+                || (header != null && ext.equals("xml")
                     && (hasXmlTag(header, "svg") || hasXmlTag(header, "vector")));
     }
 }

@@ -68,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -657,8 +658,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private CharSequence performFilterHighlight(Suggestion suggestion) {
         Spannable span = Spannable.Factory.getInstance().newSpannable(suggestion.mSuggestionText);
         int pos = 0;
-        final String suggestionNoCase = suggestion.mSuggestionText.toLowerCase();
-        final String filterNoCase = suggestion.mFilter.toLowerCase();
+        final Locale locale = AndroidHelper.getCurrentLocale(getApplicationContext());
+        final String suggestionNoCase = suggestion.mSuggestionText.toLowerCase(locale);
+        final String filterNoCase = suggestion.mFilter.toLowerCase(locale);
         while ((pos = suggestionNoCase.indexOf(filterNoCase, pos)) != -1) {
             final int length = suggestion.mFilter.length();
             if (length == 0) {
@@ -684,7 +686,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":");
             if (ChangeQuery.SUGGEST_TYPES[i] != null && ChangeQuery.SUGGEST_TYPES[i].isEnum()) {
                 for (Object o : ChangeQuery.SUGGEST_TYPES[i].getEnumConstants()) {
-                    String val = String.valueOf(o).toLowerCase();
+                    String val = String.valueOf(o).toLowerCase(Locale.US);
                     mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":" + val + " ");
                 }
             }

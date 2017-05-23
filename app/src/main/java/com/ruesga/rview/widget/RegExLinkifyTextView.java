@@ -36,6 +36,7 @@ import com.ruesga.rview.preferences.Constants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,7 +99,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
 
     public static List<RegExLink> createRepositoryRegExpLinks(Repository repository) {
         String uri = repository.mUrl.substring(
-                repository.mUrl.toLowerCase().indexOf("://") + 3);
+                repository.mUrl.toLowerCase(Locale.US).indexOf("://") + 3);
         if (!uri.endsWith("/")) {
             uri += "/";
         }
