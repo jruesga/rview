@@ -19,7 +19,6 @@ import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Keep;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -30,23 +29,22 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.adapters.SuggestedReviewersAdapter;
-import com.ruesga.rview.databinding.AddReviewerDialogBinding;
-import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
+import com.ruesga.rview.adapters.AccountsAdapter;
+import com.ruesga.rview.databinding.EditAssigneeDialogBinding;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.AndroidHelper;
-import com.ruesga.rview.preferences.Constants;
 
-public class AddReviewerDialogFragment extends RevealDialogFragment {
+public class EditAssigneeDialogFragment extends RevealDialogFragment {
 
-    public static final String TAG = "AddReviewerDialogFragment";
+    public static final String TAG = "EditAssigneeDialogFragment";
 
     @Keep
     public static class Model {
-        public String reviewer;
+        public String assignee;
     }
 
-    public interface OnReviewerAdded {
-        void onReviewerAdded(String reviewer);
+    public interface OnAssigneeSelected {
+        void onAssigneeSelected(String assignee);
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -63,63 +61,51 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
             String text = s.toString();
             enabledOrDisableButtons(text);
 
-            mModel.reviewer = text;
+            mModel.assignee = text;
             mBinding.setModel(mModel);
         }
     };
 
 
-    public static AddReviewerDialogFragment newInstance(int legacyChangeId, View anchor) {
-        AddReviewerDialogFragment fragment = new AddReviewerDialogFragment();
+    public static EditAssigneeDialogFragment newInstance(View anchor) {
+        EditAssigneeDialogFragment fragment = new EditAssigneeDialogFragment();
         Bundle arguments = new Bundle();
-        arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
         fragment.setArguments(arguments);
         return fragment;
     }
 
-    private AddReviewerDialogBinding mBinding;
+    private EditAssigneeDialogBinding mBinding;
     private final Model mModel = new Model();
 
-    private int mLegacyChangeId;
-
-    public AddReviewerDialogFragment() {
+    public EditAssigneeDialogFragment() {
     }
 
     @Override
     public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
         LayoutInflater inflater = LayoutInflater.from(builder.getContext());
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.add_reviewer_dialog, null, true);
-        mBinding.reviewer.addTextChangedListener(mTextWatcher);
-        mBinding.reviewer.setOnItemClickListener((parent, view, position, id) -> {
-            SuggestedReviewerInfo reviewer =
-                    ((SuggestedReviewersAdapter) (parent.getAdapter())).getSuggestedReviewerAt(position);
-            mModel.reviewer = reviewer.account != null
-                    ? String.valueOf(reviewer.account.accountId) : reviewer.group.id;
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.edit_assignee_dialog, null, true);
+        mBinding.assignee.addTextChangedListener(mTextWatcher);
+        mBinding.assignee.setOnItemClickListener((parent, view, position, id) -> {
+            AccountInfo account = ((AccountsAdapter) (parent.getAdapter())).getAccountAt((position));
+            mModel.assignee = String.valueOf(account.accountId);
             mBinding.setModel(mModel);
             AndroidHelper.hideSoftKeyboard(getContext(), getDialog().getWindow());
         });
         mBinding.setModel(mModel);
-        SuggestedReviewersAdapter adapter = new SuggestedReviewersAdapter(
-                mBinding.getRoot().getContext(), mLegacyChangeId);
-        mBinding.reviewer.setAdapter(adapter);
+        AccountsAdapter adapter = new AccountsAdapter(mBinding.getRoot().getContext());
+        mBinding.assignee.setAdapter(adapter);
 
-        builder.setTitle(R.string.change_details_add_reviewer)
+        builder.setTitle(R.string.edit_assignee_title)
                 .setView(mBinding.getRoot())
                 .setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_account_circle))
                 .setNegativeButton(R.string.action_cancel, null)
-                .setPositiveButton(R.string.action_add, (dialog, which) -> performAddReviewer());
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
+                .setPositiveButton(R.string.action_edit, (dialog, which) -> performAssigneeSelected());
     }
 
     @Override
     public void onDialogReveled() {
-        enabledOrDisableButtons(mBinding.reviewer.getText().toString());
+        enabledOrDisableButtons(mBinding.assignee.getText().toString());
     }
 
     @Override
@@ -128,13 +114,13 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
         mBinding.unbind();
     }
 
-    private void performAddReviewer() {
+    private void performAssigneeSelected() {
         final Activity a = getActivity();
         final Fragment f = getParentFragment();
-        if (f != null && f instanceof OnReviewerAdded) {
-            ((OnReviewerAdded) f).onReviewerAdded(mModel.reviewer);
-        } else if (a != null && a instanceof OnReviewerAdded) {
-            ((OnReviewerAdded) a).onReviewerAdded(mModel.reviewer);
+        if (f != null && f instanceof OnAssigneeSelected) {
+            ((OnAssigneeSelected) f).onAssigneeSelected(mModel.assignee);
+        } else if (a != null && a instanceof OnAssigneeSelected) {
+            ((OnAssigneeSelected) a).onAssigneeSelected(mModel.assignee);
         }
     }
 
@@ -143,7 +129,7 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
             final AlertDialog dialog = ((AlertDialog) getDialog());
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             if (button != null) {
-                button.setEnabled(query.length() >= mBinding.reviewer.getThreshold());
+                button.setEnabled(query.length() >= mBinding.assignee.getThreshold());
             }
         }
     }

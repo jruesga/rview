@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ReviewersAdapter extends BaseAdapter implements Filterable {
+public class SuggestedReviewersAdapter extends BaseAdapter implements Filterable {
 
     private static final int MAX_RESULTS = 5;
 
@@ -49,7 +49,7 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
     private List<SuggestedReviewerInfo> mReviewers = new ArrayList<>();
     private final ReviewerFilter mFilter;
 
-    public ReviewersAdapter(Context context, int legacyChangeId) {
+    public SuggestedReviewersAdapter(Context context, int legacyChangeId) {
         mContext = context;
         mLegacyChangeId = String.valueOf(legacyChangeId);
         mFilter = new ReviewerFilter(this);
@@ -106,7 +106,7 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
         } else if (reviewer.group != null) {
             text = reviewer.group.name;
         }
-        if (highlight) {
+        if (highlight && text != null) {
             return highlightOccurrences(text);
         }
         return text;
@@ -136,13 +136,13 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
 
     private static class ReviewerFilter extends Filter {
 
-        private final WeakReference<ReviewersAdapter> mAdapter;
+        private final WeakReference<SuggestedReviewersAdapter> mAdapter;
         private final Account mAccount;
         private final GerritApi mGerritApi;
         private String mLegacyChangeId;
         private CharSequence mConstraint;
 
-        private ReviewerFilter(ReviewersAdapter adapter) {
+        private ReviewerFilter(SuggestedReviewersAdapter adapter) {
             mAdapter = new WeakReference<>(adapter);
             mGerritApi = ModelHelper.getGerritApi(adapter.mContext);
             mAccount = Preferences.getAccount(adapter.mContext);
@@ -166,7 +166,7 @@ public class ReviewersAdapter extends BaseAdapter implements Filterable {
         @Override
         @SuppressWarnings("unchecked")
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            ReviewersAdapter adapter = mAdapter.get();
+            SuggestedReviewersAdapter adapter = mAdapter.get();
             if (adapter != null) {
                 mConstraint = constraint;
                 adapter.mReviewers.clear();

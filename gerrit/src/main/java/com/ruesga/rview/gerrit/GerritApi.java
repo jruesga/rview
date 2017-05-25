@@ -665,7 +665,7 @@ public interface GerritApi {
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @PUT("changes/{change-id}/assignee")
     Observable<AccountInfo> setChangeAssignee(
-            @NonNull @Path("assignee") String changeId,
+            @NonNull @Path("change-id") String changeId,
             @NonNull @Body AssigneeInput input);
 
     /**

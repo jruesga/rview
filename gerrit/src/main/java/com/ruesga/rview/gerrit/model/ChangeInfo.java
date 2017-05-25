@@ -43,6 +43,7 @@ public class ChangeInfo {
     @SerializedName("deletions") public int deletions;
     @SerializedName("_number") public int legacyChangeId;
     @SerializedName("owner") public AccountInfo owner;
+    @SerializedName("assignee") public AccountInfo assignee;
     @SerializedName("actions") public Map<String, ActionInfo> actions;
     @SerializedName("labels") public Map<String, LabelInfo> labels;
     @SerializedName("permitted_labels") public Map<String, Integer[]> permittedLabels;

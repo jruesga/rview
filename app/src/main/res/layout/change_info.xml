@@ -165,6 +165,40 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
+                android:orientation="horizontal"
+                app:bindToBoolean="@{Boolean.TRUE}"
+                app:bindToFeature="@{Features.ASSIGNEE}">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_details_assignee"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <com.ruesga.rview.widget.AccountChipView
+                    android:id="@+id/assignee"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"/>
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    app:srcCompat="@drawable/ic_edit"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:tint="@color/accent"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onEditAssigneePressed}"
+                    android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; actions[ModelHelper.ACTION_ASSIGNEE] != null ? View.VISIBLE : View.GONE}"
+                    tools:ignore="ContentDescription"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:orientation="horizontal">
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="@dimen/label_min_width"

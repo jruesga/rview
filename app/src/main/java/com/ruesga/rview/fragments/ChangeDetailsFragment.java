@@ -57,6 +57,7 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
+import com.ruesga.rview.gerrit.model.AssigneeInput;
 import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeInput;
@@ -129,6 +130,7 @@ import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class ChangeDetailsFragment extends Fragment implements
         AddReviewerDialogFragment.OnReviewerAdded,
+        EditAssigneeDialogFragment.OnAssigneeSelected,
         FilterableDialogFragment.OnFilterSelectedListener,
         EditDialogFragment.OnEditChanged,
         ConfirmDialogFragment.OnActionConfirmed {
@@ -233,6 +235,10 @@ public class ChangeDetailsFragment extends Fragment implements
 
         public void onSharePressed(View v) {
             mFragment.performShare();
+        }
+
+        public void onEditAssigneePressed(View v) {
+            mFragment.performShowEditAssigneeDialog(v);
         }
 
         public void onAddReviewerPressed(View v) {
@@ -818,6 +824,9 @@ public class ChangeDetailsFragment extends Fragment implements
                     getActivity(), account, mResponse.mChange.removableReviewers);
 
             updateChangeInfo(mResponse);
+
+            mMessagesRefreshLoader.clear();
+            mMessagesRefreshLoader.restart();
         }
 
         @Override
@@ -842,6 +851,9 @@ public class ChangeDetailsFragment extends Fragment implements
                             mResponse.mChange.labels.get(vote.first).all);
             }
             updateChangeInfo(mResponse);
+
+            mMessagesRefreshLoader.clear();
+            mMessagesRefreshLoader.restart();
         }
 
         @Override
@@ -882,6 +894,31 @@ public class ChangeDetailsFragment extends Fragment implements
             ModelHelper.updateRemovableReviewers(getContext(), mResponse.mChange, result);
 
             updateChangeInfo(mResponse);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+        }
+    };
+
+    private final RxLoaderObserver<AccountInfo> mEditAssigneeObserver
+            = new RxLoaderObserver<AccountInfo>() {
+        @Override
+        public void onNext(AccountInfo result) {
+            if (mResponse == null) {
+                return;
+            }
+
+            mResponse.mChange.assignee = result;
+            if (result != null) {
+                // TODO add to reviewers and removable reviewers
+            }
+
+            updateChangeInfo(mResponse);
+
+            mMessagesRefreshLoader.clear();
+            mMessagesRefreshLoader.restart();
         }
 
         @Override
@@ -950,6 +987,8 @@ public class ChangeDetailsFragment extends Fragment implements
             = this::performRemoveReviewer;
     private final OnAccountChipRemovedListener mOnReviewerRemovedVoteListener
             = this::performRemoveReviewerVote;
+    private final OnAccountChipRemovedListener mOnAssigneeRemovedListener =
+            (account, tag) -> onAssigneeSelected(String.valueOf(account.accountId));
 
     private ChangeDetailsFragmentBinding mBinding;
     private Picasso mPicasso;
@@ -972,6 +1011,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<ChangeEditMessageInput, Boolean> mChangeEditMessageLoader;
     private RxLoader1<ReviewInput, ReviewInfo> mReviewLoader;
     private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
+    private RxLoader1<String, AccountInfo> mEditAssigneeLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private RxLoader1<Pair<String, AccountInfo>, Pair<String, AccountInfo>> mRemoveReviewerVoteLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
@@ -1196,6 +1236,8 @@ public class ChangeDetailsFragment extends Fragment implements
                     "change_topic", this::changeTopic, mChangeTopicObserver);
             mAddReviewerLoader = loaderManager.create(
                     "add_reviewer", this::addReviewer, mAddReviewerObserver);
+            mEditAssigneeLoader = loaderManager.create(
+                    "edit_assignee", this::editAssignee, mEditAssigneeObserver);
             mRemoveReviewerLoader = loaderManager.create(
                     "remove_reviewer", this::removeReviewer, mRemoveReviewerObserver);
             mRemoveReviewerVoteLoader = loaderManager.create(
@@ -1247,11 +1289,19 @@ public class ChangeDetailsFragment extends Fragment implements
             !ChangeStatus.ABANDONED.equals(response.mChange.status);
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         boolean supportVotes = api.supportsFeature(Features.VOTES);
+        boolean supportAssignee = api.supportsFeature(Features.ASSIGNEE);
+        boolean canAssignee = response.mActions.containsKey(ModelHelper.ACTION_ASSIGNEE);
 
         mBinding.changeInfo.owner
                 .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
                 .from(response.mChange.owner);
+        mBinding.changeInfo.assignee
+                .with(mPicasso)
+                .removable(mAccount.hasAuthenticatedAccessMode() && supportAssignee && canAssignee)
+                .listenOn(mOnAccountChipClickedListener)
+                .listenOn(mOnAssigneeRemovedListener)
+                .from(response.mChange.assignee);
         mBinding.changeInfo.reviewers
                 .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
@@ -1440,6 +1490,27 @@ public class ChangeDetailsFragment extends Fragment implements
                     input.reviewerId = reviewer;
                     return api.addChangeReviewer(String.valueOf(mLegacyChangeId), input)
                             .blockingFirst();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<AccountInfo> editAssignee(final String assignee) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return SafeObservable.fromNullCallable(() -> {
+                    if (TextUtils.isEmpty(assignee)) {
+                        // Remove assignee
+                        return api.deleteChangeAssignee(String.valueOf(mLegacyChangeId))
+                                .blockingFirst();
+                    } else {
+                        // Set assignee
+                        AssigneeInput input = new AssigneeInput();
+                        input.assignee = assignee;
+                        return api.setChangeAssignee(String.valueOf(mLegacyChangeId), input)
+                                .blockingFirst();
+                    }
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -1903,6 +1974,11 @@ public class ChangeDetailsFragment extends Fragment implements
         fragment.show(getChildFragmentManager(), AddReviewerDialogFragment.TAG);
     }
 
+    private void performShowEditAssigneeDialog(View v) {
+        EditAssigneeDialogFragment fragment = EditAssigneeDialogFragment.newInstance(v);
+        fragment.show(getChildFragmentManager(), EditAssigneeDialogFragment.TAG);
+    }
+
     private void performShowMoveBranchDialog(View v) {
         BranchChooserDialogFragment fragment = BranchChooserDialogFragment.newInstance(
                 R.string.move_branch_title, R.string.action_move, mResponse.mChange.project,
@@ -2250,6 +2326,14 @@ public class ChangeDetailsFragment extends Fragment implements
         if (!isLocked()) {
             mAddReviewerLoader.clear();
             mAddReviewerLoader.restart(reviewer);
+        }
+    }
+
+    @Override
+    public void onAssigneeSelected(String assignee) {
+        if (!isLocked()) {
+            mEditAssigneeLoader.clear();
+            mEditAssigneeLoader.restart(assignee == null ? "" : assignee);
         }
     }
 

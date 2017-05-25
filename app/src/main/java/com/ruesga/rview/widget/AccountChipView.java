@@ -107,6 +107,12 @@ public class AccountChipView extends FrameLayout {
     }
 
     public AccountChipView from(AccountInfo account) {
+        if (account == null) {
+            setVisibility(View.GONE);
+            return this;
+        }
+
+        setVisibility(View.VISIBLE);
         PicassoHelper.bindAvatar(getContext(), mPicasso, account, mBinding.avatar,
                 PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDarkForeground));
         mBinding.setModel(account);

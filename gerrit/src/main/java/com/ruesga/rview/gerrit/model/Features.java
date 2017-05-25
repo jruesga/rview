@@ -31,5 +31,7 @@ public enum Features {
     @Since(2.13)
     MOVE,
     @Since(2.13)
-    VOTES
+    VOTES,
+    @Since(2.14)
+    ASSIGNEE
 }

@@ -176,8 +176,9 @@
     <string name="change_details_id">Id.</string>
     <string name="change_details_status">Status</string>
     <string name="change_details_owner">Owner</string>
-    <string name="change_details_reviewers">Reviewers</string>
+    <string name="change_details_assignee">Assignee</string>
     <string name="change_details_add_reviewer">Add reviewer</string>
+    <string name="change_details_reviewers">Reviewers</string>
     <string name="change_details_add_me_as_reviewer">Add me</string>
     <string name="change_details_project">Project</string>
     <string name="change_details_branch">Branch</string>
@@ -310,6 +311,9 @@
 
     <!-- Add reviewer dialog -->
     <string name="add_reviewer_label">Reviewer</string>
+
+    <!-- Edit assignee dialog -->
+    <string name="edit_assignee_title">Edit assignee</string>
 
     <!-- Delete draft change -->
     <string name="delete_draft_change_title">Delete Draft</string>
