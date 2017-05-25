@@ -35,6 +35,7 @@ import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,9 @@ import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.gerrit.model.CherryPickInput;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
+import com.ruesga.rview.gerrit.model.DeleteVoteInput;
 import com.ruesga.rview.gerrit.model.DraftActionType;
+import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
 import com.ruesga.rview.gerrit.model.MoveInput;
@@ -296,8 +299,8 @@ public class ChangeDetailsFragment extends Fragment implements
 
         public void onMessageAvatarPressed(View v) {
             int position = (int) v.getTag();
-            mFragment.performAccountClicked(
-                    mFragment.mResponse.mChange.messages[position].author);
+            AccountInfo account = mFragment.mResponse.mChange.messages[position].author;
+            mFragment.performAccountClicked(account, null);
         }
 
         public void onMessagePressed(View v) {
@@ -801,7 +804,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 for (ReviewerStatus status : mResponse.mChange.reviewers.keySet()) {
                     AccountInfo[] reviewers = mResponse.mChange.reviewers.get(status);
                     mResponse.mChange.reviewers.put(status,
-                            ModelHelper.removeAccount(account, reviewers));
+                            ModelHelper.removeAccount(getActivity(), account, reviewers));
                 }
             }
             if (mResponse.mChange.labels != null) {
@@ -812,8 +815,32 @@ public class ChangeDetailsFragment extends Fragment implements
                 }
             }
             mResponse.mChange.removableReviewers = ModelHelper.removeAccount(
-                    account, mResponse.mChange.removableReviewers);
+                    getActivity(), account, mResponse.mChange.removableReviewers);
 
+            updateChangeInfo(mResponse);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+        }
+    };
+
+    private final RxLoaderObserver<Pair<String, AccountInfo>> mRemoveReviewerVoteObserver
+            = new RxLoaderObserver<Pair<String, AccountInfo>>() {
+        @Override
+        public void onNext(Pair<String, AccountInfo> vote) {
+            if (mResponse == null) {
+                return;
+            }
+
+            // Update internal objects
+            if (mResponse.mChange.labels != null &&
+                    mResponse.mChange.labels.containsKey(vote.first)) {
+                mResponse.mChange.labels.get(vote.first).all =
+                    ModelHelper.removeApproval(vote.second,
+                            mResponse.mChange.labels.get(vote.first).all);
+            }
             updateChangeInfo(mResponse);
         }
 
@@ -919,8 +946,10 @@ public class ChangeDetailsFragment extends Fragment implements
 
     private final OnAccountChipClickedListener mOnAccountChipClickedListener
             = this::performAccountClicked;
-    private final OnAccountChipRemovedListener mOnAccountChipRemovedListener
-            = this::performRemoveAccount;
+    private final OnAccountChipRemovedListener mOnReviewerRemovedListener
+            = this::performRemoveReviewer;
+    private final OnAccountChipRemovedListener mOnReviewerRemovedVoteListener
+            = this::performRemoveReviewerVote;
 
     private ChangeDetailsFragmentBinding mBinding;
     private Picasso mPicasso;
@@ -944,6 +973,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<ReviewInput, ReviewInfo> mReviewLoader;
     private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
+    private RxLoader1<Pair<String, AccountInfo>, Pair<String, AccountInfo>> mRemoveReviewerVoteLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
     private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
     private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
@@ -1168,6 +1198,8 @@ public class ChangeDetailsFragment extends Fragment implements
                     "add_reviewer", this::addReviewer, mAddReviewerObserver);
             mRemoveReviewerLoader = loaderManager.create(
                     "remove_reviewer", this::removeReviewer, mRemoveReviewerObserver);
+            mRemoveReviewerVoteLoader = loaderManager.create(
+                    "remove_reviewer_vote", this::removeReviewerVote, mRemoveReviewerVoteObserver);
             mMessagesRefreshLoader = loaderManager.create(
                     "messages_refresh", fetchMessages(), mMessagesRefreshObserver);
             mActionLoader = loaderManager.create(
@@ -1205,9 +1237,16 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.patchSetInfo.setHasData(true);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void updateChangeInfo(DataResponse response) {
+        final Context ctx = getActivity();
+        if (ctx == null) {
+            return;
+        }
         boolean open = !ChangeStatus.MERGED.equals(response.mChange.status) &&
             !ChangeStatus.ABANDONED.equals(response.mChange.status);
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        boolean supportVotes = api.supportsFeature(Features.VOTES);
 
         mBinding.changeInfo.owner
                 .with(mPicasso)
@@ -1216,13 +1255,15 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.changeInfo.reviewers
                 .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
-                .listenOn(mOnAccountChipRemovedListener)
+                .listenOn(mOnReviewerRemovedListener)
                 .withRemovableReviewers(open)
                 .withFilterCIAccounts(true)
                 .from(response.mChange);
         mBinding.changeInfo.labels
                 .with(mPicasso)
+                .withRemovableReviewers(open && supportVotes, response.mChange.removableReviewers)
                 .listenOn(mOnAccountChipClickedListener)
+                .listenOn(mOnReviewerRemovedVoteListener)
                 .from(response.mChange);
         mBinding.changeInfo.setModel(response.mChange);
         mBinding.changeInfo.setSubmitType(response.mSubmitType);
@@ -1413,6 +1454,27 @@ public class ChangeDetailsFragment extends Fragment implements
                             String.valueOf(mLegacyChangeId),
                             String.valueOf(account.accountId)).blockingFirst();
                     return account;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Pair<String, AccountInfo>> removeReviewerVote(
+            final Pair<String, AccountInfo> vote) {
+        // TODO Evaluate to use deleteChangeRevisionReviewersVote 2.14+'s method
+        // for a safer deletion
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return SafeObservable.fromNullCallable(() -> {
+                    DeleteVoteInput input = new DeleteVoteInput();
+
+                    api.deleteChangeReviewerVote(
+                            String.valueOf(mLegacyChangeId),
+                            String.valueOf(vote.second.accountId),
+                            String.valueOf(vote.first),
+                            input).blockingFirst();
+                    return vote;
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -1712,7 +1774,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
-    private void performAccountClicked(AccountInfo account) {
+    private void performAccountClicked(AccountInfo account, Object tag) {
         ChangeQuery filter = new ChangeQuery().owner(ModelHelper.getSafeAccountOwner(account));
         String title = getString(R.string.account_details);
         String displayName = ModelHelper.getAccountDisplayName(account);
@@ -1721,10 +1783,17 @@ public class ChangeDetailsFragment extends Fragment implements
                 StatsFragment.ACCOUNT_STATS, String.valueOf(account.accountId), filter, extra);
     }
 
-    private void performRemoveAccount(AccountInfo account) {
+    private void performRemoveReviewer(AccountInfo account, Object tag) {
         if (!isLocked()) {
             mRemoveReviewerLoader.clear();
             mRemoveReviewerLoader.restart(account);
+        }
+    }
+
+    private void performRemoveReviewerVote(AccountInfo account, Object tag) {
+        if (!isLocked()) {
+            mRemoveReviewerVoteLoader.clear();
+            mRemoveReviewerVoteLoader.restart(new Pair<>((String) tag, account));
         }
     }
 

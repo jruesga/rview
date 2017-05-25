@@ -47,6 +47,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -208,7 +209,8 @@ public class ModelHelper {
         return sb.toString().trim();
     }
 
-    public static AccountInfo[] removeAccount(AccountInfo account, AccountInfo[] accounts) {
+    public static AccountInfo[] removeAccount(
+            Context context, AccountInfo account, AccountInfo[] accounts) {
         if (accounts == null) {
             return null;
         }
@@ -218,6 +220,7 @@ public class ModelHelper {
                 newAccounts.add(a);
             }
         }
+        ModelHelper.sortReviewers(context, newAccounts);
         return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
     }
 
@@ -377,6 +380,13 @@ public class ModelHelper {
             max = Math.max(max, value);
         }
         return max;
+    }
+
+    public static List<AccountInfo> sortReviewers(Context context, List<AccountInfo> reviewers) {
+        final Collator collator = Collator.getInstance(AndroidHelper.getCurrentLocale(context));
+        Collections.sort(reviewers, (a1, a2) -> collator.compare(
+                ModelHelper.getAccountDisplayName(a1), ModelHelper.getAccountDisplayName(a2)));
+        return reviewers;
     }
 
     public static List<String> sortLabels(Map<String, LabelInfo> changeLabels) {

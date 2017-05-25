@@ -37,10 +37,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.ruesga.rview.widget.AccountChipView.*;
+
 public class ScoreWithReviewersView extends LinearLayout {
     private List<ScoreWithReviewItemBinding> mBindings = new ArrayList<>();
     private Picasso mPicasso;
+    private boolean mIsRemovableReviewers;
+    private AccountInfo[] mRemovableReviewers;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
+    private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
+    private Object mTag;
 
     public ScoreWithReviewersView(Context context) {
         this(context, null);
@@ -59,11 +65,22 @@ public class ScoreWithReviewersView extends LinearLayout {
         return this;
     }
 
-    public ScoreWithReviewersView from(LabelInfo label) {
+    public ScoreWithReviewersView withRemovableReviewers(boolean removable, AccountInfo[] removableReviewers) {
+        mIsRemovableReviewers = removable;
+        mRemovableReviewers = removableReviewers;
+        return this;
+    }
+
+    public ScoreWithReviewersView withTag(Object tag) {
+        mTag = tag;
+        return this;
+    }
+
+    public ScoreWithReviewersView from(LabelInfo info) {
         setOrientation(VERTICAL);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        Map<Integer, List<AccountInfo>> scores = sortByScores(label);
+        Map<Integer, List<AccountInfo>> scores = sortByScores(info);
 
         int count = scores.size();
         int children = getChildCount();
@@ -86,8 +103,11 @@ public class ScoreWithReviewersView extends LinearLayout {
                         value < 0 ? R.color.rejected : R.color.approved));
             binding.reviewers
                     .with(mPicasso)
+                    .withRemovableReviewers(mIsRemovableReviewers)
                     .listenOn(mOnAccountChipClickedListener)
-                    .from(entry.getValue());
+                    .listenOn(mOnAccountChipRemovedListener)
+                    .withTag(mTag)
+                    .from(entry.getValue(), mRemovableReviewers);
             binding.getRoot().setVisibility(View.VISIBLE);
             n++;
         }
@@ -101,6 +121,11 @@ public class ScoreWithReviewersView extends LinearLayout {
 
     public ScoreWithReviewersView listenOn(OnAccountChipClickedListener cb) {
         mOnAccountChipClickedListener = cb;
+        return this;
+    }
+
+    public ScoreWithReviewersView listenOn(OnAccountChipRemovedListener cb) {
+        mOnAccountChipRemovedListener = cb;
         return this;
     }
 

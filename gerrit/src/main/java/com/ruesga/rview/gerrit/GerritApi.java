@@ -1301,8 +1301,8 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-revision-vote"
      */
-    @DELETE("changes/{change-id}/revisions/{revision-id} /reviewers/{account-id}/votes/{label-id}")
-    Observable<Void> deleteChangeRevisionReviewersVote(
+    @DELETE("changes/{change-id}/revisions/{revision-id}/reviewers/{account-id}/votes/{label-id}")
+    Observable<Void> deleteChangeRevisionReviewerVote(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
             @NonNull @Path("account-id") String accountId,

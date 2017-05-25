@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.LabelItemBinding;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
@@ -32,10 +33,15 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ruesga.rview.widget.AccountChipView.*;
+
 public class LabelsView extends LinearLayout {
     private List<LabelItemBinding> mBindings = new ArrayList<>();
     private Picasso mPicasso;
+    private boolean mIsRemovableReviewers;
+    private AccountInfo[] mRemovableReviewers;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
+    private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
 
     public LabelsView(Context context) {
         this(context, null);
@@ -55,8 +61,19 @@ public class LabelsView extends LinearLayout {
         return this;
     }
 
+    public LabelsView withRemovableReviewers(boolean removable, AccountInfo[] removableReviewers) {
+        mIsRemovableReviewers = removable;
+        mRemovableReviewers = removableReviewers;
+        return this;
+    }
+
     public LabelsView listenOn(OnAccountChipClickedListener cb) {
         mOnAccountChipClickedListener = cb;
+        return this;
+    }
+
+    public LabelsView listenOn(OnAccountChipRemovedListener cb) {
+        mOnAccountChipRemovedListener = cb;
         return this;
     }
 
@@ -79,7 +96,10 @@ public class LabelsView extends LinearLayout {
             binding.setLabel(labels.get(i));
             binding.scores
                     .with(mPicasso)
+                    .withRemovableReviewers(mIsRemovableReviewers, mRemovableReviewers)
                     .listenOn(mOnAccountChipClickedListener)
+                    .listenOn(mOnAccountChipRemovedListener)
+                    .withTag(labels.get(i))
                     .from(change.labels.get(labels.get(i)));
             binding.getRoot().setVisibility(View.VISIBLE);
         }

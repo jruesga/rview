@@ -1227,12 +1227,12 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Void> deleteChangeRevisionReviewersVote(
+    public Observable<Void> deleteChangeRevisionReviewerVote(
             @NonNull String changeId, @NonNull String revisionId, @NonNull String accountId,
             @NonNull String labelId, @NonNull DeleteVoteInput input) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.deleteChangeRevisionReviewersVote(
+                        mService.deleteChangeRevisionReviewerVote(
                                 changeId, revisionId, accountId, labelId, input)));
     }
 

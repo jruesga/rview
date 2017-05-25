@@ -25,16 +25,13 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
-import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.squareup.picasso.Picasso;
 
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ReviewersView extends NonDebuggableFlowLayout {
@@ -43,6 +40,7 @@ public class ReviewersView extends NonDebuggableFlowLayout {
     private boolean mIsFilterCIAccounts;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
     private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
+    private Object mTag;
 
     public ReviewersView(Context context) {
         this(context, null);
@@ -86,6 +84,7 @@ public class ReviewersView extends NonDebuggableFlowLayout {
                             removableReviewers.contains(filteredReviewers.get(i).accountId))
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnAccountChipRemovedListener)
+                    .withTag(mTag)
                     .from(filteredReviewers.get(i));
             view.setVisibility(View.VISIBLE);
         }
@@ -97,9 +96,14 @@ public class ReviewersView extends NonDebuggableFlowLayout {
         return this;
     }
 
-    public ReviewersView from(List<AccountInfo> reviewers) {
-        mIsRemovableReviewers = false;
-        return from(reviewers, null);
+    public ReviewersView from(List<AccountInfo> reviewers, AccountInfo[] removableReviewers) {
+        List<Integer> removableReviewersAccountIds = new ArrayList<>();
+        if (mIsRemovableReviewers && removableReviewers != null) {
+            for (AccountInfo reviewer : removableReviewers) {
+                removableReviewersAccountIds.add(reviewer.accountId);
+            }
+        }
+        return from(ModelHelper.sortReviewers(getContext(), reviewers), removableReviewersAccountIds);
     }
 
     public ReviewersView from(ChangeInfo change) {
@@ -117,6 +121,11 @@ public class ReviewersView extends NonDebuggableFlowLayout {
 
     public ReviewersView withRemovableReviewers(boolean removable) {
         mIsRemovableReviewers = removable;
+        return this;
+    }
+
+    public ReviewersView withTag(Object tag) {
+        mTag = tag;
         return this;
     }
 
@@ -143,7 +152,7 @@ public class ReviewersView extends NonDebuggableFlowLayout {
                 reviewers.addAll(Arrays.asList(change.reviewers.get(status)));
             }
         }
-        return sortReviewers(reviewers);
+        return ModelHelper.sortReviewers(getContext(), reviewers);
     }
 
     @SuppressWarnings("Convert2streamapi")
@@ -160,14 +169,6 @@ public class ReviewersView extends NonDebuggableFlowLayout {
                 }
             }
         }
-        return sortReviewers(reviewers);
-    }
-
-    private List<AccountInfo> sortReviewers(List<AccountInfo> reviewers) {
-        final Collator collator = Collator.getInstance(
-                AndroidHelper.getCurrentLocale(getContext()));
-        Collections.sort(reviewers, (a1, a2) -> collator.compare(
-                ModelHelper.getAccountDisplayName(a1), ModelHelper.getAccountDisplayName(a2)));
-        return reviewers;
+        return ModelHelper.sortReviewers(getContext(), reviewers);
     }
 }

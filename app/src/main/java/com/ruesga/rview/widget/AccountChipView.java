@@ -32,11 +32,11 @@ import com.squareup.picasso.Picasso;
 public class AccountChipView extends FrameLayout {
 
     public interface OnAccountChipClickedListener {
-        void onAccountChipClicked(AccountInfo account);
+        void onAccountChipClicked(AccountInfo account, Object tag);
     }
 
     public interface OnAccountChipRemovedListener {
-        void onAccountChipRemoved(AccountInfo account);
+        void onAccountChipRemoved(AccountInfo account, Object tag);
     }
 
     @Keep
@@ -60,6 +60,7 @@ public class AccountChipView extends FrameLayout {
     private Picasso mPicasso;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
     private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
+    private Object mTag;
 
     public AccountChipView(Context context) {
         this(context, null);
@@ -78,6 +79,11 @@ public class AccountChipView extends FrameLayout {
         mBinding.setRemovable(false);
         mBinding.setHandlers(handlers);
         addView(mBinding.getRoot());
+    }
+
+    public AccountChipView withTag(Object tag) {
+        mTag = tag;
+        return this;
     }
 
     public AccountChipView with(Picasso picasso) {
@@ -109,13 +115,13 @@ public class AccountChipView extends FrameLayout {
 
     private void onAccountChipClicked(AccountInfo account) {
         if (mOnAccountChipClickedListener != null) {
-            mOnAccountChipClickedListener.onAccountChipClicked(account);
+            mOnAccountChipClickedListener.onAccountChipClicked(account, mTag);
         }
     }
 
     private void onAccountChipRemoved(AccountInfo account) {
         if (mOnAccountChipRemovedListener != null) {
-            mOnAccountChipRemovedListener.onAccountChipRemoved(account);
+            mOnAccountChipRemovedListener.onAccountChipRemoved(account, mTag);
         }
     }
 }
