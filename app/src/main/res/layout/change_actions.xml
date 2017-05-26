@@ -30,7 +30,7 @@
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
-    <com.ruesga.rview.widget.NonDebuggableFlowLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
@@ -38,7 +38,10 @@
         android:orientation="horizontal"
         app:bindEmptyMap="@{actions}"
         android:background="@android:color/transparent"
-        android:gravity="end">
+        android:gravity="end"
+        app:flexWrap="wrap"
+        app:alignItems="flex_start"
+        app:alignContent="flex_start">
 
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/cherrypick"
@@ -207,5 +210,5 @@
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
-    </com.ruesga.rview.widget.NonDebuggableFlowLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 </layout>

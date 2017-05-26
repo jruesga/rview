@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ScoreItemBinding;
 import com.ruesga.rview.gerrit.model.LabelInfo;
@@ -43,7 +44,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScoreLabelsView extends NonDebuggableFlowLayout {
+public class ScoreLabelsView extends FlexboxLayout {
     @Keep
     public static class Model {
         public boolean visible = false;
@@ -72,7 +73,6 @@ public class ScoreLabelsView extends NonDebuggableFlowLayout {
 
     public ScoreLabelsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setOrientation(LinearLayout.HORIZONTAL);
         mInflater = LayoutInflater.from(context);
 
         mApprovedColor = ContextCompat.getColorStateList(getContext(), R.color.approved);

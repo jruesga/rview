@@ -212,8 +212,10 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="5dp"
                     android:layout_below="@id/mergeable_block"
-                    app:shortLabels="true">
-                </com.ruesga.rview.widget.ScoreLabelsView>
+                    app:flexWrap="wrap"
+                    app:alignItems="flex_start"
+                    app:alignContent="flex_start"
+                    app:shortLabels="true" />
             </RelativeLayout>
         </LinearLayout>
     </FrameLayout>

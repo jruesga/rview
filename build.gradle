@@ -32,7 +32,7 @@ ext {
         picasso2                    : '2.5.2',
         picasso2_okhttp3_downloader : '1.1.0',
         prettytime                  : '4.0.1.Final',
-        flowlayout                  : '1.10',
+        flexboxlayout               : '0.2.6',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '91e06d8a3a',
         aboutlibraries              : '5.9.6',

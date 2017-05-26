@@ -26,9 +26,12 @@
         <variable name="handlers" type="com.ruesga.rview.fragments.DiffViewerFragment.EventHandlers" />
     </data>
 
-    <com.ruesga.rview.widget.NonDebuggableFlowLayout
+    <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:flexWrap="wrap"
+        app:alignItems="flex_start"
+        app:alignContent="flex_start">
 
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/comment"
@@ -99,5 +102,5 @@
             app:allCaps="true"
             android:textSize="12sp"/>
 
-    </com.ruesga.rview.widget.NonDebuggableFlowLayout>
+    </com.google.android.flexbox.FlexboxLayout>
 </layout>

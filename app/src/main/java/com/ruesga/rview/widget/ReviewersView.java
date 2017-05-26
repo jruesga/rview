@@ -20,6 +20,7 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.google.android.flexbox.FlexboxLayout;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ReviewersView extends NonDebuggableFlowLayout {
+public class ReviewersView extends FlexboxLayout {
     private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
     private boolean mIsFilterCIAccounts;
@@ -52,7 +53,7 @@ public class ReviewersView extends NonDebuggableFlowLayout {
 
     public ReviewersView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setOrientation(HORIZONTAL);
+//        setOrientation(HORIZONTAL);
     }
 
     public ReviewersView with(Picasso picasso) {
@@ -72,8 +73,8 @@ public class ReviewersView extends NonDebuggableFlowLayout {
             for (int i = children; i < count; i++) {
                 addView(new AccountChipView(getContext()));
                 View v = getChildAt(getChildCount() - 1);
-                NonDebuggableFlowLayout.LayoutParams params =
-                        ((NonDebuggableFlowLayout.LayoutParams) v.getLayoutParams());
+                FlexboxLayout.LayoutParams params =
+                        ((FlexboxLayout.LayoutParams) v.getLayoutParams());
                 params.setMargins(rtl ? margin : 0, 0, rtl ? 0 : margin, margin);
             }
         }

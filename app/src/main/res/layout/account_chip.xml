@@ -64,6 +64,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="wrap_content"
+            android:minWidth="1dp"
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
             android:visibility="@{safeUnbox(removable) ? View.VISIBLE : View.GONE}"

@@ -65,14 +65,17 @@
                 android:textColor="?android:textColorPrimary"
                 android:text="@string/change_edit_option_file"/>
 
-            <com.ruesga.rview.widget.NonDebuggableFlowLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/listPreferredItemHeightSmall"
                 android:gravity="center_vertical|start"
                 android:paddingLeft="?attr/listPreferredItemPaddingLeft"
                 android:paddingStart="?attr/listPreferredItemPaddingLeft"
                 android:paddingRight="?attr/listPreferredItemPaddingRight"
-                android:paddingEnd="?attr/listPreferredItemPaddingRight">
+                android:paddingEnd="?attr/listPreferredItemPaddingRight"
+                app:flexWrap="wrap"
+                app:alignItems="flex_start"
+                app:alignContent="flex_start">
 
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="wrap_content"
@@ -89,7 +92,7 @@
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
-            </com.ruesga.rview.widget.NonDebuggableFlowLayout>
+            </com.google.android.flexbox.FlexboxLayout>
 
         </LinearLayout>
 
@@ -114,14 +117,17 @@
             android:textColor="?android:textColorPrimary"
             android:text="@string/change_edit_option_edit"/>
 
-            <com.ruesga.rview.widget.NonDebuggableFlowLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/listPreferredItemHeightSmall"
                 android:gravity="center_vertical|start"
                 android:paddingLeft="?attr/listPreferredItemPaddingLeft"
                 android:paddingStart="?attr/listPreferredItemPaddingLeft"
                 android:paddingRight="?attr/listPreferredItemPaddingRight"
-                android:paddingEnd="?attr/listPreferredItemPaddingRight">
+                android:paddingEnd="?attr/listPreferredItemPaddingRight"
+                app:flexWrap="wrap"
+                app:alignItems="flex_start"
+                app:alignContent="flex_start">
 
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="wrap_content"
@@ -154,7 +160,7 @@
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
-            </com.ruesga.rview.widget.NonDebuggableFlowLayout>
+            </com.google.android.flexbox.FlexboxLayout>
 
         </LinearLayout>
 

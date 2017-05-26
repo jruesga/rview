@@ -44,7 +44,7 @@ dependencies {
     compile "com.squareup.picasso:picasso:${libraries.picasso2}"
     compile "com.jakewharton.picasso:picasso2-okhttp3-downloader:${libraries.picasso2_okhttp3_downloader}"
     compile "org.ocpsoft.prettytime:prettytime:${libraries.prettytime}"
-    compile "org.apmem.tools:layouts:${libraries.flowlayout}"
+    compile "com.google.android:flexbox:${libraries.flexboxlayout}"
     compile "com.github.jruesga:floatingsearchview:${libraries.floatingsearchview}"
     compile "com.github.BigBadaboom:androidsvg:${libraries.androidsvg}"
     compile ("com.mikepenz:aboutlibraries:${libraries.aboutlibraries}@aar") { transitive = true }

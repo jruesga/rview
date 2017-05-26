@@ -97,13 +97,16 @@
                     android:layout_marginBottom="16dp"
                     android:background="?android:attr/listDivider" />
 
-                <com.ruesga.rview.widget.NonDebuggableFlowLayout
+                <com.google.android.flexbox.FlexboxLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginTop="16dp"
                     android:background="@android:color/transparent"
-                    android:gravity="end">
+                    android:gravity="end"
+                    app:flexWrap="wrap"
+                    app:alignItems="flex_start"
+                    app:alignContent="flex_start">
 
                     <com.ruesga.rview.widget.StyleableTextView
                         android:layout_width="wrap_content"
@@ -168,7 +171,7 @@
                         app:font="condensed"
                         app:allCaps="true"
                         android:textSize="12sp"/>
-                </com.ruesga.rview.widget.NonDebuggableFlowLayout>
+                </com.google.android.flexbox.FlexboxLayout>
 
             </FrameLayout>
 
