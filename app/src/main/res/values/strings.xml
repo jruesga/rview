@@ -44,6 +44,7 @@
     <string name="action_no">No</string>
     <string name="action_open_with">Open with</string>
     <string name="action_continue">Continue</string>
+    <string name="action_assign">Assign</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>

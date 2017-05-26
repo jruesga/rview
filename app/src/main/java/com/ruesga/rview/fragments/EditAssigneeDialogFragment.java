@@ -100,7 +100,7 @@ public class EditAssigneeDialogFragment extends RevealDialogFragment {
                 .setView(mBinding.getRoot())
                 .setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_account_circle))
                 .setNegativeButton(R.string.action_cancel, null)
-                .setPositiveButton(R.string.action_edit, (dialog, which) -> performAssigneeSelected());
+                .setPositiveButton(R.string.action_assign, (dialog, which) -> performAssigneeSelected());
     }
 
     @Override
