@@ -35,6 +35,7 @@ import com.ruesga.rview.ChangeDetailsActivity;
 import com.ruesga.rview.NotificationsActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.AssigneeInfo;
 import com.ruesga.rview.gerrit.model.CloudNotificationEvents;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -382,7 +383,8 @@ public class NotificationsHelper {
         }
         String author = getEventAuthor(ctx, entity);
         return Html.fromHtml(String.format("<b>%s</b> %s%s", author, event,
-                inbox ? "" : "<br/>" + message.trim().replaceAll("\n", "<br/>")));
+                (inbox || message.trim().isEmpty())
+                        ? "" : "<br/>" + message.trim().replaceAll("\n", "<br/>")));
     }
 
     private static String getEventAuthor(Context ctx, NotificationEntity entity) {
@@ -428,10 +430,14 @@ public class NotificationsHelper {
             case CloudNotificationEvents.TOPIC_CHANGED_EVENT:
                 return ctx.getString(R.string.notification_content_title_1024);
             case CloudNotificationEvents.ASSIGNEE_CHANGED_EVENT:
-                AccountInfo assignee = SerializationManager.getInstance().fromJson(
-                        entity.mNotification.extra, AccountInfo.class);
-                return ctx.getString(R.string.notification_content_title_2048,
-                        ModelHelper.getAccountDisplayName(assignee));
+                AssigneeInfo assignee = SerializationManager.getInstance().fromJson(
+                        entity.mNotification.extra, AssigneeInfo.class);
+                if (assignee._new == null) {
+                    return ctx.getString(R.string.notification_content_title_2048_unassign,
+                            ModelHelper.getAccountDisplayName(assignee.old));
+                }
+                return ctx.getString(R.string.notification_content_title_2048_assign,
+                        ModelHelper.getAccountDisplayName(assignee._new));
             case CloudNotificationEvents.VOTE_DELETED_EVENT:
                 return ctx.getString(R.string.notification_content_title_4096);
         }

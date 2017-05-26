@@ -15,7 +15,10 @@
  */
 package com.ruesga.rview.gerrit.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class AssigneeInfo {
-    public AccountInfo account;
+    public @SerializedName("old") AccountInfo old;
+    public @SerializedName("new") AccountInfo _new;
 }
 

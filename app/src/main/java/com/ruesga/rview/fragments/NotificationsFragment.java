@@ -159,7 +159,7 @@ public class NotificationsFragment extends Fragment {
             model.when = new Date(item.mNotification.when);
             model.read = item.mRead;
             model.who = item.mNotification.who;
-            model.notification = NotificationsHelper.getContentMessage(mContext, item, true, false);
+            model.notification = NotificationsHelper.getContentMessage(mContext, item, false, false);
             itemViewHolder.mBinding.setModel(model);
             itemViewHolder.mBinding.setHandlers(mHandlers);
             PicassoHelper.bindAvatar(mContext, mPicasso, model.who,

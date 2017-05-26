@@ -911,16 +911,16 @@ public class ChangeDetailsFragment extends Fragment implements
                 return;
             }
 
-            mResponse.mChange.assignee = result.account;
-            if (result.account != null) {
+            mResponse.mChange.assignee = result._new;
+            if (result._new != null) {
                 // Update internal objects
                 if (mResponse.mChange.reviewers != null) {
                     // Update reviewers
                     AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
                     mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
-                            ModelHelper.addReviewers(new AccountInfo[]{result.account}, reviewers));
+                            ModelHelper.addReviewers(new AccountInfo[]{result._new}, reviewers));
                 }
-                ModelHelper.addRemovableReviewer(mResponse.mChange, result.account);
+                ModelHelper.addRemovableReviewer(mResponse.mChange, result._new);
             }
 
             updateChangeInfo(mResponse);
@@ -1509,6 +1509,7 @@ public class ChangeDetailsFragment extends Fragment implements
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return SafeObservable.fromNullCallable(() -> {
                     AssigneeInfo info = new AssigneeInfo();
+                    info.old = mResponse.mChange.assignee;
                     if (TextUtils.isEmpty(assignee)) {
                         // Remove assignee
                         api.deleteChangeAssignee(String.valueOf(mLegacyChangeId))
@@ -1517,9 +1518,9 @@ public class ChangeDetailsFragment extends Fragment implements
                         // Set assignee
                         AssigneeInput input = new AssigneeInput();
                         input.assignee = assignee;
-                        AccountInfo account = api.setChangeAssignee(String.valueOf(mLegacyChangeId), input)
-                                .blockingFirst();
-                        info.account = account;
+                        AccountInfo account = api.setChangeAssignee(
+                                String.valueOf(mLegacyChangeId), input).blockingFirst();
+                        info._new = account;
                     }
                     return info;
                 })
