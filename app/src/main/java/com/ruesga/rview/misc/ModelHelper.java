@@ -49,6 +49,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -240,11 +241,16 @@ public class ModelHelper {
     }
 
     public static AccountInfo[] addReviewers(ReviewerInfo[] reviewers, AccountInfo[] accounts) {
+        final List<AccountInfo> newReviewers = new ArrayList<>(Arrays.asList(reviewers));
+        return addReviewers(newReviewers.toArray(new AccountInfo[newReviewers.size()]), accounts);
+    }
+
+    public static AccountInfo[] addReviewers(AccountInfo[] reviewers, AccountInfo[] accounts) {
         List<AccountInfo> newAccounts = new ArrayList<>();
         if (accounts != null) {
             Collections.addAll(newAccounts, accounts);
         }
-        for (ReviewerInfo reviewer : reviewers) {
+        for (AccountInfo reviewer : reviewers) {
             boolean exists = false;
             for (AccountInfo a : newAccounts) {
                 if (a.accountId == reviewer.accountId) {
@@ -257,6 +263,29 @@ public class ModelHelper {
             }
         }
         return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
+    }
+
+    public static void addRemovableReviewer(ChangeInfo change, AccountInfo account) {
+        if (change.removableReviewers == null) {
+            change.removableReviewers = new AccountInfo[]{account};
+            return;
+        }
+
+        List<AccountInfo> newAccounts = new ArrayList<>();
+        Collections.addAll(newAccounts, account);
+        for (AccountInfo acct : change.removableReviewers) {
+            boolean exists = false;
+            for (AccountInfo a : newAccounts) {
+                if (a.accountId == acct.accountId) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                newAccounts.add(account);
+            }
+        }
+        change.removableReviewers = newAccounts.toArray(new AccountInfo[newAccounts.size()]);
     }
 
     public static ApprovalInfo[] updateApprovals(

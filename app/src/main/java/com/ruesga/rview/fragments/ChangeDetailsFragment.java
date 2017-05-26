@@ -913,7 +913,14 @@ public class ChangeDetailsFragment extends Fragment implements
 
             mResponse.mChange.assignee = result.account;
             if (result.account != null) {
-                // TODO add to reviewers and removable reviewers
+                // Update internal objects
+                if (mResponse.mChange.reviewers != null) {
+                    // Update reviewers
+                    AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
+                    mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
+                            ModelHelper.addReviewers(new AccountInfo[]{result.account}, reviewers));
+                }
+                ModelHelper.addRemovableReviewer(mResponse.mChange, result.account);
             }
 
             updateChangeInfo(mResponse);
