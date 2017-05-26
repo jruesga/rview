@@ -105,6 +105,7 @@
                     android:background="@android:color/transparent"
                     android:gravity="end"
                     app:flexWrap="wrap"
+                    app:justifyContent="flex_end"
                     app:alignItems="flex_start"
                     app:alignContent="flex_start">
 
