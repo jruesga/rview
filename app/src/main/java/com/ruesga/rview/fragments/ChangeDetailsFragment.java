@@ -57,6 +57,7 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
+import com.ruesga.rview.gerrit.model.AssigneeInfo;
 import com.ruesga.rview.gerrit.model.AssigneeInput;
 import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -902,16 +903,16 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
-    private final RxLoaderObserver<AccountInfo> mEditAssigneeObserver
-            = new RxLoaderObserver<AccountInfo>() {
+    private final RxLoaderObserver<AssigneeInfo> mEditAssigneeObserver
+            = new RxLoaderObserver<AssigneeInfo>() {
         @Override
-        public void onNext(AccountInfo result) {
+        public void onNext(AssigneeInfo result) {
             if (mResponse == null) {
                 return;
             }
 
-            mResponse.mChange.assignee = result;
-            if (result != null) {
+            mResponse.mChange.assignee = result.account;
+            if (result.account != null) {
                 // TODO add to reviewers and removable reviewers
             }
 
@@ -988,7 +989,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private final OnAccountChipRemovedListener mOnReviewerRemovedVoteListener
             = this::performRemoveReviewerVote;
     private final OnAccountChipRemovedListener mOnAssigneeRemovedListener =
-            (account, tag) -> onAssigneeSelected(String.valueOf(account.accountId));
+            (account, tag) -> onAssigneeSelected(null);
 
     private ChangeDetailsFragmentBinding mBinding;
     private Picasso mPicasso;
@@ -1011,7 +1012,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<ChangeEditMessageInput, Boolean> mChangeEditMessageLoader;
     private RxLoader1<ReviewInput, ReviewInfo> mReviewLoader;
     private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
-    private RxLoader1<String, AccountInfo> mEditAssigneeLoader;
+    private RxLoader1<String, AssigneeInfo> mEditAssigneeLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private RxLoader1<Pair<String, AccountInfo>, Pair<String, AccountInfo>> mRemoveReviewerVoteLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
@@ -1496,21 +1497,24 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<AccountInfo> editAssignee(final String assignee) {
+    private Observable<AssigneeInfo> editAssignee(final String assignee) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return SafeObservable.fromNullCallable(() -> {
+                    AssigneeInfo info = new AssigneeInfo();
                     if (TextUtils.isEmpty(assignee)) {
                         // Remove assignee
-                        return api.deleteChangeAssignee(String.valueOf(mLegacyChangeId))
+                        api.deleteChangeAssignee(String.valueOf(mLegacyChangeId))
                                 .blockingFirst();
                     } else {
                         // Set assignee
                         AssigneeInput input = new AssigneeInput();
                         input.assignee = assignee;
-                        return api.setChangeAssignee(String.valueOf(mLegacyChangeId), input)
+                        AccountInfo account = api.setChangeAssignee(String.valueOf(mLegacyChangeId), input)
                                 .blockingFirst();
+                        info.account = account;
                     }
+                    return info;
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
