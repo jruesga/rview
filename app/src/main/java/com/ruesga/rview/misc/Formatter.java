@@ -111,6 +111,7 @@ public class Formatter {
             return;
         }
 
+        // Display Name
         String accountDisplayName = null;
         switch (sDisplayFormat) {
             case Constants.ACCOUNT_DISPLAY_FORMAT_NAME:
@@ -129,6 +130,12 @@ public class Formatter {
         if (TextUtils.isEmpty(accountDisplayName)) {
             accountDisplayName = String.valueOf(accountInfo.accountId);
         }
+
+        // Status
+        if (!TextUtils.isEmpty(accountInfo.status)) {
+            accountDisplayName += " " + accountInfo.status;
+        }
+
         view.setText(accountDisplayName);
     }
 

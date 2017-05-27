@@ -27,5 +27,6 @@ public class AccountInfo {
     @SerializedName("email") public String email;
     @SerializedName("secondary_emails") public String[] secondaryEmails;
     @SerializedName("avatars") public AvatarInfo[] avatars;
+    @SerializedName("status") public String status;
 }
 

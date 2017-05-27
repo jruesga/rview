@@ -443,6 +443,7 @@
     <string name="account_details_name">Name</string>
     <string name="account_details_emails">Emails</string>
     <string name="account_details_registered_on">Registered</string>
+    <string name="account_details_status">Status</string>
 
     <!-- Project stats -->
     <string name="project_details_name">Name</string>
