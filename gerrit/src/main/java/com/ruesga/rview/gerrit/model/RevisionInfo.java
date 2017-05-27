@@ -37,5 +37,6 @@ public class RevisionInfo {
     @SerializedName("reviewed") public boolean reviewed;
     @SerializedName("messageWithFooter") public String messageWithFooter;
     @SerializedName("push_certificate") public PushCertificateInfo pushCertificate;
+    @SerializedName("description") public String description;
 }
 

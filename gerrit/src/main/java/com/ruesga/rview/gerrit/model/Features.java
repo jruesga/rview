@@ -22,6 +22,8 @@ public enum Features {
     ACCOUNT_DETAILS,
     @Since(2.14)
     ACCOUNT_STATUS,
+    @Since(2.14)
+    ASSIGNEE,
     @Since(2.12)
     AVATARS,
     @Since(2.13)
@@ -30,8 +32,8 @@ public enum Features {
     CHANGE_STAR_LABELS,
     @Since(2.13)
     MOVE,
-    @Since(2.13)
-    VOTES,
     @Since(2.14)
-    ASSIGNEE
+    REVISION_DESCRIPTION,
+    @Since(2.13)
+    VOTES
 }

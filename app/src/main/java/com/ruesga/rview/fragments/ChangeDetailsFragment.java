@@ -69,6 +69,7 @@ import com.ruesga.rview.gerrit.model.CherryPickInput;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.DeleteVoteInput;
+import com.ruesga.rview.gerrit.model.DescriptionInput;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileInfo;
@@ -172,6 +173,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private static final int REQUEST_CODE_REVERT_CHANGE = 7;
     private static final int REQUEST_CODE_FOLLOW_UP_CHANGE = 8;
     private static final int REQUEST_CODE_SUBMIT_CHANGE = 9;
+    private static final int REQUEST_CODE_EDIT_REVISION_DESCRIPTION = 10;
 
     @Keep
     public static class ListModel {
@@ -318,6 +320,10 @@ public class ChangeDetailsFragment extends Fragment implements
         private void onNavigateToComment(View v) {
             CommentInfo comment = (CommentInfo) v.getTag();
             mFragment.performNavigateToComment(comment);
+        }
+
+        public void onEditRevisionDescriptionPressed(View v) {
+            mFragment.performEditRevisionDescription(v);
         }
     }
 
@@ -690,6 +696,19 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
+    private final RxLoaderObserver<Boolean> mChangeEditRevisionDescriptionObserver
+            = new RxLoaderObserver<Boolean>() {
+        @Override
+        public void onNext(Boolean value) {
+            forceRefresh();
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+        }
+    };
+
     private final RxLoaderObserver<ReviewInfo> mReviewObserver = new RxLoaderObserver<ReviewInfo>() {
 
         private Runnable mUiDelayedProcessingNotification = () -> internalSetProcessing(true);
@@ -1017,6 +1036,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<String, DataResponse> mChangeLoader;
     private RxLoader1<Boolean, Boolean> mStarredLoader;
     private RxLoader1<ChangeEditMessageInput, Boolean> mChangeEditMessageLoader;
+    private RxLoader1<DescriptionInput, Boolean> mChangeEditRevisionDescriptionLoader;
     private RxLoader1<ReviewInput, ReviewInfo> mReviewLoader;
     private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
     private RxLoader1<String, AssigneeInfo> mEditAssigneeLoader;
@@ -1239,6 +1259,9 @@ public class ChangeDetailsFragment extends Fragment implements
             mStarredLoader = loaderManager.create("starred", this::starChange, mStarredObserver);
             mChangeEditMessageLoader = loaderManager.create(
                     "edit:message", this::editMessage, mChangeEditMessageObserver);
+            mChangeEditRevisionDescriptionLoader = loaderManager.create(
+                    "edit:description", this::editRevisionDescription,
+                    mChangeEditRevisionDescriptionObserver);
             mReviewLoader = loaderManager.create("review", this::reviewChange, mReviewObserver);
             mChangeTopicLoader = loaderManager.create(
                     "change_topic", this::changeTopic, mChangeTopicObserver);
@@ -1460,6 +1483,20 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("ConstantConditions")
+    private Observable<Boolean> editRevisionDescription(final DescriptionInput input) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return SafeObservable.fromNullCallable(() -> {
+                    api.setChangeRevisionDescription(
+                            String.valueOf(mLegacyChangeId), mCurrentRevision, input)
+                                .blockingFirst();
+                    return true;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private Observable<ReviewInfo> reviewChange(final ReviewInput input) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -1518,9 +1555,8 @@ public class ChangeDetailsFragment extends Fragment implements
                         // Set assignee
                         AssigneeInput input = new AssigneeInput();
                         input.assignee = assignee;
-                        AccountInfo account = api.setChangeAssignee(
+                        info._new = api.setChangeAssignee(
                                 String.valueOf(mLegacyChangeId), input).blockingFirst();
-                        info._new = account;
                     }
                     return info;
                 })
@@ -1929,8 +1965,10 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.changeInfo.setIsAuthenticated(mModel.isAuthenticated);
         mBinding.reviewInfo.setIsAuthenticated(mModel.isAuthenticated);
 
-        mBinding.changeInfo.setIsOwner(mModel.isAuthenticated && mResponse != null
-                && mResponse.mChange.owner.accountId == mAccount.mAccount.accountId);
+        final boolean isOwner = mModel.isAuthenticated && mResponse != null
+                && mResponse.mChange.owner.accountId == mAccount.mAccount.accountId;
+        mBinding.patchSetInfo.setIsOwner(isOwner);
+        mBinding.changeInfo.setIsOwner(isOwner);
         mBinding.executePendingBindings();
     }
 
@@ -1960,6 +1998,19 @@ public class ChangeDetailsFragment extends Fragment implements
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(title, null, message,
                 action, hint, false, true, true, v, REQUEST_CODE_EDIT_MESSAGE, null);
+        fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void performEditRevisionDescription(View v) {
+        String title = getString(R.string.change_edit_revision_description_title);
+        String action = getString(R.string.action_edit);
+        String hint = getString(R.string.change_edit_revision_description_hint);
+
+        String message = mResponse.mChange.revisions.get(mCurrentRevision).description;
+
+        EditDialogFragment fragment = EditDialogFragment.newInstance(title, null, message,
+                action, hint, false, true, true, v, REQUEST_CODE_EDIT_REVISION_DESCRIPTION, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
@@ -2376,10 +2427,10 @@ public class ChangeDetailsFragment extends Fragment implements
         if (!isLocked()) {
             switch (requestCode) {
                 case REQUEST_CODE_EDIT_MESSAGE:
-                    ChangeEditMessageInput input = new ChangeEditMessageInput();
-                    input.message = newValue;
+                    ChangeEditMessageInput changeEditMessageInput = new ChangeEditMessageInput();
+                    changeEditMessageInput.message = newValue;
                     mChangeEditMessageLoader.clear();
-                    mChangeEditMessageLoader.restart(input);
+                    mChangeEditMessageLoader.restart(changeEditMessageInput);
                     break;
 
                 case REQUEST_CODE_CHANGE_TOPIC:
@@ -2409,6 +2460,13 @@ public class ChangeDetailsFragment extends Fragment implements
                     mActionLoader.clear();
                     mActionLoader.restart(
                             ModelHelper.ACTION_FOLLOW_UP, new String[]{newValue});
+                    break;
+
+                case REQUEST_CODE_EDIT_REVISION_DESCRIPTION:
+                    DescriptionInput descriptionInput = new DescriptionInput();
+                    descriptionInput.description = newValue;
+                    mChangeEditRevisionDescriptionLoader.clear();
+                    mChangeEditRevisionDescriptionLoader.restart(descriptionInput);
                     break;
             }
         }

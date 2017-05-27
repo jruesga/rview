@@ -192,6 +192,7 @@
     <string name="change_details_commit">Commit</string>
     <string name="change_details_parents">Parent(s)</string>
     <string name="change_details_change_id">Change-Id</string>
+    <string name="change_details_description">Description</string>
     <string name="change_details_related_changes">Related changes</string>
     <string name="change_details_download_patchset">Download</string>
     <string name="change_details_view_patchset">View</string>
@@ -355,6 +356,10 @@
     <!-- Edit change message -->
     <string name="change_edit_message_title">Edit change message</string>
     <string name="change_edit_message_hint">Change message</string>
+
+    <!-- Edit revision description -->
+    <string name="change_edit_revision_description_title">Edit revision description</string>
+    <string name="change_edit_revision_description_hint">Change revision description</string>
 
     <!-- Drafts -->
     <string name="draft_title">Draft</string>

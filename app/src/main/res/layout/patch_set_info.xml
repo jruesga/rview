@@ -21,10 +21,12 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.Features" />
 
         <variable name="hasData" type="java.lang.Boolean" />
         <variable name="isLocked" type="java.lang.Boolean" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
+        <variable name="isOwner" type="java.lang.Boolean" />
 
         <variable name="changeId" type="java.lang.String" />
         <variable name="revision" type="java.lang.String" />
@@ -246,6 +248,56 @@
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="12sp"
                     tools:ignore="Deprecated" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:orientation="horizontal"
+                app:bindToBoolean="@{safeUnbox(isOwner) || model.description != null}"
+                app:bindToFeature="@{Features.REVISION_DESCRIPTION}">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_details_description"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:id="@+id/patchset_description"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginEnd="21dp"
+                        android:layout_marginRight="21dp"
+                        android:text="@{model.description}"
+                        android:singleLine="false"
+                        android:minLines="1"
+                        android:maxLines="3"
+                        android:textIsSelectable="true"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="12sp"
+                        tools:ignore="Deprecated"/>
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        app:srcCompat="@drawable/ic_edit"
+                        android:layout_marginStart="-16dp"
+                        android:layout_marginLeft="-16dp"
+                        android:layout_toEndOf="@id/patchset_description"
+                        android:layout_toRightOf="@id/patchset_description"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:tint="@color/accent"
+                        android:onClick="@{handlers::onEditRevisionDescriptionPressed}"
+                        android:visibility="@{safeUnbox(isOwner) ? View.VISIBLE : View.GONE}"
+                        tools:ignore="ContentDescription"/>
+                </RelativeLayout>
             </LinearLayout>
 
             <View
