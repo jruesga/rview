@@ -235,10 +235,12 @@ public class MainActivity extends ChangeListBaseActivity {
         launchAddAccountIfNeeded();
         setupNavigationDrawer();
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mAccountStatusChangedReceiver, filter);
-        fetchAccountStatus(mAccount);
+        if (mAccount != null) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
+            LocalBroadcastManager.getInstance(this).registerReceiver(mAccountStatusChangedReceiver, filter);
+            fetchAccountStatus(mAccount);
+        }
 
         mHeaderDrawerBinding.setModel(mModel);
         mHeaderDrawerBinding.setHandlers(mEventHandlers);
