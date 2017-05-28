@@ -24,7 +24,13 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.support.design.internal.ForegroundLinearLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.view.AccessibilityDelegateCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.accessibility.AccessibilityEventCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.view.menu.MenuView;
 import android.text.TextUtils;
@@ -48,6 +54,11 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     private static final int[] CHECKED_STATE_SET = {android.R.attr.state_checked};
 
     private final int mIconSize;
+
+    private boolean mNeedsEmptyIcon;
+
+    boolean mCheckable;
+
     private boolean mShouldTintedIcon = true;
 
     private final ImageView mIcon;
@@ -60,6 +71,22 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     private MenuItemImpl mItemData;
 
     private ColorStateList mIconTintList;
+
+    private boolean mHasIconTintList;
+
+    private Drawable mEmptyDrawable;
+
+    private final AccessibilityDelegateCompat mAccessibilityDelegate
+            = new AccessibilityDelegateCompat() {
+
+        @Override
+        public void onInitializeAccessibilityNodeInfo(View host,
+                AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            info.setCheckable(mCheckable);
+        }
+
+    };
 
     private OnMenuButtonClickListener mOnMenuButtonClickListener;
 
@@ -98,7 +125,7 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         setVisibility(itemData.isVisible() ? VISIBLE : GONE);
 
         if (getBackground() == null) {
-            setBackgroundDrawable(createDefaultBackground());
+            ViewCompat.setBackground(this, createDefaultBackground());
         }
 
         setCheckable(itemData.isCheckable());
@@ -107,6 +134,32 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         setTitle(itemData.getTitle());
         setIcon(itemData.getIcon());
         setActionView(itemData.getActionView());
+        adjustAppearance();
+    }
+
+    private boolean shouldExpandActionArea() {
+        return mItemData.getTitle() == null &&
+                mItemData.getIcon() == null &&
+                mItemData.getActionView() != null;
+    }
+
+    private void adjustAppearance() {
+        if (shouldExpandActionArea()) {
+            // Expand the actionView area
+            mTextView.setVisibility(View.GONE);
+            if (mActionArea != null) {
+                LayoutParams params = (LayoutParams) mActionArea.getLayoutParams();
+                params.width = LayoutParams.MATCH_PARENT;
+                mActionArea.setLayoutParams(params);
+            }
+        } else {
+            mTextView.setVisibility(View.VISIBLE);
+            if (mActionArea != null) {
+                LayoutParams params = (LayoutParams) mActionArea.getLayoutParams();
+                params.width = LayoutParams.WRAP_CONTENT;
+                mActionArea.setLayoutParams(params);
+            }
+        }
     }
 
     public void setOnMenuButtonClickListener(OnMenuButtonClickListener listener) {
@@ -120,12 +173,12 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     }
 
     private void setActionView(View actionView) {
-        if (mActionArea == null) {
-            mActionArea = (FrameLayout) ((ViewStub) findViewById(
-                    R.id.drawer_menu_item_action_area_stub)).inflate();
-        }
-        mActionArea.removeAllViews();
         if (actionView != null) {
+            if (mActionArea == null) {
+                mActionArea = (FrameLayout) ((ViewStub) findViewById(
+                        R.id.drawer_menu_item_action_area_stub)).inflate();
+            }
+            mActionArea.removeAllViews();
             mActionArea.addView(actionView);
         }
     }
@@ -177,6 +230,11 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     @Override
     public void setCheckable(boolean checkable) {
         refreshDrawableState();
+        if (mCheckable != checkable) {
+            mCheckable = checkable;
+            mAccessibilityDelegate.sendAccessibilityEvent(mTextView,
+                    AccessibilityEventCompat.TYPE_WINDOW_CONTENT_CHANGED);
+        }
     }
 
     @Override
@@ -195,16 +253,23 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     @Override
     public void setIcon(Drawable icon) {
         if (icon != null) {
-            if (mShouldTintedIcon) {
+            if (mShouldTintedIcon && mHasIconTintList) {
                 Drawable.ConstantState state = icon.getConstantState();
                 icon = DrawableCompat.wrap(state == null ? icon : state.newDrawable()).mutate();
-                icon.setBounds(0, 0, mIconSize, mIconSize);
                 DrawableCompat.setTintList(icon, mIconTintList);
             }
-            mIcon.setImageDrawable(icon);
-        } else {
-            mIcon.setImageDrawable(null);
+            icon.setBounds(0, 0, mIconSize, mIconSize);
+        } else if (mNeedsEmptyIcon) {
+            if (mEmptyDrawable == null) {
+                mEmptyDrawable = ResourcesCompat.getDrawable(getResources(),
+                        R.drawable.navigation_empty_icon, getContext().getTheme());
+                if (mEmptyDrawable != null) {
+                    mEmptyDrawable.setBounds(0, 0, mIconSize, mIconSize);
+                }
+            }
+            icon = mEmptyDrawable;
         }
+        mIcon.setImageDrawable(icon);
     }
 
     @Override
@@ -228,20 +293,25 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
 
     void setIconTintList(ColorStateList tintList) {
         mIconTintList = tintList;
+        mHasIconTintList = mIconTintList != null;
         if (mItemData != null) {
             // Update the icon so that the tint takes effect
             setIcon(mItemData.getIcon());
         }
     }
 
-    public void setTextAppearance(Context context, int textAppearance) {
-        mTextView.setTextAppearance(context, textAppearance);
-        mSubTextView.setTextAppearance(context, textAppearance);
+    public void setTextAppearance(int textAppearance) {
+        TextViewCompat.setTextAppearance(mTextView, textAppearance);
+        TextViewCompat.setTextAppearance(mSubTextView, textAppearance);
     }
 
     public void setTextColor(ColorStateList colors) {
         mTextView.setTextColor(colors);
         mSubTextView.setTextColor(colors);
+    }
+
+    public void setNeedsEmptyIcon(boolean needsEmptyIcon) {
+        mNeedsEmptyIcon = needsEmptyIcon;
     }
 
     @Override
@@ -253,13 +323,17 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         if (noSubtitle) {
             mSubTextView.setAlpha(offset);
         }
-        mActionArea.setAlpha(offset);
+        if (mActionArea != null) {
+            mActionArea.setAlpha(offset);
+        }
 
         mButton.setVisibility(mButton.getDrawable() == null || offset == 0f
                 ? View.GONE : View.VISIBLE);
         mTextView.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
         mSubTextView.setVisibility(noSubtitle || offset == 0f ? View.GONE : View.VISIBLE);
-        mActionArea.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+        if (mActionArea != null) {
+            mActionArea.setVisibility(offset == 0f ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void setActionIcon(String resourceName) {

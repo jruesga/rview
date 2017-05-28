@@ -18,8 +18,6 @@ package com.ruesga.rview.drawer;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcel;
@@ -35,11 +33,14 @@ import android.support.v4.os.ParcelableCompat;
 import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v4.view.AbsSavedState;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowInsetsCompat;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
+import android.support.v7.content.res.AppCompatResources;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuItemImpl;
+import android.support.v7.widget.TintTypedArray;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -118,12 +119,12 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
                 R.dimen.drawer_mini_drawer_min_width);
 
         // Custom attributes
-        TypedArray a = context.obtainStyledAttributes(attrs,
+        TintTypedArray a = TintTypedArray.obtainStyledAttributes(context, attrs,
                 R.styleable.DrawerNavigationView, defStyleAttr,
                 R.style.Widget_Drawer_NavigationView);
 
-        //noinspection deprecation
-        setBackgroundDrawable(a.getDrawable(R.styleable.DrawerNavigationView_android_background));
+        ViewCompat.setBackground(
+                this, a.getDrawable(R.styleable.DrawerNavigationView_android_background));
         if (a.hasValue(R.styleable.DrawerNavigationView_elevation)) {
             ViewCompat.setElevation(this, a.getDimensionPixelSize(
                     R.styleable.DrawerNavigationView_elevation, 0));
@@ -211,7 +212,7 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
     }
 
     /**
-     * Set a listener that will be notified when a menu item is clicked.
+     * Set a listener that will be notified when a menu item is selected.
      *
      * @param listener The listener to notify
      */
@@ -243,8 +244,8 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
     }
 
     @Override
-    protected void onInsetsChanged(Rect insets) {
-        mPresenter.setPaddingTopDefault(insets.top);
+    protected void onInsetsChanged(WindowInsetsCompat insets) {
+        mPresenter.dispatchApplyWindowInsets(insets);
     }
 
     public void configureWithMiniDrawer(SlidingPaneLayout panel) {
@@ -491,14 +492,15 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
 
     @SuppressWarnings("ConstantConditions")
     private ColorStateList createDefaultColorStateList(int baseColorThemeAttr) {
-        TypedValue value = new TypedValue();
+        final TypedValue value = new TypedValue();
         if (!getContext().getTheme().resolveAttribute(baseColorThemeAttr, value, true)) {
             return null;
         }
         if (value.resourceId == 0) {
             return null;
         }
-        ColorStateList baseColor = getResources().getColorStateList(value.resourceId);
+        ColorStateList baseColor = AppCompatResources.getColorStateList(
+                getContext(), value.resourceId);
         if (!getContext().getTheme().resolveAttribute(
                 android.support.v7.appcompat.R.attr.colorPrimary, value, true)) {
             return null;

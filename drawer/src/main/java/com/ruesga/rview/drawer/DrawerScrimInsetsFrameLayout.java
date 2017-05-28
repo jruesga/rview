@@ -23,15 +23,16 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowInsetsCompat;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 @SuppressWarnings("UnusedParameters")
 public class DrawerScrimInsetsFrameLayout extends FrameLayout {
 
-    private Drawable mInsetForeground;
+    Drawable mInsetForeground;
 
-    private Rect mInsets;
+    Rect mInsets;
 
     private Rect mTempRect = new Rect();
 
@@ -53,19 +54,20 @@ public class DrawerScrimInsetsFrameLayout extends FrameLayout {
         a.recycle();
         setWillNotDraw(true); // No need to draw until the insets are adjusted
 
-        ViewCompat.setOnApplyWindowInsetsListener(this, (v, insets) -> {
-                if (null == mInsets) {
-                    mInsets = new Rect();
-                }
-                mInsets.set(insets.getSystemWindowInsetLeft(),
-                        insets.getSystemWindowInsetTop(),
-                        insets.getSystemWindowInsetRight(),
-                        insets.getSystemWindowInsetBottom());
-                onInsetsChanged(mInsets);
-                setWillNotDraw(mInsets.isEmpty() || mInsetForeground == null);
-                ViewCompat.postInvalidateOnAnimation(DrawerScrimInsetsFrameLayout.this);
-                return insets.consumeSystemWindowInsets();
-            });
+        ViewCompat.setOnApplyWindowInsetsListener(this,
+                (v, insets) -> {
+                    if (null == mInsets) {
+                        mInsets = new Rect();
+                    }
+                    mInsets.set(insets.getSystemWindowInsetLeft(),
+                            insets.getSystemWindowInsetTop(),
+                            insets.getSystemWindowInsetRight(),
+                            insets.getSystemWindowInsetBottom());
+                    onInsetsChanged(insets);
+                    setWillNotDraw(!insets.hasSystemWindowInsets() || mInsetForeground == null);
+                    ViewCompat.postInvalidateOnAnimation(DrawerScrimInsetsFrameLayout.this);
+                    return insets.consumeSystemWindowInsets();
+                });
     }
 
     @Override
@@ -118,7 +120,7 @@ public class DrawerScrimInsetsFrameLayout extends FrameLayout {
         }
     }
 
-    protected void onInsetsChanged(Rect insets) {
+    protected void onInsetsChanged(WindowInsetsCompat insets) {
     }
 
 }

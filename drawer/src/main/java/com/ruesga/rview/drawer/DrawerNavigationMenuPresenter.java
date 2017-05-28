@@ -30,6 +30,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.design.internal.ParcelableSparseArray;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowInsetsCompat;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.view.menu.MenuPresenter;
@@ -55,6 +57,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
 
     private static final String STATE_HIERARCHY = "drawer:menu:list";
     private static final String STATE_ADAPTER = "drawer:menu:adapter";
+    private static final String STATE_HEADER = "drawer:menu:header";
 
     private DrawerNavigationMenuView mMenuView;
     private LinearLayout mHeaderLayout;
@@ -172,7 +175,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
 
     @Override
     public Parcelable onSaveInstanceState() {
-        Bundle state = new Bundle();
+        final Bundle state = new Bundle();
         if (mMenuView != null) {
             SparseArray<Parcelable> hierarchy = new SparseArray<>();
             mMenuView.saveHierarchyState(hierarchy);
@@ -181,19 +184,30 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         if (mAdapter != null) {
             state.putBundle(STATE_ADAPTER, mAdapter.createInstanceState());
         }
+        if (mHeaderLayout != null) {
+            SparseArray<Parcelable> header = new SparseArray<>();
+            mHeaderLayout.saveHierarchyState(header);
+            state.putSparseParcelableArray(STATE_HEADER, header);
+        }
         return state;
     }
 
     @Override
-    public void onRestoreInstanceState(Parcelable parcelable) {
-        Bundle state = (Bundle) parcelable;
-        SparseArray<Parcelable> hierarchy = state.getSparseParcelableArray(STATE_HIERARCHY);
-        if (hierarchy != null) {
-            mMenuView.restoreHierarchyState(hierarchy);
-        }
-        Bundle adapterState = state.getBundle(STATE_ADAPTER);
-        if (adapterState != null) {
-            mAdapter.restoreInstanceState(adapterState);
+    public void onRestoreInstanceState(final Parcelable parcelable) {
+        if (parcelable instanceof Bundle) {
+            Bundle state = (Bundle) parcelable;
+            SparseArray<Parcelable> hierarchy = state.getSparseParcelableArray(STATE_HIERARCHY);
+            if (hierarchy != null) {
+                mMenuView.restoreHierarchyState(hierarchy);
+            }
+            Bundle adapterState = state.getBundle(STATE_ADAPTER);
+            if (adapterState != null) {
+                mAdapter.restoreInstanceState(adapterState);
+            }
+            SparseArray<Parcelable> header = state.getSparseParcelableArray(STATE_HEADER);
+            if (header != null) {
+                mHeaderLayout.restoreHierarchyState(header);
+            }
         }
     }
 
@@ -270,13 +284,15 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         }
     }
 
-    public void setPaddingTopDefault(int paddingTopDefault) {
-        if (mPaddingTopDefault != paddingTopDefault) {
-            mPaddingTopDefault = paddingTopDefault;
+    public void dispatchApplyWindowInsets(WindowInsetsCompat insets) {
+        int top = insets.getSystemWindowInsetTop();
+        if (mPaddingTopDefault != top) {
+            mPaddingTopDefault = top;
             if (mHeaderLayout.getChildCount() == 0) {
                 mMenuView.setPadding(0, mPaddingTopDefault, 0, mMenuView.getPaddingBottom());
             }
         }
+        ViewCompat.dispatchApplyWindowInsets(mHeaderLayout, insets);
     }
 
     private abstract static class ViewHolder extends RecyclerView.ViewHolder {
@@ -432,14 +448,15 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
                     DrawerNavigationMenuItemView itemView = (DrawerNavigationMenuItemView) holder.itemView;
                     itemView.setIconTintList(mIconTintList);
                     if (mTextAppearanceSet) {
-                        itemView.setTextAppearance(itemView.getContext(), mTextAppearance);
+                        itemView.setTextAppearance(mTextAppearance);
                     }
                     if (mTextColor != null) {
                         itemView.setTextColor(mTextColor);
                     }
-                    itemView.setBackgroundDrawable(mItemBackground != null ?
+                    ViewCompat.setBackground(itemView, mItemBackground != null ?
                             mItemBackground.getConstantState().newDrawable() : null);
                     NavigationMenuTextItem item = (NavigationMenuTextItem) mItems.get(position);
+                    itemView.setNeedsEmptyIcon(item.needsEmptyIcon);
                     itemView.initialize(item.getMenuItem(), 0);
                     break;
                 }
@@ -558,7 +575,9 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
                     if (currentGroupHasIcon && item.getIcon() == null) {
                         item.setIcon(android.R.color.transparent);
                     }
-                    mItems.add(new NavigationMenuTextItem(item));
+                    NavigationMenuTextItem textItem = new NavigationMenuTextItem(item);
+                    textItem.needsEmptyIcon = currentGroupHasIcon;
+                    mItems.add(textItem);
                     currentGroupId = groupId;
                 }
             }
@@ -568,6 +587,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         private void appendTransparentIconIfMissing(int startIndex, int endIndex) {
             for (int i = startIndex; i < endIndex; i++) {
                 NavigationMenuTextItem textItem = (NavigationMenuTextItem) mItems.get(i);
+                textItem.needsEmptyIcon = true;
                 MenuItem item = textItem.getMenuItem();
                 if (item.getIcon() == null) {
                     if (mTransparentIcon == null) {
@@ -631,14 +651,25 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             // Restore the states of the action views.
             SparseArray<ParcelableSparseArray> actionViewStates = state
                     .getSparseParcelableArray(STATE_ACTION_VIEWS);
-            for (NavigationMenuItem navigationMenuItem : mItems) {
-                if (navigationMenuItem instanceof NavigationMenuTextItem) {
-                    MenuItemImpl item = ((NavigationMenuTextItem) navigationMenuItem).getMenuItem();
-                    View actionView = item != null ? item.getActionView() : null;
-                    if (actionView != null) {
-                        actionView.restoreHierarchyState(actionViewStates.get(item.getItemId()));
+            if (actionViewStates != null) {
+               for (NavigationMenuItem navigationMenuItem : mItems) {
+                    if (!(navigationMenuItem instanceof NavigationMenuTextItem)) {
+                        continue;
                     }
-                }
+                    MenuItemImpl item = ((NavigationMenuTextItem) navigationMenuItem).getMenuItem();
+                    if (item == null) {
+                        continue;
+                    }
+                    View actionView = item.getActionView();
+                    if (actionView == null) {
+                        continue;
+                    }
+                    ParcelableSparseArray container = actionViewStates.get(item.getItemId());
+                    if (container == null) {
+                        continue;
+                    }
+                    actionView.restoreHierarchyState(container);
+               }
             }
         }
 
@@ -660,6 +691,8 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
     private static class NavigationMenuTextItem implements NavigationMenuItem {
 
         private final MenuItemImpl mMenuItem;
+
+        boolean needsEmptyIcon;
 
         private NavigationMenuTextItem(MenuItemImpl item) {
             mMenuItem = item;
@@ -699,6 +732,8 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
      * Header (not subheader) items.
      */
     private static class NavigationMenuHeaderItem implements NavigationMenuItem {
+        NavigationMenuHeaderItem() {
+        }
         // The actual content is hold by DrawerNavigationMenuPresenter#mHeaderLayout.
     }
 
