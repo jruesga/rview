@@ -704,7 +704,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private void enterReveal() {
         if (AndroidHelper.isLollipopOrGreater()) {
             ViewCompat.postOnAnimation(mBinding.toolbar,
-                    new RevelAnimationRunnable(mBinding.toolbar, mBinding.searchView, true));
+                    new RevealAnimationRunnable(mBinding.toolbar, mBinding.searchView, true));
         }
     }
 
@@ -716,15 +716,15 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
 
         ViewCompat.postOnAnimation(mBinding.toolbar,
-                new RevelAnimationRunnable(mBinding.toolbar, mBinding.searchView, false));
+                new RevealAnimationRunnable(mBinding.toolbar, mBinding.searchView, false));
     }
 
-    private class RevelAnimationRunnable implements Runnable {
+    private class RevealAnimationRunnable implements Runnable {
         private final View mTarget;
         private final View mParent;
         private final boolean mIn;
 
-        RevelAnimationRunnable(View parent, View target, boolean in) {
+        RevealAnimationRunnable(View parent, View target, boolean in) {
             mTarget = target;
             mParent = parent;
             mIn = in;
