@@ -108,10 +108,16 @@
                 app:font="boldCondensed"
                 app:allCaps="true"/>
 
-            <com.ruesga.rview.widget.AccountStateSuggestionsView
-                android:id="@+id/suggestions"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent"
+                android:scrollbars="vertical">
+                <com.ruesga.rview.widget.AccountStateSuggestionsView
+                    android:id="@+id/suggestions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </ScrollView>
+
         </LinearLayout>
     </LinearLayout>
 </layout>
