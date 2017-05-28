@@ -39,6 +39,7 @@ import com.ruesga.rview.gerrit.model.AccountStatusInput;
 import com.ruesga.rview.misc.EmojiHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.services.AccountStatusFetcherService;
@@ -55,6 +56,9 @@ import me.tatarka.rxloader2.safe.SafeObservable;
 public class SetAccountStatusDialogFragment extends RevealDialogFragment {
 
     public static final String TAG = "SetAccountStatus";
+
+    private static final String STATE_MODEL = "state:model";
+    private static final String STATE_ORIGINAL_STATUS = "state:original";
 
     @Keep
     public static class Model {
@@ -127,7 +131,7 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
     };
 
     private SetAccountStatusDialogBinding mBinding;
-    private final Model mModel = new Model();
+    private Model mModel = new Model();
     private EventHandlers mEventHandlers;
     private Account mAccount;
 
@@ -150,7 +154,14 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
                 .setView(mBinding.getRoot())
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_set, null);
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(STATE_MODEL, SerializationManager.getInstance().toJson(mModel));
+        outState.putString(STATE_ORIGINAL_STATUS, mOriginalStatus);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -166,7 +177,7 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(savedInstanceState);
     }
 
     @Override
@@ -177,16 +188,23 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void startLoadersWithValidContext() {
+    private void startLoadersWithValidContext(Bundle savedInstanceState) {
         if (getActivity() == null && mBinding != null) {
             return;
         }
 
         if (mAccount == null) {
             mAccount = Preferences.getAccount(getActivity());
-            mOriginalStatus = EmojiHelper.getSuggestedDescriptionFromEmoji(
-                    getActivity(), mAccount.mAccount.status);
-            updateModel(mAccount.mAccount.status);
+            if (savedInstanceState != null) {
+                mOriginalStatus = savedInstanceState.getString(STATE_ORIGINAL_STATUS);
+                mModel = SerializationManager.getInstance().fromJson(
+                        savedInstanceState.getString(STATE_MODEL), Model.class);
+                mBinding.setModel(mModel);
+            } else {
+                mOriginalStatus = EmojiHelper.getSuggestedDescriptionFromEmoji(
+                        getActivity(), mAccount.mAccount.status);
+                updateModel(mAccount.mAccount.status);
+            }
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
