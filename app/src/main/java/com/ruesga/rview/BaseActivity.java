@@ -37,6 +37,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView;
@@ -410,6 +411,10 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
 
     public void showWarning(@StringRes int message) {
         AndroidHelper.showWarningSnackbar(this, getContentBinding().getRoot(), message);
+    }
+
+    public void showToast(@StringRes int message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     public void handleException(String tag, Throwable cause) {

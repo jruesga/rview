@@ -33,4 +33,5 @@
     <dimen name="diff_line_separator_width">1dp</dimen>
     <dimen name="diff_line_indicator_width">16dp</dimen>
     <dimen name="toast_min_width">36dp</dimen>
+    <dimen name="account_suggestion_text_size">18sp</dimen>
 </resources>

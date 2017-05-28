@@ -45,6 +45,7 @@
     <string name="action_open_with">Open with</string>
     <string name="action_continue">Continue</string>
     <string name="action_assign">Assign</string>
+    <string name="action_set">Set</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -58,11 +59,13 @@
     <string name="menu_starred">Starred</string>
     <string name="menu_watched">Watched</string>
     <string name="menu_my_filters_category">My filters</string>
-    <string name="menu_account_settings">Account settings</string>
+    <string name="menu_account_settings">Settings</string>
+    <string name="menu_account_status">Status</string>
     <string name="menu_account_notifications">Notifications</string>
-    <string name="menu_account_stats">Account stats</string>
-    <string name="menu_account_password">Change password</string>
-    <string name="menu_delete_account">Delete account</string>
+    <string name="menu_account_stats">Statistics</string>
+    <string name="menu_account_password">Password</string>
+    <string name="menu_drop_account">Drop account</string>
+    <string name="menu_account_category">Account</string>
     <string name="menu_other_accounts_category">Other accounts</string>
     <string name="menu_add_account">Add account</string>
     <string name="menu_help">Help</string>
@@ -501,5 +504,10 @@
     <string name="link_play_store" translatable="false">https://play.google.com/store/apps/details?id=<xliff:g id="package_name" example="com.ruesga.rview">%1$s</xliff:g></string>
     <string name="link_privacy" translatable="false">https://github.com/jruesga/rview/blob/master/Privacy.md</string>
     <string name="link_cloud_notifications_plugin">https://gerrit.googlesource.com/plugins/cloud-notifications</string>
+
+    <!-- Account status dialog -->
+    <string name="account_status_dialog_title">Account status</string>
+    <string name="account_status_dialog_hint">What\'s your status?</string>
+    <string name="account_status_suggestions_title">Suggestions</string>
 
 </resources>

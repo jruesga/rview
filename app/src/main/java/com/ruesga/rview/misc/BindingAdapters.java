@@ -137,4 +137,14 @@ public class BindingAdapters {
         boolean supported = value && api != null && api.supportsFeature(feature);
         v.setVisibility(supported ? View.VISIBLE : View.GONE);
     }
+
+
+
+    @BindingAdapter({"bindTextImageText", "bindTextImageColor", "bindTextImageTextSize"})
+    public static void bindBackgroundTint(ImageView v, String text, Integer color, Float textSize) {
+        if (text == null) {
+            v.setImageBitmap(null);
+        }
+        v.setImageBitmap(BitmapUtils.text2Bitmap(text, color, v.getWidth(), v.getHeight(), textSize));
+    }
 }

@@ -63,6 +63,6 @@ public class ServerVersion {
     }
 
     private static boolean isEmpty(String src) {
-        return src != null && src.length() == 0;
+        return src == null || src.length() == 0;
     }
 }

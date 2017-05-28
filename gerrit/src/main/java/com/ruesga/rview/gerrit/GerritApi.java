@@ -106,6 +106,11 @@ public interface GerritApi {
      */
     boolean supportsFeature(Features feature);
 
+    /**
+     * Return an implementation of ApiVersionMediator
+     */
+    boolean supportsFeature(Features feature, ServerVersion version);
+
 
     // ===============================
     // Gerrit access endpoints

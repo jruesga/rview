@@ -27,6 +27,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.text.TextPaint;
 
 import java.io.File;
 import java.io.IOException;
@@ -157,5 +158,25 @@ public class BitmapUtils {
             // Ignore
         }
         return src;
+    }
+
+    public static Bitmap text2Bitmap(String text, int color, int w, int h, float size) {
+        if (text == null) {
+            return null;
+        }
+
+        Paint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+        paint.setTextSize(size);
+        paint.setColor(color);
+        paint.setTextAlign(Paint.Align.LEFT);
+
+        float baseline = -paint.ascent();
+        int width = (int) (paint.measureText(text) + 0.5f);
+        int height = (int) (baseline + paint.descent() + 0.5f);
+
+        Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(image);
+        canvas.drawText(text, 0, baseline, paint);
+        return image;
     }
 }

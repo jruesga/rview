@@ -15,11 +15,19 @@
  */
 package com.ruesga.rview.misc;
 
+import android.content.Context;
 import android.os.Build;
+import android.text.TextUtils;
+
+import com.ruesga.rview.R;
 
 import java.util.regex.Pattern;
 
 public final class EmojiHelper {
+
+    private static String[] sStatusCodes;
+    private static String[] sStatusDescriptions;
+
     private static final String[] TEXT =
             {
                     "<3",
@@ -190,5 +198,71 @@ public final class EmojiHelper {
 
     public static String getEmojiByUnicode(int unicode){
         return new String(Character.toChars(unicode));
+    }
+
+    public static String resolveEmojiStatus(Context ctx, String status) {
+        if (TextUtils.isEmpty(status)) {
+            return null;
+        }
+
+        loadStatusEmojis(ctx);
+        int count = sStatusCodes.length;
+        for (int i = 0; i < count; i++) {
+            if (sStatusCodes[i].equals(status)) {
+                return status + " - " + sStatusDescriptions[i];
+            }
+        }
+        return status;
+    }
+
+    public static boolean isSuggestedEmojiStatus(Context ctx, String status) {
+        if (TextUtils.isEmpty(status)) {
+            return false;
+        }
+
+        loadStatusEmojis(ctx);
+        for (String code : sStatusCodes) {
+            if (code.equals(status)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String getSuggestedDescriptionFromEmoji(Context ctx, String emoji) {
+        if (TextUtils.isEmpty(emoji)) {
+            return null;
+        }
+
+        loadStatusEmojis(ctx);
+        int count = sStatusCodes.length;
+        for (int i = 0; i < count; i++) {
+            if (sStatusCodes[i].equals(emoji)) {
+                return sStatusDescriptions[i];
+            }
+        }
+        return emoji;
+    }
+
+    public static String getSuggestedEmojiFromDescription(Context ctx, String description) {
+        if (TextUtils.isEmpty(description)) {
+            return null;
+        }
+
+        loadStatusEmojis(ctx);
+        int count = sStatusDescriptions.length;
+        for (int i = 0; i < count; i++) {
+            if (sStatusDescriptions[i].equals(description)) {
+                return sStatusCodes[i];
+            }
+        }
+        return description;
+    }
+
+    private static synchronized void loadStatusEmojis(Context ctx) {
+        if (sStatusCodes == null) {
+            sStatusCodes = ctx.getResources().getStringArray(R.array.emoji_status_codes);
+            sStatusDescriptions = ctx.getResources().getStringArray(R.array.emoji_status_descriptions);
+        }
     }
 }

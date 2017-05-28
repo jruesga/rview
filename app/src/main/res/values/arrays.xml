@@ -157,6 +157,26 @@
         <item>4096</item>
     </string-array>
 
+    <string-array name="emoji_status_codes">
+        <item>🏢</item>
+        <item>🏠</item>
+        <item>🍴</item>
+        <item>📅</item>
+        <item>🚌</item>
+        <item>🏝</item>
+        <item>🤒</item>
+        <item>😴</item>
+    </string-array>
+    <string-array name="emoji_status_descriptions">
+        <item>At work</item>
+        <item>At home</item>
+        <item>Lunch</item>
+        <item>In a meeting</item>
+        <item>Commuting</item>
+        <item>Vacationing</item>
+        <item>Out sick</item>
+        <item>Sleeping</item>
+    </string-array>
 
     <string-array name="libraries_ids" translatable="false">
         <item>crashlytics</item>
@@ -176,7 +196,7 @@
         <item>picasso</item>
         <item>picasso2_okhttp3_downloader</item>
         <item>prettytime</item>
-        <item>layouts</item>
+        <item>flexbox-layout</item>
         <item>floatingsearchview</item>
         <item>androidsvg</item>
         <item>aboutlibraries</item>

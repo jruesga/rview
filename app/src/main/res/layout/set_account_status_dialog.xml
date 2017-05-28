@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.text.TextUtils" />
+        <import type="android.view.View" />
+        <variable name="model" type="com.ruesga.rview.fragments.SetAccountStatusDialogFragment.Model" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.SetAccountStatusDialogFragment.EventHandlers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    app:srcCompat="@drawable/ic_tag_faces"
+                    android:tint="?attr/colorAccent"
+                    android:visibility="@{!safeUnbox(model.isSuggestion) ? View.VISIBLE : View.INVISIBLE}"
+                    android:contentDescription="@null"/>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="@{safeUnbox(model.isSuggestion) ? View.VISIBLE : View.INVISIBLE}"
+                    app:bindTextImageText="@{model.status}"
+                    app:bindTextImageColor="@{@android:color/black}"
+                    app:bindTextImageTextSize="@{@dimen/account_suggestion_text_size}"
+                    android:contentDescription="@null"/>
+            </FrameLayout>
+
+            <EditText
+                android:id="@+id/status"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:text="@={model.description}"
+                android:hint="@string/account_status_dialog_hint"
+                android:imeOptions="actionDone"
+                android:textSize="14sp"
+                android:minLines="1"
+                android:maxLines="1"/>
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:srcCompat="@drawable/ic_clear_black_24dp"
+                android:tint="?attr/colorAccent"
+                android:visibility="@{!TextUtils.isEmpty(model.description) ? View.VISIBLE : View.INVISIBLE}"
+                android:onClick="@{handlers::onClearPressed}"
+                android:contentDescription="@null"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="vertical">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/primaryDarkForeground"
+                android:textSize="14sp"
+                android:text="@string/account_status_suggestions_title"
+                app:font="boldCondensed"
+                app:allCaps="true"/>
+
+            <com.ruesga.rview.widget.AccountStateSuggestionsView
+                android:id="@+id/suggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

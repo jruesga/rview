@@ -53,7 +53,9 @@ public abstract class RevealDialogFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAnchorRect = getArguments().getParcelable(EXTRA_ANCHOR);
+        if (getArguments() != null) {
+            mAnchorRect = getArguments().getParcelable(EXTRA_ANCHOR);
+        }
 
         mDoReveal = true;
         if (savedInstanceState != null) {

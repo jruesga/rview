@@ -211,18 +211,24 @@ class GerritApiClient implements GerritApi {
 
     @SuppressWarnings("unchecked")
     private <T> List<T> filterByVersion(List<T> o) {
-        if (o == null) {
-            return null;
-        }
         if (mServerVersion == null) {
             mServerVersion = getServerVersion().blockingFirst();
         }
+        return filterByVersion(o, mServerVersion);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> List<T> filterByVersion(List<T> o, ServerVersion serverVersion) {
+        if (o == null) {
+            return null;
+        }
+
         ArrayList<T> filter = new ArrayList<>(o.size());
         for (T t : o) {
             boolean isSupported = true;
             try {
                 Since a = t.getClass().getDeclaredField(t.toString()).getAnnotation(Since.class);
-                if (a != null && a.value() > mServerVersion.getVersion()) {
+                if (a != null && a.value() > serverVersion.getVersion()) {
                     isSupported = false;
                 }
             } catch (Exception e) {
@@ -287,6 +293,15 @@ class GerritApiClient implements GerritApi {
     @Override
     public boolean supportsFeature(Features feature) {
         return mSupportedFeatures.contains(feature);
+    }
+
+    @Override
+    public boolean supportsFeature(Features feature, ServerVersion version) {
+        if (version == null) {
+            return false;
+        }
+        List<Features> features = filterByVersion(Arrays.asList(Features.values()), version);
+        return features.contains(feature);
     }
 
 

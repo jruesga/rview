@@ -15,7 +15,10 @@
  */
 package com.ruesga.rview;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +31,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
@@ -50,11 +54,15 @@ import com.ruesga.rview.drawer.DrawerNavigationView;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.fragments.PageableFragment;
+import com.ruesga.rview.fragments.SetAccountStatusDialogFragment;
 import com.ruesga.rview.fragments.StatsFragment;
+import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.EmojiHelper;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
@@ -64,6 +72,7 @@ import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
+import com.ruesga.rview.services.AccountStatusFetcherService;
 import com.ruesga.rview.wizards.AuthorizationAccountSetupActivity;
 import com.ruesga.rview.wizards.SetupAccountActivity;
 
@@ -169,6 +178,20 @@ public class MainActivity extends ChangeListBaseActivity {
         return false;
     };
 
+    private final BroadcastReceiver mAccountStatusChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mAccount = Preferences.getAccount(context);
+            if (mAccount != null && intent != null) {
+                String account = intent.getStringExtra(AccountStatusFetcherService.EXTRA_ACCOUNT);
+                if (mAccount.getAccountHash().equals(account)) {
+                    updateAccountStatus();
+                    performUpdateNavigationDrawer(mModel.isAccountExpanded);
+                }
+            }
+        }
+    };
+
     private ContentBinding mBinding;
     private NavigationHeaderBinding mHeaderDrawerBinding;
 
@@ -212,6 +235,11 @@ public class MainActivity extends ChangeListBaseActivity {
         launchAddAccountIfNeeded();
         setupNavigationDrawer();
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mAccountStatusChangedReceiver, filter);
+        fetchAccountStatus(mAccount);
+
         mHeaderDrawerBinding.setModel(mModel);
         mHeaderDrawerBinding.setHandlers(mEventHandlers);
 
@@ -249,6 +277,14 @@ public class MainActivity extends ChangeListBaseActivity {
             requestNavigateTo(mModel.currentNavigationItemId == INVALID_ITEM
                     ? defaultMenu : mModel.currentNavigationItemId, true, false);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Unregister services
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mAccountStatusChangedReceiver);
     }
 
     @Override
@@ -410,6 +446,15 @@ public class MainActivity extends ChangeListBaseActivity {
     }
 
     private void internalPerformShowAccount(boolean show) {
+        performUpdateNavigationDrawer(show);
+
+        // Sync the current selection status
+        if (mModel.currentNavigationItemId != -1) {
+            performSelectItem(mModel.currentNavigationItemId, true);
+        }
+    }
+
+    private void performUpdateNavigationDrawer(boolean show) {
         final boolean auth = mAccount != null && mAccount.hasAuthenticatedAccessMode();
         final boolean supportNotifications = mAccount != null && mAccount.hasNotificationsSupport()
                 && Preferences.isAccountNotificationsEnabled(this, mAccount);
@@ -423,13 +468,18 @@ public class MainActivity extends ChangeListBaseActivity {
         menu.setGroupVisible(R.id.category_info, show);
         menu.findItem(R.id.menu_account_stats).setVisible(show && auth);
         menu.findItem(R.id.menu_account_notifications).setVisible(show && supportNotifications);
+        if (auth && mAccount.getServerVersion() != null) {
+            GerritApi api = ModelHelper.getGerritApi(this, mAccount);
+            boolean hasSupportAccountStatus = api.supportsFeature(
+                    Features.ACCOUNT_STATUS, mAccount.getServerVersion());
+            menu.findItem(R.id.menu_account_status).setVisible(show && hasSupportAccountStatus);
+            updateAccountStatus();
+        } else {
+            menu.findItem(R.id.menu_account_status).setVisible(false);
+        }
+
         mModel.isAccountExpanded = show;
         mHeaderDrawerBinding.setModel(mModel);
-
-        // Sync the current selection status
-        if (mModel.currentNavigationItemId != -1) {
-            performSelectItem(mModel.currentNavigationItemId, true);
-        }
     }
 
     private boolean performSelectItem(int itemId, boolean force) {
@@ -476,13 +526,16 @@ public class MainActivity extends ChangeListBaseActivity {
             case R.id.menu_account_notifications:
                 openAccountNotifications();
                 break;
+            case R.id.menu_account_status:
+                openAccountStatusChooser();
+                break;
             case R.id.menu_account_stats:
                 openAccountStats();
                 break;
             case R.id.menu_account_password:
                 openAccountSetup();
                 break;
-            case R.id.menu_delete_account:
+            case R.id.menu_drop_account:
                 requestAccountDeletion(mAccount);
                 break;
             case R.id.menu_add_account:
@@ -621,6 +674,10 @@ public class MainActivity extends ChangeListBaseActivity {
                     PicassoHelper.getDefaultAvatar(this, R.color.primaryDarkForeground));
             i++;
         }
+
+        if (mAccount != null) {
+            updateAccountStatus();
+        }
     }
 
     private void updateCurrentAccountDrawerInfo() {
@@ -632,6 +689,18 @@ public class MainActivity extends ChangeListBaseActivity {
         PicassoHelper.bindAvatar(this, PicassoHelper.getPicassoClient(this),
                 mAccount.mAccount, mHeaderDrawerBinding.accountAvatar,
                 PicassoHelper.getDefaultAvatar(this, android.R.color.white));
+    }
+
+    private void updateAccountStatus() {
+        final DrawerNavigationMenu menu =
+                (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
+        String title = getString(R.string.menu_account_status);
+        if (!TextUtils.isEmpty(mAccount.mAccount.status)) {
+            title += DrawerNavigationView.SEPARATOR +
+                    EmojiHelper.resolveEmojiStatus(this, mAccount.mAccount.status);
+        }
+        MenuItem item = menu.findItem(R.id.menu_account_status);
+        item.setTitle(title);
     }
 
     private void performAccountSwitch() {
@@ -646,6 +715,7 @@ public class MainActivity extends ChangeListBaseActivity {
         }
         Preferences.setAccount(this, mAccount);
         Formatter.refreshCachedPreferences(this);
+        fetchAccountStatus(mAccount);
 
         // Refresh the ui
         updateCurrentAccountDrawerInfo();
@@ -784,6 +854,16 @@ public class MainActivity extends ChangeListBaseActivity {
                 internalPerformShowAccount(false);
             }
         });
+    }
+
+    private void openAccountStatusChooser() {
+        mUiHandler.post(() -> {
+            if (mAccount != null) {
+                SetAccountStatusDialogFragment fragment = SetAccountStatusDialogFragment.newInstance();
+                fragment.show(getSupportFragmentManager(), SetAccountStatusDialogFragment.TAG);
+            }
+        });
+
     }
 
     private void openAccountStats() {
@@ -951,5 +1031,12 @@ public class MainActivity extends ChangeListBaseActivity {
         if (ModelHelper.canAccountHandleUrls(getApplicationContext(), account)) {
             ModelHelper.setAccountUrlHandlingStatus(getApplicationContext(), account, status);
         }
+    }
+
+    private void fetchAccountStatus(Account account) {
+        Intent intent = new Intent(this, AccountStatusFetcherService.class);
+        intent.setAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
+        intent.putExtra(AccountStatusFetcherService.EXTRA_ACCOUNT, account.getAccountHash());
+        startService(intent);
     }
 }

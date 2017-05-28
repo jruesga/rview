@@ -151,6 +151,10 @@
             android:exported="false" />
 
         <service
+            android:name=".services.AccountStatusFetcherService"
+            android:exported="false" />
+
+        <service
             android:name=".services.NotificationService"
             tools:ignore="ExportedService">
             <intent-filter>
