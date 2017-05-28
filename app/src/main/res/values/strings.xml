@@ -510,5 +510,13 @@
     <string name="account_status_dialog_title">Account status</string>
     <string name="account_status_dialog_hint">What\'s your status?</string>
     <string name="account_status_suggestions_title">Suggestions</string>
+    <string name="account_status_at_work">At work</string>
+    <string name="account_status_at_home">At home</string>
+    <string name="account_status_lunch">Lunch</string>
+    <string name="account_status_in_a_meeting">In a meeting</string>
+    <string name="account_status_commuting">Commuting</string>
+    <string name="account_status_vacationing">Vacationing</string>
+    <string name="account_status_out_sick">Out sick</string>
+    <string name="account_status_sleeping">Sleeping</string>
 
 </resources>

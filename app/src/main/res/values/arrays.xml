@@ -168,14 +168,14 @@
         <item>😴</item>
     </string-array>
     <string-array name="emoji_status_descriptions">
-        <item>At work</item>
-        <item>At home</item>
-        <item>Lunch</item>
-        <item>In a meeting</item>
-        <item>Commuting</item>
-        <item>Vacationing</item>
-        <item>Out sick</item>
-        <item>Sleeping</item>
+        <item>@string/account_status_at_work</item>
+        <item>@string/account_status_at_home</item>
+        <item>@string/account_status_lunch</item>
+        <item>@string/account_status_in_a_meeting</item>
+        <item>@string/account_status_commuting</item>
+        <item>@string/account_status_vacationing</item>
+        <item>@string/account_status_out_sick</item>
+        <item>@string/account_status_sleeping</item>
     </string-array>
 
     <string-array name="libraries_ids" translatable="false">
