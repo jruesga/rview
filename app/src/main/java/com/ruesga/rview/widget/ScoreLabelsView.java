@@ -27,7 +27,6 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.google.android.flexbox.FlexboxLayout;
 import com.ruesga.rview.R;

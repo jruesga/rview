@@ -29,7 +29,6 @@ import com.ruesga.rview.databinding.ScoreWithReviewItemBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.LabelInfo;
-import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

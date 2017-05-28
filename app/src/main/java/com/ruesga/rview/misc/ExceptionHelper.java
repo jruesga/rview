@@ -31,7 +31,6 @@ import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 

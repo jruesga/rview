@@ -27,7 +27,6 @@ import com.ruesga.rview.databinding.LabelItemBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ModelHelper;
-import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
