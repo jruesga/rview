@@ -70,14 +70,14 @@ public class EditorActivity extends BaseActivity {
         boolean mReadOnly = !TextUtils.isEmpty(mContentFile);
 
         // Setup the title
+        setUseTwoPanel(false);
+        setForceSinglePanel(true);
         setupActivity();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(
                     getString(mReadOnly ? R.string.change_view_title : R.string.change_edit_title,
                             mLegacyChangeId));
         }
-
-        setUseTwoPanel(false);
 
         if (savedInstanceState != null) {
             Fragment fragment = getSupportFragmentManager().getFragment(

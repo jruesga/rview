@@ -73,6 +73,8 @@ public class TabFragmentActivity extends ChangeListBaseActivity {
         String subtitle = getIntent().getStringExtra(Constants.EXTRA_SUBTITLE);
 
         // Setup the title
+        setUseTwoPanel(false);
+        setForceSinglePanel(true);
         setupActivity();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);

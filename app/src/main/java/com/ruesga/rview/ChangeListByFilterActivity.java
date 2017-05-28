@@ -78,6 +78,8 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity implement
         }
 
         // Setup the title
+        setUseTwoPanel(false);
+        setForceSinglePanel(true);
         setupActivity();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);

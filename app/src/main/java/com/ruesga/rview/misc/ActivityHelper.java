@@ -278,6 +278,7 @@ public class ActivityHelper {
         Intent intent = new Intent(fragment.getContext(), EditorActivity.class);
         intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
         intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         fragment.startActivityForResult(intent, requestCode);
     }
 

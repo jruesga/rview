@@ -91,13 +91,13 @@ public class DiffViewerActivity extends BaseActivity {
         }
 
         // Setup the title
+        setUseTwoPanel(false);
+        setForceSinglePanel(true);
         setupActivity();
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(
                     getString(R.string.change_details_title, change.legacyChangeId));
         }
-
-        setUseTwoPanel(false);
 
         if (savedInstanceState != null) {
             Fragment fragment = getSupportFragmentManager().getFragment(
