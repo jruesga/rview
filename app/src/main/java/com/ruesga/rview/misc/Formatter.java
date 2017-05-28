@@ -654,7 +654,8 @@ public class Formatter {
         }
     }
 
-    public static String toShortenCommit(String commitHash) {
+    @BindingAdapter("toShortenCommit")
+    public static String toShortenCommit(TextView v, String commitHash) {
         if (!TextUtils.isEmpty(commitHash) && commitHash.length() > 8) {
             return commitHash.substring(0, 8);
         }
