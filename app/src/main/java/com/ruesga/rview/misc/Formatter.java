@@ -624,7 +624,7 @@ public class Formatter {
                     v.getContext(), R.drawable.ic_empty_results));
         } else if (state.state == EmptyState.ALL_DONE_STATE) {
             v.setImageDrawable(ContextCompat.getDrawable(
-                    v.getContext(), R.drawable.ic_empty_all_done));
+                    v.getContext(), R.drawable.ic_duck));
         } else if (state.state == EmptyState.NOT_CONNECTIVITY_STATE) {
             v.setImageDrawable(ContextCompat.getDrawable(
                     v.getContext(), R.drawable.ic_cloud_off));
