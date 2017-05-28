@@ -387,8 +387,9 @@ public class ActivityHelper {
         return intent;
     }
 
-    public static void openSearchActivity(Context context) {
-        Intent intent = new Intent(context, SearchActivity.class);
-        context.startActivity(intent);
+    public static void openSearchActivity(Activity activity) {
+        Intent intent = new Intent(activity, SearchActivity.class);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
     }
 }

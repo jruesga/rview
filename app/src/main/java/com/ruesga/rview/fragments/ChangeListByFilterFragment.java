@@ -77,7 +77,7 @@ public class ChangeListByFilterFragment extends ChangeListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_search) {
             // Show search fragment
-            ActivityHelper.openSearchActivity(getContext());
+            ActivityHelper.openSearchActivity(getActivity());
             return true;
         }
         return super.onOptionsItemSelected(item);
