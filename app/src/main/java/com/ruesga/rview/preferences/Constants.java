@@ -104,6 +104,7 @@ public class Constants {
     public static final String PREF_ACCOUNT_HOME_PAGE = "account_home_page";
     public static final String PREF_ACCOUNT_FETCHED_ITEMS = "account_fetched_items";
     public static final String PREF_ACCOUNT_DISPLAY_FORMAT = "account_display_format";
+    public static final String PREF_ACCOUNT_DISPLAY_STATUSES = "account_display_statuses";
     public static final String PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED = "account_highlight_unreviewed";
     public static final String PREF_ACCOUNT_HANDLE_LINKS = "account_handle_links";
     public static final String PREF_ACCOUNT_USE_CUSTOM_TABS = "account_use_custom_tabs";

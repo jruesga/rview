@@ -254,6 +254,7 @@
     <string name="account_settings_display_format_email">Email</string>
     <string name="account_settings_display_format_username">Username</string>
     <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>
+    <string name="account_settings_display_account_statuses">Display account statuses</string>
     <string name="account_settings_messages_folded">Fold messages</string>
     <string name="account_settings_inline_comment_in_messages">Display inline comments in messages</string>
     <string name="account_settings_toggle_ci_messages_title">Toggle CI accounts messages</string>

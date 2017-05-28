@@ -40,6 +40,11 @@
             android:defaultValue="name" />
 
         <SwitchPreference
+            android:key="account_display_statuses"
+            android:title="@string/account_settings_display_account_statuses"
+            android:defaultValue="true" />
+
+        <SwitchPreference
             android:key="account_highlight_unreviewed"
             android:title="@string/account_settings_highlight_unreviewed"
             android:defaultValue="true" />

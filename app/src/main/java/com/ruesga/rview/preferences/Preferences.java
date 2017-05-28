@@ -47,6 +47,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_STATUSES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_INTRALINE_DIFFS;
@@ -241,6 +242,11 @@ public class Preferences {
         }
         return getAccountPreferences(context, account).getString(
                 PREF_ACCOUNT_DISPLAY_FORMAT, DEFAULT_DISPLAY_FORMAT);
+    }
+
+    public static boolean isAccountDisplayStatuses(Context context, Account account) {
+        return account == null || getAccountPreferences(context, account)
+                .getBoolean(PREF_ACCOUNT_DISPLAY_STATUSES, true);
     }
 
     public static boolean isAccountHighlightUnreviewed(Context context, Account account) {

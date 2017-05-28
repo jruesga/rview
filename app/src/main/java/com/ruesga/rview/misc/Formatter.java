@@ -74,6 +74,7 @@ public class Formatter {
     private static final Map<String, PrettyTime> sPrettyTimeMap = new HashMap<>();
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
+    private static boolean sDisplayAccountStatues = true;
 
     private static int sQuoteColor = -1;
     private static int sQuoteWidth = -1;
@@ -83,6 +84,7 @@ public class Formatter {
         mAccount = Preferences.getAccount(context);
         sDisplayFormat = Preferences.getAccountDisplayFormat(context, mAccount);
         sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, mAccount);
+        sDisplayAccountStatues = Preferences.isAccountDisplayStatuses(context, mAccount);
     }
 
     private static PrettyTime getPrettyTime(Context context) {
@@ -132,7 +134,7 @@ public class Formatter {
         }
 
         // Status
-        if (!TextUtils.isEmpty(accountInfo.status)) {
+        if (sDisplayAccountStatues && !TextUtils.isEmpty(accountInfo.status)) {
             accountDisplayName += " " + accountInfo.status;
         }
 

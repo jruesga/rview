@@ -33,6 +33,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.CloudNotificationsConfigInfo;
+import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
@@ -55,6 +56,7 @@ import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_CATEGORY;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_STATUSES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_EXTERNAL_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
@@ -139,6 +141,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         setPreferencesFromResource(R.xml.account_preferences, rootKey);
 
         configureHomePage();
+        configureDisplayStatuses();
         configureToggleCI();
         configureSearch();
         configureFetchItems();
@@ -183,6 +186,18 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         mHomePage.setValue(value);
         updateHomePageSummary(mHomePage.getValue());
         mHomePage.setOnPreferenceChangeListener(this);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void configureDisplayStatuses() {
+        PreferenceCategory displayCategory =
+                (PreferenceCategory) findPreference(PREF_ACCOUNT_DISPLAY_CATEGORY);
+        Preference displayStatuses = findPreference(PREF_ACCOUNT_DISPLAY_STATUSES);
+        boolean supportAccountStatus = ModelHelper.getGerritApi(getActivity()).supportsFeature(
+                Features.ACCOUNT_STATUS, mAccount.mServerVersion);
+        if (!supportAccountStatus) {
+            displayCategory.removePreference(displayStatuses);
+        }
     }
 
     private void configureToggleCI() {
