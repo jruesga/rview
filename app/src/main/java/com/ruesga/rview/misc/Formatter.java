@@ -610,6 +610,11 @@ public class Formatter {
         }
     }
 
+    @BindingAdapter("accountStatus")
+    public static void toAccountStatus(TextView view, String status) {
+        view.setText(EmojiHelper.resolveEmojiStatus(view.getContext(), status));
+    }
+
     @BindingAdapter("emptyStateDrawable")
     public static void toEmptyStateDrawable(ImageView v, EmptyState state) {
         if (state == null || state.state == EmptyState.NORMAL_STATE) {
