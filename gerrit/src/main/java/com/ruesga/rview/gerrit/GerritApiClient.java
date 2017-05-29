@@ -52,7 +52,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Path;
 
 class GerritApiClient implements GerritApi {
 
@@ -844,6 +843,17 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<String[]> getChangeHashtags(@NonNull String changeId) {
+        return withVersionRequestCheck(mService.getChangeHashtags(changeId));
+    }
+
+    @Override
+    public Observable<String[]> setChangeHashtags(
+            @NonNull String changeId, @NonNull HashtagsInput input) {
+        return withVersionRequestCheck(mService.setChangeHashtags(changeId, input));
+    }
+
+    @Override
     public Observable<EditInfo> getChangeEdit(@NonNull String changeId,
             @Nullable Option list, @Nullable String base, @Nullable Option downloadCommands) {
         return withVersionRequestCheck(mService.getChangeEdit(
@@ -1449,7 +1459,7 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Void> indexGroup(@NonNull @Path("group-id") String groupId) {
+    public Observable<Void> indexGroup(@NonNull String groupId) {
         return withVersionRequestCheck(withEmptyObservable(mService.indexGroup(groupId)));
     }
 

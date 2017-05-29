@@ -802,6 +802,21 @@ public interface GerritApi {
             @NonNull @Body FixInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-hashtags"
+     */
+    @GET("changes/{change-id}/hashtags")
+    Observable<String[]> getChangeHashtags(@NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-hashtags"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("changes/{change-id}/hashtags")
+    Observable<String[]> setChangeHashtags(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Body HashtagsInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-edit-detail"
      */
     @GET("changes/{change-id}/edit")

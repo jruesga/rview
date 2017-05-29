@@ -15,25 +15,17 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.Since;
+import android.support.annotation.Nullable;
 
-public enum Features {
-    @Since(2.12)
-    ACCOUNT_DETAILS,
-    @Since(2.14)
-    ACCOUNT_STATUS,
-    @Since(2.14)
-    ASSIGNEE,
-    @Since(2.12)
-    AVATARS,
-    @Since(2.13)
-    BLAME,
-    @Since(2.14)
-    CHANGE_TAGS,
-    @Since(2.13)
-    MOVE,
-    @Since(2.14)
-    REVISION_DESCRIPTION,
-    @Since(2.13)
-    VOTES
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
+/**
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#hashtags-input"
+ */
+public class HashtagsInput {
+    @Nullable @SerializedName("add") public List<String> add;
+    @Nullable @SerializedName("remove") public List<String> remove;
 }
+
