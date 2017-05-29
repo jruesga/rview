@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import com.ruesga.rview.databinding.ActivityBaseBinding;
 import com.ruesga.rview.fragments.NotificationsFragment;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -42,6 +43,7 @@ public class NotificationsActivity extends AppCompatDelegateActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidHelper.configureTaskDescription(this);
 
         // Retrieve the account
         if (getIntent() != null) {

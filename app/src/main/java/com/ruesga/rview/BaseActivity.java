@@ -131,6 +131,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidHelper.configureTaskDescription(this);
         mUiHandler = new Handler();
     }
 

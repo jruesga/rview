@@ -16,6 +16,8 @@
 package com.ruesga.rview.misc;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -102,5 +104,14 @@ public class AndroidHelper {
             }
         }
         return sb.toString();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static void configureTaskDescription(Activity activity) {
+        if (isLollipopOrGreater()) {
+            TaskDescription taskDesc = new TaskDescription(
+                    null, null, ContextCompat.getColor(activity, R.color.primaryDark));
+            activity.setTaskDescription(taskDesc);
+        }
     }
 }

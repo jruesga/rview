@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import com.ruesga.rview.databinding.ActivityBaseBinding;
 import com.ruesga.rview.fragments.AccountSettingsFragment;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.services.DeviceRegistrationService;
@@ -39,6 +40,7 @@ public class AccountSettingsActivity extends AppCompatDelegateActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidHelper.configureTaskDescription(this);
 
         // Check we have a valid account
         Account account = Preferences.getAccount(this);
