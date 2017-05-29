@@ -236,6 +236,7 @@ public class MainActivity extends ChangeListBaseActivity {
             return;
         }
         setupNavigationDrawer();
+        updateAccountCustomFilters();
 
         if (mAccount != null) {
             IntentFilter filter = new IntentFilter();
@@ -642,6 +643,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
         menu.setGroupVisible(R.id.category_my_filters,
                 !mModel.isAccountExpanded && mCustomFilters != null && !mCustomFilters.isEmpty());
+        mBinding.drawerNavigationView.setCheckedItem(mModel.currentNavigationItemId);
     }
 
     private void updateAccountsDrawerInfo() {
