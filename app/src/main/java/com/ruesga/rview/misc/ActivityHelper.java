@@ -297,6 +297,8 @@ public class ActivityHelper {
         Intent intent = new Intent(activity, ChangeListByFilterActivity.class);
         if (clearStack) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        } else {
+            intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         }
         intent.putExtra(Constants.EXTRA_TITLE, title);
         intent.putExtra(Constants.EXTRA_FILTER, filter.toString());
