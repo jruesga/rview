@@ -279,8 +279,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mBinding.searchView.setOnQueryChangeListener((oldFilter, newFilter) -> {
             mHandler.removeMessages(SHOW_HISTORY_MESSAGE);
             mHandler.removeMessages(FETCH_SUGGESTIONS_MESSAGE);
-            final Message msg = Message.obtain(mHandler, FETCH_SUGGESTIONS_MESSAGE, newFilter);
-            msg.arg1 = mCurrentOption;
+            final Message msg;
+            if (TextUtils.isEmpty(newFilter)) {
+                clearSuggestions();
+                msg = Message.obtain(mHandler, SHOW_HISTORY_MESSAGE);
+            } else {
+                msg = Message.obtain(mHandler, FETCH_SUGGESTIONS_MESSAGE, newFilter);
+                msg.arg1 = mCurrentOption;
+            }
             mHandler.sendMessageDelayed(msg, 500L);
         });
         mBinding.searchView.setOnBindSuggestionCallback(
