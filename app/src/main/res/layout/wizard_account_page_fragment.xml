@@ -20,6 +20,7 @@
 
     <data>
         <import type="android.view.View"/>
+        <import type="android.text.TextUtils"/>
         <variable name="model" type="com.ruesga.rview.wizards.AccountPageFragment.Model"/>
         <variable name="handlers" type="com.ruesga.rview.wizards.AccountPageFragment.EventHandlers"/>
     </data>
@@ -96,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:enabled="@{!model.singlePage}"
+                    android:enabled="@{!model.singlePage || TextUtils.isEmpty(model.username)}"
                     android:visibility="@{model.authenticatedAccess ? View.VISIBLE : View.GONE}"
                     app:errorTextAppearance="@style/AppTheme.WizardErrorTextAppearance"
                     app:errorEnabled="true">
