@@ -27,6 +27,7 @@ public class ChangeInfo {
     @SerializedName("id") public String id;
     @SerializedName("project") public String project;
     @SerializedName("branch") public String branch;
+    @SerializedName("hashtags") public String[] hashtags;
     @SerializedName("topic") public String topic;
     @SerializedName("change_id") public String changeId;
     @SerializedName("subject") public String subject;
