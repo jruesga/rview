@@ -232,7 +232,9 @@ public class MainActivity extends ChangeListBaseActivity {
 
         setupActivity();
         loadAccounts();
-        launchAddAccountIfNeeded();
+        if (launchAddAccountIfNeeded()) {
+            return;
+        }
         setupNavigationDrawer();
 
         if (mAccount != null) {
