@@ -432,6 +432,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 suggestions.add(new Suggestion("", "", s, R.drawable.ic_history, true));
             }
         }
+        Collections.reverse(suggestions);
         mBinding.searchView.swapSuggestions(suggestions);
     }
 
