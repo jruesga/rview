@@ -37,9 +37,8 @@
         <!--suppress AndroidDomInspection -->
         <variable name="actions" type="java.util.Map&lt;String, com.ruesga.rview.gerrit.model.ActionInfo&gt;" />
         <variable name="submitType" type="com.ruesga.rview.gerrit.model.SubmitType" />
-        <!--suppress AndroidDomInspection -->
-        <variable name="tags" type="java.util.List&lt;String&gt;" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
+        <variable name="serverInfo" type="com.ruesga.rview.gerrit.model.ServerInfo" />
     </data>
 
     <android.support.v7.widget.CardView
@@ -183,7 +182,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"/>
-
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
@@ -367,6 +365,57 @@
                     android:onClick="@{handlers::onTopicEditPressed}"
                     android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; safeUnbox(isOwner) &amp;&amp; (model.status.equals(ChangeStatus.NEW) || model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
                     tools:ignore="ContentDescription"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                app:bindToBoolean="@{serverInfo != null &amp;&amp; safeUnbox(serverInfo.noteDbEnabled)}"
+                app:bindToFeature="@{Features.CHANGE_TAGS}"
+                android:orientation="horizontal">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_details_tags"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <com.ruesga.rview.widget.TagEditTextView
+                        android:id="@+id/tags_labels"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginEnd="21dp"
+                        android:layout_marginRight="21dp"
+                        android:layout_gravity="center_vertical"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="12sp"
+                        app:readonly="true"
+                        app:chipBackgroundColor="@color/noscore"
+                        app:chipTextColor="@android:color/white"
+                        app:supportUserTags="false"
+                        app:bindTags="@{model.hashtags}"/>
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        app:srcCompat="@drawable/ic_edit"
+                        android:layout_marginStart="-16dp"
+                        android:layout_marginLeft="-16dp"
+                        android:layout_toEndOf="@id/tags_labels"
+                        android:layout_toRightOf="@id/tags_labels"
+                        android:tint="@color/accent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:onClick="@{handlers::onTagsEditPressed}"
+                        android:layout_gravity="center_vertical"
+                        android:visibility="@{safeUnbox(isAuthenticated) ? View.VISIBLE : View.GONE}"
+                        tools:ignore="ContentDescription"/>
+                </RelativeLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

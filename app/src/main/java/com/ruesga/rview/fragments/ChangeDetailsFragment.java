@@ -73,6 +73,7 @@ import com.ruesga.rview.gerrit.model.DescriptionInput;
 import com.ruesga.rview.gerrit.model.DraftActionType;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.gerrit.model.HashtagsInput;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
 import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.NotifyType;
@@ -105,10 +106,12 @@ import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.LinesWithCommentsView.OnLineClickListener;
+import com.ruesga.rview.widget.TagEditTextView.Tag;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -135,7 +138,8 @@ public class ChangeDetailsFragment extends Fragment implements
         EditAssigneeDialogFragment.OnAssigneeSelected,
         FilterableDialogFragment.OnFilterSelectedListener,
         EditDialogFragment.OnEditChanged,
-        ConfirmDialogFragment.OnActionConfirmed {
+        ConfirmDialogFragment.OnActionConfirmed,
+        TagEditDialogFragment.OnTagEditChanged {
 
     private static final String TAG = "ChangeDetailsFragment";
 
@@ -174,6 +178,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private static final int REQUEST_CODE_FOLLOW_UP_CHANGE = 8;
     private static final int REQUEST_CODE_SUBMIT_CHANGE = 9;
     private static final int REQUEST_CODE_EDIT_REVISION_DESCRIPTION = 10;
+    private static final int REQUEST_CODE_TAGS = 97;
 
     @Keep
     public static class ListModel {
@@ -261,6 +266,10 @@ public class ChangeDetailsFragment extends Fragment implements
 
         public void onTopicEditPressed(View v) {
             mFragment.performShowChangeTopicDialog(v);
+        }
+
+        public void onTagsEditPressed(View v) {
+            mFragment.performShowChangeTagsDialog(v);
         }
 
         public void onRelatedChangesPressed(View v) {
@@ -772,6 +781,26 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
+    private final RxLoaderObserver<String[]> mChangeTagsObserver = new RxLoaderObserver<String[]>() {
+        @Override
+        public void onNext(String[] newTags) {
+            if (mResponse == null) {
+                return;
+            }
+
+            mResponse.mChange.hashtags = newTags;
+            updateChangeInfo(mResponse);
+
+            mMessagesRefreshLoader.clear();
+            mMessagesRefreshLoader.restart();
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+        }
+    };
+
     private final RxLoaderObserver<ChangeMessageInfo[]> mMessagesRefreshObserver
             = new RxLoaderObserver<ChangeMessageInfo[]>() {
         @Override
@@ -1043,6 +1072,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private RxLoader1<Pair<String, AccountInfo>, Pair<String, AccountInfo>> mRemoveReviewerVoteLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
+    private RxLoader2<String[], String[], String[]> mChangeTagsLoader;
     private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
     private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
@@ -1265,6 +1295,8 @@ public class ChangeDetailsFragment extends Fragment implements
             mReviewLoader = loaderManager.create("review", this::reviewChange, mReviewObserver);
             mChangeTopicLoader = loaderManager.create(
                     "change_topic", this::changeTopic, mChangeTopicObserver);
+            mChangeTagsLoader = loaderManager.create(
+                    "change_tags", this::changeTags, mChangeTagsObserver);
             mAddReviewerLoader = loaderManager.create(
                     "add_reviewer", this::addReviewer, mAddReviewerObserver);
             mEditAssigneeLoader = loaderManager.create(
@@ -1348,6 +1380,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 .from(response.mChange);
         mBinding.changeInfo.setModel(response.mChange);
         mBinding.changeInfo.setSubmitType(response.mSubmitType);
+        mBinding.changeInfo.setServerInfo(mAccount.getServerInfo());
         mBinding.changeInfo.setActions(response.mActions);
         mBinding.changeInfo.setHandlers(mEventHandlers);
         mBinding.changeInfo.setHasData(true);
@@ -1521,6 +1554,21 @@ public class ChangeDetailsFragment extends Fragment implements
                         api.deleteChangeTopic(String.valueOf(mLegacyChangeId)).blockingFirst();
                     }
                     return newTopic;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<String[]> changeTags(final String[] add, final String[] remove) {
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        return SafeObservable.fromNullCallable(() -> {
+                    HashtagsInput input = new HashtagsInput();
+                    input.add = Arrays.asList(add);
+                    input.remove = Arrays.asList(remove);
+                    return api.setChangeHashtags(
+                            String.valueOf(mLegacyChangeId), input).blockingFirst();
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -2060,6 +2108,15 @@ public class ChangeDetailsFragment extends Fragment implements
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
+    private void performShowChangeTagsDialog(View v) {
+        final Tag[] tags = mBinding.changeInfo.tagsLabels.getTags();
+        String title = getString(R.string.change_tags_title);
+        String action = getString(R.string.action_save);
+        TagEditDialogFragment fragment = TagEditDialogFragment.newInstance(
+                title, tags, action, v, REQUEST_CODE_TAGS);
+        fragment.show(getChildFragmentManager(), TagEditDialogFragment.TAG);
+    }
+
     private void performShowRebaseDialog(View v) {
         BaseChooserDialogFragment fragment = BaseChooserDialogFragment.newInstance(
                 mLegacyChangeId, mResponse.mChange.project, mResponse.mChange.branch, v,
@@ -2470,6 +2527,26 @@ public class ChangeDetailsFragment extends Fragment implements
                     break;
             }
         }
+    }
+
+    @Override
+    public void onTagEditChanged(int requestCode, Tag[] tags) {
+        // Generate tags to remove and to add
+        List<String> oldTags = new ArrayList<>(Arrays.asList(mResponse.mChange.hashtags));
+        List<String> newTags = new ArrayList<>();
+        for (Tag tag : tags) {
+            newTags.add(tag.toPlainTag().toString());
+        }
+        List<String> copy = new ArrayList<>(newTags);
+
+        newTags.removeAll(oldTags);
+        oldTags.removeAll(copy);
+
+        // Save the tags
+        mChangeTagsLoader.clear();
+        mChangeTagsLoader.restart(
+                newTags.toArray(new String[newTags.size()]),
+                oldTags.toArray(new String[oldTags.size()]));
     }
 
     @Override

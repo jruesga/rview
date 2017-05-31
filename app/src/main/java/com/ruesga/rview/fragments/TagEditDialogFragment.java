@@ -28,6 +28,7 @@ import android.view.View;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.TagEditDialogBinding;
+import com.ruesga.rview.widget.TagEditTextView;
 import com.ruesga.rview.widget.TagEditTextView.Tag;
 
 import java.util.ArrayList;
@@ -106,8 +107,7 @@ public class TagEditDialogFragment extends RevealDialogFragment {
         mModel.tags.clear();
         if (tags != null) {
             for (String tag : tags) {
-                Tag t = new Tag();
-                t.mTag = "#" + tag;
+                Tag t = new Tag(TagEditTextView.TAG_MODE.HASH, tag);
                 mModel.tags.add(t);
             }
         }

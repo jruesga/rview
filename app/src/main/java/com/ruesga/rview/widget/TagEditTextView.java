@@ -153,11 +153,27 @@ public class TagEditTextView extends LinearLayout {
     }
 
     public static class Tag {
-        public CharSequence mTag;
+        private CharSequence mTag;
         private int mColor;
 
         private int w;
         private int h;
+
+        private Tag() {
+        }
+
+        public Tag(TAG_MODE mode, CharSequence tag) {
+            mTag = (mode.equals(TAG_MODE.HASH) ? "#" : "@") + tag;
+        }
+
+        public Tag(TAG_MODE mode, CharSequence tag, int color) {
+            mTag = (mode.equals(TAG_MODE.HASH) ? "#" : "@") + tag;
+            mColor = color;
+        }
+
+        public CharSequence getTag() {
+            return mTag;
+        }
 
         public CharSequence toPlainTag() {
             if (mTag != null && mTag.length() > 2) {
@@ -536,6 +552,10 @@ public class TagEditTextView extends LinearLayout {
         }
         mTagEdit.setText("");
 
+        if (tags == null ) {
+            return;
+        }
+
         // Filter invalid tags
         for (Tag tag : tags) {
             Matcher hashTagMatcher = HASH_TAG_PATTERN.matcher(tag.mTag);
@@ -659,10 +679,12 @@ public class TagEditTextView extends LinearLayout {
 
         // Measure the chip rect
         Rect bounds = new Rect();
+        mChipFgPaint.getTextBounds("|", 0, 1, bounds);
+        int minHeight = bounds.height();
         mChipFgPaint.getTextBounds(tagText, 0, tagText.length(), bounds);
         int padding = (int) ONE_PIXEL * 2;
         int w = (int) (mChipFgPaint.measureText(tagText) + (padding * 2));
-        int h = bounds.height() + (padding * 4);
+        int h = Math.max(bounds.height() + (padding * 4), minHeight + (padding * 4));
         float baseline = h / 2  + bounds.height() / 2;
 
         // Create the bitmap

@@ -62,9 +62,20 @@ public class AccountStatusFetcherService extends IntentService {
     }
 
     private void performFetchAccountStatus(Context ctx, Account account) {
+        GerritApi api = ModelHelper.getGerritApi(ctx, account);
+
         try {
-            GerritApi api = ModelHelper.getGerritApi(ctx, account);
             account.mServerVersion = api.getServerVersion().blockingFirst();
+        } catch (Exception ex) {
+            Log.e(TAG, "Failed to fetch server version", ex);
+        }
+        try {
+            account.mServerInfo = api.getServerInfo().blockingFirst();
+        } catch (Exception ex) {
+            Log.e(TAG, "Failed to fetch server info", ex);
+        }
+
+        try {
             if (account.hasAuthenticatedAccessMode() && api.supportsFeature(Features.ACCOUNT_STATUS)) {
                 account.mAccount.status =
                         api.getAccountStatus(GerritApi.SELF_ACCOUNT).blockingFirst();
@@ -78,7 +89,6 @@ public class AccountStatusFetcherService extends IntentService {
             // Check if feature is supported
             if (ExceptionHelper.isResourceNotFoundException(ex)) {
                 account.mAccount.status = null;
-                account.mServerVersion = null;
                 Preferences.setAccount(ctx, account);
                 notifyAccountStatusChanged(ctx, account);
                 return;

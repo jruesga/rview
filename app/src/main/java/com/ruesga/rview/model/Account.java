@@ -23,6 +23,7 @@ import android.util.Base64;
 
 import com.google.gson.annotations.SerializedName;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
@@ -35,6 +36,7 @@ public class Account implements Parcelable, Comparable<Account> {
     @SerializedName("token") public String mToken;
     @SerializedName("notificationsSenderId") public String mNotificationsSenderId;
     @SerializedName("serverVersion") public ServerVersion mServerVersion;
+    @SerializedName("serverInfo") public ServerInfo mServerInfo;
 
     public Account() {
     }
@@ -49,6 +51,7 @@ public class Account implements Parcelable, Comparable<Account> {
             mNotificationsSenderId = in.readString();
         }
         mServerVersion = SerializationManager.getInstance().fromJson(in.readString(), ServerVersion.class);
+        mServerInfo = SerializationManager.getInstance().fromJson(in.readString(), ServerInfo.class);
     }
 
     public String getAccountDisplayName() {
@@ -72,6 +75,10 @@ public class Account implements Parcelable, Comparable<Account> {
 
     public ServerVersion getServerVersion() {
         return mServerVersion;
+    }
+
+    public ServerInfo getServerInfo() {
+        return mServerInfo;
     }
 
     public boolean isSameAs(Account account) {
@@ -120,6 +127,7 @@ public class Account implements Parcelable, Comparable<Account> {
             parcel.writeString(mNotificationsSenderId);
         }
         parcel.writeString(SerializationManager.getInstance().toJson(mServerVersion));
+        parcel.writeString(SerializationManager.getInstance().toJson(mServerInfo));
     }
 
     @Override

@@ -30,8 +30,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.Features;
+import com.ruesga.rview.widget.TagEditTextView;
+import com.ruesga.rview.widget.TagEditTextView.Tag;
 
 import java.util.List;
 import java.util.Map;
@@ -138,13 +141,27 @@ public class BindingAdapters {
         v.setVisibility(supported ? View.VISIBLE : View.GONE);
     }
 
-
-
     @BindingAdapter({"bindTextImageText", "bindTextImageColor", "bindTextImageTextSize"})
-    public static void bindBackgroundTint(ImageView v, String text, Integer color, Float textSize) {
+    public static void bindTextImageText(ImageView v, String text, Integer color, Float textSize) {
         if (text == null) {
             v.setImageBitmap(null);
         }
         v.setImageBitmap(BitmapUtils.text2Bitmap(text, color, v.getWidth(), v.getHeight(), textSize));
+    }
+
+    @BindingAdapter({"bindTags"})
+    public static void bindTags(TagEditTextView v, String[] tags) {
+        if (tags == null) {
+            v.setTags(null);
+            return;
+        }
+
+        int count = tags.length;
+        Tag[] t = new Tag[count];
+        for (int i = 0; i < count; i++) {
+            t[i] = new Tag(TagEditTextView.TAG_MODE.HASH,
+                    tags[i], ContextCompat.getColor(v.getContext(), R.color.noscore));
+        }
+        v.setTags(t);
     }
 }

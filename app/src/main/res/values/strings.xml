@@ -190,6 +190,8 @@
     <string name="change_details_strategy">Strategy</string>
     <string name="change_details_created">Created</string>
     <string name="change_details_updated">Updated</string>
+    <string name="change_details_tags">Tags</string>
+    <string name="change_details_tag">Tag</string>
     <string name="change_details_author">Author</string>
     <string name="change_details_committer">Committer</string>
     <string name="change_details_commit">Commit</string>
@@ -356,6 +358,9 @@
     <!-- Change topic dialog -->
     <string name="change_topic_title">Change topic</string>
     <string name="change_topic_hint">Topic name</string>
+
+    <!-- Edit change tags dialog -->
+    <string name="change_tags_title">Change tags</string>
 
     <!-- Edit change message -->
     <string name="change_edit_message_title">Edit change message</string>
