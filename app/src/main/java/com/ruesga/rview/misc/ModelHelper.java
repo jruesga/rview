@@ -73,6 +73,7 @@ public class ModelHelper {
     public static final String ACTION_SUBMIT = "submit";
     public static final String ACTION_HASHTAGS = "hashtags";
     public static final String ACTION_ASSIGNEE = "assignee";
+    public static final String ACTION_TOPIC = "topic";
 
     public static final String ACTION_CREATE_DRAFT = "create_draft";
     public static final String ACTION_UPDATE_DRAFT = "update_draft";
