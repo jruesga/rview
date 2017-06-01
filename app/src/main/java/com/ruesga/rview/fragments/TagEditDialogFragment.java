@@ -43,10 +43,11 @@ public class TagEditDialogFragment extends RevealDialogFragment {
 
     private static final String EXTRA_REQUEST_CODE = "request_code";
 
+    private static final String STATE_TAGS = "state:tags";
+
     @Keep
     public static class Model {
         public String subtitle;
-        private ArrayList<Tag> tags = new ArrayList<>();
         public String hint;
     }
 
@@ -90,7 +91,19 @@ public class TagEditDialogFragment extends RevealDialogFragment {
 
         LayoutInflater inflater = LayoutInflater.from(builder.getContext());
         mBinding = DataBindingUtil.inflate(inflater, R.layout.tag_edit_dialog, null, true);
-        mBinding.tagsEditor.setTags(mModel.tags.toArray(new Tag[mModel.tags.size()]));
+        if (savedInstanceState == null) {
+            ArrayList<String> tags = getArguments().getStringArrayList(EXTRA_TAGS);
+            if (tags != null) {
+                int count = tags.size();
+                Tag[] t = new Tag[count];
+                for (int i = 0; i < count; i++) {
+                    t[i] = new Tag(TagEditTextView.TAG_MODE.HASH, tags.get(i));
+                }
+                mBinding.tagsEditor.setTags(t);
+            }
+        } else {
+            mBinding.tagsEditor.fromPlainTags(savedInstanceState.getString(STATE_TAGS));
+        }
         mBinding.setModel(mModel);
 
         builder.setTitle(title)
@@ -103,14 +116,12 @@ public class TagEditDialogFragment extends RevealDialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE);
-        ArrayList<String> tags = getArguments().getStringArrayList(EXTRA_TAGS);
-        mModel.tags.clear();
-        if (tags != null) {
-            for (String tag : tags) {
-                Tag t = new Tag(TagEditTextView.TAG_MODE.HASH, tag);
-                mModel.tags.add(t);
-            }
-        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(STATE_TAGS, mBinding.tagsEditor.toPlainTags());
+        super.onSaveInstanceState(outState);
     }
 
     @Override

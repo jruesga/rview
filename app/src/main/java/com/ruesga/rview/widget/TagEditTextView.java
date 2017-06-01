@@ -43,6 +43,7 @@ import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.KeyListener;
 import android.text.style.ImageSpan;
@@ -545,7 +546,11 @@ public class TagEditTextView extends LinearLayout {
 
     public void setTags(Tag[] tags) {
         // Delete any existent data
-        mTagEdit.getEditableText().clearSpans();
+        try {
+            mTagEdit.getEditableText().clearSpans();
+        } catch (Exception ex) {
+            // Ignore
+        }
         int count = mTagList.size() - 1;
         for (int i = count; i >= 0; i--) {
             onTagRemoveClick(mTagList.get(i));
@@ -735,6 +740,29 @@ public class TagEditTextView extends LinearLayout {
                 mComputeTagCallbacks.remove(i);
             }
         });
+    }
+
+    public String toPlainTags() {
+        StringBuilder sb = new StringBuilder();
+        for (Tag tag : mTagList) {
+            sb.append(tag.toSavedState()).append("\0");
+        }
+        return sb.toString();
+    }
+
+    public void fromPlainTags(String plainTags) {
+        List<Tag> tags = new ArrayList<>();
+        if (!TextUtils.isEmpty(plainTags)) {
+            String[] v = plainTags.split("\0");
+            for (String t : v) {
+                if (!t.isEmpty()) {
+                    Tag tag = new Tag();
+                    tag.fromSavedState(t);
+                    tags.add(tag);
+                }
+            }
+        }
+        setTags(tags.toArray(new Tag[tags.size()]));
     }
 
     @Override
