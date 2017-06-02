@@ -39,6 +39,7 @@ public class ReviewersView extends FlexboxLayout {
     private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
     private boolean mIsFilterCIAccounts;
+    private ReviewerStatus mReviewerStatus = ReviewerStatus.REVIEWER;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
     private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
     private Object mTag;
@@ -53,7 +54,6 @@ public class ReviewersView extends FlexboxLayout {
 
     public ReviewersView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-//        setOrientation(HORIZONTAL);
     }
 
     public ReviewersView with(Picasso picasso) {
@@ -135,6 +135,11 @@ public class ReviewersView extends FlexboxLayout {
         return this;
     }
 
+    public ReviewersView withReviewerStatus(ReviewerStatus status) {
+        mReviewerStatus = status;
+        return this;
+    }
+
     public ReviewersView listenOn(OnAccountChipClickedListener cb) {
         mOnAccountChipClickedListener = cb;
         return this;
@@ -147,10 +152,10 @@ public class ReviewersView extends FlexboxLayout {
 
     private List<AccountInfo> fromReviewers(ChangeInfo change) {
         List<AccountInfo> reviewers = new ArrayList<>();
-        for (ReviewerStatus status : change.reviewers.keySet()) {
-            AccountInfo[] accounts = change.reviewers.get(status);
+        if (change.reviewers.containsKey(mReviewerStatus)) {
+            AccountInfo[] accounts = change.reviewers.get(mReviewerStatus);
             if (accounts != null) {
-                reviewers.addAll(Arrays.asList(change.reviewers.get(status)));
+                reviewers.addAll(Arrays.asList(accounts));
             }
         }
         return ModelHelper.sortReviewers(getContext(), reviewers);
@@ -160,12 +165,14 @@ public class ReviewersView extends FlexboxLayout {
     private List<AccountInfo> fromLabels(ChangeInfo change) {
         List<Integer> accountIds = new ArrayList<>();
         List<AccountInfo> reviewers = new ArrayList<>();
-        for (String label : change.labels.keySet()) {
-            if (change.labels.get(label).all !=  null) {
-                for (ApprovalInfo approval : change.labels.get(label).all) {
-                    if (!accountIds.contains(approval.owner.accountId)) {
-                        accountIds.add(approval.owner.accountId);
-                        reviewers.add(approval.owner);
+        if (mReviewerStatus.equals(ReviewerStatus.REVIEWER)) {
+            for (String label : change.labels.keySet()) {
+                if (change.labels.get(label).all != null) {
+                    for (ApprovalInfo approval : change.labels.get(label).all) {
+                        if (!accountIds.contains(approval.owner.accountId)) {
+                            accountIds.add(approval.owner.accountId);
+                            reviewers.add(approval.owner);
+                        }
                     }
                 }
             }

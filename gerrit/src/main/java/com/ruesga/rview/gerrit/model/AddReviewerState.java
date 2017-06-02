@@ -15,6 +15,6 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-public enum AddReviewerStatus {
+public enum AddReviewerState {
     REVIEWER, CC
 }

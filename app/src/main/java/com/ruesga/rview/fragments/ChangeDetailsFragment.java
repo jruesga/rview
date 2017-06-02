@@ -56,6 +56,7 @@ import com.ruesga.rview.gerrit.model.AbandonInput;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ActionInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
+import com.ruesga.rview.gerrit.model.AddReviewerState;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.AssigneeInfo;
 import com.ruesga.rview.gerrit.model.AssigneeInput;
@@ -250,13 +251,19 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         public void onAddReviewerPressed(View v) {
-            mFragment.performShowAddReviewerDialog(v);
+            mFragment.performShowAddReviewerDialog(AddReviewerState.REVIEWER, v);
+        }
+
+        public void onAddCCPressed(View v) {
+            mFragment.performShowAddReviewerDialog(AddReviewerState.CC, v);
         }
 
         public void onAddMeAsReviewerPressed(View v) {
             Account account = Preferences.getAccount(v.getContext());
             if (account != null) {
-                mFragment.onReviewerAdded(String.valueOf(account.mAccount.accountId));
+                mFragment.onReviewerAdded(
+                        String.valueOf(account.mAccount.accountId),
+                        AddReviewerState.REVIEWER);
             }
         }
 
@@ -961,14 +968,27 @@ public class ChangeDetailsFragment extends Fragment implements
             }
 
             // Update internal objects
-            if (mResponse.mChange.reviewers != null) {
-                // Update reviewers
+
+            // Update reviewers
+            if (mResponse.mChange.reviewers == null) {
+                mResponse.mChange.reviewers = new HashMap<>();
+            }
+            if (result.reviewers != null) {
                 AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
                 mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
                         ModelHelper.addReviewers(result.reviewers, reviewers));
             }
-            if (mResponse.mChange.labels != null) {
-                // Update labels
+            if (result.ccs != null) {
+                AccountInfo[] ccs = mResponse.mChange.reviewers.get(ReviewerStatus.CC);
+                if (ccs != null) {
+                    mResponse.mChange.reviewers.put(ReviewerStatus.CC,
+                            ModelHelper.addReviewers(result.ccs, ccs));
+                }
+            }
+
+            // Update labels
+            if (result.reviewers != null && mResponse.mChange.labels != null) {
+
                 for (String label : mResponse.mChange.labels.keySet()) {
                     ApprovalInfo[] approvals = mResponse.mChange.labels.get(label).all;
                     mResponse.mChange.labels.get(label).all =
@@ -1117,7 +1137,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<ChangeEditMessageInput, Boolean> mChangeEditMessageLoader;
     private RxLoader1<DescriptionInput, Boolean> mChangeEditRevisionDescriptionLoader;
     private RxLoader1<ReviewInput, ReviewInfo> mReviewLoader;
-    private RxLoader1<String, AddReviewerResultInfo> mAddReviewerLoader;
+    private RxLoader2<String, AddReviewerState, AddReviewerResultInfo> mAddReviewerLoader;
     private RxLoader1<String, AssigneeInfo> mEditAssigneeLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
     private RxLoader1<Pair<String, AccountInfo>, Pair<String, AccountInfo>> mRemoveReviewerVoteLoader;
@@ -1421,7 +1441,19 @@ public class ChangeDetailsFragment extends Fragment implements
                 .listenOn(mOnReviewerRemovedListener)
                 .withRemovableReviewers(open)
                 .withFilterCIAccounts(true)
+                .withReviewerStatus(ReviewerStatus.REVIEWER)
                 .from(response.mChange);
+        if (api.supportsFeature(Features.CC) &&
+                mAccount.getServerInfo() != null && mAccount.getServerInfo().noteDbEnabled) {
+            mBinding.changeInfo.cc
+                    .with(mPicasso)
+                    .listenOn(mOnAccountChipClickedListener)
+                    .listenOn(mOnReviewerRemovedListener)
+                    .withRemovableReviewers(open)
+                    .withFilterCIAccounts(true)
+                    .withReviewerStatus(ReviewerStatus.CC)
+                    .from(response.mChange);
+        }
         mBinding.changeInfo.labels
                 .with(mPicasso)
                 .withRemovableReviewers(open && supportVotes, response.mChange.removableReviewers)
@@ -1625,12 +1657,14 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<AddReviewerResultInfo> addReviewer(final String reviewer) {
+    private Observable<AddReviewerResultInfo> addReviewer(
+            final String reviewer, AddReviewerState state) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return SafeObservable.fromNullCallable(() -> {
                     ReviewerInput input = new ReviewerInput();
                     input.reviewerId = reviewer;
+                    input.state = state;
                     return api.addChangeReviewer(String.valueOf(mLegacyChangeId), input)
                             .blockingFirst();
                 })
@@ -2129,9 +2163,9 @@ public class ChangeDetailsFragment extends Fragment implements
         ActivityHelper.share(getContext(), action, title, uri.toString());
     }
 
-    private void performShowAddReviewerDialog(View v) {
+    private void performShowAddReviewerDialog(AddReviewerState reviewerState, View v) {
         AddReviewerDialogFragment fragment =
-                AddReviewerDialogFragment.newInstance(mLegacyChangeId, v);
+                AddReviewerDialogFragment.newInstance(mLegacyChangeId, reviewerState, v);
         fragment.show(getChildFragmentManager(), AddReviewerDialogFragment.TAG);
     }
 
@@ -2492,10 +2526,10 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @Override
-    public void onReviewerAdded(String reviewer) {
+    public void onReviewerAdded(String reviewer, AddReviewerState reviewerState) {
         if (!isLocked()) {
             mAddReviewerLoader.clear();
-            mAddReviewerLoader.restart(reviewer);
+            mAddReviewerLoader.restart(reviewer, reviewerState);
         }
     }
 

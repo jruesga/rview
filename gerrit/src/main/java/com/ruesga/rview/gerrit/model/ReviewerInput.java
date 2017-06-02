@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ReviewerInput {
     @NonNull @SerializedName("reviewer") public String reviewerId = "";
-    @Nullable @SerializedName("state") public AddReviewerStatus state;
+    @Nullable @SerializedName("state") public AddReviewerState state;
     @Nullable @SerializedName("confirmed") public Boolean confirmed;
 }
 

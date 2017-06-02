@@ -32,6 +32,7 @@ import android.widget.Button;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.SuggestedReviewersAdapter;
 import com.ruesga.rview.databinding.AddReviewerDialogBinding;
+import com.ruesga.rview.gerrit.model.AddReviewerState;
 import com.ruesga.rview.gerrit.model.SuggestedReviewerInfo;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.preferences.Constants;
@@ -40,13 +41,15 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
 
     public static final String TAG = "AddReviewerDialogFragment";
 
+    private static final String EXTRA_REVIEWER_STATE = "reviewer_state";
+
     @Keep
     public static class Model {
         public String reviewer;
     }
 
     public interface OnReviewerAdded {
-        void onReviewerAdded(String reviewer);
+        void onReviewerAdded(String reviewer, AddReviewerState state);
     }
 
     private final TextWatcher mTextWatcher = new TextWatcher() {
@@ -69,10 +72,12 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
     };
 
 
-    public static AddReviewerDialogFragment newInstance(int legacyChangeId, View anchor) {
+    public static AddReviewerDialogFragment newInstance(
+            int legacyChangeId, AddReviewerState reviewerState, View anchor) {
         AddReviewerDialogFragment fragment = new AddReviewerDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        arguments.putString(EXTRA_REVIEWER_STATE, reviewerState.name());
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
         fragment.setArguments(arguments);
         return fragment;
@@ -82,6 +87,7 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
     private final Model mModel = new Model();
 
     private int mLegacyChangeId;
+    private AddReviewerState mReviewerState;
 
     public AddReviewerDialogFragment() {
     }
@@ -104,7 +110,8 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
                 mBinding.getRoot().getContext(), mLegacyChangeId);
         mBinding.reviewer.setAdapter(adapter);
 
-        builder.setTitle(R.string.change_details_add_reviewer)
+        builder.setTitle(mReviewerState.equals(AddReviewerState.REVIEWER)
+                    ? R.string.change_details_add_reviewer : R.string.change_details_add_cc)
                 .setView(mBinding.getRoot())
                 .setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_account_circle))
                 .setNegativeButton(R.string.action_cancel, null)
@@ -115,6 +122,7 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
+        mReviewerState = AddReviewerState.valueOf(getArguments().getString(EXTRA_REVIEWER_STATE));
     }
 
     @Override
@@ -132,9 +140,9 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
         final Activity a = getActivity();
         final Fragment f = getParentFragment();
         if (f != null && f instanceof OnReviewerAdded) {
-            ((OnReviewerAdded) f).onReviewerAdded(mModel.reviewer);
+            ((OnReviewerAdded) f).onReviewerAdded(mModel.reviewer, mReviewerState);
         } else if (a != null && a instanceof OnReviewerAdded) {
-            ((OnReviewerAdded) a).onReviewerAdded(mModel.reviewer);
+            ((OnReviewerAdded) a).onReviewerAdded(mModel.reviewer, mReviewerState);
         }
     }
 

@@ -327,21 +327,46 @@ public class ModelHelper {
         Collections.addAll(newRemovableAccounts, change.removableReviewers);
 
         Account account = Preferences.getAccount(context);
-        for (ReviewerInfo reviewer : result.reviewers) {
-            boolean removable = false;
 
-            // Owner of the change
-            if (change.owner.accountId == account.mAccount.accountId) {
-                removable = true;
+        // REVIEWERS
+        if (result.reviewers != null) {
+            for (ReviewerInfo reviewer : result.reviewers) {
+                boolean removable = false;
+
+                // Owner of the change
+                if (change.owner.accountId == account.mAccount.accountId) {
+                    removable = true;
+                }
+
+                // Reviewer is me
+                if (reviewer.accountId == account.mAccount.accountId) {
+                    removable = true;
+                }
+
+                if (removable) {
+                    newRemovableAccounts.add(reviewer);
+                }
             }
+        }
 
-            // Reviewer is me
-            if (reviewer.accountId == account.mAccount.accountId) {
-                removable = true;
-            }
+        // CCs
+        if (result.ccs != null) {
+            for (ReviewerInfo cc : result.ccs) {
+                boolean removable = false;
 
-            if (removable) {
-                newRemovableAccounts.add(reviewer);
+                // Owner of the change
+                if (change.owner.accountId == account.mAccount.accountId) {
+                    removable = true;
+                }
+
+                // Reviewer is me
+                if (cc.accountId == account.mAccount.accountId) {
+                    removable = true;
+                }
+
+                if (removable) {
+                    newRemovableAccounts.add(cc);
+                }
             }
         }
 

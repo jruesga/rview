@@ -229,7 +229,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="5dp"
                         app:flexWrap="wrap"
                         app:alignItems="flex_start"
                         app:alignContent="flex_start">
@@ -246,7 +245,6 @@
                             android:textStyle="bold"
                             app:allCaps="true"
                             android:textSize="12sp"/>
-
                         <com.ruesga.rview.widget.StyleableTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -261,6 +259,54 @@
                             app:allCaps="true"
                             android:textSize="12sp"/>
                     </com.google.android.flexbox.FlexboxLayout>
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:orientation="horizontal"
+                app:bindToBoolean="@{serverInfo != null &amp;&amp; safeUnbox(serverInfo.noteDbEnabled)}"
+                app:bindToFeature="@{Features.CC}">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_details_cc"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:minHeight="16dp">
+                        <com.ruesga.rview.widget.ReviewersView
+                            android:id="@+id/cc"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:flexWrap="wrap"
+                            app:alignItems="flex_start"
+                            app:alignContent="flex_start" />
+                    </FrameLayout>
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:visibility="@{safeUnbox(isAuthenticated) ? View.VISIBLE : View.GONE}"
+                        android:onClick="@{handlers::onAddCCPressed}"
+                        android:background="?attr/selectableItemBackground"
+                        android:text="@string/change_details_add_cc"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?attr/colorAccent"
+                        android:textStyle="bold"
+                        app:allCaps="true"
+                        android:textSize="12sp"/>
                 </LinearLayout>
             </LinearLayout>
             <LinearLayout

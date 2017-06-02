@@ -29,6 +29,8 @@ public enum Features {
     @Since(2.13)
     BLAME,
     @Since(2.14)
+    CC,
+    @Since(2.14)
     CHANGE_TAGS,
     @Since(2.13)
     MOVE,
