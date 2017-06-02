@@ -83,6 +83,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
                 Preferences.setAccount(getContext(), mAccount);
                 enableNotificationsSupport();
             }
+
+            mNotificationsSupportLoader.clear();
         }
     };
 

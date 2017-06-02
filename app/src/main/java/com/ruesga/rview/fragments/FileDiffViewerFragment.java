@@ -176,11 +176,16 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             // Force refresh
             mDraftsLoader.clear();
             mDraftsLoader.restart();
+
+            mActionLoader.clear();
+
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error);
+
+            mActionLoader.clear();
         }
     };
 
@@ -188,6 +193,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             = new RxLoaderObserver<Boolean>() {
         @Override
         public void onNext(Boolean result) {
+            mReviewedLoader.clear();
         }
     };
 

@@ -682,11 +682,15 @@ public class ChangeDetailsFragment extends Fragment implements
 
             mResponse.mChange.starred = value;
             updateChangeInfo(mResponse);
+
+            mStarredLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mStarredLoader.clear();
         }
     };
 
@@ -697,11 +701,15 @@ public class ChangeDetailsFragment extends Fragment implements
             // Switch to the new revision
             mCurrentRevision = null;
             forceRefresh();
+
+            mChangeEditMessageLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mChangeEditMessageLoader.clear();
         }
     };
 
@@ -710,11 +718,15 @@ public class ChangeDetailsFragment extends Fragment implements
         @Override
         public void onNext(Boolean value) {
             forceRefresh();
+
+            mChangeEditRevisionDescriptionLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mChangeEditRevisionDescriptionLoader.clear();
         }
     };
 
@@ -731,6 +743,8 @@ public class ChangeDetailsFragment extends Fragment implements
             // Clean the message box
             mBinding.reviewInfo.reviewComment.setText(null);
             AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
+
+            mReviewLoader.clear();
         }
 
         @Override
@@ -738,6 +752,8 @@ public class ChangeDetailsFragment extends Fragment implements
             setProcessing(false);
 
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mReviewLoader.clear();
         }
 
         @Override
@@ -773,11 +789,15 @@ public class ChangeDetailsFragment extends Fragment implements
 
             // Refresh messages
             performMessagesRefresh();
+
+            mChangeTopicLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mChangeTopicLoader.clear();
         }
     };
 
@@ -791,13 +811,16 @@ public class ChangeDetailsFragment extends Fragment implements
             mResponse.mChange.hashtags = newTags;
             updateChangeInfo(mResponse);
 
-            mMessagesRefreshLoader.clear();
-            mMessagesRefreshLoader.restart();
+            performMessagesRefresh();
+
+            mChangeTagsLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mChangeTagsLoader.clear();
         }
     };
 
@@ -822,6 +845,8 @@ public class ChangeDetailsFragment extends Fragment implements
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mMessagesRefreshLoader.clear();
         }
     };
 
@@ -838,11 +863,15 @@ public class ChangeDetailsFragment extends Fragment implements
             mModel.filesListModel.visible = mResponse.mFiles != null && !mResponse.mFiles.isEmpty();
             mFileAdapter.update(
                     mResponse.mFiles, mResponse.mInlineComments, mResponse.mDraftComments);
+
+            mDraftsRefreshLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mDraftsRefreshLoader.clear();
         }
     };
 
@@ -874,13 +903,16 @@ public class ChangeDetailsFragment extends Fragment implements
 
             updateChangeInfo(mResponse);
 
-            mMessagesRefreshLoader.clear();
-            mMessagesRefreshLoader.restart();
+            performMessagesRefresh();
+
+            mRemoveReviewerLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mRemoveReviewerLoader.clear();
         }
     };
 
@@ -901,13 +933,16 @@ public class ChangeDetailsFragment extends Fragment implements
             }
             updateChangeInfo(mResponse);
 
-            mMessagesRefreshLoader.clear();
-            mMessagesRefreshLoader.restart();
+            performMessagesRefresh();
+
+            mRemoveReviewerVoteLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mRemoveReviewerVoteLoader.clear();
         }
     };
 
@@ -943,11 +978,15 @@ public class ChangeDetailsFragment extends Fragment implements
             ModelHelper.updateRemovableReviewers(getContext(), mResponse.mChange, result);
 
             updateChangeInfo(mResponse);
+
+            mAddReviewerLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mAddReviewerLoader.clear();
         }
     };
 
@@ -973,13 +1012,16 @@ public class ChangeDetailsFragment extends Fragment implements
 
             updateChangeInfo(mResponse);
 
-            mMessagesRefreshLoader.clear();
-            mMessagesRefreshLoader.restart();
+            performMessagesRefresh();
+
+            mEditAssigneeLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mEditAssigneeLoader.clear();
         }
     };
 
@@ -1000,11 +1042,15 @@ public class ChangeDetailsFragment extends Fragment implements
 
             // Refresh the change
             forceRefresh();
+
+            mActionLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mActionLoader.clear();
         }
     };
 
@@ -1014,11 +1060,15 @@ public class ChangeDetailsFragment extends Fragment implements
         public void onNext(ChangeInfo value) {
             // Refresh the change
             forceRefresh();
+
+            mMoveBranchLoader.clear();
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            mMoveBranchLoader.clear();
         }
     };
 

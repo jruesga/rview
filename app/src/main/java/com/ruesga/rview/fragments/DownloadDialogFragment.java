@@ -112,6 +112,8 @@ public class DownloadDialogFragment extends RevealDialogFragment {
         @Override
         public void onNext(Download download) {
            download(download);
+
+            mDownloadLoader.clear();
         }
     };
 
