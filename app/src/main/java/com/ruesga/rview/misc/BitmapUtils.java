@@ -28,6 +28,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.text.TextPaint;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -160,8 +161,8 @@ public class BitmapUtils {
         return src;
     }
 
-    public static Bitmap text2Bitmap(String text, int color, int w, int h, float size) {
-        if (text == null) {
+    public static Bitmap text2Bitmap(String text, int color, float size) {
+        if (TextUtils.isEmpty(text)) {
             return null;
         }
 

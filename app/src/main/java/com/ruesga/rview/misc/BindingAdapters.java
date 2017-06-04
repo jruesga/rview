@@ -146,7 +146,7 @@ public class BindingAdapters {
         if (text == null) {
             v.setImageBitmap(null);
         }
-        v.setImageBitmap(BitmapUtils.text2Bitmap(text, color, v.getWidth(), v.getHeight(), textSize));
+        v.setImageBitmap(BitmapUtils.text2Bitmap(text, color, textSize));
     }
 
     @BindingAdapter({"bindTags"})
