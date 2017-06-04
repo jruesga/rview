@@ -45,7 +45,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             "bug", "label", "message", "comment", "path", "file", "star", "has",
             "is", "status", "added", "deleted", "delta", "size", "commentby", "from",
             "reviewedby", "author", "committer", "visibleto", "starredby", "watchedby",
-            "draftby", "assignee"
+            "draftby", "assignee", "cc"
     };
 
     public static final Class[] FIELDS_TYPES = {
@@ -55,7 +55,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             String.class, Label.class, String.class, String.class, String.class, String.class, String.class, HasType.class,
             IsType.class, StatusType.class, Relation.class, Relation.class, Relation.class, Relation.class, String.class, String.class,
             String.class, String.class, String.class, String.class, String.class, String.class,
-            String.class, String.class
+            String.class, String.class, String.class
     };
 
     public static final Class[] SUGGEST_TYPES = {
@@ -65,7 +65,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, HasType.class,
             IsType.class, StatusType.class, null, null, null, null, AccountInfo.class, AccountInfo.class,
             AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class,
-            AccountInfo.class, AccountInfo.class
+            AccountInfo.class, AccountInfo.class, AccountInfo.class
     };
 
     public static final Double[] SUPPORTED_VERSION = {
@@ -75,7 +75,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
-            null, 2.14d
+            null, 2.14d, 2.14d
     };
 
     public ChangeQuery age(TimeUnit unit, int value) {
@@ -145,6 +145,16 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
 
     public ChangeQuery reviewerSelf() {
         add("reviewer:self");
+        return this;
+    }
+
+    public ChangeQuery cc(String user) {
+        add("cc:" + sanitizeValue(user));
+        return this;
+    }
+
+    public ChangeQuery ccSelf() {
+        add("cc:self");
         return this;
     }
 
