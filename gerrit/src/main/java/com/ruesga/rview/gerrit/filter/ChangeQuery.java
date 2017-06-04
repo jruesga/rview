@@ -68,6 +68,16 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             AccountInfo.class, AccountInfo.class
     };
 
+    public static final Double[] SUPPORTED_VERSION = {
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null,
+            null, 2.14d
+    };
+
     public ChangeQuery age(TimeUnit unit, int value) {
         add("age:" + unit.toQuery(value));
         return this;

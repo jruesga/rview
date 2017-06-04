@@ -55,10 +55,12 @@ import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectType;
+import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.StringHelper;
+import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -221,6 +223,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private Handler mHandler;
 
+    private Account mAccount;
     private SearchActivityBinding mBinding;
     private int mCurrentOption;
     private int[] mIcons;
@@ -234,6 +237,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler(mMessenger);
+        mAccount = Preferences.getAccount(this);
+        mCurrentOption = Preferences.getAccountSearchMode(this, mAccount);
 
         fillSuggestions();
 
@@ -320,7 +325,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mBinding.searchView.setOnClearSearchActionListener(this::performShowHistory);
         clearSuggestions();
 
-        mCurrentOption = Preferences.getAccountSearchMode(this, Preferences.getAccount(this));
         mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[mCurrentOption]));
 
         configureSearchHint();
@@ -411,7 +415,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         popupWindow.setOnItemClickListener((parent, view, position, id) -> {
             popupWindow.dismiss();
             mCurrentOption = position;
-            Preferences.setAccountSearchMode(this, Preferences.getAccount(this), mCurrentOption);
+            Preferences.setAccountSearchMode(this, mAccount, mCurrentOption);
             configureSearchHint();
             mBinding.searchView.setCustomIcon(ContextCompat.getDrawable(this, mIcons[position]));
             clearSuggestions();
@@ -430,8 +434,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             return;
         }
 
-        String[] history = Preferences.getAccountSearchHistory(
-                this, Preferences.getAccount(this), mCurrentOption);
+        String[] history = Preferences.getAccountSearchHistory(this, mAccount, mCurrentOption);
         ArrayList<Suggestion> suggestions = new ArrayList<>();
         if (history != null) {
             for (String s : history) {
@@ -534,8 +537,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         // Persist history
         String history = mCurrentOption != Constants.SEARCH_MODE_CUSTOM
                 ? query : String.valueOf(filter);
-        Preferences.addAccountSearchHistory(
-                this, Preferences.getAccount(this), mCurrentOption, history);
+        Preferences.addAccountSearchHistory(this, mAccount, mCurrentOption, history);
     }
 
     private int[] loadSearchIcons() {
@@ -632,14 +634,19 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
             final int index = Arrays.asList(ChangeQuery.FIELDS_NAMES).indexOf(token);
             if (index != -1) {
-                Class clazz = ChangeQuery.SUGGEST_TYPES[index];
-                if (clazz != null) {
-                    if (clazz.equals(AccountInfo.class)) {
-                        requestAccountSuggestions(currentFilter, partial);
-                        return;
-                    } else if (clazz.equals(ProjectInfo.class)) {
-                        requestProjectSuggestions(currentFilter, partial);
-                        return;
+                Double version = ChangeQuery.SUPPORTED_VERSION[index];
+                ServerVersion serverVersion = mAccount.getServerVersion();
+                if (version == null || (serverVersion != null
+                        && version <= serverVersion.getVersion())) {
+                    Class clazz = ChangeQuery.SUGGEST_TYPES[index];
+                    if (clazz != null) {
+                        if (clazz.equals(AccountInfo.class)) {
+                            requestAccountSuggestions(currentFilter, partial);
+                            return;
+                        } else if (clazz.equals(ProjectInfo.class)) {
+                            requestProjectSuggestions(currentFilter, partial);
+                            return;
+                        }
                     }
                 }
             }
@@ -690,11 +697,16 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mSuggestions = new ArrayList<>();
         int count = ChangeQuery.FIELDS_NAMES.length;
         for (int i = 0; i < count; i++) {
-            mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":");
-            if (ChangeQuery.SUGGEST_TYPES[i] != null && ChangeQuery.SUGGEST_TYPES[i].isEnum()) {
-                for (Object o : ChangeQuery.SUGGEST_TYPES[i].getEnumConstants()) {
-                    String val = String.valueOf(o).toLowerCase(Locale.US);
-                    mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":" + val + " ");
+            Double version = ChangeQuery.SUPPORTED_VERSION[i];
+            ServerVersion serverVersion = mAccount.getServerVersion();
+            if (version == null || (serverVersion != null
+                    && version <= serverVersion.getVersion())) {
+                mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":");
+                if (ChangeQuery.SUGGEST_TYPES[i] != null && ChangeQuery.SUGGEST_TYPES[i].isEnum()) {
+                    for (Object o : ChangeQuery.SUGGEST_TYPES[i].getEnumConstants()) {
+                        String val = String.valueOf(o).toLowerCase(Locale.US);
+                        mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":" + val + " ");
+                    }
                 }
             }
         }
