@@ -24,6 +24,7 @@
         <import type="com.ruesga.rview.gerrit.model.FileStatus" />
         <variable name="model" type="com.ruesga.rview.fragments.ChangeDetailsFragment.FileItemModel" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
+        <variable name="isShortFileName" type="java.lang.Boolean" />
     </data>
 
     <LinearLayout
@@ -76,8 +77,11 @@
                 android:layout_toLeftOf="@id/added_vs_deleted"
                 android:layout_toStartOf="@id/added_vs_deleted"
                 android:layout_centerVertical="true"
+                android:singleLine="@{safeUnbox(isShortFileName)}"
+                android:ellipsize="start"
                 android:textAppearance="@style/TextAppearance.VerySmall"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textColor="?android:attr/textColorPrimary"
+                tools:ignore="Deprecated"/>
         </RelativeLayout>
 
         <LinearLayout

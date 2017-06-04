@@ -61,6 +61,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_EXTERNAL_CATEG
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_ADVISE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_CLEAR;
@@ -203,13 +204,13 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     }
 
     private void configureToggleCI() {
-        PreferenceCategory displayCategory =
-                (PreferenceCategory) findPreference(PREF_ACCOUNT_DISPLAY_CATEGORY);
+        PreferenceCategory messagesCategory =
+                (PreferenceCategory) findPreference(PREF_ACCOUNT_MESSAGES_CATEGORY);
         Preference toggleCI = findPreference(PREF_ACCOUNT_TOGGLE_CI_MESSAGES);
         if (toggleCI != null) {
             Repository repository = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
             if (repository == null || TextUtils.isEmpty(repository.mCiAccounts)) {
-                displayCategory.removePreference(toggleCI);
+                messagesCategory.removePreference(toggleCI);
             }
         }
     }

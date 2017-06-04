@@ -259,11 +259,16 @@
     <string name="account_settings_display_format_username">Username</string>
     <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>
     <string name="account_settings_display_account_statuses">Display account statuses</string>
+    <string name="account_settings_messages_category">Messages</string>
     <string name="account_settings_messages_folded">Fold messages</string>
     <string name="account_settings_inline_comment_in_messages">Display inline comments in messages</string>
     <string name="account_settings_toggle_ci_messages_title">Toggle CI accounts messages</string>
     <string name="account_settings_toggle_ci_messages_summary_off">Show messages from CI accounts</string>
     <string name="account_settings_toggle_ci_messages_summary_on">Hide messages from CI accounts</string>
+    <string name="account_settings_files_category">Files</string>
+    <string name="account_settings_account_short_filenames">Short file names</string>
+    <string name="account_settings_account_short_filenames_on">File names will be shortened to fit into a single line</string>
+    <string name="account_settings_account_short_filenames_off">File names will be fully displayed</string>
     <string name="account_settings_search_category">Search</string>
     <string name="account_settings_search_clear">Clear search history</string>
     <string name="account_settings_search_clear_message">Search history cleared</string>

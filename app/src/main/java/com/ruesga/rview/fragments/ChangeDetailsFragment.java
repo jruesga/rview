@@ -354,7 +354,7 @@ public class ChangeDetailsFragment extends Fragment implements
         public int draftComments;
     }
 
-    public static class FileInfoViewHolder extends RecyclerView.ViewHolder {
+    private static class FileInfoViewHolder extends RecyclerView.ViewHolder {
         private final FileInfoItemBinding mBinding;
         FileInfoViewHolder(FileInfoItemBinding binding) {
             super(binding.getRoot());
@@ -363,7 +363,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
-    public static class TotalAddedDeletedViewHolder extends RecyclerView.ViewHolder {
+    private static class TotalAddedDeletedViewHolder extends RecyclerView.ViewHolder {
         private final TotalAddedDeletedBinding mBinding;
         TotalAddedDeletedViewHolder(TotalAddedDeletedBinding binding) {
             super(binding.getRoot());
@@ -372,7 +372,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+    private static class MessageViewHolder extends RecyclerView.ViewHolder {
         private final MessageItemBinding mBinding;
         MessageViewHolder(MessageItemBinding binding, boolean isMessagesFolded) {
             super(binding.getRoot());
@@ -386,9 +386,11 @@ public class ChangeDetailsFragment extends Fragment implements
         private final List<FileItemModel> mFiles = new ArrayList<>();
         private FileItemModel mTotals;
         private final EventHandlers mEventHandlers;
+        private Boolean mIsShortFilenames;
 
-        FileAdapter(EventHandlers handlers) {
+        FileAdapter(EventHandlers handlers, boolean isShortFilenames) {
             mEventHandlers = handlers;
+            mIsShortFilenames = isShortFilenames;
         }
 
         void update(Map<String, FileInfo> files, Map<String,
@@ -488,6 +490,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 FileItemModel model = mFiles.get(position);
                 FileInfoItemBinding binding = ((FileInfoViewHolder) holder).mBinding;
                 binding.addedVsDeleted.with(model);
+                binding.setIsShortFileName(mIsShortFilenames);
                 binding.setModel(model);
                 binding.setHandlers(mEventHandlers);
             }
@@ -601,7 +604,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
-    public static class DataResponse {
+    private static class DataResponse {
         ChangeInfo mChange;
         SubmitType mSubmitType;
         Map<String, FileInfo> mFiles;
@@ -1292,13 +1295,13 @@ public class ChangeDetailsFragment extends Fragment implements
             updateAuthenticatedAndOwnerStatus();
 
             boolean isMessagesFolded = Preferences.isAccountMessagesFolded(getContext(), mAccount);
-            mIsInlineCommentsInMessages =
-                    Preferences.isAccountInlineCommentInMessages(getContext(), mAccount);
-
+            mIsInlineCommentsInMessages = Preferences.isAccountInlineCommentInMessages(
+                    getContext(), mAccount);
 
             mEventHandlers = new EventHandlers(this);
 
-            mFileAdapter = new FileAdapter(mEventHandlers);
+            mFileAdapter = new FileAdapter(mEventHandlers,
+                    Preferences.isAccountShortFilenames(getContext(), mAccount));
             mBinding.fileInfo.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.fileInfo.list.setNestedScrollingEnabled(false);

@@ -101,6 +101,7 @@ public class Constants {
 
     // -- Account preferences keys
     public static final String PREF_ACCOUNT_DISPLAY_CATEGORY = "account_display_category";
+    public static final String PREF_ACCOUNT_MESSAGES_CATEGORY = "account_messages_category";
     public static final String PREF_ACCOUNT_HOME_PAGE = "account_home_page";
     public static final String PREF_ACCOUNT_FETCHED_ITEMS = "account_fetched_items";
     public static final String PREF_ACCOUNT_DISPLAY_FORMAT = "account_display_format";
@@ -115,6 +116,7 @@ public class Constants {
     public static final String PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES
             = "account_inline_comment_in_messages";
     public static final String PREF_ACCOUNT_TOGGLE_CI_MESSAGES = "account_toggle_ci_messages";
+    public static final String PREF_ACCOUNT_SHORT_FILENAMES = "account_short_filenames";
     public static final String PREF_ACCOUNT_HIGHLIGHT_TABS = "account_highlight_tabs";
     public static final String PREF_ACCOUNT_HIGHLIGHT_TRAILING_WHITESPACES
             = "account_highlight_trailing_whitespaces";

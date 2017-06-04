@@ -48,6 +48,11 @@
             android:key="account_highlight_unreviewed"
             android:title="@string/account_settings_highlight_unreviewed"
             android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="account_messages_category"
+        android:title="@string/account_settings_messages_category">
 
         <SwitchPreference
             android:key="account_messages_folded"
@@ -64,6 +69,18 @@
             android:title="@string/account_settings_toggle_ci_messages_title"
             android:summaryOn="@string/account_settings_toggle_ci_messages_summary_on"
             android:summaryOff="@string/account_settings_toggle_ci_messages_summary_off"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="account_files_category"
+        android:title="@string/account_settings_files_category">
+
+        <SwitchPreference
+            android:key="account_short_filenames"
+            android:title="@string/account_settings_account_short_filenames"
+            android:summaryOn="@string/account_settings_account_short_filenames_on"
+            android:summaryOff="@string/account_settings_account_short_filenames_off"
             android:defaultValue="false" />
     </PreferenceCategory>
 

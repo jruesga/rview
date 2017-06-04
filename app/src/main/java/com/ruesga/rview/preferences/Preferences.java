@@ -61,6 +61,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_EVENTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_HISTORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_MODE;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SHORT_FILENAMES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TEXT_SIZE_FACTOR;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_CI_MESSAGES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_USE_CUSTOM_TABS;
@@ -408,6 +409,11 @@ public class Preferences {
     public static boolean isAccountToggleCIAccountsMessages(Context context, Account account) {
         return account == null || getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_TOGGLE_CI_MESSAGES, false);
+    }
+
+    public static boolean isAccountShortFilenames(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_SHORT_FILENAMES, false);
     }
 
     public static List<CustomFilter> getAccountCustomFilters(Context context, Account account) {
