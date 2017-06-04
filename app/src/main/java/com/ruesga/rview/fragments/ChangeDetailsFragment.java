@@ -434,7 +434,11 @@ public class ChangeDetailsFragment extends Fragment implements
                         ((model.info.linesInserted != null && model.info.linesInserted > 0) ||
                                 (model.info.linesDeleted != null && model.info.linesDeleted > 0) ||
                                 model.inlineComments > 0 || model.draftComments > 0);
-                mFiles.add(model);
+                if (key.equals(Constants.COMMIT_MESSAGE)) {
+                    mFiles.add(0, model);
+                } else {
+                    mFiles.add(model);
+                }
             }
 
             // And add the total
