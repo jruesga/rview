@@ -46,10 +46,12 @@ import android.view.animation.AccelerateInterpolator;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.google.gson.annotations.Since;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.databinding.SearchActivityBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.IsType;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.gerrit.model.AccountInfo;
@@ -704,6 +706,16 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":");
                 if (ChangeQuery.SUGGEST_TYPES[i] != null && ChangeQuery.SUGGEST_TYPES[i].isEnum()) {
                     for (Object o : ChangeQuery.SUGGEST_TYPES[i].getEnumConstants()) {
+                        try {
+                            Since since = o.getClass().getDeclaredField(o.toString())
+                                    .getAnnotation(Since.class);
+                            if (since != null && since.value() > serverVersion.getVersion()) {
+                                continue;
+                            }
+                        } catch (NoSuchFieldException ex) {
+                            // Ignore
+                        }
+
                         String val = String.valueOf(o).toLowerCase(Locale.US);
                         mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":" + val + " ");
                     }

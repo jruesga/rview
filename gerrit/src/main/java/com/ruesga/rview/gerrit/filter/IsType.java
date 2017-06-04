@@ -15,7 +15,9 @@
  */
 package com.ruesga.rview.gerrit.filter;
 
+import com.google.gson.annotations.Since;
+
 public enum IsType {
     STARRED, WATCHED, REVIEWED, OWNER, REVIEWER, OPEN, PENDING, DRAFT,
-    CLOSED, MERGED, ABANDONED, MERGEABLE, VISIBLE, ASSIGNED, UNASSIGNED
+    CLOSED, MERGED, ABANDONED, MERGEABLE, VISIBLE, @Since(2.14) ASSIGNED, @Since(2.14) UNASSIGNED
 }
