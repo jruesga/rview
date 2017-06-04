@@ -181,10 +181,9 @@ public class MainActivity extends ChangeListBaseActivity {
     private final BroadcastReceiver mAccountStatusChangedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            mAccount = Preferences.getAccount(context);
             if (mAccount != null && intent != null) {
-                String account = intent.getStringExtra(AccountStatusFetcherService.EXTRA_ACCOUNT);
-                if (mAccount.getAccountHash().equals(account)) {
+                String acct = intent.getStringExtra(AccountStatusFetcherService.EXTRA_ACCOUNT);
+                if (mAccount.getAccountHash().equals(acct)) {
                     updateAccountStatus();
                     performUpdateNavigationDrawer(mModel.isAccountExpanded);
                 }
