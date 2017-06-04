@@ -21,6 +21,7 @@ import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParser;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
+import com.ruesga.rview.gerrit.model.SubmitRecordStatusType;
 
 import org.antlr.runtime.tree.Tree;
 
@@ -45,7 +46,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             "bug", "label", "message", "comment", "path", "file", "star", "has",
             "is", "status", "added", "deleted", "delta", "size", "commentby", "from",
             "reviewedby", "author", "committer", "visibleto", "starredby", "watchedby",
-            "draftby", "assignee", "cc"
+            "draftby", "assignee", "cc", "unresolved", "submittable"
     };
 
     public static final Class[] FIELDS_TYPES = {
@@ -55,7 +56,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             String.class, Label.class, String.class, String.class, String.class, String.class, String.class, HasType.class,
             IsType.class, StatusType.class, Relation.class, Relation.class, Relation.class, Relation.class, String.class, String.class,
             String.class, String.class, String.class, String.class, String.class, String.class,
-            String.class, String.class, String.class
+            String.class, String.class, String.class, Relation.class, SubmitRecordStatusType.class
     };
 
     public static final Class[] SUGGEST_TYPES = {
@@ -65,7 +66,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, HasType.class,
             IsType.class, StatusType.class, null, null, null, null, AccountInfo.class, AccountInfo.class,
             AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class,
-            AccountInfo.class, AccountInfo.class, AccountInfo.class
+            AccountInfo.class, AccountInfo.class, AccountInfo.class, SubmitRecordStatusType.class
     };
 
     public static final Double[] SUPPORTED_VERSION = {
@@ -75,7 +76,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
-            null, 2.14d, 2.14d
+            null, 2.14d, 2.14d, 2.14d, 2.14d
     };
 
     public ChangeQuery age(TimeUnit unit, int value) {
@@ -345,6 +346,16 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
 
     public ChangeQuery assigneeBySelf() {
         add("assignee:self");
+        return this;
+    }
+
+    public ChangeQuery unresolved(Relation relation, int count) {
+        add("unresolved:\"" + relation.toQuery(count) + "\"");
+        return this;
+    }
+
+    public ChangeQuery submittable(SubmitRecordStatusType type) {
+        add("submittable:" + type.toString().toLowerCase(Locale.US));
         return this;
     }
 

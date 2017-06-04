@@ -23,7 +23,7 @@ import java.util.Map;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#submit-record"
  */
 public class SubmitRecordInfo {
-    @SerializedName("status") public String status;
+    @SerializedName("status") public SubmitRecordStatusType status;
     @SerializedName("ok") public Map<String, AccountInfo> ok;
     @SerializedName("reject") public Map<String, AccountInfo> reject;
     @SerializedName("need") public Map<String, Void> need;

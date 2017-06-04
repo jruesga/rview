@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.gerrit.filter;
+package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.Since;
-
-public enum IsType {
-    STARRED, WATCHED, REVIEWED, OWNER, REVIEWER, OPEN, PENDING, DRAFT,
-    CLOSED, MERGED, ABANDONED, MERGEABLE, VISIBLE, @Since(2.14) ASSIGNED, @Since(2.14) UNASSIGNED,
-    @Since(2.14) SUBMITTABLE
+public enum SubmitRecordStatusType {
+    OK, NOT_READY, CLOSED, RULE_ERROR
 }

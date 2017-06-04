@@ -15,6 +15,8 @@
  */
 package com.ruesga.rview.gerrit.filter;
 
+import com.google.gson.annotations.Since;
+
 public enum HasType {
-    DRAFT, STAR, STARS, EDIT
+    DRAFT, STAR, STARS, EDIT, @Since(2.14) UNRESOLVED
 }
