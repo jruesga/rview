@@ -82,14 +82,14 @@ public class AccountStatusFetcherService extends IntentService {
             } else {
                 account.mAccount.status = null;
             }
-            Preferences.setAccount(ctx, account);
+            Preferences.addOrUpdateAccount(ctx, account);
             notifyAccountStatusChanged(ctx, account);
 
         } catch (Exception ex) {
             // Check if feature is supported
             if (ExceptionHelper.isResourceNotFoundException(ex)) {
                 account.mAccount.status = null;
-                Preferences.setAccount(ctx, account);
+                Preferences.addOrUpdateAccount(ctx, account);
                 notifyAccountStatusChanged(ctx, account);
                 return;
             }

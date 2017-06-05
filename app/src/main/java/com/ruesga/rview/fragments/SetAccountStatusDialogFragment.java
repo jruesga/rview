@@ -90,7 +90,7 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
         @Override
         public void onNext(String status) {
             mAccount.mAccount.status = status;
-            Preferences.setAccount(getActivity(), mAccount);
+            Preferences.addOrUpdateAccount(getActivity(), mAccount);
 
             Intent i = new Intent(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
             i.putExtra(AccountStatusFetcherService.EXTRA_ACCOUNT, mAccount.getAccountHash());

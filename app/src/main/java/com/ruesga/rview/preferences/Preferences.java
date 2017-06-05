@@ -112,7 +112,16 @@ public class Preferences {
         if (value == null) {
             return null;
         }
-        return gson.fromJson(value, Account.class);
+
+        // Ensure we obtain the most refreshed data from account
+        Account account = gson.fromJson(value, Account.class);
+        List<Account> accounts = getAccounts(context);
+        for (Account acct : accounts) {
+            if (acct.getAccountHash().equals(account.getAccountHash())) {
+                return acct;
+            }
+        }
+        return account;
     }
 
     public static void setAccount(Context context, Account account) {
