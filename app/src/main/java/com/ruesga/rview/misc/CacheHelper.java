@@ -37,6 +37,7 @@ public class CacheHelper {
 
     public static final String CACHE_CHANGE_JSON = "change.json";
     public static final String CACHE_FILES_JSON = "files.json";
+    public static final String CACHE_FILES_INFO_JSON = "files_info.json";
     public static final String CACHE_DIFF_JSON = "diff.json";
     public static final String CACHE_COMMENTS_JSON = "comments.json";
     public static final String CACHE_DRAFT_JSON = "drafts.json";

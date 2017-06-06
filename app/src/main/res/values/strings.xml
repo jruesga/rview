@@ -237,6 +237,7 @@
     <string name="change_action_blame">Blame</string>
     <string name="change_action_download">Download</string>
     <string name="change_action_view">View</string>
+    <string name="change_action_details">Details</string>
 
     <!-- Revert -->
     <string name="revert_msg_template">Revert \"<xliff:g id="commit_msg">%1$s</xliff:g>\"\n\nThis reverts commit <xliff:g id="commit_id">%2$s</xliff:g>.</string>
@@ -358,6 +359,14 @@
     <string name="download_commands_dialog_archive_tbz2">tbz2</string>
     <string name="download_commands_dialog_archive_txz">txz</string>
     <string name="download_commands_dialog_copy_message">Download <xliff:g id="type" example="Format Patch">%1$s</xliff:g> command copied to clipboard</string>
+
+    <!-- File details dialog -->
+    <string name="file_details_dialog_title">File details</string>
+    <string name="file_details_dialog_name_title">Name</string>
+    <string name="file_details_dialog_path_title">Path</string>
+    <string name="file_details_dialog_type_title">Type</string>
+    <string name="file_details_dialog_size_title">Size</string>
+    <string name="file_details_dialog_diff_title">Diff</string>
 
     <!-- Move branch dialog -->
     <string name="move_branch_title">Move branch</string>

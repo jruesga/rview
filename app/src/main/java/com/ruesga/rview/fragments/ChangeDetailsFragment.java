@@ -1916,7 +1916,7 @@ public class ChangeDetailsFragment extends Fragment implements
         String current = String.valueOf(mResponse.mChange.revisions.get(mCurrentRevision).number);
 
         ArrayList<String> files = new ArrayList<>(mResponse.mFiles.keySet());
-        ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, files,
+        ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, files, mResponse.mFiles,
                 mCurrentRevision, base, current, file, null, DIFF_REQUEST_CODE);
     }
 
@@ -1935,7 +1935,7 @@ public class ChangeDetailsFragment extends Fragment implements
             }
         }
 
-        ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, null,
+        ActivityHelper.openDiffViewerActivity(this, mResponse.mChange, null, null,
                 revision, base, current, comment.path, comment.id, DIFF_REQUEST_CODE);
 
     }

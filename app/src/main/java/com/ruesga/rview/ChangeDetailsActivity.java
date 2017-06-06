@@ -291,7 +291,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
         String current = String.valueOf(change.revisions.get(revisionId).number);
         ActivityHelper.openDiffViewerActivity(
-                this, change, /*files*/null, revisionId, base, current, file, null, 0);
+                this, change, /*files*/null, /*info*/null, revisionId, base, current, file, null, 0);
         finish();
     }
 

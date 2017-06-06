@@ -47,6 +47,7 @@ import com.ruesga.rview.fragments.RelatedChangesFragment;
 import com.ruesga.rview.fragments.StatsFragment;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -57,6 +58,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class ActivityHelper {
 
@@ -347,23 +349,23 @@ public class ActivityHelper {
     }
 
     public static void openDiffViewerActivity(Fragment fragment, ChangeInfo change,
-            ArrayList<String> files, String revisionId, String base, String current,
+            ArrayList<String> files, Map<String, FileInfo> info, String revisionId, String base, String current,
             String file, String comment, int requestCode) {
-        Intent intent = getOpenDiffViewerActivityIntent(fragment.getContext(), change,
-                files, revisionId, base, current, file, comment, requestCode);
+        Intent intent = getOpenDiffViewerActivityIntent(fragment.getContext(), change, files, info,
+                revisionId, base, current, file, comment, requestCode);
         fragment.startActivityForResult(intent, requestCode);
     }
 
     public static void openDiffViewerActivity(Activity activity, ChangeInfo change,
-            ArrayList<String> files, String revisionId, String base, String current,
+            ArrayList<String> files, Map<String, FileInfo> info, String revisionId, String base, String current,
             String file, String comment, int requestCode) {
-        Intent intent = getOpenDiffViewerActivityIntent(activity, change, files, revisionId, base,
-                current, file, comment, requestCode);
+        Intent intent = getOpenDiffViewerActivityIntent(activity, change, files, info,
+                revisionId, base, current, file, comment, requestCode);
         activity.startActivityForResult(intent, requestCode);
     }
 
     private static Intent getOpenDiffViewerActivityIntent(Context context, ChangeInfo change,
-            ArrayList<String> files, String revisionId, String base, String current,
+            ArrayList<String> files, Map<String, FileInfo> info, String revisionId, String base, String current,
             String file, String comment, int requestCode) {
         Intent intent = new Intent(context, DiffViewerActivity.class);
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
@@ -382,6 +384,11 @@ public class ActivityHelper {
                 String prefix = (base == null ? "0" : base) + "_" + current + "_";
                 CacheHelper.writeAccountDiffCacheFile(context, prefix + CacheHelper.CACHE_FILES_JSON,
                         SerializationManager.getInstance().toJson(files).getBytes());
+            }
+            if (info != null) {
+                String prefix = (base == null ? "0" : base) + "_" + current + "_";
+                CacheHelper.writeAccountDiffCacheFile(context, prefix + CacheHelper.CACHE_FILES_INFO_JSON,
+                        SerializationManager.getInstance().toJson(info).getBytes());
             }
         } catch (IOException ex) {
             // Ignore

@@ -74,6 +74,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +127,10 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
         public void onFileChooserPressed(View v) {
             mFragment.performFileChooser(v);
+        }
+
+        public void onShowFileDetailsPressed(View v) {
+            mFragment.performShowFileDetails();
         }
 
         public void onBaseChooserPressed(View v) {
@@ -270,13 +275,27 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         }
     };
 
-    private final RxLoaderObserver<ArrayList<String>> mFilesObserver
-            = new RxLoaderObserver<ArrayList<String>>() {
+    private final RxLoaderObserver<Map<String, FileInfo>> mFilesObserver
+            = new RxLoaderObserver<Map<String, FileInfo>>() {
         @Override
-        public void onNext(ArrayList<String> response) {
+        public void onNext(Map<String, FileInfo> response) {
             // Refresh the page controller
+            mFilesInfo.clear();
+            mFilesInfo.putAll(response);
             mFiles.clear();
-            mFiles.addAll(new ArrayList<>(response));
+            mFiles.addAll(new ArrayList<>(response.keySet()));
+            Collections.sort(mFiles, (o1, o2) -> {
+                if (o1.equals(o2)) {
+                    return 0;
+                }
+                if (o1.equals(Constants.COMMIT_MESSAGE)) {
+                    return -1;
+                }
+                if (o2.equals(Constants.COMMIT_MESSAGE)) {
+                    return 1;
+                }
+                return o1.compareTo(o2);
+            });
             mCurrentFile = mFiles.indexOf(mFile);
 
             try {
@@ -285,6 +304,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                 CacheHelper.writeAccountDiffCacheFile(getContext(),
                         prefix + CacheHelper.CACHE_FILES_JSON,
                         SerializationManager.getInstance().toJson(mFiles).getBytes());
+                CacheHelper.writeAccountDiffCacheFile(getContext(),
+                        prefix + CacheHelper.CACHE_FILES_INFO_JSON,
+                        SerializationManager.getInstance().toJson(mFilesInfo).getBytes());
             } catch (IOException ex) {
                 Log.e(TAG, "Failed to save files cached data", ex);
             }
@@ -355,12 +377,13 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private ChangeInfo mChange;
     private final ArrayList<String> mFiles = new ArrayList<>();
+    private final Map<String, FileInfo> mFilesInfo = new HashMap<>();
     private String mRevisionId;
     private String mFile;
     private String mBase;
     private String mComment;
 
-    private RxLoader2<String, String, ArrayList<String>> mFilesLoader;
+    private RxLoader2<String, String, Map<String, FileInfo>> mFilesLoader;
 
     private final List<String> mAllRevisions = new ArrayList<>();
 
@@ -452,6 +475,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
             // Deserialize the files
             mFiles.clear();
+            mFilesInfo.clear();
             String current = String.valueOf(mChange.revisions.get(mRevisionId).number);
             String prefix = (mBase == null ? "0" : mBase) + "_" + current + "_";
             String name = prefix + CacheHelper.CACHE_FILES_JSON;
@@ -460,6 +484,13 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
                 List<String> files = SerializationManager.getInstance().fromJson(
                         new String(CacheHelper.readAccountDiffCacheFile(getContext(), name)), type);
                 mFiles.addAll(files);
+            }
+            name = prefix + CacheHelper.CACHE_FILES_INFO_JSON;
+            if (CacheHelper.hasAccountDiffCache(getContext(), name)) {
+                Type type = new TypeToken<Map<String, FileInfo>>() {}.getType();
+                Map<String, FileInfo> infos = SerializationManager.getInstance().fromJson(
+                        new String(CacheHelper.readAccountDiffCacheFile(getContext(), name)), type);
+                mFilesInfo.putAll(infos);
             }
             if (!mFiles.isEmpty()) {
                 mCurrentFile = mFiles.indexOf(mFile);
@@ -700,6 +731,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         popupWindow.show();
     }
 
+    private void performShowFileDetails() {
+        FileDetailsDialogFragment fragment = FileDetailsDialogFragment.newInstance(
+                new File(mFile), mFilesInfo.get(mFile));
+        fragment.show(getChildFragmentManager(), FileDetailsDialogFragment.TAG);
+    }
+
     @SuppressWarnings("Convert2streamapi")
     private void performShowBaseChooser(View v) {
         final List<String> revisions = new ArrayList<>(mAllRevisions);
@@ -906,7 +943,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<ArrayList<String>> loadFiles(
+    private Observable<Map<String, FileInfo>> loadFiles(
             final String revisionId, final String baseRevisionId) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -916,15 +953,12 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         String prefix = (mBase == null ? "0" : mBase) + "_" + current + "_";
 
         return withCached(
-                    SafeObservable.fromNullCallable(() -> {
-                        Map<String, FileInfo> files =
-                                api.getChangeRevisionFiles(
-                                    String.valueOf(mChange.legacyChangeId),
-                                    revisionId, baseRevisionId, null, null).blockingFirst();
-                        return new ArrayList<>(files.keySet());
-                    }),
+                    SafeObservable.fromNullCallable(() ->
+                            api.getChangeRevisionFiles(
+                                String.valueOf(mChange.legacyChangeId),
+                                revisionId, baseRevisionId, null, null).blockingFirst()),
                     type,
-                    prefix + CacheHelper.CACHE_FILES_JSON
+                    prefix + CacheHelper.CACHE_FILES_INFO_JSON
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -945,10 +979,9 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
         } else {
             // Both have the same files, so use the files of the current revision
             // Revision doesn't contains the COMMIT_MESSAGE, so just add as well
-            ArrayList<String> files = new ArrayList<>(
-                    mChange.revisions.get(mRevisionId).files.keySet());
-            files.add(0, Constants.COMMIT_MESSAGE);
-            mFilesObserver.onNext(files);
+            Map<String, FileInfo> info = new HashMap<>(mChange.revisions.get(mRevisionId).files);
+            info.put(Constants.COMMIT_MESSAGE, null);
+            mFilesObserver.onNext(info);
         }
     }
 

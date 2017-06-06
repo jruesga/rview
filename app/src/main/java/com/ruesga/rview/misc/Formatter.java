@@ -654,6 +654,15 @@ public class Formatter {
         }
     }
 
+    @BindingAdapter("humanReadableSize")
+    public static void toHumanReadableSize(TextView v, Long size) {
+        if (size == null) {
+            v.setText(null);
+            return;
+        }
+        v.setText(android.text.format.Formatter.formatFileSize(v.getContext(), size));
+    }
+
     public static String toShortenCommit(String commitHash) {
         if (!TextUtils.isEmpty(commitHash) && commitHash.length() > 8) {
             return commitHash.substring(0, 8);
