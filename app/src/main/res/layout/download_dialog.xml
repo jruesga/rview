@@ -98,9 +98,12 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="12sp" />
 
-            <org.apmem.tools.layouts.FlowLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:flexWrap="wrap"
+                app:alignItems="flex_start"
+                app:alignContent="flex_start">
 
                 <com.ruesga.rview.widget.StyleableTextView
                     android:id="@+id/patch_file_base64"
@@ -135,7 +138,7 @@
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
 
-            </org.apmem.tools.layouts.FlowLayout>
+            </com.google.android.flexbox.FlexboxLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -152,9 +155,12 @@
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="12sp" />
 
-            <org.apmem.tools.layouts.FlowLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:flexWrap="wrap"
+                app:alignItems="flex_start"
+                app:alignContent="flex_start">
 
                 <com.ruesga.rview.widget.StyleableTextView
                     android:id="@+id/archive_tgz"
@@ -224,7 +230,7 @@
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
-            </org.apmem.tools.layouts.FlowLayout>
+            </com.google.android.flexbox.FlexboxLayout>
 
         </LinearLayout>
     </LinearLayout>
