@@ -66,7 +66,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, HasType.class,
             IsType.class, StatusType.class, null, null, null, null, AccountInfo.class, AccountInfo.class,
             AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class,
-            AccountInfo.class, AccountInfo.class, AccountInfo.class, SubmitRecordStatusType.class
+            AccountInfo.class, AccountInfo.class, AccountInfo.class, Relation.class, SubmitRecordStatusType.class
     };
 
     public static final Double[] SUPPORTED_VERSION = {
