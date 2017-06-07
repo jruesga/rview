@@ -62,6 +62,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -103,6 +104,10 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
 
         public void onFileChooserPressed(View v) {
             mFragment.performFileChooser(v);
+        }
+
+        public void onShowFileDetailsPressed(View v) {
+            mFragment.performShowFileDetails();
         }
 
         public void onActionPressed(View v) {
@@ -628,6 +633,14 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         });
         popupWindow.setModal(true);
         popupWindow.show();
+    }
+
+    private void performShowFileDetails() {
+        File file = new File(CacheHelper.getAccountDiffCacheDir(
+                getActivity(), mAccount), getContentCachedFileName(mFile));
+        FileDetailsDialogFragment fragment = FileDetailsDialogFragment.newInstance(
+                new File(mFile), file.length(), null);
+        fragment.show(getChildFragmentManager(), FileDetailsDialogFragment.TAG);
     }
 
     @SuppressWarnings("ConstantConditions")

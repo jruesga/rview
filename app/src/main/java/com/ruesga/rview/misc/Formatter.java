@@ -449,6 +449,28 @@ public class Formatter {
         view.setText(txt);
     }
 
+    @BindingAdapter("fileStatus")
+    public static void toFileStatus(TextView view, FileStatus status) {
+        if (status == null) {
+            view.setText(null);
+            return;
+        }
+
+        if (status.equals(FileStatus.R)) {
+            view.setText(R.string.file_status_renamed);
+        } else if (status.equals(FileStatus.C)) {
+            view.setText(R.string.file_status_copied);
+        } else if (status.equals(FileStatus.W)) {
+            view.setText(R.string.file_status_rewritten);
+        } else if (status.equals(FileStatus.A)) {
+            view.setText(R.string.file_status_added);
+        } else if (status.equals(FileStatus.D)) {
+            view.setText(R.string.file_status_deleted);
+        } else if (status.equals(FileStatus.M)) {
+            view.setText(R.string.file_status_modified);
+        }
+    }
+
     @BindingAdapter("file")
     public static void toFile(TextView view, String path) {
         view.setText(path.startsWith("/") ? path.substring(1) : path);

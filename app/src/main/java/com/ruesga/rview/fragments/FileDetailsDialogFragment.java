@@ -41,14 +41,16 @@ public class FileDetailsDialogFragment extends RevealDialogFragment {
         public String name;
         public String path;
         public String type;
+        public long size;
         public FileInfo info;
     }
 
-    public static FileDetailsDialogFragment newInstance(File file, FileInfo details) {
+    public static FileDetailsDialogFragment newInstance(File file, long size, FileInfo details) {
         FileDetailsDialogFragment fragment = new FileDetailsDialogFragment();
         Bundle arguments = new Bundle();
         Gson gson = SerializationManager.getInstance();
         arguments.putString(Constants.EXTRA_FILE, file.getPath());
+        arguments.putLong(Constants.EXTRA_SIZE, size);
         if (details != null) {
             arguments.putString(Constants.EXTRA_DATA, gson.toJson(details));
         }
@@ -73,9 +75,13 @@ public class FileDetailsDialogFragment extends RevealDialogFragment {
             mModel.path += "/";
         }
         mModel.type = StringHelper.getMimeType(file);
+        mModel.size = getArguments().getLong(Constants.EXTRA_SIZE);
         String json = getArguments().getString(Constants.EXTRA_DATA);
         if (json != null) {
             mModel.info = gson.fromJson(json, FileInfo.class);
+            if (mModel.info != null) {
+                mModel.size = mModel.info.size;
+            }
         }
     }
 

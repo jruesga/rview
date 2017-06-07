@@ -733,7 +733,7 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     private void performShowFileDetails() {
         FileDetailsDialogFragment fragment = FileDetailsDialogFragment.newInstance(
-                new File(mFile), mFilesInfo.get(mFile));
+                new File(mFile), 0, mFilesInfo.get(mFile));
         fragment.show(getChildFragmentManager(), FileDetailsDialogFragment.TAG);
     }
 

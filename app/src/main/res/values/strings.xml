@@ -303,6 +303,9 @@
     <string name="file_status_renamed">Renamed</string>
     <string name="file_status_copied">Copied</string>
     <string name="file_status_rewritten">Rewritten</string>
+    <string name="file_status_added">Added</string>
+    <string name="file_status_deleted">Deleted</string>
+    <string name="file_status_modified">Modified</string>
 
     <!-- Change statuses -->
     <string name="change_statuses_submitted">Submitted</string>
@@ -366,6 +369,7 @@
     <string name="file_details_dialog_path_title">Path</string>
     <string name="file_details_dialog_type_title">Type</string>
     <string name="file_details_dialog_size_title">Size</string>
+    <string name="file_details_dialog_status_title">Status</string>
     <string name="file_details_dialog_diff_title">Diff</string>
 
     <!-- Move branch dialog -->

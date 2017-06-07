@@ -50,6 +50,7 @@ public class Constants {
     public static final String EXTRA_SOURCE = "source";
     public static final String EXTRA_NOTIFICATION_GROUP_ID = "notification_group_id";
     public static final String EXTRA_CONTENT_FILE = "content_file";
+    public static final String EXTRA_SIZE = "size";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
     public static final String EXTRA_FORCE_SINGLE_PANEL = "force_single_panel";
