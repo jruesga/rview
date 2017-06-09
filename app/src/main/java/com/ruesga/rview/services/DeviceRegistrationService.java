@@ -50,7 +50,7 @@ public class DeviceRegistrationService extends IntentService {
     @Override
     @SuppressWarnings("Convert2streamapi")
     protected void onHandleIntent(Intent intent) {
-        if (intent != null && intent.getAction().equals(REGISTER_DEVICE_ACTION)) {
+        if (intent != null && REGISTER_DEVICE_ACTION.equals(intent.getAction())) {
             String account = intent.getStringExtra(EXTRA_ACCOUNT);
             List<Account> accounts = Preferences.getAccounts(this);
             for (Account acct : accounts) {

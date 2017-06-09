@@ -45,7 +45,7 @@ public class AccountStatusFetcherService extends IntentService {
     @Override
     @SuppressWarnings("Convert2streamapi")
     protected void onHandleIntent(Intent intent) {
-        if (intent != null && intent.getAction().equals(ACCOUNT_STATUS_FETCHER_ACTION)) {
+        if (intent != null && ACCOUNT_STATUS_FETCHER_ACTION.equals(intent.getAction())) {
             String account = intent.getStringExtra(EXTRA_ACCOUNT);
             List<Account> accounts = Preferences.getAccounts(this);
             for (Account acct : accounts) {

@@ -52,7 +52,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        final String action = intent.getAction();
+        final String action = intent != null ? intent.getAction() : null;
 
         if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
             // If locale changed then recreate the notifications to display the labels
