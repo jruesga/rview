@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationManagerCompat;
 import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ActivityBaseBinding;
@@ -63,7 +64,7 @@ public class AccountSettingsActivity extends AppCompatDelegateActivity {
         }
 
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                .setAllowOptimization(false);
+                .setReorderingAllowed(false);
         Fragment fragment;
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
@@ -82,10 +83,10 @@ public class AccountSettingsActivity extends AppCompatDelegateActivity {
         if (account != null && account.hasAuthenticatedAccessMode()
                 && account.hasNotificationsSupport()) {
             // Register device
-            Intent intent = new Intent(this, DeviceRegistrationService.class);
+            Intent intent = new Intent();
             intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
             intent.putExtra(DeviceRegistrationService.EXTRA_ACCOUNT, account.getAccountHash());
-            startService(intent);
+            DeviceRegistrationService.enqueueWork(this, intent);
         }
     }
 

@@ -41,7 +41,7 @@
             android:text="@string/change_action_details"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorAccent"
-            app:font="condensed"
+            app:fontFamilyType="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>
 

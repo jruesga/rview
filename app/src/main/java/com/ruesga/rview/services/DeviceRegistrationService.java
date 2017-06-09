@@ -15,9 +15,10 @@
  */
 package com.ruesga.rview.services;
 
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -34,7 +35,7 @@ import java.util.List;
 import me.tatarka.rxloader2.safe.Empty;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
-public class DeviceRegistrationService extends IntentService {
+public class DeviceRegistrationService extends JobIntentService {
 
     private static final String TAG = "DeviceRegisterService";
 
@@ -43,14 +44,20 @@ public class DeviceRegistrationService extends IntentService {
 
     private static final String TOKEN_SCOPE = "FCM";
 
+    private static final int JOB_ID = 1001;
+
     public DeviceRegistrationService() {
-        super(TAG);
+        super();
+    }
+
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, DeviceRegistrationService.class, JOB_ID, work);
     }
 
     @Override
     @SuppressWarnings("Convert2streamapi")
-    protected void onHandleIntent(Intent intent) {
-        if (intent != null && REGISTER_DEVICE_ACTION.equals(intent.getAction())) {
+    protected void onHandleWork(@NonNull Intent intent) {
+        if (REGISTER_DEVICE_ACTION.equals(intent.getAction())) {
             String account = intent.getStringExtra(EXTRA_ACCOUNT);
             List<Account> accounts = Preferences.getAccounts(this);
             for (Account acct : accounts) {

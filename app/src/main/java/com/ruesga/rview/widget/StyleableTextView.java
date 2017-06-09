@@ -56,7 +56,7 @@ public class StyleableTextView extends SelectableCompatTextView {
                 int attr = appearance.getIndex(i);
 
                 switch (attr) {
-                    case R.styleable.StyleableTextView_font:
+                    case R.styleable.StyleableTextView_fontFamilyType:
                         mTypefaceValue = appearance.getInt(attr, -1);
                         break;
                     case R.styleable.StyleableTextView_allCaps:
@@ -73,7 +73,7 @@ public class StyleableTextView extends SelectableCompatTextView {
             int attr = a.getIndex(i);
 
             switch (attr) {
-                case R.styleable.StyleableTextView_font:
+                case R.styleable.StyleableTextView_fontFamilyType:
                     mTypefaceValue = a.getInt(attr, -1);
                     break;
                 case R.styleable.StyleableTextView_allCaps:

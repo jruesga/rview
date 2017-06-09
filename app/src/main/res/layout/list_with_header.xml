@@ -121,7 +121,7 @@
                         android:onClick="@{handlers::onListHeaderActionPressed}"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?attr/colorAccent"
-                        app:font="condensed"
+                        app:fontFamilyType="condensed"
                         app:allCaps="true"
                         android:textSize="12sp"/>
 
@@ -137,7 +137,7 @@
                         android:onClick="@{handlers::onListHeaderActionPressed}"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?attr/colorAccent"
-                        app:font="condensed"
+                        app:fontFamilyType="condensed"
                         app:allCaps="true"
                         android:textSize="12sp"/>
 
@@ -153,7 +153,7 @@
                         android:onClick="@{handlers::onListHeaderActionPressed}"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?attr/colorAccent"
-                        app:font="condensed"
+                        app:fontFamilyType="condensed"
                         app:allCaps="true"
                         android:textSize="12sp"/>
 
@@ -169,7 +169,7 @@
                         android:onClick="@{handlers::onListHeaderActionPressed}"
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:textColor="?attr/colorAccent"
-                        app:font="condensed"
+                        app:fontFamilyType="condensed"
                         app:allCaps="true"
                         android:textSize="12sp"/>
                 </com.google.android.flexbox.FlexboxLayout>

@@ -46,7 +46,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{(safeUnbox(isLeft) ? model.hasLeftCommentAction : model.hasRightCommentAction) ? View.VISIBLE : View.GONE}"
             android:textColor="?attr/colorAccent"
-            app:font="condensed"
+            app:fontFamilyType="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>
 
@@ -64,7 +64,7 @@
             app:bindToFeature="@{Features.BLAME}"
             app:bindToBoolean="@{(safeUnbox(isLeft) ? model.hasLeftBlameAction : model.hasRightBlameAction)}"
             android:textColor="@{((safeUnbox(isLeft) &amp;&amp; model.isLeftBlame) || ((!safeUnbox(isLeft)) &amp;&amp; model.isRightBlame)) ? @color/primaryDarkForeground : @color/accent}"
-            app:font="condensed"
+            app:fontFamilyType="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>
 
@@ -81,7 +81,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{(safeUnbox(isLeft) ? model.hasLeftDownloadAction : model.hasRightDownloadAction) ? View.VISIBLE : View.GONE}"
             android:textColor="?attr/colorAccent"
-            app:font="condensed"
+            app:fontFamilyType="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>
 
@@ -98,7 +98,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:visibility="@{(safeUnbox(isLeft) ? model.hasLeftDownloadAction : model.hasRightDownloadAction) ? View.VISIBLE : View.GONE}"
             android:textColor="?attr/colorAccent"
-            app:font="condensed"
+            app:fontFamilyType="condensed"
             app:allCaps="true"
             android:textSize="12sp"/>
 

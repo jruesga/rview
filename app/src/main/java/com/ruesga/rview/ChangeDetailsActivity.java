@@ -265,7 +265,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
 
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                .setAllowOptimization(false);
+                .setReorderingAllowed(false);
         Fragment fragment;
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);

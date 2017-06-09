@@ -330,7 +330,7 @@
                     android:text="@string/change_details_related_changes"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
@@ -346,7 +346,7 @@
                     android:text="@string/change_details_download_patchset"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
@@ -363,7 +363,7 @@
                     android:text="@string/change_details_view_patchset"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
@@ -381,7 +381,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="@color/primaryDarkForeground"
                     android:visibility="@{(safeUnbox(isAuthenticated) &amp;&amp; safeUnbox(isCurrentRevision)) ? View.VISIBLE : View.GONE}"
-                    app:font="boldCondensed"
+                    app:fontFamilyType="boldCondensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>

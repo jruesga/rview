@@ -16,12 +16,12 @@
 
 ext {
     libraries = [
-        support                     : '25.3.1',
-        firebase                    : '10.2.6',
-        gson                        : '2.8.0',
-        retrofit2                   : '2.2.0',
-        okhttp3                     : '3.7.0',
-        okio                        : '1.12.0',
+        support                     : '26.0.0-beta2',
+        firebase                    : '11.0.0',
+        gson                        : '2.8.1',
+        retrofit2                   : '2.3.0',
+        okhttp3                     : '3.8.0',
+        okio                        : '1.13.0',
         okhttp_digest               : 'f8af82f343',
         rxjava                      : '2.1.0',
         rxandroid                   : '2.0.1',
@@ -47,7 +47,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.7.22'
+        mockito                     : '2.8.9'
     ]
 }
 
@@ -59,11 +59,11 @@ allprojects {
             maven { url 'https://maven.fabric.io/public' }
         }
         dependencies {
-            classpath 'com.android.tools.build:gradle:2.3.2'
+            classpath 'com.android.tools.build:gradle:2.3.3'
             classpath 'me.tatarka:gradle-retrolambda:3.6.1'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.4'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.22.1'
+            classpath 'io.fabric.tools:gradle:1.22.2'
         }
     }
 
@@ -85,12 +85,12 @@ subprojects {
     afterEvaluate {project ->
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
             android {
-                compileSdkVersion 25
-                buildToolsVersion '25.0.3'
+                compileSdkVersion 26
+                buildToolsVersion '26.0.0'
 
                 defaultConfig {
                     minSdkVersion 16
-                    targetSdkVersion 25
+                    targetSdkVersion 26
 
                     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
                 }

@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:addedVsDeleted="@{model.info}"
-            app:font="bold"
+            app:fontFamilyType="bold"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:textColor="?android:attr/textColorPrimary" />
 

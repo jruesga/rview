@@ -67,7 +67,7 @@
                 android:textColor="@color/primaryDarkForeground"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
-                app:font="monospace"
+                app:fontFamilyType="monospace"
                 android:text="@{model.lineNumberA}"/>
         </FrameLayout>
 
@@ -86,7 +86,7 @@
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:maxLines="1"
                 android:ellipsize="end"
-                app:font="boldMonospace"
+                app:fontFamilyType="boldMonospace"
                 android:text="@{model.blameA}"/>
 
         </LinearLayout>
@@ -123,7 +123,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
-                app:font="monospace"
+                app:fontFamilyType="monospace"
                 android:text="@{model.lineNumberB}"/>
         </FrameLayout>
 
@@ -142,7 +142,7 @@
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:maxLines="1"
                 android:ellipsize="end"
-                app:font="boldMonospace"
+                app:fontFamilyType="boldMonospace"
                 android:text="@{model.blameB}"/>
 
         </LinearLayout>
@@ -169,7 +169,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
-                app:font="monospace"
+                app:fontFamilyType="monospace"
                 android:gravity="center_horizontal"
                 android:visibility="@{safeUnbox(mode) == DiffView.UNIFIED_MODE ? View.VISIBLE : View.GONE}"
                 android:text='@{model.lineNumberA != null &amp;&amp; model.lineNumberB != null ? " " : model.lineNumberA != null ? "-" : "+"}'/>
@@ -181,7 +181,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
-                app:font="monospace"
+                app:fontFamilyType="monospace"
                 android:paddingTop="@dimen/diff_line_text_padding"
                 android:paddingBottom="@dimen/diff_line_text_padding"
                 android:paddingLeft="2dp"
@@ -227,7 +227,7 @@
                 android:padding="@dimen/diff_line_text_padding"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
-                app:font="monospace"
+                app:fontFamilyType="monospace"
                 android:text="@{model.lineNumberB}"/>
         </FrameLayout>
 
@@ -246,7 +246,7 @@
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:maxLines="1"
                 android:ellipsize="end"
-                app:font="boldMonospace"
+                app:fontFamilyType="boldMonospace"
                 android:text="@{model.blameB}"/>
 
         </LinearLayout>
@@ -284,7 +284,7 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorPrimary"
-                app:font="monospace"
+                app:fontFamilyType="monospace"
                 android:paddingTop="@dimen/diff_line_text_padding"
                 android:paddingBottom="@dimen/diff_line_text_padding"
                 android:paddingLeft="2dp"

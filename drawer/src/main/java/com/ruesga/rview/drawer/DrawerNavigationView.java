@@ -29,8 +29,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StyleRes;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.os.ParcelableCompat;
-import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v4.view.AbsSavedState;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.WindowInsetsCompat;
@@ -558,18 +556,23 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
             dest.writeBundle(menuState);
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
+        public static final Parcelable.ClassLoaderCreator<SavedState> CREATOR
+                = new Parcelable.ClassLoaderCreator<SavedState>() {
             @Override
-            public SavedState createFromParcel(Parcel parcel, ClassLoader loader) {
-                return new SavedState(parcel, loader);
+            public SavedState createFromParcel(Parcel source) {
+                return createFromParcel(source, null);
+            }
+
+            @Override
+            public SavedState createFromParcel(Parcel source, ClassLoader loader) {
+                return new SavedState(source, loader);
             }
 
             @Override
             public SavedState[] newArray(int size) {
                 return new SavedState[size];
             }
-        });
+        };
     }
 
 }

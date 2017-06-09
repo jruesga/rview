@@ -37,6 +37,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -82,6 +83,8 @@ import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.OTHER_ACCOUNTS_GROUP_BASE_ID;
 
 public class MainActivity extends ChangeListBaseActivity {
+
+    private static final String TAG = "MainActivity";
 
     private static final int REQUEST_WIZARD = 1;
     private static final int REQUEST_ACCOUNT_SETTINGS = 2;
@@ -184,7 +187,7 @@ public class MainActivity extends ChangeListBaseActivity {
             if (mAccount != null && intent != null) {
                 String account = intent.getStringExtra(AccountStatusFetcherService.EXTRA_ACCOUNT);
                 if (mAccount.getAccountHash().equals(account)) {
-                    mAccount = Preferences.getAccount(context);;
+                    mAccount = Preferences.getAccount(context);
                     updateAccountStatus();
                     performUpdateNavigationDrawer(mModel.isAccountExpanded);
                 }
@@ -263,7 +266,7 @@ public class MainActivity extends ChangeListBaseActivity {
                     savedInstanceState, FRAGMENT_TAG_LIST);
             if (listFragment != null) {
                 FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                        .setAllowOptimization(false);
+                        .setReorderingAllowed(false);
                 tx.replace(R.id.content, listFragment, FRAGMENT_TAG_LIST);
                 if (detailsFragment != null) {
                     tx.replace(R.id.details, detailsFragment, FRAGMENT_TAG_DETAILS);
@@ -899,7 +902,7 @@ public class MainActivity extends ChangeListBaseActivity {
         // Open the dashboard fragment
         mModel.selectedChangeId = INVALID_ITEM;
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                .setAllowOptimization(false);
+                .setReorderingAllowed(false);
         Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
         if (oldFragment != null) {
             tx.remove(oldFragment);
@@ -923,7 +926,7 @@ public class MainActivity extends ChangeListBaseActivity {
         // Open the filter fragment
         mModel.selectedChangeId = INVALID_ITEM;
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                .setAllowOptimization(false);
+                .setReorderingAllowed(false);
         Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
         if (oldFragment != null) {
             tx.remove(oldFragment);
@@ -1038,9 +1041,16 @@ public class MainActivity extends ChangeListBaseActivity {
     }
 
     private void fetchAccountStatus(Account account) {
-        Intent intent = new Intent(this, AccountStatusFetcherService.class);
-        intent.setAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
-        intent.putExtra(AccountStatusFetcherService.EXTRA_ACCOUNT, account.getAccountHash());
-        startService(intent);
+        // This is running while the app is in foreground so there is not risk on
+        // perform this operation. In addition, we need the account information asap, so
+        // just try to start the service directly.
+        try {
+            Intent intent = new Intent(this, AccountStatusFetcherService.class);
+            intent.setAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
+            intent.putExtra(AccountStatusFetcherService.EXTRA_ACCOUNT, account.getAccountHash());
+            startService(intent);
+        } catch (IllegalStateException ex) {
+            Log.w(TAG, "Can't start account fetcher service.", ex);
+        }
     }
 }

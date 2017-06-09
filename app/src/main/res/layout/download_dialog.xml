@@ -116,7 +116,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
                     android:onClick="@{handlers::onDownloadActionPressed}"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
@@ -133,7 +133,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
                     android:onClick="@{handlers::onDownloadActionPressed}"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
@@ -173,7 +173,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
                     android:onClick="@{handlers::onDownloadActionPressed}"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
@@ -190,7 +190,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
                     android:onClick="@{handlers::onDownloadActionPressed}"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
@@ -208,7 +208,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
                     android:onClick="@{handlers::onDownloadActionPressed}"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>
@@ -226,7 +226,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?attr/colorAccent"
                     android:onClick="@{handlers::onDownloadActionPressed}"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     app:allCaps="true"
                     android:textSize="12sp"
                     tools:ignore="RtlSymmetry"/>

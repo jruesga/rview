@@ -33,8 +33,6 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v4.os.ParcelableCompat;
-import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v4.view.AbsSavedState;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatEditText;
@@ -61,6 +59,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.drawer.DrawerNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -828,17 +827,22 @@ public class TagEditTextView extends LinearLayout {
             }
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
+        public static final Parcelable.ClassLoaderCreator<DrawerNavigationView.SavedState> CREATOR
+                = new Parcelable.ClassLoaderCreator<DrawerNavigationView.SavedState>() {
             @Override
-            public SavedState createFromParcel(Parcel parcel, ClassLoader loader) {
-                return new SavedState(parcel, loader);
+            public DrawerNavigationView.SavedState createFromParcel(Parcel source) {
+                return createFromParcel(source, null);
             }
 
             @Override
-            public SavedState[] newArray(int size) {
-                return new SavedState[size];
+            public DrawerNavigationView.SavedState createFromParcel(Parcel source, ClassLoader loader) {
+                return new DrawerNavigationView.SavedState(source, loader);
             }
-        });
+
+            @Override
+            public DrawerNavigationView.SavedState[] newArray(int size) {
+                return new DrawerNavigationView.SavedState[size];
+            }
+        };
     }
 }

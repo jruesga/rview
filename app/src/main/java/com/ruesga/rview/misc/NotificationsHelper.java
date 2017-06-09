@@ -226,7 +226,7 @@ public class NotificationsHelper {
     private static void createSummaryGroupNotification(
             Context ctx, Account account, Set<String> notifications, boolean feedback) {
         int notificationId = FowlerNollVo.fnv1_32(account.getAccountHash().getBytes()).intValue();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, obtainChannelId(account))
                 .setContentTitle(getNotificationSubText(account))
                 .setSubText(getNotificationSubText(account))
                 .setSmallIcon(R.drawable.ic_stat_notify)
@@ -254,8 +254,7 @@ public class NotificationsHelper {
 
     private static NotificationCompat.Builder createNotificationBuilder(
             Context ctx, Account account, NotificationEntity entity, boolean feedback) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx);
-        return builder
+        return new NotificationCompat.Builder(ctx, obtainChannelId(account))
                 .setContentTitle(entity.mNotification.subject)
                 .setContentText(getContentTitle(ctx, entity, true))
                 .setSubText(getNotificationSubText(account))
@@ -485,5 +484,10 @@ public class NotificationsHelper {
         }
 
         return reviewers;
+    }
+
+    private static String obtainChannelId(Account account) {
+        return "Rview - " + account.getRepositoryDisplayName() + " - "
+                + account.getAccountDisplayName();
     }
 }

@@ -84,7 +84,7 @@ public class EditorActivity extends BaseActivity {
                     savedInstanceState, FRAGMENT_TAG);
             if (fragment != null) {
                 FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                        .setAllowOptimization(false);
+                        .setReorderingAllowed(false);
                 tx.replace(R.id.content, fragment, FRAGMENT_TAG);
                 tx.commit();
             }
@@ -98,7 +98,7 @@ public class EditorActivity extends BaseActivity {
 
     private void createEditorFragment() {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                .setAllowOptimization(false);
+                .setReorderingAllowed(false);
         Fragment fragment = EditorFragment.newInstance(
                 mLegacyChangeId, mChangeId, mFileName, mContentFile);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG);

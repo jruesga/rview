@@ -64,7 +64,7 @@
                 android:textColor="@color/primaryDarkForeground"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
-                app:font="monospace"/>
+                app:fontFamilyType="monospace"/>
         </FrameLayout>
 
         <View
@@ -97,7 +97,7 @@
                 android:textColor="@color/primaryDarkForeground"
                 android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                 android:gravity="end"
-                app:font="monospace"/>
+                app:fontFamilyType="monospace"/>
         </FrameLayout>
 
         <View

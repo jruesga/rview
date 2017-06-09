@@ -79,7 +79,7 @@
                     android:textColor="?android:attr/textColorPrimary"
                     android:text="@{model.status.equals(ChangeStatus.MERGED) ? @string/menu_merged : model.status.equals(ChangeStatus.ABANDONED) ? @string/menu_abandoned : model.status.equals(ChangeStatus.DRAFT) ? @string/menu_draft : null}"
                     app:allCaps="true"
-                    app:font="condensed"
+                    app:fontFamilyType="condensed"
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:textSize="8sp"

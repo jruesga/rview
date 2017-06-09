@@ -92,9 +92,9 @@ public class RviewApplication extends Application {
         NotificationsHelper.recreateNotifications(getApplicationContext());
 
         // Register devices for push notifications
-        Intent intent = new Intent(this, DeviceRegistrationService.class);
+        Intent intent = new Intent();
         intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
-        startService(intent);
+        DeviceRegistrationService.enqueueWork(this, intent);
 
         // Enable Url Handlers
         enableExternalUrlHandlers();

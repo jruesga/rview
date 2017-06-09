@@ -105,7 +105,7 @@
                 android:textColor="@color/primaryDarkForeground"
                 android:textSize="14sp"
                 android:text="@string/account_status_suggestions_title"
-                app:font="boldCondensed"
+                app:fontFamilyType="boldCondensed"
                 app:allCaps="true"/>
 
             <ScrollView

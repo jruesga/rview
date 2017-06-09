@@ -32,8 +32,8 @@ public class FirebaseIdService extends FirebaseInstanceIdService {
         }
 
         // Register all accounts
-        Intent intent = new Intent(this, DeviceRegistrationService.class);
+        Intent intent = new Intent();
         intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
-        startService(intent);
+        DeviceRegistrationService.enqueueWork(this, intent);
     }
 }

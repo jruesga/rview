@@ -40,7 +40,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             app:score="@{score}"
-            app:font="bold"
+            app:fontFamilyType="bold"
             android:textSize="11sp"
             tools:ignore="SmallSp"/>
 

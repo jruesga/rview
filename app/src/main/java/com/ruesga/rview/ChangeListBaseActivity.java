@@ -77,7 +77,7 @@ public abstract class ChangeListBaseActivity extends BaseActivity implements OnC
             if (changeId == ChangeListFragment.NO_SELECTION) {
                 // Remove the details fragment
                 FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                        .setAllowOptimization(false);
+                        .setReorderingAllowed(false);
                 Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(
                         FRAGMENT_TAG_DETAILS);
                 if (oldFragment != null) {
@@ -93,7 +93,7 @@ public abstract class ChangeListBaseActivity extends BaseActivity implements OnC
 
     private void loadChangeDetailsFragment(int changeId) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                .setAllowOptimization(false);
+                .setReorderingAllowed(false);
         Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(
                 FRAGMENT_TAG_DETAILS);
         if (oldFragment != null) {

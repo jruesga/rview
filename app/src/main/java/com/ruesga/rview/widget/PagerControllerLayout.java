@@ -170,7 +170,7 @@ public class PagerControllerLayout extends FrameLayout {
         }
 
         FragmentTransaction tx = mAdapter.getFragmentManager().beginTransaction()
-                .setAllowOptimization(false);
+                .setReorderingAllowed(false);
         Fragment oldFragment = mAdapter.getFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         if (oldFragment != null) {
             tx.remove(oldFragment);

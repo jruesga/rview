@@ -70,10 +70,10 @@ public class NotificationService extends FirebaseMessagingService {
             Log.i(TAG, "Can't handle notification because account has disabled notifications");
 
             // Register device
-            Intent intent = new Intent(this, DeviceRegistrationService.class);
+            Intent intent = new Intent();
             intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
             intent.putExtra(DeviceRegistrationService.EXTRA_ACCOUNT, account.getAccountHash());
-            startService(intent);
+            DeviceRegistrationService.enqueueWork(this, intent);
             return;
         }
 

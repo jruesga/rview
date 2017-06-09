@@ -104,7 +104,7 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity implement
                     savedInstanceState, FRAGMENT_TAG_LIST);
             if (listFragment != null) {
                 FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                        .setAllowOptimization(false);
+                        .setReorderingAllowed(false);
                 tx.replace(R.id.content, listFragment, FRAGMENT_TAG_LIST);
                 if (detailsFragment != null) {
                     tx.replace(R.id.details, detailsFragment, FRAGMENT_TAG_DETAILS);
@@ -138,7 +138,7 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity implement
 
     private void openChangeListByFilterFragment(String filter) {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                .setAllowOptimization(false);
+                .setReorderingAllowed(false);
         Fragment fragment = ChangeListByFilterFragment.newInstance(filter);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG_LIST);
         tx.commit();

@@ -55,7 +55,7 @@
             android:layout_alignParentTop="true"
             app:accountDisplayName="@{model.author}"
             android:tag="@{index}"
-            app:font="bold"
+            app:fontFamilyType="bold"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?android:attr/textColorPrimary" />
 
