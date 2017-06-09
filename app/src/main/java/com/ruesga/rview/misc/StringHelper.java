@@ -171,7 +171,7 @@ public class StringHelper {
             return msg;
         }
         int p = msg.length();
-        while (msg.charAt(p - 1) == '\n' || msg.charAt(p - 1) == '\r') {
+        while (p > 0 && (msg.charAt(p - 1) == '\n' || msg.charAt(p - 1) == '\r')) {
             p--;
         }
         return msg.substring(0, p);
