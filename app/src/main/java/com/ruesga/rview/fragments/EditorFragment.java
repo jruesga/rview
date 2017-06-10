@@ -46,6 +46,7 @@ import com.ruesga.rview.databinding.EditFileChooserHeaderBinding;
 import com.ruesga.rview.databinding.EditorFragmentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
@@ -834,13 +835,18 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         for (File edit : edits) {
             String hash = edit.getName().substring(0, edit.getName().length() - 5);
             String file = mFiles.get(mFilesHashes.indexOf(hash));
+            if (file.equals(Constants.COMMIT_MESSAGE)) {
+                ChangeEditMessageInput input = new ChangeEditMessageInput();
+                input.message = new String(readEditContent(file));
+                api.setChangeEditMessage(String.valueOf(mLegacyChangeId), input).blockingFirst();
+            } else {
+                // Extract the mime/type of the file
+                MediaType mediaType = MediaType.parse(StringHelper.getMimeType(new File(file)));
 
-            // Extract the mime/type of the file
-            MediaType mediaType = MediaType.parse(StringHelper.getMimeType(new File(file)));
-
-            // Send the request
-            RequestBody body = RequestBody.create(mediaType, readEditContent(file));
-            api.setChangeEdit(String.valueOf(mLegacyChangeId), file, body).blockingFirst();
+                // Send the request
+                RequestBody body = RequestBody.create(mediaType, readEditContent(file));
+                api.setChangeEdit(String.valueOf(mLegacyChangeId), file, body).blockingFirst();
+            }
         }
 
         // And now publish the edit
