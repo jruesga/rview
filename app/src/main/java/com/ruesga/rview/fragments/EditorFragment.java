@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -56,13 +57,13 @@ import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.EditorView;
 import com.ruesga.rview.widget.EditorView.OnContentChangedListener;
+import com.ruesga.rview.widget.EditorView.OnMessageListener;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -323,6 +324,20 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         }
     };
 
+    private OnMessageListener mMessageListener = new OnMessageListener() {
+        @Override
+        public void onErrorMessage(@StringRes int msg) {
+            Log.e(TAG, getString(msg));
+            ((BaseActivity) getActivity()).showError(msg);
+        }
+
+        @Override
+        public void onWarnMessage(@StringRes int msg) {
+            Log.w(TAG, getString(msg));
+            ((BaseActivity) getActivity()).showWarning(msg);
+        }
+    };
+
     private Handler.Callback mOnChangeCallback = msg -> {
         if (msg.what == READ_CONTENT_MESSAGE) {
             readFileContent(null);
@@ -403,7 +418,8 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
                 inflater, R.layout.editor_fragment, container, false);
         mBinding.editor
                 .setReadOnly(mReadOnly)
-                .listenOn(mContentChangedListener);
+                .listenOn(mContentChangedListener)
+                .listenOn(mMessageListener);
         return mBinding.getRoot();
     }
 

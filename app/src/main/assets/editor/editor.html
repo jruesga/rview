@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <script src="ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="ext-metadata.js" type="text/javascript" charset="utf-8"></script>
+    <script src="crc32.min.js" type="text/javascript" charset="utf-8"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -23,6 +24,7 @@
     var edt_content = '';
     var edt_last_change_event = 0;
     var edt_MAX_EXCHANGE_SIZE = 25000;
+    var edt_TOO_BIG_SIZE = 100000;
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/chrome");
     editor.session.setUseWrapMode(false);
@@ -53,8 +55,19 @@
     function addPartialContent(content) {
         edt_content += content;
     }
-    function loadContent(name) {
-        editor.session.setMode(edtFindByFileName(name));
+    function loadContent(name, crc) {
+        if (parseInt(crc) != -1 && parseInt(crc) != CRC32.str(edt_content)) {
+            console.log("edt:crc");
+            return;
+        }
+        var big = edt_content.length > edt_TOO_BIG_SIZE;
+        if (big) {
+            console.log("edt:big");
+        }
+
+        if (!big) {
+            editor.session.setMode(edtFindByFileName(name));
+        }
         editor.setValue(window.atob(edt_content), 0);
         editor.session.getSelection().clearSelection();
         editor.gotoLine(1, 0);
@@ -62,17 +75,17 @@
     }
     function readContent(key) {
         var encoded = window.btoa(editor.getValue());
-        do {
-            var l = Math.min(encoded.length, edt_MAX_EXCHANGE_SIZE);
-            var msg = encoded.substring(0, l);
-            console.log("edt:" + key + ":p:" + msg);
-
-            if (l <= edt_MAX_EXCHANGE_SIZE) {
-                break;
-            }
-            encoded = encoded.substring(edt_MAX_EXCHANGE_SIZE);
-        } while (encoded.length > edt_MAX_EXCHANGE_SIZE);
-        console.log("edt:" + key + ":f:");
+        var crc = -1;
+        if (encoded.length > 0) {
+            var s = 0;
+            do {
+                var e = Math.min(encoded.length - s, edt_MAX_EXCHANGE_SIZE);
+                console.log("edt:" + key + ":p:" + encoded.substr(s, e));
+                s += e;
+            } while (s < encoded.length);
+            crc = CRC32.str(encoded);
+        }
+        console.log("edt:" + key + ":f:" + crc);
     }
 </script>
 </body>

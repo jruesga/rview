@@ -21,6 +21,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Pair;
@@ -37,6 +38,7 @@ import com.ruesga.rview.R;
 
 import java.util.Random;
 import java.util.regex.Pattern;
+import java.util.zip.CRC32;
 
 public class EditorView extends FrameLayout {
 
@@ -47,6 +49,11 @@ public class EditorView extends FrameLayout {
 
     public interface OnContentChangedListener {
         void onContentChanged();
+    }
+
+    public interface OnMessageListener {
+        void onErrorMessage(@StringRes int msg);
+        void onWarnMessage(@StringRes int msg);
     }
 
     private final static int MAX_EXCHANGE_SIZE = 25000;
@@ -68,6 +75,7 @@ public class EditorView extends FrameLayout {
     private byte[] mPendingContent;
 
     private OnContentChangedListener mContentChangedListener;
+    private OnMessageListener mMessageListener;
 
     private SparseArray<Pair<StringBuilder, OnReadContentReadyListener>> mMap = new SparseArray<>();
 
@@ -130,6 +138,19 @@ public class EditorView extends FrameLayout {
             @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
                 final String msg = consoleMessage.message();
+                if (msg.equals("edt:crc")) {
+                    if (mMessageListener != null) {
+                        mMessageListener.onErrorMessage(R.string.editor_load_bad_crc);
+                    }
+                    return true;
+                }
+                if (msg.equals("edt:big")) {
+                    if (mMessageListener != null) {
+                        mMessageListener.onWarnMessage(R.string.editor_file_to_big);
+                    }
+                    return true;
+                }
+
                 if (msg.equals("edt:u")) {
                     if (!mIgnoreNextUnsavedEvent) {
                         mIsDirty = true;
@@ -154,7 +175,7 @@ public class EditorView extends FrameLayout {
                             // partial
                             o.first.append(v[3]);
                             break;
-                        default:
+                        case "f":
                             // finish
                             byte[] content;
                             if (o.first.length() == 0) {
@@ -162,6 +183,17 @@ public class EditorView extends FrameLayout {
                             } else {
                                 content = o.first.toString().getBytes();
                             }
+
+                            int crc = Integer.parseInt(v[3]);
+                            int computedCrc = crc(content);
+                            if (crc != -1 && crc != computedCrc) {
+                                if (mMessageListener != null) {
+                                    mMessageListener.onErrorMessage(R.string.editor_save_bad_crc);
+                                }
+                                return true;
+                            }
+                            System.out.println("CONSOLE: computed hash: " + crc);
+
                             o.second.onReadContentReady(content);
                             mMap.remove(key);
                             break;
@@ -226,6 +258,11 @@ public class EditorView extends FrameLayout {
         return this;
     }
 
+    public EditorView listenOn(OnMessageListener cb) {
+        mMessageListener = cb;
+        return this;
+    }
+
     public void loadContent(String fileName, byte[] content) {
         loadEncodedContent(fileName, Base64.encode(content, Base64.NO_WRAP));
     }
@@ -238,25 +275,23 @@ public class EditorView extends FrameLayout {
             return;
         }
 
+        int crc = 0;
         if (encoded.length > 0) {
             int s = 0;
             do {
-                int e = Math.min(encoded.length, s + MAX_EXCHANGE_SIZE);
+                int e = Math.min(encoded.length - s, MAX_EXCHANGE_SIZE);
                 String msg = new String(encoded, s, e);
                 mWebView.loadUrl("javascript: addPartialContent('" + msg + "');");
-
-                if (e <= MAX_EXCHANGE_SIZE) {
-                    break;
-                }
-                s = e;
-            } while (true);
+                s += e;
+            } while (s < encoded.length);
+            crc = crc(encoded);
         }
         mIgnoreNextUnsavedEvent = true;
         if (!mInitialLoad) {
             mIsDirty = false;
         }
         mInitialLoad = false;
-        mWebView.loadUrl("javascript: loadContent('" + fileName + "');");
+        mWebView.loadUrl("javascript: loadContent('" + fileName + "','" + crc + "');");
     }
 
     public void readContent(OnReadContentReadyListener cb) {
@@ -294,6 +329,12 @@ public class EditorView extends FrameLayout {
         mWrap = savedState.mWrap;
         mTextSize = savedState.mTextSize;
         mIsDirty = savedState.mIsDirty;
+    }
+
+    private static int crc(byte[] data) {
+        CRC32 crc = new CRC32();
+        crc.update(data);
+        return (int) crc.getValue();
     }
 
     static class SavedState extends BaseSavedState {
