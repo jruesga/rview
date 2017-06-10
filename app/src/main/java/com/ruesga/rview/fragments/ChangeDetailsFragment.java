@@ -982,14 +982,20 @@ public class ChangeDetailsFragment extends Fragment implements
             }
             if (result.reviewers != null) {
                 AccountInfo[] reviewers = mResponse.mChange.reviewers.get(ReviewerStatus.REVIEWER);
-                mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
-                        ModelHelper.addReviewers(result.reviewers, reviewers));
+                if (reviewers != null) {
+                    mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER,
+                            ModelHelper.addReviewers(result.reviewers, reviewers));
+                } else {
+                    mResponse.mChange.reviewers.put(ReviewerStatus.REVIEWER, result.reviewers);
+                }
             }
             if (result.ccs != null) {
                 AccountInfo[] ccs = mResponse.mChange.reviewers.get(ReviewerStatus.CC);
                 if (ccs != null) {
                     mResponse.mChange.reviewers.put(ReviewerStatus.CC,
                             ModelHelper.addReviewers(result.ccs, ccs));
+                } else {
+                    mResponse.mChange.reviewers.put(ReviewerStatus.CC, result.ccs);
                 }
             }
 
