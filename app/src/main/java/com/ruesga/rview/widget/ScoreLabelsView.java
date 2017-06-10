@@ -144,14 +144,14 @@ public class ScoreLabelsView extends FlexboxLayout {
                 if (info.blocking || info.rejected != null) {
                     model.score = "\u2717";
                     model.color = mRejectedColor;
+                } else if (info.approved != null) {
+                    model.score = "\u2713";
+                    model.color = mApprovedColor;
                 } else if (info.disliked != null) {
                     model.score = "-1";
                     model.color = mRejectedColor;
                 } else if (info.recommended != null) {
                     model.score = "+1";
-                    model.color = mApprovedColor;
-                } else if (info.approved != null) {
-                    model.score = "\u2713";
                     model.color = mApprovedColor;
                 } else {
                     model.score = " ";
