@@ -1431,6 +1431,8 @@ public class ChangeDetailsFragment extends Fragment implements
         boolean supportVotes = api.supportsFeature(Features.VOTES);
         boolean supportAssignee = api.supportsFeature(Features.ASSIGNEE);
         boolean canAssignee = response.mActions.containsKey(ModelHelper.ACTION_ASSIGNEE);
+        boolean supportsCC = api.supportsFeature(Features.CC) &&
+                mAccount.getServerInfo() != null && mAccount.getServerInfo().noteDbEnabled;
 
         mBinding.changeInfo.owner
                 .with(mPicasso)
@@ -1448,10 +1450,9 @@ public class ChangeDetailsFragment extends Fragment implements
                 .listenOn(mOnReviewerRemovedListener)
                 .withRemovableReviewers(open)
                 .withFilterCIAccounts(true)
-                .withReviewerStatus(ReviewerStatus.REVIEWER)
+                .withReviewerStatus(supportsCC ? ReviewerStatus.REVIEWER : null)
                 .from(response.mChange);
-        if (api.supportsFeature(Features.CC) &&
-                mAccount.getServerInfo() != null && mAccount.getServerInfo().noteDbEnabled) {
+        if (supportsCC) {
             mBinding.changeInfo.cc
                     .with(mPicasso)
                     .listenOn(mOnAccountChipClickedListener)

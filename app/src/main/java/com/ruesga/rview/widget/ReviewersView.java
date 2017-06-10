@@ -39,7 +39,7 @@ public class ReviewersView extends FlexboxLayout {
     private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
     private boolean mIsFilterCIAccounts;
-    private ReviewerStatus mReviewerStatus = ReviewerStatus.REVIEWER;
+    private ReviewerStatus mReviewerStatus = null;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
     private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
     private Object mTag;
@@ -152,7 +152,14 @@ public class ReviewersView extends FlexboxLayout {
 
     private List<AccountInfo> fromReviewers(ChangeInfo change) {
         List<AccountInfo> reviewers = new ArrayList<>();
-        if (change.reviewers.containsKey(mReviewerStatus)) {
+        if (mReviewerStatus == null) {
+            for (ReviewerStatus status : change.reviewers.keySet()) {
+                AccountInfo[] accounts = change.reviewers.get(status);
+                if (accounts != null) {
+                    reviewers.addAll(Arrays.asList(change.reviewers.get(status)));
+                }
+            }
+        } else if (change.reviewers.containsKey(mReviewerStatus)) {
             AccountInfo[] accounts = change.reviewers.get(mReviewerStatus);
             if (accounts != null) {
                 reviewers.addAll(Arrays.asList(accounts));
@@ -165,7 +172,18 @@ public class ReviewersView extends FlexboxLayout {
     private List<AccountInfo> fromLabels(ChangeInfo change) {
         List<Integer> accountIds = new ArrayList<>();
         List<AccountInfo> reviewers = new ArrayList<>();
-        if (mReviewerStatus.equals(ReviewerStatus.REVIEWER)) {
+        if (mReviewerStatus == null) {
+            for (String label : change.labels.keySet()) {
+                if (change.labels.get(label).all !=  null) {
+                    for (ApprovalInfo approval : change.labels.get(label).all) {
+                        if (!accountIds.contains(approval.owner.accountId)) {
+                            accountIds.add(approval.owner.accountId);
+                            reviewers.add(approval.owner);
+                        }
+                    }
+                }
+            }
+        } else  if (mReviewerStatus.equals(ReviewerStatus.REVIEWER)) {
             for (String label : change.labels.keySet()) {
                 if (change.labels.get(label).all != null) {
                     for (ApprovalInfo approval : change.labels.get(label).all) {
