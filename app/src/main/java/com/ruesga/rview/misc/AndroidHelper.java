@@ -45,6 +45,10 @@ public class AndroidHelper {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     }
 
+    public static boolean isApi26OrGreater() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
     @TargetApi(Build.VERSION_CODES.N)
     @SuppressWarnings("deprecation")
     public static Locale getCurrentLocale(Context context) {

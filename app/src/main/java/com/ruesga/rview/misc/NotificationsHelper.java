@@ -17,6 +17,9 @@ package com.ruesga.rview.misc;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +42,7 @@ import com.ruesga.rview.gerrit.model.AssigneeInfo;
 import com.ruesga.rview.gerrit.model.CloudNotificationEvents;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
 import com.ruesga.rview.receivers.NotificationReceiver;
 
@@ -226,7 +230,7 @@ public class NotificationsHelper {
     private static void createSummaryGroupNotification(
             Context ctx, Account account, Set<String> notifications, boolean feedback) {
         int notificationId = FowlerNollVo.fnv1_32(account.getAccountHash().getBytes()).intValue();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, obtainChannelId(account))
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(ctx, account.getAccountHash())
                 .setContentTitle(getNotificationSubText(account))
                 .setSubText(getNotificationSubText(account))
                 .setSmallIcon(R.drawable.ic_stat_notify)
@@ -254,7 +258,7 @@ public class NotificationsHelper {
 
     private static NotificationCompat.Builder createNotificationBuilder(
             Context ctx, Account account, NotificationEntity entity, boolean feedback) {
-        return new NotificationCompat.Builder(ctx, obtainChannelId(account))
+        return new NotificationCompat.Builder(ctx, account.getAccountHash())
                 .setContentTitle(entity.mNotification.subject)
                 .setContentText(getContentTitle(ctx, entity, true))
                 .setSubText(getNotificationSubText(account))
@@ -308,7 +312,8 @@ public class NotificationsHelper {
 
     private static PendingIntent getDeleteAccountNotificationPendingIntent(
             Context ctx, Account account, int notificationId) {
-        Intent intent = new Intent(NotificationReceiver.ACTION_NOTIFICATION_DISMISSED);
+        Intent intent = new Intent(ctx, NotificationReceiver.class);
+        intent.setAction(NotificationReceiver.ACTION_NOTIFICATION_DISMISSED);
         intent.putExtra(Constants.EXTRA_ACCOUNT_HASH, account.getAccountHash());
 
         return PendingIntent.getBroadcast(
@@ -317,7 +322,8 @@ public class NotificationsHelper {
 
     private static PendingIntent getReplyPendingIntent(
             Context ctx, NotificationEntity entity) {
-        Intent intent = new Intent(NotificationReceiver.ACTION_NOTIFICATION_REPLY);
+        Intent intent = new Intent(ctx, NotificationReceiver.class);
+        intent.setAction(NotificationReceiver.ACTION_NOTIFICATION_REPLY);
         intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, entity.mNotification.legacyChangeId);
         intent.putExtra(Constants.EXTRA_ACCOUNT_HASH, entity.mAccountId);
         intent.putExtra(Constants.EXTRA_NOTIFICATION_GROUP_ID, entity.mGroupId);
@@ -486,8 +492,42 @@ public class NotificationsHelper {
         return reviewers;
     }
 
-    private static String obtainChannelId(Account account) {
-        return "Rview - " + account.getRepositoryDisplayName() + " - "
-                + account.getAccountDisplayName();
+    public static void createNotificationChannels(Context context) {
+        List<Account> accounts = Preferences.getAccounts(context);
+        for (Account account : accounts) {
+            createNotificationChannel(context, account);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    public static void createNotificationChannel(Context context, Account account) {
+        if (AndroidHelper.isApi26OrGreater()) {
+            final String defaultChannelName = context.getString(
+                    R.string.notifications_default_channel_name,
+                    account.getRepositoryDisplayName(), account.getAccountDisplayName());
+            final NotificationManager nm =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            nm.createNotificationChannelGroup(new NotificationChannelGroup(
+                    account.getAccountHash(), defaultChannelName));
+
+            NotificationChannel channel = new NotificationChannel(account.getAccountHash(),
+                    defaultChannelName, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(context.getString(R.string.notifications_default_channel_description));
+            channel.enableVibration(true);
+            channel.enableLights(true);
+            channel.setLightColor(ContextCompat.getColor(context, R.color.primaryDark));
+            channel.setShowBadge(true);
+            channel.setGroup(account.getAccountHash());
+            nm.createNotificationChannel(channel);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    public static void deleteNotificationChannel(Context context, Account account) {
+        if (AndroidHelper.isApi26OrGreater()) {
+            final NotificationManager nm =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            nm.deleteNotificationChannelGroup(account.getAccountHash());
+        }
     }
 }

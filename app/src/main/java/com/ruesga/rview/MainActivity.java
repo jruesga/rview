@@ -66,6 +66,7 @@ import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.EmojiHelper;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
@@ -359,6 +360,7 @@ public class MainActivity extends ChangeListBaseActivity {
                     Formatter.refreshCachedPreferences(this);
                     CacheHelper.createAccountCacheDir(this, mAccount);
                     setupAccountUrlHandlingStatus(mAccount, true);
+                    NotificationsHelper.createNotificationChannel(this, mAccount);
                 } else {
                     showWarning(R.string.account_exists);
                 }
@@ -799,6 +801,7 @@ public class MainActivity extends ChangeListBaseActivity {
         Preferences.removeAccountPreferences(this, acct);
         CacheHelper.removeAccountCacheDir(this, acct);
         NotificationEntity.deleteAccountNotifications(this, acct.getAccountHash());
+        NotificationsHelper.deleteNotificationChannel(this, acct);
 
         // Unregister the url handling for this repository if no other account for the
         // same repository is active

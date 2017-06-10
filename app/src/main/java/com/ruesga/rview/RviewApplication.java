@@ -88,6 +88,7 @@ public class RviewApplication extends Application {
         Formatter.refreshCachedPreferences(getApplicationContext());
 
         // Recreate notifications
+        NotificationsHelper.createNotificationChannels(getApplicationContext());
         NotificationEntity.truncateNotifications(getApplicationContext());
         NotificationsHelper.recreateNotifications(getApplicationContext());
 
