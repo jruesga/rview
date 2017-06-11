@@ -34,6 +34,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
+            android:hint="@string/change_details_assignee"
             app:errorEnabled="false">
             <com.ruesga.rview.widget.DelayedAutocompleteTextView
                 android:id="@+id/assignee"
@@ -46,8 +47,7 @@
                 android:tag="@{model.assignee}"
                 android:completionThreshold="2"
                 app:delay="300"
-                android:inputType="textNoSuggestions"
-                android:hint="@string/change_details_assignee">
+                android:inputType="textNoSuggestions">
                 <requestFocus />
             </com.ruesga.rview.widget.DelayedAutocompleteTextView>
         </android.support.design.widget.TextInputLayout>

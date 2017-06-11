@@ -41,8 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:hint="@string/actions_base_hint"
             app:errorEnabled="false">
-
             <com.ruesga.rview.widget.DelayedAutocompleteTextView
                 android:id="@+id/base"
                 android:layout_width="match_parent"
@@ -53,8 +53,7 @@
                 android:maxLines="1"
                 android:completionThreshold="1"
                 app:delay="300"
-                android:inputType="textNoSuggestions"
-                android:hint="@string/actions_base_hint">
+                android:inputType="textNoSuggestions">
                 <requestFocus />
             </com.ruesga.rview.widget.DelayedAutocompleteTextView>
         </android.support.design.widget.TextInputLayout>

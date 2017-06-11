@@ -99,6 +99,7 @@
                     android:layout_marginTop="8dp"
                     android:enabled="@{!model.singlePage || TextUtils.isEmpty(model.username)}"
                     android:visibility="@{model.authenticatedAccess ? View.VISIBLE : View.GONE}"
+                    android:hint="@string/account_wizard_account_page_username"
                     app:errorTextAppearance="@style/AppTheme.WizardErrorTextAppearance"
                     app:errorEnabled="true">
                     <android.support.design.widget.TextInputEditText
@@ -107,8 +108,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@={model.username}"
-                        android:inputType="textNoSuggestions"
-                        android:hint="@string/account_wizard_account_page_username">
+                        android:inputType="textNoSuggestions">
                     </android.support.design.widget.TextInputEditText>
                 </android.support.design.widget.TextInputLayout>
 
@@ -119,6 +119,7 @@
                     android:visibility="@{model.authenticatedAccess ? View.VISIBLE : View.GONE}"
                     app:passwordToggleEnabled="true"
                     app:errorTextAppearance="@style/AppTheme.WizardErrorTextAppearance"
+                    android:hint="@string/account_wizard_account_page_password"
                     app:errorEnabled="true">
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/account_password_edit"
@@ -126,8 +127,7 @@
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@={model.password}"
-                        android:inputType="textPassword"
-                        android:hint="@string/account_wizard_account_page_password"/>
+                        android:inputType="textPassword"/>
                 </android.support.design.widget.TextInputLayout>
 
             </LinearLayout>

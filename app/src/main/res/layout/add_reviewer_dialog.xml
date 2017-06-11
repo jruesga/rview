@@ -34,6 +34,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp"
+            android:hint="@string/add_reviewer_label"
             app:errorEnabled="false">
             <com.ruesga.rview.widget.DelayedAutocompleteTextView
                 android:id="@+id/reviewer"
@@ -46,8 +47,7 @@
                 android:tag="@{model.reviewer}"
                 android:completionThreshold="2"
                 app:delay="300"
-                android:inputType="textNoSuggestions"
-                android:hint="@string/add_reviewer_label">
+                android:inputType="textNoSuggestions">
                 <requestFocus />
             </com.ruesga.rview.widget.DelayedAutocompleteTextView>
         </android.support.design.widget.TextInputLayout>
