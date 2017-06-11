@@ -63,6 +63,10 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
         return position;
     }
 
+    public boolean needsConstraintForQuery() {
+        return false;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
@@ -92,7 +96,7 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
         return mFilter;
     }
 
-    public abstract List<CharSequence> getResults();
+    public abstract List<CharSequence> getResults(CharSequence constraint);
 
 
     private static class ResultFilter extends Filter {
@@ -111,8 +115,8 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
             FilterResults results = new FilterResults();
             if (innerClass != null && constraint != null) {
                 // Fetch if needed
-                if (innerClass.mResults == null) {
-                    innerClass.mResults = innerClass.getResults();
+                if (innerClass.needsConstraintForQuery() || innerClass.mResults == null) {
+                    innerClass.mResults = innerClass.getResults(constraint);
                 }
 
                 // Filter results

@@ -71,14 +71,19 @@ public class BranchChooserDialogFragment extends FilterableDialogFragment {
     }
 
     @Override
-    public FilterableAdapter getAdapter() {
-        return mAdapter;
+    public int getFilterableItems() {
+        return 1;
+    }
+
+    @Override
+    public FilterableAdapter[] getAdapter() {
+        return new FilterableAdapter[]{mAdapter};
     }
 
     @NonNull
     @Override
-    public DelayedAutocompleteTextView getFilterView() {
-        return mBinding.branch;
+    public DelayedAutocompleteTextView[] getFilterView() {
+        return new DelayedAutocompleteTextView[]{mBinding.branch};
     }
 
     @Override
@@ -149,7 +154,7 @@ public class BranchChooserDialogFragment extends FilterableDialogFragment {
     }
 
     @Override
-    public Object transformResult(String result) {
+    public Object transformResult(int pos, String result) {
         if (TextUtils.isEmpty(result)) {
             return null;
         }

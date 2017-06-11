@@ -1547,7 +1547,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
                         return dataResponse;
                     }),
-                    api.getChangeRevisionFiles(changeId, revision, mDiffAgainstRevision, null, null),
+                    api.getChangeRevisionFiles(changeId, revision, mDiffAgainstRevision, null),
                     api.getChangeRevisionSubmitType(changeId, revision),
                     api.getChangeRevisionComments(changeId, revision),
                     SafeObservable.fromNullCallable(() -> {
@@ -2027,7 +2027,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private void showEditChangeActivity() {
         if (!isLocked()) {
             ActivityHelper.editChange(this,
-                    mResponse.mChange.legacyChangeId, mResponse.mChange.changeId,
+                    mResponse.mChange.legacyChangeId, mResponse.mChange.changeId, mCurrentRevision,
                     EDIT_REQUEST_CODE);
         }
     }
@@ -2556,12 +2556,12 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @Override
-    public void onFilterSelected(int requestCode, Object o) {
+    public void onFilterSelected(int requestCode, Object[] o) {
         if (!isLocked()) {
             switch (requestCode) {
                 case REQUEST_CODE_REBASE:
                     mActionLoader.clear();
-                    mActionLoader.restart(ModelHelper.ACTION_REBASE, new String[]{(String) o});
+                    mActionLoader.restart(ModelHelper.ACTION_REBASE, new String[]{(String) o[0]});
                     break;
                 case REQUEST_CODE_CHERRY_PICK:
                     String[] result = (String[]) o;
@@ -2571,7 +2571,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     break;
                 case REQUEST_CODE_MOVE_BRANCH:
                     mMoveBranchLoader.clear();
-                    mMoveBranchLoader.restart((String) o);
+                    mMoveBranchLoader.restart((String) o[0]);
                     break;
             }
         }

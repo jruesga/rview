@@ -855,12 +855,14 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
     }
 
     private void performViewFile(boolean isLeft) {
+        ((BaseActivity) getActivity()).closeOptionsDrawer();
+
         String revision = String.valueOf(mChange.revisions.get(mRevisionId).number);
         String fileHash = FowlerNollVo.fnv1a_64(mFile.getBytes()).toString();
         String base = isLeft ? mBase == null ? "0" : String.valueOf(mBase) : revision;
         String name = base + "_" + fileHash + "_" + CacheHelper.CACHE_CONTENT;
         File content = new File(CacheHelper.getAccountDiffCacheDir(getContext()), name);
-        ActivityHelper.viewChangeFile(this, mChange.legacyChangeId, mChange.changeId,
+        ActivityHelper.viewChangeFile(this, mChange.legacyChangeId, mChange.changeId, revision,
                 mFile, content);
     }
 
@@ -954,9 +956,8 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
         return withCached(
                     SafeObservable.fromNullCallable(() ->
-                            api.getChangeRevisionFiles(
-                                String.valueOf(mChange.legacyChangeId),
-                                revisionId, baseRevisionId, null, null).blockingFirst()),
+                        api.getChangeRevisionFiles(String.valueOf(mChange.legacyChangeId),
+                            revisionId, baseRevisionId, null).blockingFirst()),
                     type,
                     prefix + CacheHelper.CACHE_FILES_INFO_JSON
                 )

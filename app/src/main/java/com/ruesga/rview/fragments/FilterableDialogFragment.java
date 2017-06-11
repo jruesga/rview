@@ -43,7 +43,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
     public static final String EXTRA_REQUEST_CODE = "request_code";
 
     public interface OnFilterSelectedListener {
-        void onFilterSelected(int requestCode, Object o);
+        void onFilterSelected(int requestCode, Object[] o);
     }
 
     @Keep
@@ -51,16 +51,18 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         public String filter;
     }
 
-    private boolean mIsUserSelection;
-    private String mUserSelection;
+    private boolean mIsUserSelection[];
+    private String mUserSelection[];
     private int mRequestCode;
 
     public FilterableDialogFragment() {
     }
 
-    public abstract FilterableAdapter getAdapter();
+    public abstract int getFilterableItems();
 
-    public abstract @NonNull DelayedAutocompleteTextView getFilterView();
+    public abstract FilterableAdapter[] getAdapter();
+
+    public abstract @NonNull DelayedAutocompleteTextView[] getFilterView();
 
     public abstract @StringRes int getDialogTitle();
 
@@ -75,14 +77,23 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         return true;
     }
 
+    public int getRequestCode() {
+        return mRequestCode;
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE, 0);
+        int count = getFilterableItems();
+        mIsUserSelection = new boolean[count];
+        mUserSelection = new String[count];
 
         if (savedInstanceState != null) {
-            mUserSelection = savedInstanceState.getString("userSelection");
-            mIsUserSelection = savedInstanceState.getBoolean("isUserSelection");
+            for (int i = 0; i < count; i++) {
+                mUserSelection[i] = savedInstanceState.getString("userSelection" + i);
+                mIsUserSelection[i] = savedInstanceState.getBoolean("isUserSelection" + i);
+            }
         }
     }
 
@@ -91,28 +102,32 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         LayoutInflater inflater = LayoutInflater.from(builder.getContext());
         ViewDataBinding binding = inflateView(inflater, null, savedInstanceState);
 
-        getFilterView().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+        int count = getFilterableItems();
+        for (int i = 0; i < count; i++) {
+            final int item = i;
+            getFilterView()[i].addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                mIsUserSelection = false;
+                @Override
+                public void afterTextChanged(Editable s) {
+                    mIsUserSelection[item] = false;
+                    enabledOrDisableButtons();
+                }
+            });
+            getFilterView()[i].setOnItemClickListener((parent, view, position, id) -> {
+                mUserSelection[item] = parent.getAdapter().getItem(position).toString();
+                mIsUserSelection[item] = true;
                 enabledOrDisableButtons();
-            }
-        });
-        getFilterView().setOnItemClickListener((parent, view, position, id) -> {
-            mUserSelection = parent.getAdapter().getItem(position).toString();
-            mIsUserSelection = true;
-            enabledOrDisableButtons();
-            AndroidHelper.hideSoftKeyboard(getContext(), getDialog().getWindow());
-        });
-        getFilterView().setAdapter(getAdapter());
+                AndroidHelper.hideSoftKeyboard(getContext(), getDialog().getWindow());
+            });
+            getFilterView()[i].setAdapter(getAdapter()[i]);
+        }
 
         builder.setTitle(getDialogTitle())
                 .setView(binding.getRoot())
@@ -124,8 +139,12 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("userSelection", mUserSelection);
-        outState.putBoolean("isUserSelection", mIsUserSelection);
+
+        int count = getFilterableItems();
+        for (int i = 0; i < count; i++) {
+            outState.putString("userSelection" + i, mUserSelection[i]);
+            outState.putBoolean("isUserSelection" + i, mIsUserSelection[i]);
+        }
     }
 
     @Override
@@ -133,12 +152,32 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         enabledOrDisableButtons();
     }
 
+    public boolean handleResult(int requestCode, Object[] result) {
+        return false;
+    }
+
     private void performNotifyFilterSelected() {
-        Object result = transformResult(mUserSelection);
-        if (!isAllowEmpty() && result == null) {
-            mIsUserSelection = false;
-            enabledOrDisableButtons();
-        } else {
+        int count = getFilterableItems();
+        Object[] result = new Object[count];
+        for (int i = 0; i < count; i++) {
+            result[i] = transformResult(i, mUserSelection[i]);
+        }
+
+        boolean empty = false;
+        if (!isAllowEmpty()) {
+            for (int i = 0; i < count; i++) {
+                if (result[i] == null) {
+                    mIsUserSelection[i] = false;
+                    empty = true;
+                }
+            }
+
+            if (empty) {
+                enabledOrDisableButtons();
+            }
+        }
+
+        if (!empty && !handleResult(mRequestCode, result)) {
             Activity a = getActivity();
             Fragment f = getParentFragment();
             if (f != null && f instanceof OnFilterSelectedListener) {
@@ -149,7 +188,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         }
     }
 
-    public Object transformResult(String result) {
+    public Object transformResult(int pos, String result) {
         return result;
     }
 
@@ -158,9 +197,29 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
             final AlertDialog dialog = ((AlertDialog) getDialog());
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             if (button != null) {
-                button.setEnabled(((isAllowEmpty() && TextUtils.isEmpty(mUserSelection))
-                        || mIsUserSelection) && isValidated());
+                button.setEnabled(((isAllowEmpty() && isEmptyUserSelection())
+                        || isUserSelection()) && isValidated());
             }
         }
+    }
+
+    private boolean isEmptyUserSelection() {
+        int count = getFilterableItems();
+        for (int i = 0; i < count; i++) {
+            if (TextUtils.isEmpty(mUserSelection[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isUserSelection() {
+        int count = getFilterableItems();
+        for (int i = 0; i < count; i++) {
+            if (!mIsUserSelection[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }

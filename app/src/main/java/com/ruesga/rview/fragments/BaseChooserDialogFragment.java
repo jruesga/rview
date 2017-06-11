@@ -28,6 +28,7 @@ import android.widget.CompoundButton;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.BaseAdapter;
+import com.ruesga.rview.adapters.FilterableAdapter;
 import com.ruesga.rview.databinding.BaseChooserDialogBinding;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.widget.DelayedAutocompleteTextView;
@@ -61,14 +62,19 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment implemen
     }
 
     @Override
-    public BaseAdapter getAdapter() {
-        return mAdapter;
+    public int getFilterableItems() {
+        return 1;
+    }
+
+    @Override
+    public FilterableAdapter[] getAdapter() {
+        return new FilterableAdapter[]{mAdapter};
     }
 
     @NonNull
     @Override
-    public DelayedAutocompleteTextView getFilterView() {
-        return mBinding.base;
+    public DelayedAutocompleteTextView[] getFilterView() {
+        return new DelayedAutocompleteTextView[]{mBinding.base};
     }
 
     @Override
@@ -122,7 +128,7 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment implemen
     }
 
     @Override
-    public Object transformResult(String result) {
+    public Object transformResult(int pos, String result) {
         if (!mBinding.changeBase.isChecked()) {
             return null;
         }

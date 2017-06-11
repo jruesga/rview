@@ -22,6 +22,8 @@
         <import type="android.view.View" />
         <variable name="isDirty" type="java.lang.Boolean" />
         <variable name="canPublish" type="java.lang.Boolean" />
+        <variable name="canDeleteCurrent" type="java.lang.Boolean" />
+        <variable name="canRenameCurrent" type="java.lang.Boolean" />
         <variable name="handlers" type="com.ruesga.rview.fragments.EditorFragment.EventHandlers" />
     </data>
 
@@ -94,31 +96,138 @@
                     app:allCaps="true"
                     android:textSize="12sp"/>
 
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onActionPressed}"
+                    android:tag="delete_current"
+                    android:text="@string/action_delete"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    android:visibility="@{safeUnbox(canDeleteCurrent) ? View.VISIBLE : View.GONE}"
+                    app:fontFamilyType="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onActionPressed}"
+                    android:tag="rename_current"
+                    android:text="@string/action_rename"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    android:visibility="@{safeUnbox(canRenameCurrent) ? View.VISIBLE : View.GONE}"
+                    app:fontFamilyType="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"/>
+
             </com.google.android.flexbox.FlexboxLayout>
 
         </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="?attr/listPreferredItemHeightSmall"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:baselineAligned="false">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:baselineAligned="false">
 
-        <com.ruesga.rview.widget.StyleableTextView
-            android:layout_width="@dimen/label_min_width"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical|start"
-            android:gravity="center_vertical|start"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:paddingLeft="?attr/listPreferredItemPaddingLeft"
-            android:paddingStart="?attr/listPreferredItemPaddingLeft"
-            android:paddingRight="?attr/listPreferredItemPaddingRight"
-            android:paddingEnd="?attr/listPreferredItemPaddingRight"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textColor="?android:textColorPrimary"
-            android:text="@string/change_edit_option_edit"/>
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|start"
+                android:gravity="center_vertical|start"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+                android:paddingStart="?attr/listPreferredItemPaddingLeft"
+                android:paddingRight="?attr/listPreferredItemPaddingRight"
+                android:paddingEnd="?attr/listPreferredItemPaddingRight"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="?android:textColorPrimary"
+                android:text="@string/change_edit_option_edit"/>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:gravity="center_vertical|start"
+                android:paddingLeft="?attr/listPreferredItemPaddingLeft"
+                android:paddingStart="?attr/listPreferredItemPaddingLeft"
+                android:paddingRight="?attr/listPreferredItemPaddingRight"
+                android:paddingEnd="?attr/listPreferredItemPaddingRight"
+                app:flexWrap="wrap"
+                app:alignItems="flex_start"
+                app:alignContent="flex_start">
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onActionPressed}"
+                    android:tag="add"
+                    android:text="@string/action_add"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    app:fontFamilyType="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onActionPressed}"
+                    android:tag="delete"
+                    android:text="@string/action_delete"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    app:fontFamilyType="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onActionPressed}"
+                    android:tag="rename"
+                    android:text="@string/action_rename"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/colorAccent"
+                    app:fontFamilyType="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"/>
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:baselineAligned="false">
+
+            <View
+                android:layout_width="@dimen/label_min_width"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical|start"
+                android:gravity="center_vertical|start"/>
 
             <com.google.android.flexbox.FlexboxLayout
                 android:layout_width="match_parent"

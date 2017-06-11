@@ -275,22 +275,25 @@ public class ActivityHelper {
         context.startActivity(intent);
     }
 
-    public static void editChange(
-            Fragment fragment, int legacyChangeId, String changeId, int requestCode) {
+    public static void editChange( Fragment fragment, int legacyChangeId,
+            String changeId, String revisionId, int requestCode) {
         Intent intent = new Intent(fragment.getContext(), EditorActivity.class);
         intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
         intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         fragment.startActivityForResult(intent, requestCode);
     }
 
-    public static void viewChangeFile(
-            Fragment fragment, int legacyChangeId, String changeId, String fileName, File content) {
+    public static void viewChangeFile(Fragment fragment, int legacyChangeId,
+            String changeId, String revisionId, String fileName, File content) {
         Intent intent = new Intent(fragment.getContext(), EditorActivity.class);
         intent.putExtra(Constants.EXTRA_CHANGE_ID, changeId);
         intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
+        intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_FILE, fileName);
         intent.putExtra(Constants.EXTRA_CONTENT_FILE, content.getAbsolutePath());
+        intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         fragment.startActivity(intent);
     }
 

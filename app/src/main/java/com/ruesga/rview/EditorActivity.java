@@ -37,6 +37,7 @@ public class EditorActivity extends BaseActivity {
 
     private int mLegacyChangeId;
     private String mChangeId;
+    private String mRevisionId;
 
     private String mFileName;
     private String mContentFile;
@@ -62,6 +63,11 @@ public class EditorActivity extends BaseActivity {
         }
         mChangeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
         if (TextUtils.isEmpty(mChangeId)) {
+            finish();
+            return;
+        }
+        mRevisionId = getIntent().getStringExtra(Constants.EXTRA_REVISION_ID);
+        if (TextUtils.isEmpty(mRevisionId)) {
             finish();
             return;
         }
@@ -100,7 +106,7 @@ public class EditorActivity extends BaseActivity {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(false);
         Fragment fragment = EditorFragment.newInstance(
-                mLegacyChangeId, mChangeId, mFileName, mContentFile);
+                mLegacyChangeId, mChangeId, mRevisionId, mFileName, mContentFile);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG);
         tx.commit();
     }

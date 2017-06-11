@@ -18,41 +18,44 @@ package com.ruesga.rview.adapters;
 import android.content.Context;
 
 import com.ruesga.rview.gerrit.GerritApi;
-import com.ruesga.rview.gerrit.model.BranchInfo;
+import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.preferences.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class BranchAdapter extends FilterableAdapter {
+public class FileChooserAdapter extends FilterableAdapter {
 
-    private final String mProjectId;
-    private final String mBranch;
+    private final String mLegacyChangeId;
+    private final String mRevisionId;
 
-    public BranchAdapter(Context context, String projectId, String branch) {
+    public FileChooserAdapter(Context context, String legacyChangeId, String revisionId) {
         super(context);
-        mProjectId = projectId;
-        mBranch = branch;
+        mLegacyChangeId = legacyChangeId;
+        mRevisionId = revisionId;
     }
 
     @Override
-    @SuppressWarnings({"ConstantConditions", "Convert2streamapi"})
+    @SuppressWarnings({"ConstantConditions"})
     public List<CharSequence> getResults(CharSequence constraint) {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
-        List<BranchInfo> branches = api.getProjectBranches(
-                mProjectId, null, null, null, null).blockingFirst();
-        List<CharSequence> results = new ArrayList<>(branches.size());
-        for (BranchInfo branch : branches) {
-            if (branch.ref.startsWith(Constants.REF_HEADS)) {
-                String v = branch.ref.substring(Constants.REF_HEADS.length());
-
-                // Exclude current base
-                if (!mBranch.equals(v)) {
-                    results.add(v);
-                }
+        List<String> files =
+                api.getChangeRevisionFilesSuggestion(mLegacyChangeId, mRevisionId, null, null,
+                        constraint.toString()).blockingFirst();
+        List<CharSequence> results = new ArrayList<>();
+        for (String file : files) {
+            if (file.equals(Constants.COMMIT_MESSAGE)) {
+                continue;
             }
+            results.add(file);
         }
         return results;
+    }
+
+    @Override
+    public boolean needsConstraintForQuery() {
+        return true;
     }
 }

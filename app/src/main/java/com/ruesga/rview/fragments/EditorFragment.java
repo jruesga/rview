@@ -80,7 +80,8 @@ import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
-public class EditorFragment extends Fragment implements KeyEventBindable {
+public class EditorFragment extends Fragment
+        implements KeyEventBindable, EditFileChooserDialogFragment.OnEditFileChosen {
 
     private static final String TAG = "EditorFragment";
 
@@ -120,11 +121,28 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
                 case "restore":
                     mFragment.performRestore();
                     break;
+                case "delete_current":
+                    mFragment.performDeleteCurrentEdit();
+                    break;
+                case "rename_current":
+                    mFragment.performRenameEdit(mFragment.mFile, v);
+                    break;
+
                 case "discard":
                     mFragment.performCancelEdit();
                     break;
                 case "publish":
                     mFragment.performPublishEdit();
+                    break;
+
+                case "add":
+                    mFragment.performAddEdit(v);
+                    break;
+                case "delete":
+                    mFragment.performDeleteEdit(v);
+                    break;
+                case "rename":
+                    mFragment.performRenameEdit(null, v);
                     break;
             }
         }
@@ -355,6 +373,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
 
     private int mLegacyChangeId;
     private String mChangeId;
+    private String mRevisionId;
 
     private ArrayList<String> mFiles = new ArrayList<>();
     private ArrayList<String> mFilesHashes = new ArrayList<>();
@@ -375,16 +394,17 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
 
     private Handler mUiHandler;
 
-    public static EditorFragment newInstance(int legacyChangeId, String changeId) {
-        return newInstance(legacyChangeId, changeId, null, null);
+    public static EditorFragment newInstance(int legacyChangeId, String changeId, String revisionId) {
+        return newInstance(legacyChangeId, changeId, revisionId, null, null);
     }
 
     public static EditorFragment newInstance(
-            int legacyChangeId, String changeId, String file, String content) {
+            int legacyChangeId, String changeId, String revisionId, String file, String content) {
         EditorFragment fragment = new EditorFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         arguments.putString(Constants.EXTRA_CHANGE_ID, changeId);
+        arguments.putString(Constants.EXTRA_REVISION_ID, revisionId);
         if (!TextUtils.isEmpty(file)) {
             arguments.putString(Constants.EXTRA_FILE, file);
         }
@@ -404,6 +424,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
         mLegacyChangeId = state.getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         mChangeId = state.getString(Constants.EXTRA_CHANGE_ID);
+        mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
         mFile = state.getString(Constants.EXTRA_FILE);
         mContentFile = state.getString(Constants.EXTRA_CONTENT_FILE);
         mReadOnly = !TextUtils.isEmpty(mContentFile);
@@ -451,6 +472,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
 
         outState.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
         outState.putString(Constants.EXTRA_CHANGE_ID, mChangeId);
+        outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         outState.putString(Constants.EXTRA_CONTENT_FILE, mContentFile);
 
         outState.putStringArrayList("files", mFiles);
@@ -547,6 +569,8 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         if (mEditActionsBinding != null) {
             mEditActionsBinding.setIsDirty(mBinding.editor.isDirty());
             mEditActionsBinding.setCanPublish(mIsDirty);
+            mEditActionsBinding.setCanDeleteCurrent(!mFile.equals(Constants.COMMIT_MESSAGE));
+            mEditActionsBinding.setCanRenameCurrent(!mFile.equals(Constants.COMMIT_MESSAGE));
         }
 
         // Open drawer
@@ -567,7 +591,7 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         return SafeObservable.fromNullCallable(() ->
                 api.getChangeRevisionFiles(
-                        String.valueOf(mLegacyChangeId), GerritApi.CURRENT_REVISION, null, null, null)
+                        String.valueOf(mLegacyChangeId), GerritApi.CURRENT_REVISION, null, null)
                         .blockingFirst())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -805,6 +829,27 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
         });
     }
 
+    private void performAddEdit(View v) {
+        EditFileChooserDialogFragment fragment = EditFileChooserDialogFragment.newAddInstance(
+                getActivity(), 0, mLegacyChangeId, mRevisionId, v);
+        fragment.show(getChildFragmentManager(), EditFileChooserDialogFragment.TAG);
+    }
+
+    private void performDeleteEdit(View v) {
+        EditFileChooserDialogFragment fragment = EditFileChooserDialogFragment.newDeleteInstance(
+                getActivity(), 0, mLegacyChangeId, mRevisionId, v);
+        fragment.show(getChildFragmentManager(), EditFileChooserDialogFragment.TAG);
+    }
+
+    private void performRenameEdit(String source, View v) {
+        EditFileChooserDialogFragment fragment = EditFileChooserDialogFragment.newRenameInstance(
+                getActivity(), 0, mLegacyChangeId, mRevisionId, source, v);
+        fragment.show(getChildFragmentManager(), EditFileChooserDialogFragment.TAG);
+    }
+
+    private void performDeleteCurrentEdit() {
+    }
+
     @SuppressWarnings("Convert2streamapi")
     private void createFileHashes() {
         mFilesHashes.clear();
@@ -860,5 +905,11 @@ public class EditorFragment extends Fragment implements KeyEventBindable {
             return new byte[0];
         }
         return Base64.decode(o, Base64.NO_WRAP);
+    }
+
+    @Override
+    public void onEditFileChosen(int requestCode, EditFileChooserDialogFragment.MODE mode,
+        String oldValue, String newValue) {
+        System.out.println("jrc: oldValue: " + oldValue + "; newValue: " + newValue);
     }
 }

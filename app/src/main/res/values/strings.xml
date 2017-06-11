@@ -50,6 +50,7 @@
     <string name="action_continue">Continue</string>
     <string name="action_assign">Assign</string>
     <string name="action_set">Set</string>
+    <string name="action_rename">Rename</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -392,7 +393,7 @@
 
     <!-- Edit revision description -->
     <string name="change_edit_revision_description_title">Edit revision description</string>
-    <string name="change_edit_revision_description_hint">Change revision description</string>
+    <string name="change_edit_revision_description_hint">Add a patch set description</string>
 
     <!-- Drafts -->
     <string name="draft_title">Draft</string>
@@ -553,5 +554,12 @@
     <string name="editor_save_bad_crc">Failed to save file (bad crc)</string>
     <string name="editor_file_to_big">File too big. Highlight and optimizations were disabled.</string>
 
+    <!-- Edit file chooser dialog -->
+    <string name="edit_file_add">Add file</string>
+    <string name="edit_file_delete">Delete file</string>
+    <string name="edit_file_rename">Rename file</string>
+    <string name="edit_file_add_delete_hint">File</string>
+    <string name="edit_file_rename_old_hint">Old file</string>
+    <string name="edit_file_rename_new_hint">New file</string>
 
 </resources>
