@@ -73,7 +73,7 @@ var edtSupportedModes = {
     Lua:         ["lua"],
     LuaPage:     ["lp"],
     Lucene:      ["lucene"],
-    Makefile:    ["^Makefile|^GNUmakefile|^makefile|^OCamlMakefile|make"],
+    Makefile:    ["^Makefile|^GNUmakefile|^makefile|^OCamlMakefile|make|mk"],
     Markdown:    ["md|markdown"],
     Mask:        ["mask"],
     MATLAB:      ["matlab"],
