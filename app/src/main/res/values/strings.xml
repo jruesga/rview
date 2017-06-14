@@ -126,7 +126,7 @@
     <string name="account_wizard_account_setup_page_title">Account setup</string>
     <string name="account_wizard_account_setup_page_message">This wizard will guide you in the setup of a new Gerrit repository account.\n\nIt will take just a few seconds.</string>
     <string name="account_wizard_repository_page_title">Repository</string>
-    <string name="account_wizard_repository_page_message1">Please enter the name and location of the Gerrit repository.</string>
+    <string name="account_wizard_repository_page_message1">Please enter the name and location of the Gerrit instance.</string>
     <string name="account_wizard_repository_page_message2">Or choose between some <xliff:g id="link" example="predefined">%1$s</xliff:g> repositories.</string>
     <string name="account_wizard_repository_page_message2_predefined">predefined</string>
     <string name="account_wizard_repository_page_name">Name</string>
