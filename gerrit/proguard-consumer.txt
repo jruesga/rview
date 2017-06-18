@@ -1,4 +1,5 @@
 -dontwarn android.support.v4.app.NotificationCompatBase
+-dontwarn javax.annotation.*
 -dontwarn com.google.gson.*
 -dontwarn retrofit2.*
 -dontwarn okio.*
