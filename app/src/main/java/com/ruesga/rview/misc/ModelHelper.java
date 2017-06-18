@@ -295,26 +295,28 @@ public class ModelHelper {
         if (approvals != null) {
             Collections.addAll(newApprovals, approvals);
         }
-        for (ReviewerInfo reviewer : reviewers) {
-            boolean exists = false;
-            for (ApprovalInfo a : newApprovals) {
-                if (a.owner.accountId == reviewer.accountId) {
-                    if (reviewer.approvals != null) {
-                        a.value = reviewer.approvals.get(label);
-                    } else {
-                        a.value = null;
+        if (reviewers != null) {
+            for (ReviewerInfo reviewer : reviewers) {
+                boolean exists = false;
+                for (ApprovalInfo a : newApprovals) {
+                    if (a.owner.accountId == reviewer.accountId) {
+                        if (reviewer.approvals != null) {
+                            a.value = reviewer.approvals.get(label);
+                        } else {
+                            a.value = null;
+                        }
+                        a.date = new Date();
+                        exists = true;
+                        break;
                     }
-                    a.date = new Date();
-                    exists = true;
-                    break;
                 }
-            }
-            if (!exists) {
-                ApprovalInfo approvalInfo = new ApprovalInfo();
-                approvalInfo.owner = reviewer;
-                approvalInfo.date = new Date();
-                approvalInfo.value = reviewer.approvals.get(label);
-                newApprovals.add(approvalInfo);
+                if (!exists) {
+                    ApprovalInfo approvalInfo = new ApprovalInfo();
+                    approvalInfo.owner = reviewer;
+                    approvalInfo.date = new Date();
+                    approvalInfo.value = reviewer.approvals.get(label);
+                    newApprovals.add(approvalInfo);
+                }
             }
         }
         return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
