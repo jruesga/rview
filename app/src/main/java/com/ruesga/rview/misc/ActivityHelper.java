@@ -291,6 +291,7 @@ public class ActivityHelper {
         intent.putExtra(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
         intent.putExtra(Constants.EXTRA_FILE, fileName);
         intent.putExtra(Constants.EXTRA_CONTENT_FILE, content.getAbsolutePath());
+        intent.putExtra(Constants.EXTRA_READ_ONLY, true);
         fragment.startActivity(intent);
     }
 

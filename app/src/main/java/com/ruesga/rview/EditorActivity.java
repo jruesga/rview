@@ -40,6 +40,7 @@ public class EditorActivity extends BaseActivity {
 
     private String mFileName;
     private String mContentFile;
+    private boolean mReadOnly;
 
     @SuppressWarnings("Convert2streamapi")
     @Override
@@ -67,7 +68,7 @@ public class EditorActivity extends BaseActivity {
         }
         mFileName = getIntent().getStringExtra(Constants.EXTRA_FILE);
         mContentFile = getIntent().getStringExtra(Constants.EXTRA_CONTENT_FILE);
-        boolean mReadOnly = !TextUtils.isEmpty(mContentFile);
+        mReadOnly = getIntent().getBooleanExtra(Constants.EXTRA_READ_ONLY, false);
 
         // Setup the title
         setUseTwoPanel(false);
@@ -100,7 +101,7 @@ public class EditorActivity extends BaseActivity {
         FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
                 .setReorderingAllowed(false);
         Fragment fragment = EditorFragment.newInstance(
-                mLegacyChangeId, mChangeId, mFileName, mContentFile);
+                mLegacyChangeId, mChangeId, mFileName, mContentFile, mReadOnly);
         tx.replace(R.id.content, fragment, FRAGMENT_TAG);
         tx.commit();
     }
