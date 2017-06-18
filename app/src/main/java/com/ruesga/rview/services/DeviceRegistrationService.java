@@ -125,18 +125,17 @@ public class DeviceRegistrationService extends JobIntentService {
     }
 
     private String getToken(Account account) {
-        String deviceId = FirebaseInstanceId.getInstance().getToken();
-        if (deviceId == null) {
-            return null;
-        }
-
         try {
+            String deviceId = FirebaseInstanceId.getInstance().getToken();
+            if (deviceId == null) {
+                return null;
+            }
+
             return FirebaseInstanceId.getInstance().getToken(
                     account.mNotificationsSenderId, TOKEN_SCOPE);
-        } catch (IOException ex) {
-            // ignore
+        } catch (Exception ex) {
+            Log.w(TAG, "Failed to obtain a Firebase token", ex);
         }
-
         return null;
     }
 }
