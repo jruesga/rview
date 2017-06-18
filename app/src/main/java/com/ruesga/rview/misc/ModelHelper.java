@@ -314,7 +314,8 @@ public class ModelHelper {
                     ApprovalInfo approvalInfo = new ApprovalInfo();
                     approvalInfo.owner = reviewer;
                     approvalInfo.date = new Date();
-                    approvalInfo.value = reviewer.approvals.get(label);
+                    approvalInfo.value = reviewer.approvals != null
+                            ? reviewer.approvals.get(label) : null;
                     newApprovals.add(approvalInfo);
                 }
             }
