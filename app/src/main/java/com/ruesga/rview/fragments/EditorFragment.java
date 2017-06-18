@@ -395,11 +395,11 @@ public class EditorFragment extends Fragment
     private Handler mUiHandler;
 
     public static EditorFragment newInstance(int legacyChangeId, String changeId, String revisionId) {
-        return newInstance(legacyChangeId, changeId, revisionId, null, null);
+        return newInstance(legacyChangeId, changeId, revisionId, null, null, false);
     }
 
-    public static EditorFragment newInstance(
-            int legacyChangeId, String changeId, String revisionId, String file, String content) {
+    public static EditorFragment newInstance(int legacyChangeId, String changeId,
+            String revisionId, String file, String content, boolean readOnly) {
         EditorFragment fragment = new EditorFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
@@ -411,6 +411,7 @@ public class EditorFragment extends Fragment
         if (!TextUtils.isEmpty(content)) {
             arguments.putString(Constants.EXTRA_CONTENT_FILE, content);
         }
+        arguments.putBoolean(Constants.EXTRA_READ_ONLY, readOnly);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -427,7 +428,7 @@ public class EditorFragment extends Fragment
         mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
         mFile = state.getString(Constants.EXTRA_FILE);
         mContentFile = state.getString(Constants.EXTRA_CONTENT_FILE);
-        mReadOnly = !TextUtils.isEmpty(mContentFile);
+        mReadOnly = state.getBoolean(Constants.EXTRA_READ_ONLY, false);
 
         setHasOptionsMenu(true);
     }
@@ -474,6 +475,7 @@ public class EditorFragment extends Fragment
         outState.putString(Constants.EXTRA_CHANGE_ID, mChangeId);
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
         outState.putString(Constants.EXTRA_CONTENT_FILE, mContentFile);
+        outState.putBoolean(Constants.EXTRA_READ_ONLY, mReadOnly);
 
         outState.putStringArrayList("files", mFiles);
         outState.putString(Constants.EXTRA_FILE, mFile);
@@ -482,19 +484,17 @@ public class EditorFragment extends Fragment
     }
 
     private void startLoadersWithValidContext(@Nullable Bundle savedInstanceState) {
-        boolean edit = TextUtils.isEmpty(mFile) && TextUtils.isEmpty(mContentFile);
-
         // Configure the diff_options menu
         BaseActivity activity = ((BaseActivity) getActivity());
         activity.configureOptionsTitle(getString(
-                edit ? R.string.menu_edit_options : R.string.menu_view_options));
+                !mReadOnly ? R.string.menu_edit_options : R.string.menu_view_options));
         activity.configureOptionsMenu(R.menu.edit_options_menu, mOptionsItemListener);
 
         mAccount = Preferences.getAccount(getContext());
         mWrap = Preferences.getAccountWrapMode(getContext(), mAccount);
         mTextSizeFactor = Preferences.getAccountTextSizeFactor(getContext(), mAccount);
 
-        if (edit) {
+        if (!mReadOnly) {
             // Edit mode
             mFileChooserBinding = DataBindingUtil.inflate(LayoutInflater.from(getContext()),
                     R.layout.edit_file_chooser_header, activity.getOptionsMenu(), false);
@@ -613,8 +613,15 @@ public class EditorFragment extends Fragment
 
     @SuppressWarnings("ConstantConditions")
     private Observable<byte[]> fetchLocalContent() {
+        if (mContentFile == null) {
+            return Observable.just(new byte[]{});
+        }
+
         return SafeObservable.fromNullCallable(
-                    () -> FileUtils.readFileToByteArray(new File(mContentFile)))
+                    () -> mReadOnly
+                            ? FileUtils.readFileToByteArray(new File(mContentFile))
+                            : readEditContent(mContentFile)
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -722,7 +729,9 @@ public class EditorFragment extends Fragment
                         String name = getEditCachedFileName(file);
                         Log.i(TAG, new String(Base64.decode(content, Base64.NO_WRAP)));
                         try {
-                            CacheHelper.writeAccountDiffCacheFile(getContext(), name, content);
+                            CacheHelper.writeAccountDiffCacheFile(getActivity(), name, content);
+                            mContentFile = new File(CacheHelper.getAccountDiffCacheDir(
+                                    getActivity(), mAccount), name).getAbsolutePath();
                         } catch (IOException ex) {
                             Log.w(TAG, "Failed to store edit for " + file);
                         }

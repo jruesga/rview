@@ -17,7 +17,7 @@
 ext {
     libraries = [
         support                     : '26.0.0-beta2',
-        firebase                    : '11.0.0',
+        firebase                    : '11.0.1',
         gson                        : '2.8.1',
         retrofit2                   : '2.3.0',
         okhttp3                     : '3.8.0',

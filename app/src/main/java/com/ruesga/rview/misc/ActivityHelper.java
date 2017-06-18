@@ -293,6 +293,7 @@ public class ActivityHelper {
         intent.putExtra(Constants.EXTRA_REVISION_ID, revisionId);
         intent.putExtra(Constants.EXTRA_FILE, fileName);
         intent.putExtra(Constants.EXTRA_CONTENT_FILE, content.getAbsolutePath());
+        intent.putExtra(Constants.EXTRA_READ_ONLY, true);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
         fragment.startActivity(intent);
     }
