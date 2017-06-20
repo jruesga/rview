@@ -11,7 +11,7 @@
   {"name":"CarbonROM", "url":"https://review.carbonrom.org/"},
   {"name":"Chromium", "url":"https://chromium-review.googlesource.com/", "ci_accounts": "^(ChromeOS Commit Bot)$"},
   {"name":"Cloudera", "url":"https://gerrit.cloudera.org/", "ci_accounts": "^(.* Jenkins)$"},
-  {"name":"CoreBoot", "url":"http://review.coreboot.org/", "ci_accounts": "^(.*Jenkins.*)$"},
+  {"name":"CoreBoot", "url":"https://review.coreboot.org/", "ci_accounts": "^(.*Jenkins.*)$"},
   {"name":"Deepin", "url":"https://cr.deepin.io/", "ci_accounts": "^(jenkins)$"},
   {"name":"Dirty Unicorns", "url":"http://gerrit.dirtyunicorns.com/"},
   {"name":"Eclipse", "url":"https://git.eclipse.org/r/", "ci_accounts": "^(.* CI)$"},
@@ -21,9 +21,10 @@
   {"name":"Gerrit", "url":"https://gerrit-review.googlesource.com/", "ci_accounts": "^(GerritForge CI|Diffy Cuckoo.*)$"},
   {"name":"GerritHub", "url":"https://review.gerrithub.io/"},
   {"name":"Golang", "url":"https://go-review.googlesource.com/", "ci_accounts": "^(Gobot Gobot)$"},
+  {"name":"GWT", "url":"https://gwt-review.googlesource.com/", "ci_accounts": "^(.* Jenkins)$"}
   {"name":"Intel HPDD", "url":"https://review.whamcloud.com/", "ci_accounts": "^(Jenkins|HPDD Checkpatch|Misc Code Checks Robot.*|.* Buildbot|Autotest|Maloo)$"},
   {"name":"Joyent", "url":"https://cr.joyent.us/", "ci_accounts": "^(Joyent Automation)$"},
-  {"name":"Kitware", "url":"http://review.source.kitware.com/"},
+  {"name":"Kitware", "url":"http://review.source.kitware.com/", "ci_accounts": "^(Kitware Build Robot)$"},
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/", "ci_accounts": "^(Jenkins)$"},
   {"name":"Linaro", "url":"https://android-review.linaro.org/", "ci_accounts": "^(lava-bot)$"},
   {"name":"LineageOS", "url":"https://review.lineageos.org/", "ci_accounts": "^(Jenkins)$"},
@@ -36,11 +37,12 @@
   {"name":"OpenDaylight", "url":"https://git.opendaylight.org/gerrit/", "ci_accounts": "^(jenkins-releng)$"},
   {"name":"OpenStack", "url":"https://review.openstack.org/", "ci_accounts": "^(.* CI|Jenkins|Zuul|Elastic Recheck)$"},
   {"name":"RDO", "url":"https://review.rdoproject.org/r/", "ci_accounts": "^(Jenkins .*)$"},
+  {"name":"Scilab", "url":"https://codereview.scilab.org/"}
   {"name":"SlimRoms", "url":"https://review.slimroms.org/"},
   {"name":"TeamForge CollabNet", "url":"https://forge.collab.net/gerrit/"},
   {"name":"Typo3", "url":"https://review.typo3.org/", "ci_accounts": "^(TYPO3com)$"},
   {"name":"TWRP", "url":"https://gerrit.twrp.me/"},
-  {"name":"Unlegacy Android", "url":"http://gerrit.unlegacy-android.cf/"},
+  {"name":"Unlegacy Android", "url":"https://gerrit.unlegacy-android.org/"},
   {"name":"Wireshark", "url":"https://code.wireshark.org/review/", "ci_accounts": "^(.* Buildbot)$"},
   {"name":"Zephyr", "url":"https://gerrit.zephyrproject.org/r/", "ci_accounts": "^(Zephyr JobBuilder)$"}
 ]
