@@ -234,6 +234,13 @@ public class ChangeDetailsFragment extends Fragment implements
                     case "files-action1":
                         mFragment.showEditChangeActivity();
                         break;
+
+                    case "messages-action1":
+                        mFragment.toggleTaggedMessages();
+                        break;
+                    case "messages-action2":
+                        mFragment.toggleCIMessages();
+                        break;
                 }
             }
         }
@@ -505,9 +512,10 @@ public class ChangeDetailsFragment extends Fragment implements
         private boolean[] mFolded;
         private final boolean mIsAuthenticated;
         private final boolean mIsFolded;
-        private final boolean mIsHideTaggedMessages;
         private final Picasso mPicasso;
-        private final Repository mRepository;
+
+        private boolean mIsHideTaggedMessages;
+        private Repository mRepository;
 
         private final OnLineClickListener mLineClickListener = new OnLineClickListener() {
             @Override
@@ -517,15 +525,12 @@ public class ChangeDetailsFragment extends Fragment implements
         };
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
-                Repository repository, boolean isAuthenticated, boolean isFolded,
-                boolean isHideTaggedMessages) {
+                boolean isAuthenticated, boolean isFolded) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
             mIsAuthenticated = isAuthenticated;
             mIsFolded = isFolded;
-            mIsHideTaggedMessages = isHideTaggedMessages;
             mPicasso = picasso;
-            mRepository = repository;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -534,6 +539,14 @@ public class ChangeDetailsFragment extends Fragment implements
         void changeFoldedStatus(int position) {
             mFolded[position] = !mFolded[position];
             notifyItemChanged(position);
+        }
+
+        void updateHideTaggedMessages(boolean isHideTaggedMessages) {
+            mIsHideTaggedMessages = isHideTaggedMessages;
+        }
+
+        void updateHideCIMessages(Repository repo) {
+            mRepository = repo;
         }
 
         void update(ChangeMessageInfo[] messages,
@@ -654,6 +667,13 @@ public class ChangeDetailsFragment extends Fragment implements
                     mCurrentRevision = change.currentRevision;
                 }
 
+                // Check supported features
+                final GerritApi api = ModelHelper.getGerritApi(getActivity());
+                boolean supportTaggedMessages = api != null
+                        && api.supportsFeature(Features.TAGGED_MESSAGES);
+                Repository repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
+                boolean supportCIMessages = repo != null && !TextUtils.isEmpty(repo.mCiAccounts);
+
                 sortRevisions(change);
                 updatePatchSetInfo(result);
                 updateChangeInfo(result);
@@ -672,6 +692,16 @@ public class ChangeDetailsFragment extends Fragment implements
                 mFileAdapter.update(result.mFiles, result.mInlineComments, result.mDraftComments);
                 mModel.msgListModel.visible =
                         change.messages != null && change.messages.length > 0;
+                if (supportTaggedMessages) {
+                    mModel.msgListModel.actions.put("action1", getString(mHideTaggedMessages
+                            ? R.string.change_details_action_show_tagged_messages
+                            : R.string.change_details_action_hide_tagged_messages));
+                }
+                if (supportCIMessages) {
+                    mModel.msgListModel.actions.put("action2", getString(mHideCIMessages
+                            ? R.string.change_details_action_show_ci_messages
+                            : R.string.change_details_action_hide_ci_messages));
+                }
                 mMessageAdapter.update(change.messages, result.mMessagesWithComments);
             }
 
@@ -1162,6 +1192,9 @@ public class ChangeDetailsFragment extends Fragment implements
     private final List<RevisionInfo> mAllRevisions = new ArrayList<>();
     private final List<RevisionInfo> mAllRevisionsWithBase = new ArrayList<>();
 
+    private boolean mHideTaggedMessages;
+    private boolean mHideCIMessages;
+
     private RxLoader1<String, DataResponse> mChangeLoader;
     private RxLoader1<Boolean, Boolean> mStarredLoader;
     private RxLoader1<ChangeEditMessageInput, Boolean> mChangeEditMessageLoader;
@@ -1248,6 +1281,8 @@ public class ChangeDetailsFragment extends Fragment implements
         outState.putString("review", SerializationManager.getInstance().toJson(review));
         outState.putString("current_revision", mCurrentRevision);
         outState.putString("diff_against_revision", mDiffAgainstRevision);
+        outState.putBoolean("hideTaggedMessages", mHideTaggedMessages);
+        outState.putBoolean("hideCIMessages", mHideCIMessages);
     }
 
     @Override
@@ -1306,20 +1341,26 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         if (mFileAdapter == null) {
-            // Set authenticated mode
-            Repository repo = null;
             mAccount = Preferences.getAccount(getContext());
             if (mAccount != null) {
                 mModel.isAuthenticated = mAccount.hasAuthenticatedAccessMode();
-                if (Preferences.isAccountToggleCIAccountsMessages(getContext(), mAccount)) {
-                    repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
-                }
             }
             updateAuthenticatedAndOwnerStatus();
 
+            mHideTaggedMessages = Preferences.isAccountToggleTaggedMessages(getContext(), mAccount);
+            mHideCIMessages = Preferences.isAccountToggleCIAccountsMessages(getContext(), mAccount);
+            if (savedInstanceState != null) {
+                mHideTaggedMessages = savedInstanceState.getBoolean(
+                        "hideTaggedMessages", mHideTaggedMessages);
+                mHideCIMessages = savedInstanceState.getBoolean(
+                        "hideCIMessages", mHideCIMessages);
+            }
+            Repository repo = null;
+            if (mHideCIMessages) {
+                repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
+            }
+
             boolean isMessagesFolded = Preferences.isAccountMessagesFolded(getContext(), mAccount);
-            boolean isHideTaggedMessages = Preferences.isAccountToggleTaggedMessages(
-                    getContext(), mAccount);
             mIsInlineCommentsInMessages = Preferences.isAccountInlineCommentInMessages(
                     getContext(), mAccount);
 
@@ -1334,7 +1375,9 @@ public class ChangeDetailsFragment extends Fragment implements
 
 
             mMessageAdapter = new MessageAdapter(this, mEventHandlers, mPicasso,
-                    repo, mModel.isAuthenticated, isMessagesFolded, isHideTaggedMessages);
+                    mModel.isAuthenticated, isMessagesFolded);
+            mMessageAdapter.updateHideTaggedMessages(mHideTaggedMessages);
+            mMessageAdapter.updateHideCIMessages(repo);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(
@@ -2048,6 +2091,44 @@ public class ChangeDetailsFragment extends Fragment implements
             ActivityHelper.editChange(this,
                     mResponse.mChange.legacyChangeId, mResponse.mChange.changeId,
                     EDIT_REQUEST_CODE);
+        }
+    }
+
+    private void toggleTaggedMessages() {
+        if (!isLocked()) {
+            mModel.isLocked = true;
+            if (mModel.msgListModel.actions.containsKey("action1")) {
+                mHideTaggedMessages = !mHideTaggedMessages;
+                mModel.msgListModel.actions.put("action1", getString(mHideTaggedMessages
+                        ? R.string.change_details_action_show_tagged_messages
+                        : R.string.change_details_action_hide_tagged_messages));
+
+                mMessageAdapter.updateHideTaggedMessages(mHideTaggedMessages);
+                mMessageAdapter.update(mResponse.mChange.messages, mResponse.mMessagesWithComments);
+                mBinding.setModel(mModel);
+            }
+            mModel.isLocked = false;
+        }
+    }
+
+    private void toggleCIMessages() {
+        if (!isLocked()) {
+            mModel.isLocked = true;
+            if (mModel.msgListModel.actions.containsKey("action2")) {
+                mHideCIMessages = !mHideCIMessages;
+                mModel.msgListModel.actions.put("action2", getString(mHideCIMessages
+                        ? R.string.change_details_action_show_ci_messages
+                        : R.string.change_details_action_hide_ci_messages));
+
+                Repository repo = null;
+                if (mHideCIMessages) {
+                    repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
+                }
+                mMessageAdapter.updateHideCIMessages(repo);
+                mMessageAdapter.update(mResponse.mChange.messages, mResponse.mMessagesWithComments);
+                mBinding.setModel(mModel);
+            }
+            mModel.isLocked = false;
         }
     }
 

@@ -214,6 +214,10 @@
     <string name="change_details_comment_base_line_number">B,L<xliff:g id="line_number" example="1">%1$d</xliff:g>:</string>
     <string name="change_details_comment_file">File:</string>
     <string name="change_details_fast_scroll_msg">Scroll to last message</string>
+    <string name="change_details_action_hide_tagged_messages">Hide tagged</string>
+    <string name="change_details_action_show_tagged_messages">Show tagged</string>
+    <string name="change_details_action_hide_ci_messages">Hide CI</string>
+    <string name="change_details_action_show_ci_messages">Show CI</string>
 
     <!-- Change edit -->
     <string name="change_edit_title">Edit #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>

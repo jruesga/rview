@@ -65,6 +65,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_CATEG
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_ADVISE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_CLEAR;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_TAGGED_MESSAGES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_CI_MESSAGES;
 
 public class AccountSettingsFragment extends PreferenceFragmentCompat
@@ -145,6 +146,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
 
         configureHomePage();
         configureDisplayStatuses();
+        configureToggleTagged();
         configureToggleCI();
         configureSearch();
         configureFetchItems();
@@ -200,6 +202,20 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
                 Features.ACCOUNT_STATUS, mAccount.mServerVersion);
         if (!supportAccountStatus) {
             displayCategory.removePreference(displayStatuses);
+        }
+    }
+
+    private void configureToggleTagged() {
+        PreferenceCategory messagesCategory =
+                (PreferenceCategory) findPreference(PREF_ACCOUNT_MESSAGES_CATEGORY);
+        Preference toggleTagged = findPreference(PREF_ACCOUNT_TOGGLE_TAGGED_MESSAGES);
+        if (toggleTagged != null) {
+            final GerritApi api = ModelHelper.getGerritApi(getActivity());
+            boolean supportTaggedMessages = api != null
+                    && api.supportsFeature(Features.TAGGED_MESSAGES);
+            if (!supportTaggedMessages) {
+                messagesCategory.removePreference(toggleTagged);
+            }
         }
     }
 
