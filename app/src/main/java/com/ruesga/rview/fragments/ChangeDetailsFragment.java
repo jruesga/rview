@@ -505,6 +505,7 @@ public class ChangeDetailsFragment extends Fragment implements
         private boolean[] mFolded;
         private final boolean mIsAuthenticated;
         private final boolean mIsFolded;
+        private final boolean mIsHideTaggedMessages;
         private final Picasso mPicasso;
         private final Repository mRepository;
 
@@ -516,11 +517,13 @@ public class ChangeDetailsFragment extends Fragment implements
         };
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
-                Repository repository, boolean isAuthenticated, boolean isFolded) {
+                Repository repository, boolean isAuthenticated, boolean isFolded,
+                boolean isHideTaggedMessages) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
             mIsAuthenticated = isAuthenticated;
             mIsFolded = isFolded;
+            mIsHideTaggedMessages = isHideTaggedMessages;
             mPicasso = picasso;
             mRepository = repository;
 
@@ -535,7 +538,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         void update(ChangeMessageInfo[] messages,
                 Map<String, LinkedHashMap<String, List<CommentInfo>>> messagesWithComments) {
-            mMessages = filterCiAccountsMessages(messages);
+            mMessages = filterTaggedMessages(filterCiAccountsMessages(messages));
             mMessagesWithComments = messagesWithComments;
 
             int count = mMessages.length;
@@ -585,6 +588,20 @@ public class ChangeDetailsFragment extends Fragment implements
             holder.mBinding.setFolded(mFolded[position]);
             holder.mBinding.setHandlers(mEventHandlers);
             holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
+        }
+
+        private ChangeMessageInfo[] filterTaggedMessages(ChangeMessageInfo[] messages) {
+            if (!mIsHideTaggedMessages) {
+                return messages;
+            }
+
+            ArrayList<ChangeMessageInfo> msgs = new ArrayList<>();
+            for (ChangeMessageInfo msg : messages) {
+                if (TextUtils.isEmpty(msg.tag)) {
+                    msgs.add(msg);
+                }
+            }
+            return msgs.toArray(new ChangeMessageInfo[msgs.size()]);
         }
 
         private ChangeMessageInfo[] filterCiAccountsMessages(ChangeMessageInfo[] messages) {
@@ -1301,6 +1318,8 @@ public class ChangeDetailsFragment extends Fragment implements
             updateAuthenticatedAndOwnerStatus();
 
             boolean isMessagesFolded = Preferences.isAccountMessagesFolded(getContext(), mAccount);
+            boolean isHideTaggedMessages = Preferences.isAccountToggleTaggedMessages(
+                    getContext(), mAccount);
             mIsInlineCommentsInMessages = Preferences.isAccountInlineCommentInMessages(
                     getContext(), mAccount);
 
@@ -1315,7 +1334,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
 
             mMessageAdapter = new MessageAdapter(this, mEventHandlers, mPicasso,
-                    repo, mModel.isAuthenticated, isMessagesFolded);
+                    repo, mModel.isAuthenticated, isMessagesFolded, isHideTaggedMessages);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(

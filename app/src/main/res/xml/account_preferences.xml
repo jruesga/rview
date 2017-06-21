@@ -65,6 +65,13 @@
             android:defaultValue="true" />
 
         <SwitchPreference
+            android:key="account_toggle_tagged_messages"
+            android:title="@string/account_settings_toggle_tagged_messages_title"
+            android:summaryOn="@string/account_settings_toggle_tagged_messages_summary_on"
+            android:summaryOff="@string/account_settings_toggle_tagged_messages_summary_off"
+            android:defaultValue="false" />
+
+        <SwitchPreference
             android:key="account_toggle_ci_messages"
             android:title="@string/account_settings_toggle_ci_messages_title"
             android:summaryOn="@string/account_settings_toggle_ci_messages_summary_on"

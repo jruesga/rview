@@ -117,6 +117,7 @@ public class Constants {
     public static final String PREF_ACCOUNT_MESSAGES_FOLDED = "account_messages_folded";
     public static final String PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES
             = "account_inline_comment_in_messages";
+    public static final String PREF_ACCOUNT_TOGGLE_TAGGED_MESSAGES = "account_toggle_tagged_messages";
     public static final String PREF_ACCOUNT_TOGGLE_CI_MESSAGES = "account_toggle_ci_messages";
     public static final String PREF_ACCOUNT_SHORT_FILENAMES = "account_short_filenames";
     public static final String PREF_ACCOUNT_HIGHLIGHT_TABS = "account_highlight_tabs";
