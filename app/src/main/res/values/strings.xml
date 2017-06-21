@@ -178,7 +178,9 @@
     <string name="change_details_header_patchset_details">Patch Set details</string>
     <string name="change_details_header_patchsets">Patch Set (<xliff:g id="current_patch_set" example="1">%1$d</xliff:g>/<xliff:g id="total_patch_sets" example="2">%2$d</xliff:g>)</string>
     <string name="change_details_header_files">Files</string>
+    <string name="change_details_header_files_empty">Revision has no files</string>
     <string name="change_details_header_messages">Messages</string>
+    <string name="change_details_header_messages_empty">Change has no messages</string>
     <string name="change_details_diff_against">Diff against: <xliff:g id="patch_set" example="1 (f3125b)">%1$s</xliff:g></string>
     <string name="change_details_diff_against_format"><xliff:g id="patch_set" example="1">%1$d</xliff:g> (<xliff:g id="commit" example="f3125b">%2$s</xliff:g>)</string>
     <string name="change_details_id">Id.</string>
