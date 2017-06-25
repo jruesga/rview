@@ -1529,7 +1529,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnReviewerRemovedListener)
                 .withRemovableReviewers(open)
-                .withFilterCIAccounts(true)
+                .withFilterCIAccounts(mHideCIMessages)
                 .withReviewerStatus(supportsCC ? ReviewerStatus.REVIEWER : null)
                 .from(response.mChange);
         if (supportsCC) {
@@ -1538,7 +1538,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnReviewerRemovedListener)
                     .withRemovableReviewers(open)
-                    .withFilterCIAccounts(true)
+                    .withFilterCIAccounts(mHideCIMessages)
                     .withReviewerStatus(ReviewerStatus.CC)
                     .from(response.mChange);
         }
@@ -2140,6 +2140,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 mMessageAdapter.updateHideCIMessages(repo);
                 mMessageAdapter.update(mModel.msgListModel, mResponse.mChange.messages,
                         mResponse.mMessagesWithComments);
+                updateChangeInfo(mResponse);
                 mBinding.setModel(mModel);
             }
             mModel.isLocked = false;
