@@ -20,10 +20,10 @@ ext {
         firebase                    : '11.0.1',
         gson                        : '2.8.1',
         retrofit2                   : '2.3.0',
-        okhttp3                     : '3.8.0',
+        okhttp3                     : '3.8.1',
         okio                        : '1.13.0',
         okhttp_digest               : 'f8af82f343',
-        rxjava                      : '2.1.0',
+        rxjava                      : '2.1.1',
         rxandroid                   : '2.0.1',
         rxloader2                   : '1c07294ba2',
         commons_io                  : '2.5',
@@ -32,7 +32,7 @@ ext {
         picasso2                    : '2.5.2',
         picasso2_okhttp3_downloader : '1.1.0',
         prettytime                  : '4.0.1.Final',
-        flexboxlayout               : '0.2.6',
+        flexboxlayout               : '0.2.7',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '91e06d8a3a',
         aboutlibraries              : '5.9.6',
@@ -47,7 +47,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.8.9'
+        mockito                     : '2.8.47'
     ]
 }
 
@@ -61,7 +61,7 @@ allprojects {
         dependencies {
             classpath 'com.android.tools.build:gradle:2.3.3'
             classpath 'me.tatarka:gradle-retrolambda:3.6.1'
-            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.4'
+            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.1'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
             classpath 'io.fabric.tools:gradle:1.22.2'
         }
