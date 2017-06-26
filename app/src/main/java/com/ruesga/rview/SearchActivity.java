@@ -51,7 +51,6 @@ import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.databinding.SearchActivityBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
-import com.ruesga.rview.gerrit.filter.IsType;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.gerrit.model.AccountInfo;

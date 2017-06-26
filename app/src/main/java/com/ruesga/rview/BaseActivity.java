@@ -146,8 +146,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     }
 
     protected void setupActivity() {
-        mMiniDrawerLayout = (SlidingPaneLayout) getContentBinding().getRoot()
-                .findViewById(R.id.mini_drawer_layout);
+        mMiniDrawerLayout = getContentBinding().getRoot().findViewById(R.id.mini_drawer_layout);
         if (mMiniDrawerLayout != null) {
             // Disable drawer elevation to match AppBarLayout
             View v = getContentBinding().getRoot().findViewById(R.id.drawer_navigation_view);
@@ -342,7 +341,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     }
 
     public void configureOptionsTitle(String title) {
-        TextView tv = (TextView) getContentBinding().drawerOptionsView
+        TextView tv = getContentBinding().drawerOptionsView
                 .getHeaderView(0).findViewById(R.id.options_title);
         tv.setText(title);
     }
