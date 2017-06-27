@@ -34,8 +34,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -158,13 +160,16 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
 
-            if (mMiniDrawerLayout != null && mModel.useTowPane) {
-                configureMiniDrawer();
-            } else {
-                configureFullDrawer();
-            }
-
+            setupDrawer();
             configureOptionsDrawer();
+        }
+    }
+
+    private void setupDrawer() {
+        if (mMiniDrawerLayout != null && mModel.useTowPane) {
+            configureMiniDrawer();
+        } else {
+            configureFullDrawer();
         }
     }
 
@@ -175,9 +180,10 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
                     this, getDrawerLayout(), getContentBinding().toolbar, 0, 0);
             getDrawerLayout().addDrawerListener(drawerToggle);
-            drawerToggle.syncState();
             getContentBinding().drawerLayout.setDrawerLockMode(
-                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START);
+                    DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                    GravityCompat.START);
+            drawerToggle.syncState();
             getContentBinding().toolbar.setNavigationOnClickListener(view -> {
                 if (mMiniDrawerLayout.isOpen()) {
                     mMiniDrawerLayout.closePane();
@@ -204,17 +210,18 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
                     this, getDrawerLayout(), getContentBinding().toolbar, 0, 0);
             getDrawerLayout().addDrawerListener(drawerToggle);
-            drawerToggle.syncState();
-
-            getContentBinding().drawerLayout.setDrawerLockMode(
+            getDrawerLayout().setDrawerLockMode(
                     DrawerLayout.LOCK_MODE_UNLOCKED,
-                    getContentBinding().drawerNavigationView);
+                    Gravity.START);
+            drawerToggle.syncState();
         } else {
-            if (!mModel.hasForceSinglePanel) {
+            final ViewGroup.LayoutParams params = getContentBinding().drawerLayout.getLayoutParams();
+            if (!(params instanceof SlidingPaneLayout.LayoutParams)) {
                 getContentBinding().drawerLayout.setDrawerLockMode(
                         DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                        getContentBinding().drawerNavigationView);
-            } else {
+                        Gravity.START);
+            }
+            if (mModel.hasForceSinglePanel) {
                 // Someones is requesting a single panel in a multipanel layout
                 // Just hide the multipanel
                 mModel.hasMiniDrawer = false;
@@ -226,7 +233,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         // Options is open/closed programatically
         getContentBinding().drawerLayout.setDrawerLockMode(
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                getContentBinding().drawerOptionsView);
+                GravityCompat.END);
 
         // Listen for options close
         getContentBinding().drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -245,7 +252,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
                 if (getContentBinding().drawerOptionsView == drawerView) {
                     getContentBinding().drawerLayout.setDrawerLockMode(
                             DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                            getContentBinding().drawerOptionsView);
+                            GravityCompat.END);
                 }
             }
 
@@ -360,6 +367,11 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
                     + "_base_activity_model");
         }
         mHasStateSaved = false;
+
+        // We need to restore drawer layout lock state
+        if (getContentBinding() != null) {
+            setupDrawer();
+        }
     }
 
     @Override
@@ -491,7 +503,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         if (!getContentBinding().drawerLayout.isDrawerOpen(getContentBinding().drawerOptionsView)) {
             getContentBinding().drawerLayout.setDrawerLockMode(
                     DrawerLayout.LOCK_MODE_UNLOCKED,
-                    getContentBinding().drawerOptionsView);
+                    GravityCompat.END);
             getContentBinding().drawerLayout.openDrawer(getContentBinding().drawerOptionsView);
         }
     }
@@ -502,7 +514,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         }
         getContentBinding().drawerLayout.setDrawerLockMode(
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                getContentBinding().drawerOptionsView);
+                GravityCompat.END);
     }
 
     public DrawerNavigationView getOptionsMenu() {
