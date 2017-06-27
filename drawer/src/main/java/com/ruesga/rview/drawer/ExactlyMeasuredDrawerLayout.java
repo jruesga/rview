@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2015 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.ruesga.rview.drawer;
+
+import android.content.Context;
+import android.support.v4.widget.DrawerLayout;
+import android.util.AttributeSet;
+
+// This class avoids random "DrawerLayout must be measured with MeasureSpec.EXACTLY." exceptions
+// in the support library
+public class ExactlyMeasuredDrawerLayout extends DrawerLayout {
+    public ExactlyMeasuredDrawerLayout(Context context) {
+        super(context);
+    }
+
+    public ExactlyMeasuredDrawerLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public ExactlyMeasuredDrawerLayout(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        widthMeasureSpec = MeasureSpec.makeMeasureSpec(
+                MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY);
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec(
+                MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.EXACTLY);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+}
