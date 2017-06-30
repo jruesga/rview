@@ -33,8 +33,10 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.LabelInfo;
+import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.model.Account;
@@ -56,6 +58,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class ModelHelper {
@@ -533,9 +536,11 @@ public class ModelHelper {
     }
 
     public static Repository findRepositoryForAccount(Context ctx, Account account) {
-        for (Repository repository : getPredefinedRepositories(ctx)) {
-            if (repository.mUrl.equals(account.mRepository.mUrl)) {
-                return repository;
+        if (account != null) {
+            for (Repository repository : getPredefinedRepositories(ctx)) {
+                if (repository.mUrl.equals(account.mRepository.mUrl)) {
+                    return repository;
+                }
             }
         }
         return null;
@@ -575,22 +580,39 @@ public class ModelHelper {
 
     public static List<AccountInfo> filterCIAccounts(Context ctx, List<AccountInfo> src) {
         Account account = Preferences.getAccount(ctx);
-        boolean hideCIAccounts = Preferences.isAccountToggleCIAccountsMessages(ctx, account);
-        if (hideCIAccounts) {
-            Repository repository = findRepositoryForAccount(ctx, account);
-            if (repository != null && !TextUtils.isEmpty(repository.mCiAccounts)) {
-                Pattern pattern = Pattern.compile(repository.mCiAccounts, Pattern.MULTILINE);
-                List<AccountInfo> dst = new ArrayList<>(src);
-                Iterator<AccountInfo> it = dst.iterator();
-                while (it.hasNext()) {
-                    AccountInfo acct = it.next();
-                    if (acct.name != null && pattern.matcher(acct.name).matches()) {
-                        it.remove();
-                    }
+        Repository repository = findRepositoryForAccount(ctx, account);
+        if (repository != null && !TextUtils.isEmpty(repository.mCiAccounts)) {
+            Pattern pattern = Pattern.compile(repository.mCiAccounts, Pattern.MULTILINE);
+            List<AccountInfo> dst = new ArrayList<>(src);
+            Iterator<AccountInfo> it = dst.iterator();
+            while (it.hasNext()) {
+                AccountInfo acct = it.next();
+                if (acct.name != null && pattern.matcher(acct.name).matches()) {
+                    it.remove();
                 }
-                return dst;
             }
+            return dst;
         }
         return src;
+    }
+
+    public static void updateChangeMessageInfo(
+            Context ctx, Account account, ChangeInfo change, ReviewInput input) {
+        // Copy the old structure
+        int count = change.messages.length;
+        ChangeMessageInfo[] messages = new ChangeMessageInfo[count + 1];
+        System.arraycopy(change.messages, 0, messages, 0, count);
+
+        // Update the message
+        ChangeMessageInfo msg = new ChangeMessageInfo();
+        msg.id = UUID.randomUUID().toString();
+        msg.author = account.mAccount;
+        msg.message = input.message;
+        msg.tag = input.tag;
+        msg.date = new Date();
+        msg.revisionNumber = -1;
+        messages[count] = msg;
+
+        change.messages = messages;
     }
 }

@@ -339,7 +339,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         Toast.makeText(this, getString(
                 R.string.exception_cannot_handle_link, getIntent().getData().toString()),
                 Toast.LENGTH_SHORT).show();
-        ActivityHelper.performFinishActivity(this, true);
+        ActivityHelper.performFinishActivity(this, false);
     }
 
     private String[] extractRevisionAndBase(String[] tokens) {

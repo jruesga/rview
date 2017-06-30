@@ -187,11 +187,15 @@ public class ChangeDetailsFragment extends Fragment implements
         public int header;
         public String selector;
         public boolean visible;
+        public boolean empty;
+        public int emptyText;
         public final Map<String, String> actions = new HashMap<>();
-        private ListModel(int h) {
-            header = h;
+        private ListModel(int headerLabel, int emptyTextLabel) {
+            header = headerLabel;
             selector = null;
             visible = false;
+            empty = true;
+            emptyText = emptyTextLabel;
         }
     }
 
@@ -199,8 +203,10 @@ public class ChangeDetailsFragment extends Fragment implements
     public static class Model {
         boolean isLocked = false;
         boolean isAuthenticated = false;
-        public ListModel filesListModel = new ListModel(R.string.change_details_header_files);
-        public ListModel msgListModel = new ListModel(R.string.change_details_header_messages);
+        public ListModel filesListModel = new ListModel(
+                R.string.change_details_header_files, R.string.change_details_header_files_empty);
+        public ListModel msgListModel = new ListModel(
+                R.string.change_details_header_messages, R.string.change_details_header_messages_empty);
     }
 
     @Keep
@@ -233,6 +239,13 @@ public class ChangeDetailsFragment extends Fragment implements
                 switch (id) {
                     case "files-action1":
                         mFragment.showEditChangeActivity();
+                        break;
+
+                    case "messages-action1":
+                        mFragment.toggleTaggedMessages();
+                        break;
+                    case "messages-action2":
+                        mFragment.toggleCIMessages();
                         break;
                 }
             }
@@ -393,7 +406,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mIsShortFilenames = isShortFilenames;
         }
 
-        void update(Map<String, FileInfo> files, Map<String,
+        void update(ListModel listModel, Map<String, FileInfo> files, Map<String,
                 Integer> inlineComments, Map<String, Integer> draftComments) {
             mFiles.clear();
             mTotals = null;
@@ -455,6 +468,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mTotals.totalAdded = added;
             mTotals.totalDeleted = deleted;
 
+            listModel.empty = mFiles.isEmpty();
             notifyDataSetChanged();
         }
 
@@ -506,7 +520,9 @@ public class ChangeDetailsFragment extends Fragment implements
         private final boolean mIsAuthenticated;
         private final boolean mIsFolded;
         private final Picasso mPicasso;
-        private final Repository mRepository;
+
+        private boolean mIsHideTaggedMessages;
+        private Repository mRepository;
 
         private final OnLineClickListener mLineClickListener = new OnLineClickListener() {
             @Override
@@ -516,13 +532,12 @@ public class ChangeDetailsFragment extends Fragment implements
         };
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
-                Repository repository, boolean isAuthenticated, boolean isFolded) {
+                boolean isAuthenticated, boolean isFolded) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
             mIsAuthenticated = isAuthenticated;
             mIsFolded = isFolded;
             mPicasso = picasso;
-            mRepository = repository;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -533,9 +548,17 @@ public class ChangeDetailsFragment extends Fragment implements
             notifyItemChanged(position);
         }
 
-        void update(ChangeMessageInfo[] messages,
+        void updateHideTaggedMessages(boolean isHideTaggedMessages) {
+            mIsHideTaggedMessages = isHideTaggedMessages;
+        }
+
+        void updateHideCIMessages(Repository repo) {
+            mRepository = repo;
+        }
+
+        void update(ListModel listModel, ChangeMessageInfo[] messages,
                 Map<String, LinkedHashMap<String, List<CommentInfo>>> messagesWithComments) {
-            mMessages = filterCiAccountsMessages(messages);
+            mMessages = filterTaggedMessages(filterCiAccountsMessages(messages));
             mMessagesWithComments = messagesWithComments;
 
             int count = mMessages.length;
@@ -545,6 +568,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 mFolded[i] = old != null && old.length > i ? old[i] : mIsFolded;
             }
 
+            listModel.empty = count == 0;
             notifyDataSetChanged();
         }
 
@@ -585,6 +609,20 @@ public class ChangeDetailsFragment extends Fragment implements
             holder.mBinding.setFolded(mFolded[position]);
             holder.mBinding.setHandlers(mEventHandlers);
             holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
+        }
+
+        private ChangeMessageInfo[] filterTaggedMessages(ChangeMessageInfo[] messages) {
+            if (!mIsHideTaggedMessages) {
+                return messages;
+            }
+
+            ArrayList<ChangeMessageInfo> msgs = new ArrayList<>();
+            for (ChangeMessageInfo msg : messages) {
+                if (TextUtils.isEmpty(msg.tag)) {
+                    msgs.add(msg);
+                }
+            }
+            return msgs.toArray(new ChangeMessageInfo[msgs.size()]);
         }
 
         private ChangeMessageInfo[] filterCiAccountsMessages(ChangeMessageInfo[] messages) {
@@ -637,6 +675,13 @@ public class ChangeDetailsFragment extends Fragment implements
                     mCurrentRevision = change.currentRevision;
                 }
 
+                // Check supported features
+                final GerritApi api = ModelHelper.getGerritApi(getActivity());
+                boolean supportTaggedMessages = api != null
+                        && api.supportsFeature(Features.TAGGED_MESSAGES);
+                Repository repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
+                boolean supportCIMessages = repo != null && !TextUtils.isEmpty(repo.mCiAccounts);
+
                 sortRevisions(change);
                 updatePatchSetInfo(result);
                 updateChangeInfo(result);
@@ -652,10 +697,22 @@ public class ChangeDetailsFragment extends Fragment implements
                         && mCurrentRevision.equals(result.mChange.currentRevision)) {
                     mModel.filesListModel.actions.put("action1", getString(R.string.action_edit));
                 }
-                mFileAdapter.update(result.mFiles, result.mInlineComments, result.mDraftComments);
+                mFileAdapter.update(mModel.filesListModel, result.mFiles,
+                        result.mInlineComments, result.mDraftComments);
                 mModel.msgListModel.visible =
                         change.messages != null && change.messages.length > 0;
-                mMessageAdapter.update(change.messages, result.mMessagesWithComments);
+                if (supportTaggedMessages) {
+                    mModel.msgListModel.actions.put("action1", getString(mHideTaggedMessages
+                            ? R.string.change_details_action_show_tagged_messages
+                            : R.string.change_details_action_hide_tagged_messages));
+                }
+                if (supportCIMessages) {
+                    mModel.msgListModel.actions.put("action2", getString(mHideCIMessages
+                            ? R.string.change_details_action_show_ci_messages
+                            : R.string.change_details_action_hide_ci_messages));
+                }
+                mMessageAdapter.update(mModel.msgListModel, change.messages,
+                        result.mMessagesWithComments);
             }
 
             // Invalidate the diff cache. we have new data
@@ -744,21 +801,29 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
-    private final RxLoaderObserver<ReviewInfo> mReviewObserver = new RxLoaderObserver<ReviewInfo>() {
+    private final RxLoaderObserver<Pair<ReviewInput, ReviewInfo>> mReviewObserver
+            = new RxLoaderObserver<Pair<ReviewInput, ReviewInfo>>() {
 
         private Runnable mUiDelayedProcessingNotification = () -> internalSetProcessing(true);
 
         @Override
-        public void onNext(ReviewInfo review) {
-            // Fetch the whole change
-            forceRefresh();
+        public void onNext(Pair<ReviewInput, ReviewInfo> review) {
             setProcessing(false);
+            mReviewLoader.clear();
 
             // Clean the message box
             mBinding.reviewInfo.reviewComment.setText(null);
             AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
 
-            mReviewLoader.clear();
+            // Update the messages (since it was update at server side, we can temporary
+            // update the message list until a full refresh happens)
+            ModelHelper.updateChangeMessageInfo(
+                    getActivity(), mAccount, mResponse.mChange, review.first);
+            mMessageAdapter.update(mModel.msgListModel, mResponse.mChange.messages,
+                    mResponse.mMessagesWithComments);
+
+            // Fetch the whole change
+            forceRefresh();
         }
 
         @Override
@@ -853,7 +918,8 @@ public class ChangeDetailsFragment extends Fragment implements
             // will fix the out-of-sync problem).
             mResponse.mChange.messages = messages;
             mModel.msgListModel.visible = messages != null && messages.length > 0;
-            mMessageAdapter.update(messages, mResponse.mMessagesWithComments);
+            mMessageAdapter.update(mModel.msgListModel, messages, mResponse.mMessagesWithComments);
+            mBinding.setModel(mModel);
         }
 
         @Override
@@ -875,8 +941,9 @@ public class ChangeDetailsFragment extends Fragment implements
             mResponse.mDraftComments = drafts;
 
             mModel.filesListModel.visible = mResponse.mFiles != null && !mResponse.mFiles.isEmpty();
-            mFileAdapter.update(
-                    mResponse.mFiles, mResponse.mInlineComments, mResponse.mDraftComments);
+            mFileAdapter.update(mModel.filesListModel, mResponse.mFiles,
+                    mResponse.mInlineComments, mResponse.mDraftComments);
+            mBinding.setModel(mModel);
 
             mDraftsRefreshLoader.clear();
         }
@@ -1145,11 +1212,14 @@ public class ChangeDetailsFragment extends Fragment implements
     private final List<RevisionInfo> mAllRevisions = new ArrayList<>();
     private final List<RevisionInfo> mAllRevisionsWithBase = new ArrayList<>();
 
+    private boolean mHideTaggedMessages;
+    private boolean mHideCIMessages;
+
     private RxLoader1<String, DataResponse> mChangeLoader;
     private RxLoader1<Boolean, Boolean> mStarredLoader;
     private RxLoader1<ChangeEditMessageInput, Boolean> mChangeEditMessageLoader;
     private RxLoader1<DescriptionInput, Boolean> mChangeEditRevisionDescriptionLoader;
-    private RxLoader1<ReviewInput, ReviewInfo> mReviewLoader;
+    private RxLoader1<ReviewInput, Pair<ReviewInput, ReviewInfo>> mReviewLoader;
     private RxLoader2<String, AddReviewerState, AddReviewerResultInfo> mAddReviewerLoader;
     private RxLoader1<String, AssigneeInfo> mEditAssigneeLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
@@ -1231,6 +1301,8 @@ public class ChangeDetailsFragment extends Fragment implements
         outState.putString("review", SerializationManager.getInstance().toJson(review));
         outState.putString("current_revision", mCurrentRevision);
         outState.putString("diff_against_revision", mDiffAgainstRevision);
+        outState.putBoolean("hideTaggedMessages", mHideTaggedMessages);
+        outState.putBoolean("hideCIMessages", mHideCIMessages);
     }
 
     @Override
@@ -1289,16 +1361,24 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         if (mFileAdapter == null) {
-            // Set authenticated mode
-            Repository repo = null;
             mAccount = Preferences.getAccount(getContext());
             if (mAccount != null) {
                 mModel.isAuthenticated = mAccount.hasAuthenticatedAccessMode();
-                if (Preferences.isAccountToggleCIAccountsMessages(getContext(), mAccount)) {
-                    repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
-                }
             }
             updateAuthenticatedAndOwnerStatus();
+
+            mHideTaggedMessages = Preferences.isAccountToggleTaggedMessages(getContext(), mAccount);
+            mHideCIMessages = Preferences.isAccountToggleCIAccountsMessages(getContext(), mAccount);
+            if (savedInstanceState != null) {
+                mHideTaggedMessages = savedInstanceState.getBoolean(
+                        "hideTaggedMessages", mHideTaggedMessages);
+                mHideCIMessages = savedInstanceState.getBoolean(
+                        "hideCIMessages", mHideCIMessages);
+            }
+            Repository repo = null;
+            if (mHideCIMessages) {
+                repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
+            }
 
             boolean isMessagesFolded = Preferences.isAccountMessagesFolded(getContext(), mAccount);
             mIsInlineCommentsInMessages = Preferences.isAccountInlineCommentInMessages(
@@ -1315,7 +1395,9 @@ public class ChangeDetailsFragment extends Fragment implements
 
 
             mMessageAdapter = new MessageAdapter(this, mEventHandlers, mPicasso,
-                    repo, mModel.isAuthenticated, isMessagesFolded);
+                    mModel.isAuthenticated, isMessagesFolded);
+            mMessageAdapter.updateHideTaggedMessages(mHideTaggedMessages);
+            mMessageAdapter.updateHideCIMessages(repo);
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(
@@ -1455,7 +1537,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnReviewerRemovedListener)
                 .withRemovableReviewers(open)
-                .withFilterCIAccounts(true)
+                .withFilterCIAccounts(mHideCIMessages)
                 .withReviewerStatus(supportsCC ? ReviewerStatus.REVIEWER : null)
                 .from(response.mChange);
         if (supportsCC) {
@@ -1464,7 +1546,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnReviewerRemovedListener)
                     .withRemovableReviewers(open)
-                    .withFilterCIAccounts(true)
+                    .withFilterCIAccounts(mHideCIMessages)
                     .withReviewerStatus(ReviewerStatus.CC)
                     .from(response.mChange);
         }
@@ -1626,12 +1708,15 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<ReviewInfo> reviewChange(final ReviewInput input) {
+    private Observable<Pair<ReviewInput, ReviewInfo>> reviewChange(final ReviewInput input) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return SafeObservable.fromNullCallable(() ->
-                    api.setChangeRevisionReview(
-                        String.valueOf(mLegacyChangeId), mCurrentRevision, input).blockingFirst()
+        return SafeObservable.fromNullCallable(() -> {
+                        ReviewInfo response = api.setChangeRevisionReview(
+                                String.valueOf(mLegacyChangeId), mCurrentRevision, input)
+                                .blockingFirst();
+                        return new Pair<>(input, response);
+                    }
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -2029,6 +2114,47 @@ public class ChangeDetailsFragment extends Fragment implements
             ActivityHelper.editChange(this,
                     mResponse.mChange.legacyChangeId, mResponse.mChange.changeId, mCurrentRevision,
                     EDIT_REQUEST_CODE);
+        }
+    }
+
+    private void toggleTaggedMessages() {
+        if (!isLocked()) {
+            mModel.isLocked = true;
+            if (mModel.msgListModel.actions.containsKey("action1")) {
+                mHideTaggedMessages = !mHideTaggedMessages;
+                mModel.msgListModel.actions.put("action1", getString(mHideTaggedMessages
+                        ? R.string.change_details_action_show_tagged_messages
+                        : R.string.change_details_action_hide_tagged_messages));
+
+                mMessageAdapter.updateHideTaggedMessages(mHideTaggedMessages);
+                mMessageAdapter.update(mModel.msgListModel, mResponse.mChange.messages,
+                        mResponse.mMessagesWithComments);
+                mBinding.setModel(mModel);
+            }
+            mModel.isLocked = false;
+        }
+    }
+
+    private void toggleCIMessages() {
+        if (!isLocked()) {
+            mModel.isLocked = true;
+            if (mModel.msgListModel.actions.containsKey("action2")) {
+                mHideCIMessages = !mHideCIMessages;
+                mModel.msgListModel.actions.put("action2", getString(mHideCIMessages
+                        ? R.string.change_details_action_show_ci_messages
+                        : R.string.change_details_action_hide_ci_messages));
+
+                Repository repo = null;
+                if (mHideCIMessages) {
+                    repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
+                }
+                mMessageAdapter.updateHideCIMessages(repo);
+                mMessageAdapter.update(mModel.msgListModel, mResponse.mChange.messages,
+                        mResponse.mMessagesWithComments);
+                updateChangeInfo(mResponse);
+                mBinding.setModel(mModel);
+            }
+            mModel.isLocked = false;
         }
     }
 

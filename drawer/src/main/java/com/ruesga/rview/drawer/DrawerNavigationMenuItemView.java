@@ -104,11 +104,11 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         LayoutInflater.from(context).inflate(R.layout.drawer_navigation_menu_item, this, true);
         mIconSize = context.getResources().getDimensionPixelSize(
                 R.dimen.drawer_navigation_icon_size);
-        mIcon = (ImageView) findViewById(R.id.drawer_menu_item_icon);
-        mButton = (ImageView) findViewById(R.id.drawer_menu_item_button);
-        mTextView = (CheckedTextView) findViewById(R.id.drawer_menu_item_text);
+        mIcon = findViewById(R.id.drawer_menu_item_icon);
+        mButton = findViewById(R.id.drawer_menu_item_button);
+        mTextView = findViewById(R.id.drawer_menu_item_text);
         mTextView.setDuplicateParentStateEnabled(true);
-        mSubTextView = (CheckedTextView) findViewById(R.id.drawer_menu_item_subtext);
+        mSubTextView = findViewById(R.id.drawer_menu_item_subtext);
         mSubTextView.setDuplicateParentStateEnabled(true);
 
         mButton.setOnClickListener(v -> {

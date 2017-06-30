@@ -78,10 +78,26 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/list"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{safeUnbox(model.empty) ? View.GONE : View.VISIBLE}"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="16dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:visibility="@{safeUnbox(model.empty) ? View.VISIBLE : View.GONE}"
+                    android:text="@{model.emptyText == 0 ? null : context.getString(model.emptyText)}"
+                    android:textSize="14sp"/>
+            </FrameLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"

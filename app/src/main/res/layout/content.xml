@@ -24,7 +24,7 @@
         <variable name="model" type="com.ruesga.rview.BaseActivity.Model" />
     </data>
 
-    <android.support.v4.widget.DrawerLayout
+    <com.ruesga.rview.drawer.ExactlyMeasuredDrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -127,6 +127,6 @@
             app:headerLayout="@layout/options_header">
         </com.ruesga.rview.drawer.DrawerNavigationView>
 
-    </android.support.v4.widget.DrawerLayout>
+    </com.ruesga.rview.drawer.ExactlyMeasuredDrawerLayout>
 
 </layout>

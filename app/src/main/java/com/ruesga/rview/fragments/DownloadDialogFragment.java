@@ -111,9 +111,8 @@ public class DownloadDialogFragment extends RevealDialogFragment {
     private final RxLoaderObserver<Download> mDownloadObserver = new RxLoaderObserver<Download>() {
         @Override
         public void onNext(Download download) {
-           download(download);
-
             mDownloadLoader.clear();
+            download(download);
         }
     };
 

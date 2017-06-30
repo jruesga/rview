@@ -179,7 +179,9 @@
     <string name="change_details_header_patchset_details">Patch Set details</string>
     <string name="change_details_header_patchsets">Patch Set (<xliff:g id="current_patch_set" example="1">%1$d</xliff:g>/<xliff:g id="total_patch_sets" example="2">%2$d</xliff:g>)</string>
     <string name="change_details_header_files">Files</string>
+    <string name="change_details_header_files_empty">Revision has no files</string>
     <string name="change_details_header_messages">Messages</string>
+    <string name="change_details_header_messages_empty">Change has no messages</string>
     <string name="change_details_diff_against">Diff against: <xliff:g id="patch_set" example="1 (f3125b)">%1$s</xliff:g></string>
     <string name="change_details_diff_against_format"><xliff:g id="patch_set" example="1">%1$d</xliff:g> (<xliff:g id="commit" example="f3125b">%2$s</xliff:g>)</string>
     <string name="change_details_id">Id.</string>
@@ -198,7 +200,6 @@
     <string name="change_details_created">Created</string>
     <string name="change_details_updated">Updated</string>
     <string name="change_details_tags">Tags</string>
-    <string name="change_details_tag">Tag</string>
     <string name="change_details_author">Author</string>
     <string name="change_details_committer">Committer</string>
     <string name="change_details_commit">Commit</string>
@@ -215,6 +216,10 @@
     <string name="change_details_comment_base_line_number">B,L<xliff:g id="line_number" example="1">%1$d</xliff:g>:</string>
     <string name="change_details_comment_file">File:</string>
     <string name="change_details_fast_scroll_msg">Scroll to last message</string>
+    <string name="change_details_action_hide_tagged_messages">Hide tagged</string>
+    <string name="change_details_action_show_tagged_messages">Show tagged</string>
+    <string name="change_details_action_hide_ci_messages">Hide CI</string>
+    <string name="change_details_action_show_ci_messages">Show CI</string>
 
     <!-- Change edit -->
     <string name="change_edit_title">Edit #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>
@@ -268,6 +273,9 @@
     <string name="account_settings_messages_category">Messages</string>
     <string name="account_settings_messages_folded">Fold messages</string>
     <string name="account_settings_inline_comment_in_messages">Display inline comments in messages</string>
+    <string name="account_settings_toggle_tagged_messages_title">Toggle tagged messages</string>
+    <string name="account_settings_toggle_tagged_messages_summary_off">Show tagged messages</string>
+    <string name="account_settings_toggle_tagged_messages_summary_on">Hide tagged messages</string>
     <string name="account_settings_toggle_ci_messages_title">Toggle CI accounts messages</string>
     <string name="account_settings_toggle_ci_messages_summary_off">Show messages from CI accounts</string>
     <string name="account_settings_toggle_ci_messages_summary_on">Hide messages from CI accounts</string>

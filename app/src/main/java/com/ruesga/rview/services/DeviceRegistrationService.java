@@ -29,7 +29,6 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
-import java.io.IOException;
 import java.util.List;
 
 import me.tatarka.rxloader2.safe.Empty;

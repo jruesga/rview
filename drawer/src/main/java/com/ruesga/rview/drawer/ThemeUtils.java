@@ -27,7 +27,7 @@ class ThemeUtils {
 
     static void checkAppCompatTheme(Context context) {
         TypedArray a = context.obtainStyledAttributes(APPCOMPAT_CHECK_ATTRS);
-        final boolean failed = !a.hasValue(0);
+        final boolean failed = a == null || !a.hasValue(0);
         if (a != null) {
             a.recycle();
         }
