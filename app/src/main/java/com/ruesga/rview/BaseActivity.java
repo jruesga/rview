@@ -25,6 +25,7 @@ import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -418,11 +419,21 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     }
 
     public void showError(@StringRes int message) {
-        AndroidHelper.showErrorSnackbar(this, getContentBinding().getRoot(), message);
+        AndroidHelper.showErrorSnackbar(this,
+                getSnackBarTarget(getContentBinding().getRoot()), message);
     }
 
     public void showWarning(@StringRes int message) {
-        AndroidHelper.showWarningSnackbar(this, getContentBinding().getRoot(), message);
+        AndroidHelper.showWarningSnackbar(this,
+                getSnackBarTarget(getContentBinding().getRoot()), message);
+    }
+
+    private View getSnackBarTarget(View root) {
+        View v = root.findViewById(R.id.page_content_layout);
+        if (v != null && v instanceof CoordinatorLayout) {
+            return v;
+        }
+        return root;
     }
 
     public void showToast(@StringRes int message) {
