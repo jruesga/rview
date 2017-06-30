@@ -801,21 +801,29 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
-    private final RxLoaderObserver<ReviewInfo> mReviewObserver = new RxLoaderObserver<ReviewInfo>() {
+    private final RxLoaderObserver<Pair<ReviewInput, ReviewInfo>> mReviewObserver
+            = new RxLoaderObserver<Pair<ReviewInput, ReviewInfo>>() {
 
         private Runnable mUiDelayedProcessingNotification = () -> internalSetProcessing(true);
 
         @Override
-        public void onNext(ReviewInfo review) {
-            // Fetch the whole change
-            forceRefresh();
+        public void onNext(Pair<ReviewInput, ReviewInfo> review) {
             setProcessing(false);
+            mReviewLoader.clear();
 
             // Clean the message box
             mBinding.reviewInfo.reviewComment.setText(null);
             AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
 
-            mReviewLoader.clear();
+            // Update the messages (since it was update at server side, we can temporary
+            // update the message list until a full refresh happens)
+            ModelHelper.updateChangeMessageInfo(
+                    getActivity(), mAccount, mResponse.mChange, review.first);
+            mMessageAdapter.update(mModel.msgListModel, mResponse.mChange.messages,
+                    mResponse.mMessagesWithComments);
+
+            // Fetch the whole change
+            forceRefresh();
         }
 
         @Override
@@ -1211,7 +1219,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<Boolean, Boolean> mStarredLoader;
     private RxLoader1<ChangeEditMessageInput, Boolean> mChangeEditMessageLoader;
     private RxLoader1<DescriptionInput, Boolean> mChangeEditRevisionDescriptionLoader;
-    private RxLoader1<ReviewInput, ReviewInfo> mReviewLoader;
+    private RxLoader1<ReviewInput, Pair<ReviewInput, ReviewInfo>> mReviewLoader;
     private RxLoader2<String, AddReviewerState, AddReviewerResultInfo> mAddReviewerLoader;
     private RxLoader1<String, AssigneeInfo> mEditAssigneeLoader;
     private RxLoader1<AccountInfo, AccountInfo> mRemoveReviewerLoader;
@@ -1700,12 +1708,15 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<ReviewInfo> reviewChange(final ReviewInput input) {
+    private Observable<Pair<ReviewInput, ReviewInfo>> reviewChange(final ReviewInput input) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return SafeObservable.fromNullCallable(() ->
-                    api.setChangeRevisionReview(
-                        String.valueOf(mLegacyChangeId), mCurrentRevision, input).blockingFirst()
+        return SafeObservable.fromNullCallable(() -> {
+                        ReviewInfo response = api.setChangeRevisionReview(
+                                String.valueOf(mLegacyChangeId), mCurrentRevision, input)
+                                .blockingFirst();
+                        return new Pair<>(input, response);
+                    }
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
