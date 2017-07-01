@@ -41,6 +41,7 @@ import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.Repository;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.RegExLinkifyTextView;
 
@@ -614,5 +615,10 @@ public class ModelHelper {
         messages[count] = msg;
 
         change.messages = messages;
+    }
+
+    public static boolean isCommitMessage(String name) {
+        return name != null && (name.equals(Constants.COMMIT_MESSAGE)
+                || name.equals(Constants.COMMIT_MESSAGE.substring(1)));
     }
 }

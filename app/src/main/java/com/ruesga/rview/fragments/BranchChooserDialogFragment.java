@@ -102,6 +102,11 @@ public class BranchChooserDialogFragment extends FilterableDialogFragment {
     }
 
     @Override
+    public boolean isSelectionRequired(int pos) {
+        return true;
+    }
+
+    @Override
     public boolean isValidated() {
         return mIsValidated;
     }

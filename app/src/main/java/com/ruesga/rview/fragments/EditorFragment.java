@@ -38,6 +38,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.gson.JsonParseException;
+import com.google.gson.annotations.SerializedName;
+import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
@@ -45,6 +47,7 @@ import com.ruesga.rview.databinding.EditActionsHeaderBinding;
 import com.ruesga.rview.databinding.EditFileChooserHeaderBinding;
 import com.ruesga.rview.databinding.EditorFragmentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
+import com.ruesga.rview.fragments.EditFileChooserDialogFragment.MODE;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.FileInfo;
@@ -52,6 +55,7 @@ import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -63,8 +67,11 @@ import com.ruesga.rview.widget.EditorView.OnMessageListener;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +93,11 @@ public class EditorFragment extends Fragment
     private static final String TAG = "EditorFragment";
 
     private static final int READ_CONTENT_MESSAGE = 0;
+
+    public static class Op {
+        @SerializedName("op") public MODE op;
+        @SerializedName("old_path") public String oldPath;
+    }
 
     private interface OnSavedContentReady {
         void onContentSaved();
@@ -377,6 +389,7 @@ public class EditorFragment extends Fragment
 
     private ArrayList<String> mFiles = new ArrayList<>();
     private ArrayList<String> mFilesHashes = new ArrayList<>();
+    private Map<String, Op> mEditOps = new HashMap<>();
     private String mFile;
     private int mCurrentFile;
     private boolean mIsDirty;
@@ -511,6 +524,11 @@ public class EditorFragment extends Fragment
             mContentLoader = loaderManager.create("content", fetchContent(), mContentObserver);
             mPublishLoader = loaderManager.create("publish", publishEdit(), mPublishObserver);
 
+            if (!mReadOnly) {
+                // Load current edit operations
+                readFileOps();
+            }
+
             if (savedInstanceState != null) {
                 mFile = savedInstanceState.getString(Constants.EXTRA_FILE);
                 mFiles = savedInstanceState.getStringArrayList("files");
@@ -590,9 +608,10 @@ public class EditorFragment extends Fragment
     private Observable<Map<String, FileInfo>> fetchFiles() {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         return SafeObservable.fromNullCallable(() ->
-                api.getChangeRevisionFiles(
-                        String.valueOf(mLegacyChangeId), GerritApi.CURRENT_REVISION, null, null)
-                        .blockingFirst())
+                    api.getChangeRevisionFiles(
+                            String.valueOf(mLegacyChangeId), GerritApi.CURRENT_REVISION, null, null)
+                            .blockingFirst()
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -601,14 +620,14 @@ public class EditorFragment extends Fragment
     private Observable<byte[]> fetchContent() {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         return SafeObservable.fromNullCallable(() ->
-                withCached(SafeObservable.fromNullCallable(() -> {
-                        ResponseBody body =
-                            api.getChangeRevisionFileContent(String.valueOf(mLegacyChangeId),
-                                    GerritApi.CURRENT_REVISION, mFile).blockingFirst();
-                        return body.bytes();
-                })).blockingFirst())
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread());
+                    withCached(SafeObservable.fromNullCallable(() -> {
+                            ResponseBody body =
+                                api.getChangeRevisionFileContent(String.valueOf(mLegacyChangeId),
+                                        GerritApi.CURRENT_REVISION, mFile).blockingFirst();
+                            return body.bytes();
+                    })).blockingFirst())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -620,8 +639,7 @@ public class EditorFragment extends Fragment
         return SafeObservable.fromNullCallable(
                     () -> mReadOnly
                             ? FileUtils.readFileToByteArray(new File(mContentFile))
-                            : readEditContent(mContentFile)
-                )
+                            : readEditContent(mContentFile))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -648,9 +666,11 @@ public class EditorFragment extends Fragment
 
     @SuppressWarnings("Convert2streamapi")
     private void performFileChooser(View v) {
+        // Filter out current ops
         final List<String> files = new ArrayList<>();
         for (String file : mFiles) {
             files.add(new File(file).getName());
+            // TODO Update file ops and sort
         }
 
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
@@ -916,9 +936,28 @@ public class EditorFragment extends Fragment
         return Base64.decode(o, Base64.NO_WRAP);
     }
 
+    private void readFileOps() {
+        try {
+            byte[] data = CacheHelper.readAccountDiffCacheFile(getContext(), "ops.edit");
+            Type type = new TypeToken<Map<String, MODE>>(){}.getType();
+            mEditOps = SerializationManager.getInstance().fromJson(new String(data), type);
+        } catch (FileNotFoundException ex) {
+            // Ignore
+        } catch (IOException ex) {
+            ((BaseActivity) getActivity()).handleException(TAG, ex, null);
+        }
+    }
+
+    private void writeFileOps() {
+        try {
+            byte[] data = SerializationManager.getInstance().toJson(mEditOps).getBytes();
+            CacheHelper.writeAccountDiffCacheFile(getContext(), "ops.edit", data);
+        } catch (IOException ex) {
+            ((BaseActivity) getActivity()).handleException(TAG, ex, null);
+        }
+    }
+
     @Override
-    public void onEditFileChosen(int requestCode, EditFileChooserDialogFragment.MODE mode,
-        String oldValue, String newValue) {
-        System.out.println("jrc: oldValue: " + oldValue + "; newValue: " + newValue);
+    public void onEditFileChosen(int requestCode, MODE mode, String oldValue, String newValue) {
     }
 }

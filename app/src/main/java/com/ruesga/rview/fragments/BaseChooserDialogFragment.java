@@ -93,6 +93,11 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment implemen
     }
 
     @Override
+    public boolean isSelectionRequired(int pos) {
+        return true;
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);

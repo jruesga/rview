@@ -70,6 +70,8 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
 
     public abstract boolean isAllowEmpty();
 
+    public abstract boolean isSelectionRequired(int pos);
+
     public abstract ViewDataBinding inflateView(LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
 
@@ -116,6 +118,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
 
                 @Override
                 public void afterTextChanged(Editable s) {
+                    mUserSelection[item] = null;
                     mIsUserSelection[item] = false;
                     enabledOrDisableButtons();
                 }
@@ -163,21 +166,21 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
             result[i] = transformResult(i, mUserSelection[i]);
         }
 
-        boolean empty = false;
+        boolean valid = true;
         if (!isAllowEmpty()) {
             for (int i = 0; i < count; i++) {
                 if (result[i] == null) {
                     mIsUserSelection[i] = false;
-                    empty = true;
+                    valid = false;
                 }
             }
 
-            if (empty) {
-                enabledOrDisableButtons();
+            if (!valid) {
+                valid = enabledOrDisableButtons();
             }
         }
 
-        if (!empty && !handleResult(mRequestCode, result)) {
+        if (valid && !handleResult(mRequestCode, result)) {
             Activity a = getActivity();
             Fragment f = getParentFragment();
             if (f != null && f instanceof OnFilterSelectedListener) {
@@ -192,31 +195,26 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         return result;
     }
 
-    private void enabledOrDisableButtons() {
+    private boolean enabledOrDisableButtons() {
         if (getDialog() != null) {
             final AlertDialog dialog = ((AlertDialog) getDialog());
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             if (button != null) {
-                button.setEnabled(((isAllowEmpty() && isEmptyUserSelection())
-                        || isUserSelection()) && isValidated());
-            }
-        }
-    }
-
-    private boolean isEmptyUserSelection() {
-        int count = getFilterableItems();
-        for (int i = 0; i < count; i++) {
-            if (TextUtils.isEmpty(mUserSelection[i])) {
-                return true;
+                boolean valid = isValidSelection() && isValidated();
+                button.setEnabled(valid);
+                return valid;
             }
         }
         return false;
     }
 
-    private boolean isUserSelection() {
+    private boolean isValidSelection() {
         int count = getFilterableItems();
         for (int i = 0; i < count; i++) {
-            if (!mIsUserSelection[i]) {
+            CharSequence text = getFilterView()[i].getText();
+            boolean valid = (isAllowEmpty() || !TextUtils.isEmpty(text))
+                    && (!isSelectionRequired(i) || mIsUserSelection[i]);
+            if (!valid) {
                 return false;
             }
         }

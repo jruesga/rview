@@ -34,6 +34,7 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.FileChooserAdapter;
 import com.ruesga.rview.adapters.FilterableAdapter;
 import com.ruesga.rview.databinding.EditFileChooserDialogBinding;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.widget.DelayedAutocompleteTextView;
 
@@ -63,6 +64,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
         public String value2;
         public String hint1;
         public String hint2;
+        private boolean value1Locked;
         public boolean valid;
     }
 
@@ -164,15 +166,38 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
     }
 
     @Override
+    public boolean isSelectionRequired(int pos) {
+        switch (mModel.mode) {
+            case DELETE:
+                return true;
+            case RENAME:
+                return !mModel.value1Locked && pos == 0;
+        }
+        return false;
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         mModel.mode = MODE.valueOf(getArguments().getString(EXTRA_MODE));
         mModel.value1 = getArguments().getString(EXTRA_VALUE);
         mModel.hint1 = getArguments().getString(EXTRA_HINT_1);
         mModel.hint2 = getArguments().getString(EXTRA_HINT_2);
+        mModel.value1Locked = !TextUtils.isEmpty(mModel.value1);
         mTitle = getArguments().getInt(EXTRA_TITLE);
         mAction = getArguments().getInt(EXTRA_ACTION);
 
+        if (savedInstanceState != null) {
+            mModel.value1Locked = savedInstanceState.getBoolean("value1Locked", mModel.value1Locked);
+        }
+
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putBoolean("value1Locked", mModel.value1Locked);
     }
 
     @Override
@@ -181,7 +206,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
         int legacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         String revisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
         mBinding = DataBindingUtil.inflate(inflater, R.layout.edit_file_chooser_dialog, container, true);
-        if (mModel.mode.equals(MODE.RENAME) && !TextUtils.isEmpty(mModel.value1)) {
+        if (mModel.mode.equals(MODE.RENAME) && mModel.value1Locked) {
             mBinding.edit1.setEnabled(false);
         }
         mBinding.setModel(mModel);
@@ -209,11 +234,19 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
         mBinding.unbind();
     }
 
+
     @Override
+    @SuppressWarnings("SimplifiableIfStatement")
     public boolean isValidated() {
-        return true;
+        // COMMIT_MESSAGE is not a valid name
+        if (ModelHelper.isCommitMessage(mModel.value1)
+                || ModelHelper.isCommitMessage(mModel.value2)) {
+            return false;
+        }
+        return !mModel.mode.equals(MODE.RENAME) || !mModel.value1.equals(mModel.value2);
     }
 
+    @Override
     public boolean handleResult(int requestCode, Object[] result) {
         Activity a = getActivity();
         Fragment f = getParentFragment();
@@ -226,5 +259,4 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
         }
         return true;
     }
-
 }
