@@ -161,7 +161,8 @@ public class EditorFragment extends Fragment
         }
     }
 
-    private OnDrawerNavigationItemSelectedListener mOptionsItemListener = new OnDrawerNavigationItemSelectedListener() {
+    private OnDrawerNavigationItemSelectedListener mOptionsItemListener
+            = new OnDrawerNavigationItemSelectedListener() {
         @Override
         public boolean onDrawerNavigationItemSelected(MenuItem item) {
             switch (item.getItemId()) {
@@ -311,6 +312,7 @@ public class EditorFragment extends Fragment
             showProgress(false);
 
             mContentLoader.clear();
+            mLocked = false;
         }
 
         @Override
@@ -319,11 +321,13 @@ public class EditorFragment extends Fragment
             showProgress(false);
 
             mContentLoader.clear();
+            mLocked = false;
         }
 
         @Override
         public void onStarted() {
             showProgress(true);
+            mLocked = true;
         }
     };
 
@@ -344,6 +348,7 @@ public class EditorFragment extends Fragment
             showProgress(false);
 
             mContentLoader.clear();
+            mLocked = false;
         }
 
         @Override
@@ -352,11 +357,13 @@ public class EditorFragment extends Fragment
             showProgress(false);
 
             mContentLoader.clear();
+            mLocked = false;
         }
 
         @Override
         public void onStarted() {
             showProgress(true);
+            mLocked = true;
         }
     };
 
@@ -411,6 +418,7 @@ public class EditorFragment extends Fragment
 
     private String mContentFile;
     private boolean mReadOnly;
+    private boolean mLocked;
 
     private RxLoader<byte[]> mContentLoader;
     private RxLoader<Boolean> mCancelLoader;
@@ -596,31 +604,33 @@ public class EditorFragment extends Fragment
     }
 
     private void openOptionsMenu() {
-        // Update diff_options
-        BaseActivity activity =  ((BaseActivity) getActivity());
-        Menu menu = activity.getOptionsMenu().getMenu();
-        menu.findItem(R.id.wrap_mode_on).setChecked(mWrap);
-        menu.findItem(R.id.wrap_mode_off).setChecked(!mWrap);
-        menu.findItem(R.id.text_size_smaller).setChecked(
-                mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_SMALLER);
-        menu.findItem(R.id.text_size_normal).setChecked(
-                mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_NORMAL);
-        menu.findItem(R.id.text_size_bigger).setChecked(
-                mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_BIGGER);
+        if (!mLocked) {
+            // Update diff_options
+            BaseActivity activity = ((BaseActivity) getActivity());
+            Menu menu = activity.getOptionsMenu().getMenu();
+            menu.findItem(R.id.wrap_mode_on).setChecked(mWrap);
+            menu.findItem(R.id.wrap_mode_off).setChecked(!mWrap);
+            menu.findItem(R.id.text_size_smaller).setChecked(
+                    mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_SMALLER);
+            menu.findItem(R.id.text_size_normal).setChecked(
+                    mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_NORMAL);
+            menu.findItem(R.id.text_size_bigger).setChecked(
+                    mTextSizeFactor == Constants.DEFAULT_TEXT_SIZE_BIGGER);
 
-        if (mEditActionsBinding != null) {
-            mEditActionsBinding.setIsDirty(mBinding.editor.isDirty());
+            if (mEditActionsBinding != null) {
+                mEditActionsBinding.setIsDirty(mBinding.editor.isDirty());
 
-            boolean wasDeleted = mFileInfo.get(mFile).status.equals(FileStatus.D);
-            mEditActionsBinding.setCanPublish(mIsDirty);
-            mEditActionsBinding.setCanDeleteCurrent(
-                    !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted);
-            mEditActionsBinding.setCanRenameCurrent(
-                    !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted);
+                boolean wasDeleted = mFileInfo.get(mFile).status.equals(FileStatus.D);
+                mEditActionsBinding.setCanPublish(mIsDirty);
+                mEditActionsBinding.setCanDeleteCurrent(
+                        !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted);
+                mEditActionsBinding.setCanRenameCurrent(
+                        !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted);
+            }
+
+            // Open drawer
+            activity.openOptionsDrawer();
         }
-
-        // Open drawer
-        activity.openOptionsDrawer();
     }
 
     private void showProgress(boolean show) {
