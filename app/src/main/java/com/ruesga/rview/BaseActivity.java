@@ -395,8 +395,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
 
     @Override
     public void onBackPressed() {
-        if (!mModel.hasForceSinglePanel &&
-                getContentBinding() != null && getContentBinding().drawerLayout != null) {
+        if (getContentBinding() != null && getContentBinding().drawerLayout != null) {
             final DrawerLayout drawer = getContentBinding().drawerLayout;
             final DrawerNavigationView optionsView = getContentBinding().drawerOptionsView;
             final DrawerNavigationView navigationView = getContentBinding().drawerNavigationView;
