@@ -231,6 +231,7 @@
     <string name="change_edit_discard_message">This will discard the whole changes made to the current revision.</string>
     <string name="change_edit_publish_title">Publish changes</string>
     <string name="change_edit_publish_message">This will publish the changes made to the current revision.</string>
+    <string name="change_edit_deleted_file">Deleted file</string>
     <string name="change_view_title">View #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>
 
     <!-- Actions -->

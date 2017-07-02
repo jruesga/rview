@@ -18,11 +18,39 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data />
+    <data>
+        <import type="android.view.View" />
+        <import type="android.text.TextUtils" />
+        <variable name="advise" type="java.lang.String" />
+    </data>
 
-    <com.ruesga.rview.widget.EditorView
-        android:id="@+id/editor"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:ignore="RtlSymmetry"/>
+        android:orientation="vertical">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="@{TextUtils.isEmpty(advise) ? View.GONE : View.VISIBLE}"
+            android:background="@color/diffNoDiffBackgroundColor">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="@dimen/diff_line_text_size"
+                android:ellipsize="none"
+                android:textStyle="bold"
+                android:padding="5dp"
+                android:maxLines="1"
+                android:gravity="center_horizontal"
+                android:text="@{advise}"/>
+        </FrameLayout>
+
+        <com.ruesga.rview.widget.EditorView
+            android:id="@+id/editor"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="RtlSymmetry"/>
+    </LinearLayout>
 </layout>

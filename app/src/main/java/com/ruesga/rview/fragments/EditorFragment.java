@@ -51,6 +51,7 @@ import com.ruesga.rview.fragments.EditFileChooserDialogFragment.MODE;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
@@ -65,7 +66,6 @@ import com.ruesga.rview.widget.EditorView.OnContentChangedListener;
 import com.ruesga.rview.widget.EditorView.OnMessageListener;
 
 import org.apache.commons.io.FileUtils;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -209,11 +209,11 @@ public class EditorFragment extends Fragment
             // Update files
             mFile = null;
             mFiles.clear();
-            mFileInfos.clear();
+            mFileInfo.clear();
             for (String file : files.keySet()) {
                 if (!files.get(file).binary) {
                     mFiles.add(file);
-                    mFileInfos.put(file, files.get(file));
+                    mFileInfo.put(file, files.get(file));
                 }
             }
             createFileHashes();
@@ -286,16 +286,27 @@ public class EditorFragment extends Fragment
                 data = content;
             }
 
-            try {
-                CacheHelper.writeAccountDiffCacheFile(
-                        getContext(), getContentCachedFileName(mFile), data);
-            } catch (IOException ex) {
-                Log.w(TAG, "Failed to store content for " + mFile);
+            FileInfo info = mFileInfo.get(mFile);
+            final boolean wasDeleted = info.status.equals(FileStatus.D);
+
+            if (!wasDeleted) {
+                try {
+                    CacheHelper.writeAccountDiffCacheFile(
+                            getContext(), getContentCachedFileName(mFile), data);
+                } catch (IOException ex) {
+                    Log.w(TAG, "Failed to store content for " + mFile);
+                }
             }
 
             // The response is base64 encoded
+            mBinding.editor.setReadOnly(wasDeleted);
             mBinding.editor.scrollTo(0, 0);
             mBinding.editor.loadEncodedContent(mFile, data);
+            if (wasDeleted) {
+                mBinding.setAdvise(getString(R.string.change_edit_deleted_file));
+            } else {
+                mBinding.setAdvise(null);
+            }
 
             showProgress(false);
 
@@ -391,7 +402,7 @@ public class EditorFragment extends Fragment
     private String mRevisionId;
 
     private ArrayList<String> mFiles = new ArrayList<>();
-    private Map<String, FileInfo> mFileInfos = new HashMap<>();
+    private Map<String, FileInfo> mFileInfo = new HashMap<>();
     private ArrayList<String> mFilesHashes = new ArrayList<>();
     private Map<String, Op> mEditOps = new HashMap<>();
     private String mFile;
@@ -460,6 +471,7 @@ public class EditorFragment extends Fragment
                 .setReadOnly(mReadOnly)
                 .listenOn(mContentChangedListener)
                 .listenOn(mMessageListener);
+        mBinding.setAdvise(null);
         return mBinding.getRoot();
     }
 
@@ -495,7 +507,7 @@ public class EditorFragment extends Fragment
         outState.putBoolean(Constants.EXTRA_READ_ONLY, mReadOnly);
 
         outState.putStringArrayList("files", mFiles);
-        outState.putString("file_infos", SerializationManager.getInstance().toJson(mFileInfos));
+        outState.putString("file_infos", SerializationManager.getInstance().toJson(mFileInfo));
         outState.putString(Constants.EXTRA_FILE, mFile);
         outState.putInt("current_file", mCurrentFile);
         outState.putBoolean("is_dirty", mIsDirty);
@@ -541,7 +553,7 @@ public class EditorFragment extends Fragment
                 final String json = savedInstanceState.getString("file_infos");
                 if (TextUtils.isEmpty(json)) {
                     Type type = new TypeToken<Map<String, FileInfo>>(){}.getType();
-                    mFileInfos = SerializationManager.getInstance().fromJson(json, type);
+                    mFileInfo = SerializationManager.getInstance().fromJson(json, type);
                 }
 
                 mCurrentFile = savedInstanceState.getInt("current_file");
@@ -598,9 +610,13 @@ public class EditorFragment extends Fragment
 
         if (mEditActionsBinding != null) {
             mEditActionsBinding.setIsDirty(mBinding.editor.isDirty());
+
+            boolean wasDeleted = mFileInfo.get(mFile).status.equals(FileStatus.D);
             mEditActionsBinding.setCanPublish(mIsDirty);
-            mEditActionsBinding.setCanDeleteCurrent(!mFile.equals(Constants.COMMIT_MESSAGE));
-            mEditActionsBinding.setCanRenameCurrent(!mFile.equals(Constants.COMMIT_MESSAGE));
+            mEditActionsBinding.setCanDeleteCurrent(
+                    !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted);
+            mEditActionsBinding.setCanRenameCurrent(
+                    !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted);
         }
 
         // Open drawer
@@ -633,6 +649,12 @@ public class EditorFragment extends Fragment
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         return SafeObservable.fromNullCallable(() ->
                     withCached(SafeObservable.fromNullCallable(() -> {
+                            // Deleted files doesn't have content
+                            FileInfo info = mFileInfo.get(mFile);
+                            if (info.status.equals(FileStatus.D)) {
+                                return "".getBytes();
+                            }
+
                             ResponseBody body =
                                 api.getChangeRevisionFileContent(String.valueOf(mLegacyChangeId),
                                         GerritApi.CURRENT_REVISION, mFile).blockingFirst();
@@ -679,12 +701,12 @@ public class EditorFragment extends Fragment
     @SuppressWarnings("Convert2streamapi")
     private void performFileChooser(View v) {
         // Filter out current ops
-        int count = mFileInfos.size();
+        int count = mFileInfo.size();
         final List<String> files = new ArrayList<>(count);
         int[] icons = new int[count];
         for (int i = 0; i < count; i++) {
             final String file = mFiles.get(i);
-            final FileInfo fileInfo = mFileInfos.get(file);
+            final FileInfo fileInfo = mFileInfo.get(file);
             files.add(new File(file).getName());
             icons[i] = ModelHelper.toFileStatusDrawable(fileInfo.status);
 
