@@ -623,11 +623,12 @@ public class EditorFragment extends Fragment
                 mEditActionsBinding.setIsDirty(mBinding.editor.isDirty());
 
                 boolean wasDeleted = mFileInfo.get(mFile).status.equals(FileStatus.D);
+                boolean isOp = mEditOps.containsKey(mFile);
                 mEditActionsBinding.setCanPublish(mIsDirty);
                 mEditActionsBinding.setCanDeleteCurrent(
-                        !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted);
+                        !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted && !isOp);
                 mEditActionsBinding.setCanRenameCurrent(
-                        !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted);
+                        !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted && !isOp);
             }
 
             // Open drawer
@@ -875,11 +876,7 @@ public class EditorFragment extends Fragment
         AlertDialog dialog = new AlertDialog.Builder(getContext())
             .setTitle(R.string.change_edit_restore_file_title)
             .setMessage(R.string.change_edit_restore_file_message)
-            .setPositiveButton(R.string.action_restore, (dialogInterface, i) -> {
-                CacheHelper.removeAccountDiffCacheFile(
-                        getContext(), getEditCachedFileName(mFile));
-                requestFileContent();
-            })
+            .setPositiveButton(R.string.action_restore, (dialogInterface, i) -> restoreFile())
             .setNegativeButton(R.string.action_cancel, null)
             .create();
         dialog.show();
@@ -977,7 +974,7 @@ public class EditorFragment extends Fragment
                     RequestBody body = RequestBody.create(mediaType, readEditContent(file));
                     api.deleteChangeEditFile(String.valueOf(mLegacyChangeId), file).blockingFirst();
                 } else if (wasRenamed) {
-                    // TODO
+                    // TODO rename op
                 } else {
                     RequestBody body = RequestBody.create(mediaType, readEditContent(file));
                     api.setChangeEditFile(String.valueOf(mLegacyChangeId), file, body).blockingFirst();
@@ -1093,4 +1090,30 @@ public class EditorFragment extends Fragment
         }
     }
 
+    private void restoreFile() {
+        CacheHelper.removeAccountDiffCacheFile(
+                getContext(), getEditCachedFileName(mFile));
+        CacheHelper.removeAccountDiffCacheFile(
+                getContext(), getContentCachedFileName(mFile));
+        mIsDirty = hasPendingEdits();
+
+        boolean isOp = mEditOps.containsKey(mFile);
+        if (isOp) {
+            // TODO rename op
+            mFiles.remove(mFile);
+            mFileInfo.remove(mFile);
+            mFilesHashes.remove(mFile);
+            mEditOps.remove(mFile);
+            switchToPosition(0);
+        } else {
+            // Just restore the content
+            requestFileContent();
+        }
+    }
+
+    private boolean hasPendingEdits() {
+        File dir = CacheHelper.getAccountDiffCacheDir(getContext());
+        File[] edits = dir.listFiles((dir1, name) -> name.endsWith(".edit"));
+        return edits.length > 0;
+    }
 }
