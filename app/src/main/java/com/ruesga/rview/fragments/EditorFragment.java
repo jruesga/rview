@@ -65,6 +65,7 @@ import com.ruesga.rview.widget.EditorView.OnContentChangedListener;
 import com.ruesga.rview.widget.EditorView.OnMessageListener;
 
 import org.apache.commons.io.FileUtils;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -208,9 +209,11 @@ public class EditorFragment extends Fragment
             // Update files
             mFile = null;
             mFiles.clear();
+            mFileInfos.clear();
             for (String file : files.keySet()) {
                 if (!files.get(file).binary) {
                     mFiles.add(file);
+                    mFileInfos.put(file, files.get(file));
                 }
             }
             createFileHashes();
@@ -388,6 +391,7 @@ public class EditorFragment extends Fragment
     private String mRevisionId;
 
     private ArrayList<String> mFiles = new ArrayList<>();
+    private Map<String, FileInfo> mFileInfos = new HashMap<>();
     private ArrayList<String> mFilesHashes = new ArrayList<>();
     private Map<String, Op> mEditOps = new HashMap<>();
     private String mFile;
@@ -491,6 +495,7 @@ public class EditorFragment extends Fragment
         outState.putBoolean(Constants.EXTRA_READ_ONLY, mReadOnly);
 
         outState.putStringArrayList("files", mFiles);
+        outState.putString("file_infos", SerializationManager.getInstance().toJson(mFileInfos));
         outState.putString(Constants.EXTRA_FILE, mFile);
         outState.putInt("current_file", mCurrentFile);
         outState.putBoolean("is_dirty", mIsDirty);
@@ -532,6 +537,13 @@ public class EditorFragment extends Fragment
             if (savedInstanceState != null) {
                 mFile = savedInstanceState.getString(Constants.EXTRA_FILE);
                 mFiles = savedInstanceState.getStringArrayList("files");
+
+                final String json = savedInstanceState.getString("file_infos");
+                if (TextUtils.isEmpty(json)) {
+                    Type type = new TypeToken<Map<String, FileInfo>>(){}.getType();
+                    mFileInfos = SerializationManager.getInstance().fromJson(json, type);
+                }
+
                 mCurrentFile = savedInstanceState.getInt("current_file");
                 mIsDirty = savedInstanceState.getBoolean("is_dirty");
                 createFileHashes();
@@ -667,15 +679,21 @@ public class EditorFragment extends Fragment
     @SuppressWarnings("Convert2streamapi")
     private void performFileChooser(View v) {
         // Filter out current ops
-        final List<String> files = new ArrayList<>();
-        for (String file : mFiles) {
+        int count = mFileInfos.size();
+        final List<String> files = new ArrayList<>(count);
+        int[] icons = new int[count];
+        for (int i = 0; i < count; i++) {
+            final String file = mFiles.get(i);
+            final FileInfo fileInfo = mFileInfos.get(file);
             files.add(new File(file).getName());
+            icons[i] = ModelHelper.toFileStatusDrawable(fileInfo.status);
+
             // TODO Update file ops and sort
         }
 
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
-                getContext(), files, new File(mFile).getName());
+                getContext(), files, icons, new File(mFile).getName());
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());

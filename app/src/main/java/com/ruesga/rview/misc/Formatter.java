@@ -411,16 +411,8 @@ public class Formatter {
             return;
         }
 
-        if (model.status.equals(FileStatus.A)) {
-            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(),
-                    R.drawable.ic_add_circle_outline));
-        } else if (model.status.equals(FileStatus.D)) {
-            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(),
-                    R.drawable.ic_remove_circle_outline));
-        } else {
-            view.setImageDrawable(ContextCompat.getDrawable(view.getContext(),
-                    R.drawable.ic_modify_circle_outline));
-        }
+        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(),
+                ModelHelper.toFileStatusDrawable(model.status)));
     }
 
     @BindingAdapter("fileStatus")

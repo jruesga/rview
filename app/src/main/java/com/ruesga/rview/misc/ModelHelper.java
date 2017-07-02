@@ -18,6 +18,7 @@ package com.ruesga.rview.misc;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -35,6 +36,7 @@ import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.Features;
+import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
@@ -620,5 +622,18 @@ public class ModelHelper {
     public static boolean isCommitMessage(String name) {
         return name != null && (name.equals(Constants.COMMIT_MESSAGE)
                 || name.equals(Constants.COMMIT_MESSAGE.substring(1)));
+    }
+
+    public static @DrawableRes int toFileStatusDrawable(FileStatus info) {
+        switch (info) {
+            case A:
+                return R.drawable.ic_add_circle_outline;
+            case D:
+                return R.drawable.ic_remove_circle_outline;
+            case R:
+                return R.drawable.ic_rename_circle_outline;
+            default:
+                return R.drawable.ic_modify_circle_outline;
+        }
     }
 }

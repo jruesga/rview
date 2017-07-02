@@ -698,14 +698,20 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
 
     @SuppressWarnings("Convert2streamapi")
     private void performFileChooser(View v) {
-        final List<String> files = new ArrayList<>();
-        for (String file : mFiles) {
+        // Filter out current ops
+        int count = mFilesInfo.size();
+        final List<String> files = new ArrayList<>(count);
+        int[] icons = new int[count];
+        for (int i = 0; i < count; i++) {
+            final String file = mFiles.get(i);
+            final FileInfo fileInfo = mFilesInfo.get(file);
             files.add(new File(file).getName());
+            icons[i] = ModelHelper.toFileStatusDrawable(fileInfo.status);
         }
 
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
-                getContext(), files, new File(mFile).getName());
+                getContext(), files, icons, new File(mFile).getName());
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());
