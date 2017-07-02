@@ -23,10 +23,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.EditorFragment;
 import com.ruesga.rview.fragments.KeyEventBindable;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.preferences.Constants;
 
 public class EditorActivity extends BaseActivity {
@@ -130,6 +132,17 @@ public class EditorActivity extends BaseActivity {
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
         if (fragment != null) {
             getSupportFragmentManager().putFragment(outState, FRAGMENT_TAG, fragment);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

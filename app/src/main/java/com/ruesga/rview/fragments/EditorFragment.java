@@ -54,6 +54,7 @@ import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
@@ -95,6 +96,7 @@ public class EditorFragment extends Fragment
 
     private static final int READ_CONTENT_MESSAGE = 0;
 
+    @Keep
     public static class Op {
         @SerializedName("op") public MODE op;
         @SerializedName("old_path") public String oldPath;
@@ -662,13 +664,24 @@ public class EditorFragment extends Fragment
                             // Deleted files doesn't have content
                             FileInfo info = mFileInfo.get(mFile);
                             if (info.status.equals(FileStatus.D)) {
+                                createEmptyEdit(mFile);
                                 return "".getBytes();
                             }
 
-                            ResponseBody body =
-                                api.getChangeRevisionFileContent(String.valueOf(mLegacyChangeId),
+                            try {
+                                ResponseBody body = api.getChangeRevisionFileContent(
+                                        String.valueOf(mLegacyChangeId),
                                         GerritApi.CURRENT_REVISION, mFile).blockingFirst();
-                            return body.bytes();
+                                return body.bytes();
+                            } catch (Exception ex) {
+                                // If is a new content edit, just initialize the edit
+                                if (ExceptionHelper.isResourceNotFoundException(ex)
+                                        && mFileInfo.get(mFile).status.equals(FileStatus.A)) {
+                                    createEmptyEdit(mFile);
+                                    return "".getBytes();
+                                }
+                                throw ex;
+                            }
                     })).blockingFirst())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -719,8 +732,6 @@ public class EditorFragment extends Fragment
             final FileInfo fileInfo = mFileInfo.get(file);
             files.add(new File(file).getName());
             icons[i] = ModelHelper.toFileStatusDrawable(fileInfo.status);
-
-            // TODO Update file ops and sort
         }
 
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
@@ -738,15 +749,7 @@ public class EditorFragment extends Fragment
 
             // Change to the new file
             if (position != mCurrentFile) {
-                if (mBinding.editor.isDirty()) {
-                    readFileContent(null);
-                }
-
-                mFile = mFiles.get(position);
-                mCurrentFile = position;
-                updateModel();
-
-                requestFileContent();
+                switchToPosition(position);
             }
         });
         popupWindow.setModal(true);
@@ -967,9 +970,18 @@ public class EditorFragment extends Fragment
                 // Extract the mime/type of the file
                 MediaType mediaType = MediaType.parse(StringHelper.getMimeType(new File(file)));
 
-                // Send the request
-                RequestBody body = RequestBody.create(mediaType, readEditContent(file));
-                api.setChangeEdit(String.valueOf(mLegacyChangeId), file, body).blockingFirst();
+                boolean wasDeleted = mFileInfo.get(file).status.equals(FileStatus.D);
+                boolean wasRenamed = mFileInfo.get(file).status.equals(FileStatus.R);
+
+                if (wasDeleted) {
+                    RequestBody body = RequestBody.create(mediaType, readEditContent(file));
+                    api.deleteChangeEditFile(String.valueOf(mLegacyChangeId), file).blockingFirst();
+                } else if (wasRenamed) {
+                    // TODO
+                } else {
+                    RequestBody body = RequestBody.create(mediaType, readEditContent(file));
+                    api.setChangeEditFile(String.valueOf(mLegacyChangeId), file, body).blockingFirst();
+                }
             }
         }
 
@@ -988,7 +1000,7 @@ public class EditorFragment extends Fragment
 
     private void readFileOps() {
         try {
-            byte[] data = CacheHelper.readAccountDiffCacheFile(getContext(), "ops.edit");
+            byte[] data = CacheHelper.readAccountDiffCacheFile(getContext(), "edit.ops");
             Type type = new TypeToken<Map<String, MODE>>(){}.getType();
             mEditOps = SerializationManager.getInstance().fromJson(new String(data), type);
         } catch (FileNotFoundException ex) {
@@ -1001,7 +1013,7 @@ public class EditorFragment extends Fragment
     private void writeFileOps() {
         try {
             byte[] data = SerializationManager.getInstance().toJson(mEditOps).getBytes();
-            CacheHelper.writeAccountDiffCacheFile(getContext(), "ops.edit", data);
+            CacheHelper.writeAccountDiffCacheFile(getContext(), "edit.ops", data);
         } catch (IOException ex) {
             ((BaseActivity) getActivity()).handleException(TAG, ex, null);
         }
@@ -1009,5 +1021,76 @@ public class EditorFragment extends Fragment
 
     @Override
     public void onEditFileChosen(int requestCode, MODE mode, String oldValue, String newValue) {
+        // Update operation's structure
+        FileInfo info = new FileInfo();
+        switch (mode) {
+            case ADD:
+                if (mFiles.contains(newValue)) {
+                    // The file exists in the structure. just switch to that file
+                    switchToPosition(mFiles.indexOf(newValue));
+                    return;
+                }
+
+                createOp(mode, null, newValue);
+                info.status = FileStatus.A;
+                break;
+
+            case DELETE:
+                if (mFiles.contains(newValue) &&
+                        mFileInfo.get(newValue).status.equals(FileStatus.D)) {
+                    // The file exists in the structure. just switch to that file
+                    switchToPosition(mFiles.indexOf(newValue));
+                    return;
+                }
+
+                createOp(mode, null, newValue);
+                info.status = FileStatus.D;
+                break;
+        }
+        writeFileOps();
+        mIsDirty = true;
+
+        // Update file structures
+        if (!TextUtils.isEmpty(oldValue)) {
+            mFiles.remove(oldValue);
+            mFileInfo.remove(oldValue);
+        }
+        if (!mFiles.contains(newValue)) {
+            mFiles.add(newValue);
+            mFileInfo.put(newValue, info);
+        }
+        createFileHashes();
+
+        // Change to the new file
+        switchToPosition(mFiles.indexOf(newValue));
     }
+
+    private void createOp(MODE mode, String oldPath, String newPath) {
+        Op op = new Op();
+        op.op = mode;
+        op.oldPath = oldPath;
+        mEditOps.put(newPath, op);
+    }
+
+    private void switchToPosition(int position) {
+        if (mBinding.editor.isDirty()) {
+            readFileContent(null);
+        }
+
+        mFile = mFiles.get(position);
+        mCurrentFile = position;
+        updateModel();
+
+        requestFileContent();
+    }
+
+    private void createEmptyEdit(String file) {
+        String name = getEditCachedFileName(file);
+        try {
+            CacheHelper.writeAccountDiffCacheFile(getActivity(), name, new byte[]{});
+        } catch (IOException ex) {
+            Log.w(TAG, "Failed to store edit for " + file);
+        }
+    }
+
 }

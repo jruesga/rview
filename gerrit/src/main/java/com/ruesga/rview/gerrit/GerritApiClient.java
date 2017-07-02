@@ -861,35 +861,35 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Void> setChangeEdit(
+    public Observable<Void> setChangeEditFile(
             @NonNull String changeId, @NonNull String fileId, @NonNull RequestBody data) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.setChangeEdit(changeId, fileId, data)));
+                        mService.setChangeEditFile(changeId, fileId, data)));
     }
 
     @Override
-    public Observable<Void> restoreChangeEdit(
+    public Observable<Void> restoreChangeEditFile(
             @NonNull String changeId, @NonNull RestoreChangeEditInput input) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.restoreChangeEdit(changeId, input)));
+                        mService.restoreChangeEditFile(changeId, input)));
     }
 
     @Override
-    public Observable<Void> renameChangeEdit(
+    public Observable<Void> renameChangeEditFile(
             @NonNull String changeId, @NonNull RenameChangeEditInput input) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.renameChangeEdit(changeId, input)));
+                        mService.renameChangeEditFile(changeId, input)));
     }
 
     @Override
-    public Observable<Void> newChangeEdit(
+    public Observable<Void> newChangeEditFile(
             @NonNull String changeId, @NonNull NewChangeEditInput input) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.newChangeEdit(changeId, input)));
+                        mService.newChangeEditFile(changeId, input)));
     }
 
     @Override

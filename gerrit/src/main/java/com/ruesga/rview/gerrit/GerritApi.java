@@ -831,7 +831,7 @@ public interface GerritApi {
      */
     @Headers({"Content-Type: application/octet-stream"})
     @PUT("changes/{change-id}/edit/{file-id}")
-    Observable<Void> setChangeEdit(
+    Observable<Void> setChangeEditFile(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("file-id") String fileId,
             @NonNull @Body RequestBody data);
@@ -841,7 +841,7 @@ public interface GerritApi {
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("changes/{change-id}/edit")
-    Observable<Void> restoreChangeEdit(
+    Observable<Void> restoreChangeEditFile(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Body RestoreChangeEditInput input);
 
@@ -850,7 +850,7 @@ public interface GerritApi {
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("changes/{change-id}/edit")
-    Observable<Void> renameChangeEdit(
+    Observable<Void> renameChangeEditFile(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Body RenameChangeEditInput input);
 
@@ -859,7 +859,7 @@ public interface GerritApi {
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("changes/{change-id}/edit")
-    Observable<Void> newChangeEdit(
+    Observable<Void> newChangeEditFile(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Body NewChangeEditInput input);
 
