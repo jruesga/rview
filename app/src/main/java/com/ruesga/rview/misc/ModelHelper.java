@@ -631,6 +631,8 @@ public class ModelHelper {
             case D:
                 return R.drawable.ic_remove_circle_outline;
             case R:
+            case C:
+            case W:
                 return R.drawable.ic_rename_circle_outline;
             default:
                 return R.drawable.ic_modify_circle_outline;
