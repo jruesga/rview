@@ -61,7 +61,7 @@ public class ChangeListByFilterFragment extends ChangeListFragment
                 mNewChangeLoader.clear();
                 showProgress(false);
 
-                ActivityHelper.openChangeDetails(getContext(), change, true, false);
+                ActivityHelper.openChangeDetails(getContext(), change, false, false);
             }
 
             @Override
