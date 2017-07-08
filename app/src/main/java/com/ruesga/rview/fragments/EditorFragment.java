@@ -52,6 +52,7 @@ import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.ChangeEditMessageInput;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
+import com.ruesga.rview.gerrit.model.RenameChangeEditInput;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
@@ -93,6 +94,7 @@ public class EditorFragment extends Fragment
         implements KeyEventBindable, EditFileChooserDialogFragment.OnEditFileChosen {
 
     private static final String TAG = "EditorFragment";
+    private static final boolean DEBUG = false;
 
     private static final int READ_CONTENT_MESSAGE = 0;
 
@@ -100,6 +102,7 @@ public class EditorFragment extends Fragment
     public static class Op {
         @SerializedName("op") public MODE op;
         @SerializedName("old_path") public String oldPath;
+        @SerializedName("old_info") public FileInfo oldInfo;
     }
 
     private interface OnSavedContentReady {
@@ -669,10 +672,11 @@ public class EditorFragment extends Fragment
                                 return "".getBytes();
                             }
 
+                            String file = info.status.equals(FileStatus.R) ? info.oldPath : mFile;
                             try {
                                 ResponseBody body = api.getChangeRevisionFileContent(
                                         String.valueOf(mLegacyChangeId),
-                                        GerritApi.CURRENT_REVISION, mFile).blockingFirst();
+                                        GerritApi.CURRENT_REVISION, file).blockingFirst();
                                 return body.bytes();
                             } catch (Exception ex) {
                                 // If is a new content edit, just initialize the edit
@@ -801,7 +805,9 @@ public class EditorFragment extends Fragment
                 public void onReadContentReady(byte[] content) {
                     if (content.length > 0) {
                         String name = getEditCachedFileName(file);
-                        Log.i(TAG, new String(Base64.decode(content, Base64.NO_WRAP)));
+                        if (DEBUG) {
+                            Log.i(TAG, new String(Base64.decode(content, Base64.NO_WRAP)));
+                        }
                         try {
                             CacheHelper.writeAccountDiffCacheFile(getActivity(), name, content);
                             mContentFile = new File(CacheHelper.getAccountDiffCacheDir(
@@ -921,8 +927,9 @@ public class EditorFragment extends Fragment
     }
 
     private void performRenameEdit(String source, View v) {
+        final String[] prevFiles = mFiles.toArray(new String[mFiles.size()]);
         EditFileChooserDialogFragment fragment = EditFileChooserDialogFragment.newRenameInstance(
-                getActivity(), 0, mLegacyChangeId, mRevisionId, source, v);
+                getActivity(), 0, mLegacyChangeId, mRevisionId, source, prevFiles, v);
         fragment.show(getChildFragmentManager(), EditFileChooserDialogFragment.TAG);
     }
 
@@ -956,6 +963,7 @@ public class EditorFragment extends Fragment
         File[] edits = dir.listFiles((dir1, name) -> name.endsWith(".edit"));
 
         // Send every edit to the server
+        List<String> renames = new ArrayList<>();
         for (File edit : edits) {
             String hash = edit.getName().substring(0, edit.getName().length() - 5);
             String file = mFiles.get(mFilesHashes.indexOf(hash));
@@ -971,14 +979,33 @@ public class EditorFragment extends Fragment
                 boolean wasRenamed = mFileInfo.get(file).status.equals(FileStatus.R);
 
                 if (wasDeleted) {
-                    RequestBody body = RequestBody.create(mediaType, readEditContent(file));
                     api.deleteChangeEditFile(String.valueOf(mLegacyChangeId), file).blockingFirst();
                 } else if (wasRenamed) {
-                    // TODO rename op
+                    // Rename
+                    RenameChangeEditInput input = new RenameChangeEditInput();
+                    input.newPath = file;
+                    input.oldPath = mEditOps.get(file).oldPath;
+                    api.renameChangeEditFile(String.valueOf(mLegacyChangeId), input).blockingFirst();
+
+                    // Upload file changes
+                    RequestBody body = RequestBody.create(mediaType, readEditContent(file));
+                    api.setChangeEditFile(String.valueOf(mLegacyChangeId), file, body).blockingFirst();
+
+                    renames.add(file);
                 } else {
                     RequestBody body = RequestBody.create(mediaType, readEditContent(file));
                     api.setChangeEditFile(String.valueOf(mLegacyChangeId), file, body).blockingFirst();
                 }
+            }
+        }
+
+        // Renames without content modification
+        for (Map.Entry<String, Op> entry :  mEditOps.entrySet()) {
+            if (!renames.contains(entry.getKey())) {
+                RenameChangeEditInput input = new RenameChangeEditInput();
+                input.newPath = entry.getKey();
+                input.oldPath = mEditOps.get(entry.getKey()).oldPath;
+                api.renameChangeEditFile(String.valueOf(mLegacyChangeId), input).blockingFirst();
             }
         }
 
@@ -1043,6 +1070,15 @@ public class EditorFragment extends Fragment
                 createOp(mode, null, newValue);
                 info.status = FileStatus.D;
                 break;
+
+            case RENAME:
+                Op op = createOp(mode, oldValue, newValue);
+                info.status = FileStatus.R;
+                info.oldPath = oldValue;
+                if (mFileInfo.containsKey(oldValue)) {
+                    op.oldInfo = mFileInfo.get(oldValue);
+                }
+                break;
         }
         writeFileOps();
         mIsDirty = true;
@@ -1062,11 +1098,12 @@ public class EditorFragment extends Fragment
         switchToPosition(mFiles.indexOf(newValue));
     }
 
-    private void createOp(MODE mode, String oldPath, String newPath) {
+    private Op createOp(MODE mode, String oldPath, String newPath) {
         Op op = new Op();
         op.op = mode;
         op.oldPath = oldPath;
         mEditOps.put(newPath, op);
+        return op;
     }
 
     private void switchToPosition(int position) {
@@ -1099,11 +1136,23 @@ public class EditorFragment extends Fragment
 
         boolean isOp = mEditOps.containsKey(mFile);
         if (isOp) {
-            // TODO rename op
+            Op op = mEditOps.get(mFile);
+
             mFiles.remove(mFile);
             mFileInfo.remove(mFile);
             mFilesHashes.remove(mFile);
             mEditOps.remove(mFile);
+
+            if (op.op.equals(MODE.RENAME) && op.oldInfo != null) {
+                mFiles.add(op.oldPath);
+                mFileInfo.put(op.oldPath, op.oldInfo);
+                createFileHashes();
+
+                switchToPosition(mFiles.indexOf(op.oldPath));
+                requestFileContent();
+                return;
+            }
+
             switchToPosition(0);
         } else {
             // Just restore the content
@@ -1114,6 +1163,6 @@ public class EditorFragment extends Fragment
     private boolean hasPendingEdits() {
         File dir = CacheHelper.getAccountDiffCacheDir(getContext());
         File[] edits = dir.listFiles((dir1, name) -> name.endsWith(".edit"));
-        return edits.length > 0;
+        return edits.length > 0 || mEditOps.size() > 0;
     }
 }

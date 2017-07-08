@@ -56,6 +56,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
     private static final String EXTRA_VALUE = "value";
     private static final String EXTRA_HINT_1 = "hint1";
     private static final String EXTRA_HINT_2 = "hint2";
+    private static final String EXTRA_PREV_FILES = "prev_files";
 
     @Keep
     public static class Model {
@@ -101,7 +102,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
     }
 
     public static EditFileChooserDialogFragment newRenameInstance(Context context, int requestCode,
-            int legacyChangeId, String revisionId, String source, View anchor) {
+            int legacyChangeId, String revisionId, String source, String[] prevFiles, View anchor) {
         EditFileChooserDialogFragment fragment = new EditFileChooserDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, legacyChangeId);
@@ -114,6 +115,9 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
         arguments.putString(EXTRA_VALUE, source);
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
         arguments.putInt(EXTRA_REQUEST_CODE, requestCode);
+        if (prevFiles != null) {
+            arguments.putStringArray(EXTRA_PREV_FILES, prevFiles);
+        }
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -124,6 +128,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
     private final Model mModel = new Model();
     private int mTitle;
     private int mAction;
+    private String[] mPrevFiles;
 
     public EditFileChooserDialogFragment() {
     }
@@ -185,6 +190,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
         mModel.value1Locked = !TextUtils.isEmpty(mModel.value1);
         mTitle = getArguments().getInt(EXTRA_TITLE);
         mAction = getArguments().getInt(EXTRA_ACTION);
+        mPrevFiles = getArguments().getStringArray(EXTRA_PREV_FILES);
 
         if (savedInstanceState != null) {
             mModel.value1Locked = savedInstanceState.getBoolean("value1Locked", mModel.value1Locked);
@@ -243,7 +249,23 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
                 || ModelHelper.isCommitMessage(mModel.value2)) {
             return false;
         }
-        return !mModel.mode.equals(MODE.RENAME) || !mModel.value1.equals(mModel.value2);
+
+        if (!mModel.mode.equals(MODE.RENAME)) {
+            return true;
+        }
+
+        return !mModel.value1.equals(mModel.value2) && isValidRenameFile(mModel.value2);
+    }
+
+    private boolean isValidRenameFile(String v) {
+        if (mPrevFiles != null) {
+            for (String f : mPrevFiles) {
+                if (f.equals(v)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
