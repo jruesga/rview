@@ -19,6 +19,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -113,8 +115,10 @@ public class AndroidHelper {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void configureTaskDescription(Activity activity) {
         if (isLollipopOrGreater()) {
+            Bitmap icon = BitmapFactory.decodeResource(
+                    activity.getResources(), R.mipmap.ic_launcher);
             TaskDescription taskDesc = new TaskDescription(
-                    null, null, ContextCompat.getColor(activity, R.color.primaryDark));
+                    null, icon, ContextCompat.getColor(activity, R.color.primaryDark));
             activity.setTaskDescription(taskDesc);
         }
     }
