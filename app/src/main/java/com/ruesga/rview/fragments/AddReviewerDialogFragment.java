@@ -113,7 +113,6 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
         builder.setTitle(mReviewerState.equals(AddReviewerState.REVIEWER)
                     ? R.string.change_details_add_reviewer : R.string.change_details_add_cc)
                 .setView(mBinding.getRoot())
-                .setIcon(ContextCompat.getDrawable(getContext(), R.drawable.ic_account_circle))
                 .setNegativeButton(R.string.action_cancel, null)
                 .setPositiveButton(R.string.action_add, (dialog, which) -> performAddReviewer());
     }

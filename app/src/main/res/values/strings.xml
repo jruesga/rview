@@ -30,6 +30,7 @@
     <string name="action_next">Next</string>
     <string name="action_done">Done</string>
     <string name="action_delete">Delete</string>
+    <string name="action_create">Create</string>
     <string name="action_close">Close</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_let_start">Let\'s start</string>
@@ -193,6 +194,7 @@
     <string name="change_details_add_me_as_reviewer">Add me</string>
     <string name="change_details_cc">CC</string>
     <string name="change_details_add_cc">Add CC</string>
+    <string name="change_details_subject">Subject</string>
     <string name="change_details_project">Project</string>
     <string name="change_details_branch">Branch</string>
     <string name="change_details_topic">Topic</string>
@@ -570,5 +572,8 @@
     <string name="edit_file_add_delete_hint">File</string>
     <string name="edit_file_rename_old_hint">Old file</string>
     <string name="edit_file_rename_new_hint">New file</string>
+
+    <!-- Create new change dialog -->
+    <string name="create_new_change_title">Create new change</string>
 
 </resources>

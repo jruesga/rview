@@ -128,6 +128,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
                 mIsUserSelection[item] = true;
                 enabledOrDisableButtons();
                 AndroidHelper.hideSoftKeyboard(getContext(), getDialog().getWindow());
+                onItemSelected(item, mUserSelection[item]);
             });
             getFilterView()[i].setAdapter(getAdapter()[i]);
         }
@@ -148,6 +149,9 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
             outState.putString("userSelection" + i, mUserSelection[i]);
             outState.putBoolean("isUserSelection" + i, mIsUserSelection[i]);
         }
+    }
+
+    public void onItemSelected(int pos, String value) {
     }
 
     @Override
@@ -195,6 +199,10 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         return result;
     }
 
+    public boolean isValidated(int pos) {
+        return false;
+    }
+
     private boolean enabledOrDisableButtons() {
         if (getDialog() != null) {
             final AlertDialog dialog = ((AlertDialog) getDialog());
@@ -211,6 +219,9 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
     private boolean isValidSelection() {
         int count = getFilterableItems();
         for (int i = 0; i < count; i++) {
+            if (isValidated(i)) {
+                continue;
+            }
             CharSequence text = getFilterView()[i].getText();
             boolean valid = (isAllowEmpty() || !TextUtils.isEmpty(text))
                     && (!isSelectionRequired(i) || mIsUserSelection[i]);

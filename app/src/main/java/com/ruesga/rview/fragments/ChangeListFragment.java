@@ -197,7 +197,6 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mEmptyState.state = result != null && !result.isEmpty()
                     ? EmptyState.NORMAL_STATE : EmptyState.NO_RESULTS_STATE;
             mBinding.setEmpty(mEmptyState);
-            showProgress(false);
         }
 
         @Override
@@ -207,13 +206,18 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mBinding.setEmpty(mEmptyState);
 
             mChangesLoader.clear();
-            ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandler);
-            showProgress(false);
+            handleException(error);
         }
 
         @Override
         public void onStarted() {
             showProgress(true);
+        }
+
+        @Override
+        public void onComplete() {
+            showProgress(false);
+            ((BaseActivity) getActivity()).setupFab(getFabPressedListener());
         }
     };
 
@@ -279,6 +283,10 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
     void notifyNoMoreItems() {
         mBinding.list.removeOnScrollListener(mEndlessScroller);
+    }
+
+    BaseActivity.OnFabPressedListener getFabPressedListener() {
+        return null;
     }
 
     List<ChangeInfo> combineChanges(
@@ -373,8 +381,12 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+            setupLoaders(loaderManager);
             mChangesLoader = loaderManager.create(this::fetchChanges, mLoaderObserver);
             mChangesLoader.start(mItemsToFetch, 0);
+
+            // Hide fab until things were loaded
+            ((BaseActivity) getActivity()).setupFab(null);
         }
     }
 
@@ -388,6 +400,9 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(EXTRA_CHANGE_ID, mAdapter != null ? mAdapter.mChangeId : NO_SELECTION);
+    }
+
+    void setupLoaders(RxLoaderManager loaderManager) {
     }
 
     private void setupSwipeToRefresh() {
@@ -405,7 +420,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         });
     }
 
-    private void showProgress(boolean show) {
+    void showProgress(boolean show) {
         if (mEndlessScroller == null || !mEndlessScroller.isLoading()) {
             BaseActivity activity = (BaseActivity) getActivity();
             if (show) {
@@ -416,6 +431,10 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         } else if (!show) {
             mEndlessScroller.loadCompleted();
         }
+    }
+
+    void handleException(Throwable error) {
+        ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandler);
     }
 
     private void onItemClick(ChangeInfo item) {

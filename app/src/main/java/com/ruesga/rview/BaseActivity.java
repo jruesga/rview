@@ -26,6 +26,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -68,6 +69,26 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     public static final String FRAGMENT_TAG_LIST = "list";
     public static final String FRAGMENT_TAG_DETAILS = "details";
 
+    public interface OnFabPressedListener {
+        void onFabPressed(FloatingActionButton fab);
+    }
+
+    @Keep
+    @SuppressWarnings("unused")
+    public static class EventHandlers {
+        BaseActivity mActivity;
+
+        EventHandlers(BaseActivity activity) {
+            mActivity = activity;
+        }
+
+        public void onFabPressed(View view) {
+            if (mActivity.mOnFabPressedListener != null) {
+                mActivity.mOnFabPressedListener.onFabPressed((FloatingActionButton) view);
+            }
+        }
+    }
+
     @Keep
     public static class Model implements Parcelable {
         public boolean isInProgress = false;
@@ -76,6 +97,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         public boolean useTowPane = true;
         public boolean hasMiniDrawer = true;
         public boolean hasForceSinglePanel = false;
+        public boolean hasFab = false;
 
         public Model() {
         }
@@ -87,6 +109,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             useTowPane = in.readByte() != 0;
             hasMiniDrawer = in.readByte() != 0;
             hasForceSinglePanel = in.readByte() != 0;
+            hasFab = in.readByte() != 0;
         }
 
         @Override
@@ -97,6 +120,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             dest.writeByte((byte) (useTowPane ? 1 : 0));
             dest.writeByte((byte) (hasMiniDrawer ? 1 : 0));
             dest.writeByte((byte) (hasForceSinglePanel ? 1 : 0));
+            dest.writeByte((byte) (hasFab ? 1 : 0));
         }
 
         @Override
@@ -120,8 +144,10 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     private Handler mUiHandler;
 
     private Model mModel = new Model();
+    private final EventHandlers mHandlers = new EventHandlers(this);
     private ViewPager mViewPager;
     private boolean mHasStateSaved;
+    private OnFabPressedListener mOnFabPressedListener;
 
     private AlertDialog mDialog;
 
@@ -164,6 +190,8 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             setupDrawer();
             configureOptionsDrawer();
         }
+
+        getContentBinding().setHandlers(mHandlers);
     }
 
     private void setupDrawer() {
@@ -172,6 +200,19 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         } else {
             configureFullDrawer();
         }
+    }
+
+    public void setupFab(OnFabPressedListener cb) {
+        final Account account = Preferences.getAccount(this);
+        mOnFabPressedListener = cb;
+        mModel.hasFab = account != null && account.hasAuthenticatedAccessMode()
+                && mOnFabPressedListener != null;
+        if (!mModel.hasFab) {
+            getContentBinding().fab.hide();
+        } else {
+            getContentBinding().fab.show();
+        }
+        getContentBinding().setModel(mModel);
     }
 
     private void configureMiniDrawer() {
@@ -231,7 +272,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     }
 
     private void configureOptionsDrawer() {
-        // Options is open/closed programatically
+        // Options is open/closed programmatically
         getContentBinding().drawerLayout.setDrawerLockMode(
                 DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
                 GravityCompat.END);
@@ -300,6 +341,9 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
                 if (fragment != null && fragment instanceof SelectableFragment) {
                     mUiHandler.post(((SelectableFragment) fragment)::onFragmentSelected);
                 }
+
+                // Show fab if necessary
+                showFab();
             }
 
             @Override
@@ -319,6 +363,14 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         mModel.hasTabs = false;
         getContentBinding().pagerController.listenOn(null).with(null);
         getContentBinding().setModel(mModel);
+    }
+
+    private void showFab() {
+        final Account account = Preferences.getAccount(this);
+        if (account != null && account.hasAuthenticatedAccessMode()
+                && mOnFabPressedListener != null) {
+            getContentBinding().fab.show();
+        }
     }
 
     public void configurePages(PagerControllerAdapter adapter, OnPageSelectionListener cb) {

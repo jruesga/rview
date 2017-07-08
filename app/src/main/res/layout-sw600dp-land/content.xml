@@ -22,6 +22,7 @@
     <data>
         <import type="android.view.View" />
         <variable name="model" type="com.ruesga.rview.BaseActivity.Model" />
+        <variable name="handlers" type="com.ruesga.rview.BaseActivity.EventHandlers" />
     </data>
 
     <com.ruesga.rview.drawer.ExactlyMeasuredDrawerLayout
@@ -123,11 +124,27 @@
                             android:orientation="horizontal"
                             android:baselineAligned="false">
                             <FrameLayout
-                                android:id="@+id/content"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 app:bindLayoutWeight="@{model.useTowPane ? 0.35f : 1f}"
-                                tools:ignore="Suspicious0dp"/>
+                                tools:ignore="Suspicious0dp">
+
+                                <FrameLayout
+                                    android:id="@+id/content"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"/>
+
+                                <android.support.design.widget.FloatingActionButton
+                                    android:id="@+id/fab"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="bottom|end"
+                                    android:layout_margin="16dp"
+                                    android:visibility="@{model.hasFab ? View.VISIBLE : View.GONE}"
+                                    android:onClick="@{handlers::onFabPressed}"
+                                    app:backgroundTint="?attr/colorPrimaryDark"
+                                    app:srcCompat="@drawable/ic_add"/>
+                            </FrameLayout>
 
                             <View
                                 android:layout_width="5dp"

@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
+import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 
 public class DashboardFragment extends PageableFragment {
@@ -45,7 +46,7 @@ public class DashboardFragment extends PageableFragment {
 
     @Override
     public Fragment getFragment(int position) {
-        return ChangeListByFilterFragment.newInstance(mDashboardFilters[position], true);
+        return ChangeListByFilterFragment.newInstance(mDashboardFilters[position], true, true);
     }
 
     @Override

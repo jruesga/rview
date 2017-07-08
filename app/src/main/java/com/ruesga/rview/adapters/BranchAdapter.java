@@ -16,6 +16,7 @@
 package com.ruesga.rview.adapters;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.BranchInfo;
@@ -27,8 +28,16 @@ import java.util.List;
 
 public class BranchAdapter extends FilterableAdapter {
 
-    private final String mProjectId;
+    private String mProjectId;
     private final String mBranch;
+
+    public BranchAdapter(Context context) {
+        this(context, null, null);
+    }
+
+    public BranchAdapter(Context context, String projectId) {
+        this(context, projectId, null);
+    }
 
     public BranchAdapter(Context context, String projectId, String branch) {
         super(context);
@@ -36,9 +45,17 @@ public class BranchAdapter extends FilterableAdapter {
         mBranch = branch;
     }
 
+    public void setProjectId(String mProjectId) {
+        this.mProjectId = mProjectId;
+    }
+
     @Override
     @SuppressWarnings({"ConstantConditions", "Convert2streamapi"})
     public List<CharSequence> getResults(CharSequence constraint) {
+        if (TextUtils.isEmpty(mProjectId)) {
+            return new ArrayList<>();
+        }
+
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         List<BranchInfo> branches = api.getProjectBranches(
                 mProjectId, null, null, null, null).blockingFirst();
@@ -47,8 +64,8 @@ public class BranchAdapter extends FilterableAdapter {
             if (branch.ref.startsWith(Constants.REF_HEADS)) {
                 String v = branch.ref.substring(Constants.REF_HEADS.length());
 
-                // Exclude current base
-                if (!mBranch.equals(v)) {
+                // Exclude current branch
+                if (mBranch == null || !mBranch.equals(v)) {
                     results.add(v);
                 }
             }
