@@ -89,8 +89,8 @@ public class ChangeListByFilterFragment extends ChangeListFragment {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
-                Observable.just(getCurrentData(start == 0)),
-                api.getChanges(query, count, start, OPTIONS),
+                Observable.just(getCurrentData(start <= 0)),
+                api.getChanges(query, count, Math.max(0, start), OPTIONS),
                 Observable.just(count),
                 this::combineChanges
             )
