@@ -385,7 +385,12 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mChangesLoader = loaderManager.create(this::fetchChanges, mLoaderObserver);
             mChangesLoader.start(mItemsToFetch, 0);
 
-            // Hide fab until things were loaded
+            if (mIsTwoPanel) {
+                // Hide fab until things were loaded (for dual panel layout we must register
+                // an scroll listener directly, because CoordinatorLayout can't directly access
+                // the floating action button)
+                ((BaseActivity) getActivity()).registerFabWithRecyclerView(mBinding.list);
+            }
             ((BaseActivity) getActivity()).setupFab(null);
         }
     }

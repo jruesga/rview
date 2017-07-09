@@ -36,6 +36,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,6 +59,7 @@ import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.PagerControllerLayout;
 import com.ruesga.rview.widget.PagerControllerLayout.OnPageSelectionListener;
 import com.ruesga.rview.widget.PagerControllerLayout.PagerControllerAdapter;
+import com.ruesga.rview.widget.ScrollAwareFloatingActionButtonBehavior;
 import com.ruesga.rview.wizards.AuthorizationAccountSetupActivity;
 
 import java.util.List;
@@ -213,6 +215,19 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             getContentBinding().fab.show();
         }
         getContentBinding().setModel(mModel);
+    }
+
+    public void registerFabWithRecyclerView(RecyclerView view) {
+        view.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            final ScrollAwareFloatingActionButtonBehavior mBehavior =
+                    new ScrollAwareFloatingActionButtonBehavior(BaseActivity.this, null);
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                //noinspection ConstantConditions
+                mBehavior.onNestedScroll(null, getContentBinding().fab, view, dx, dy, 0, 0, -1);
+            }
+        });
     }
 
     private void configureMiniDrawer() {
