@@ -218,16 +218,22 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     }
 
     public void registerFabWithRecyclerView(RecyclerView view) {
-        view.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            final ScrollAwareFloatingActionButtonBehavior mBehavior =
-                    new ScrollAwareFloatingActionButtonBehavior(BaseActivity.this, null);
+        final Account mAccount = Preferences.getAccount(BaseActivity.this);
+        if (mAccount != null && mAccount.hasAuthenticatedAccessMode()) {
+            view.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                final ScrollAwareFloatingActionButtonBehavior mBehavior =
+                        new ScrollAwareFloatingActionButtonBehavior(BaseActivity.this, null);
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                //noinspection ConstantConditions
-                mBehavior.onNestedScroll(null, getContentBinding().fab, view, dx, dy, 0, 0, -1);
-            }
-        });
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    if (mOnFabPressedListener != null) {
+                        //noinspection ConstantConditions
+                        mBehavior.onNestedScroll(
+                                null, getContentBinding().fab, view, dx, dy, 0, 0, -1);
+                    }
+                }
+            });
+        }
     }
 
     private void configureMiniDrawer() {
