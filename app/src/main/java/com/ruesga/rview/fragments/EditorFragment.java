@@ -1001,7 +1001,7 @@ public class EditorFragment extends Fragment
 
         // Renames without content modification
         for (Map.Entry<String, Op> entry :  mEditOps.entrySet()) {
-            if (!renames.contains(entry.getKey())) {
+            if (entry.getValue().op.equals(MODE.RENAME) && !renames.contains(entry.getKey())) {
                 RenameChangeEditInput input = new RenameChangeEditInput();
                 input.newPath = entry.getKey();
                 input.oldPath = mEditOps.get(entry.getKey()).oldPath;
