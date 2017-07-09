@@ -1886,8 +1886,7 @@ public class ChangeDetailsFragment extends Fragment implements
                         case ModelHelper.ACTION_REVERT:
                             return performRevertChange(api, params[0]);
                         case ModelHelper.ACTION_PUBLISH_DRAFT:
-                            performPublishDraft(api);
-                            break;
+                            return performPublishDraft(api);
                         case ModelHelper.ACTION_DELETE_CHANGE:
                             performDeleteChange(api);
                             break;
@@ -2510,9 +2509,10 @@ public class ChangeDetailsFragment extends Fragment implements
         return api.revertChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
-    private void performPublishDraft(GerritApi api) {
+    private boolean performPublishDraft(GerritApi api) {
         api.publishChangeDraftRevision(String.valueOf(mLegacyChangeId), mCurrentRevision)
                 .blockingFirst();
+        return true;
     }
 
     private void performDeleteChange(GerritApi api) {

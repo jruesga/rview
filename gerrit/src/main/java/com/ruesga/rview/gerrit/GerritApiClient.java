@@ -1059,9 +1059,11 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<SubmitInfo> publishChangeDraftRevision(
+    public Observable<Void> publishChangeDraftRevision(
             @NonNull String changeId, @NonNull String revisionId) {
-        return withVersionRequestCheck(mService.publishChangeDraftRevision(changeId, revisionId));
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.publishChangeDraftRevision(changeId, revisionId)));
     }
 
     @Override

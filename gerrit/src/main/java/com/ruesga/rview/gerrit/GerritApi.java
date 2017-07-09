@@ -1071,7 +1071,7 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#publish-draft-revision"
      */
     @POST("changes/{change-id}/revisions/{revision-id}/publish")
-    Observable<SubmitInfo> publishChangeDraftRevision(
+    Observable<Void> publishChangeDraftRevision(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId);
 
