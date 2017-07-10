@@ -32,7 +32,7 @@ ext {
         picasso2                    : '2.5.2',
         picasso2_okhttp3_downloader : '1.1.0',
         prettytime                  : '4.0.1.Final',
-        flexboxlayout               : '0.2.7',
+        flexboxlayout               : '0.3.0',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '91e06d8a3a',
         aboutlibraries              : '5.9.6',
@@ -47,7 +47,8 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.8.47'
+        mockito                     : '2.8.47',
+        base64                      : '2.3.9'
     ]
 }
 
