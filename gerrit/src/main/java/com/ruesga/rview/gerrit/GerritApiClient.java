@@ -1839,7 +1839,7 @@ class GerritApiClient implements GerritApi {
     // ===============================
 
     @Override
-    public Observable<DocResult> findDocumentation(@NonNull String keyword) {
+    public Observable<List<DocResult>> findDocumentation(@NonNull String keyword) {
         return withVersionRequestCheck(mService.findDocumentation(keyword));
     }
 

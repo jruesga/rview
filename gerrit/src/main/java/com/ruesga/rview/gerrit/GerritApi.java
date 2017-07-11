@@ -2067,7 +2067,7 @@ public interface GerritApi {
      * @link "https://review.lineageos.org/Documentation/rest-api-documentation.html#search-documentation"
      */
     @GET("Documentation/")
-    Observable<DocResult> findDocumentation(@NonNull @Path("q") String keyword);
+    Observable<List<DocResult>> findDocumentation(@NonNull @Path("q") String keyword);
 
 
 
