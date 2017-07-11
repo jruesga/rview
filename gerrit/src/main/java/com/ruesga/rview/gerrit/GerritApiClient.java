@@ -1832,6 +1832,18 @@ class GerritApiClient implements GerritApi {
                         mService.deleteProjectDashboard(projectName, dashboardId)));
     }
 
+
+    // ===============================
+    // Gerrit documentation endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-documentation.html"
+    // ===============================
+
+    @Override
+    public Observable<DocResult> findDocumentation(@NonNull String keyword) {
+        return withVersionRequestCheck(mService.findDocumentation(keyword));
+    }
+
+
     // ===============================
     // Other endpoints
     // ===============================

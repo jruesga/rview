@@ -2058,6 +2058,18 @@ public interface GerritApi {
             @NonNull @Path("dashboard-id") String dashboardId);
 
 
+    // ===============================
+    // Gerrit documentation endpoints
+    // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-documentation.html"
+    // ===============================
+
+    /**
+     * @link "https://review.lineageos.org/Documentation/rest-api-documentation.html#search-documentation"
+     */
+    @GET("Documentation/")
+    Observable<DocResult> findDocumentation(@NonNull @Path("q") String keyword);
+
+
 
     // ===============================
     // Other endpoints
