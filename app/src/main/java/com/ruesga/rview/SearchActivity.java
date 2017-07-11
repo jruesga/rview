@@ -54,6 +54,7 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.DocResult;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectType;
 import com.ruesga.rview.gerrit.model.ServerVersion;
@@ -76,6 +77,7 @@ import java.util.Locale;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader1;
 import me.tatarka.rxloader2.RxLoader2;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
@@ -110,14 +112,16 @@ public class SearchActivity extends AppCompatDelegateActivity {
         private final String mFilter;
         private final String mPartial;
         private final String mSuggestionText;
+        private final String mSuggestionData;
         private final int mSuggestionIcon;
         private final boolean mHistory;
 
-        Suggestion(String filter, String partial, String suggestion,
+        Suggestion(String filter, String partial, String suggestion, String data,
                    @DrawableRes int icon, boolean history) {
             mFilter = filter;
             mPartial = partial;
             mSuggestionText = suggestion;
+            mSuggestionData = data;
             mSuggestionIcon = icon;
             mHistory = history;
         }
@@ -126,6 +130,11 @@ public class SearchActivity extends AppCompatDelegateActivity {
             mFilter = in.readString();
             mPartial = in.readString();
             mSuggestionText = in.readString();
+            if (in.readInt() == 1) {
+                mSuggestionData = in.readString();
+            } else {
+                mSuggestionData = null;
+            }
             mSuggestionIcon = in.readInt();
             mHistory = in.readInt() == 1;
         }
@@ -140,6 +149,10 @@ public class SearchActivity extends AppCompatDelegateActivity {
             parcel.writeString(mFilter);
             parcel.writeString(mPartial);
             parcel.writeString(mSuggestionText);
+            parcel.writeInt(TextUtils.isEmpty(mSuggestionData) ? 0 : 1);
+            if (!TextUtils.isEmpty(mSuggestionData)) {
+                parcel.writeString(mSuggestionData);
+            }
             parcel.writeInt(mSuggestionIcon);
             parcel.writeInt(mHistory ? 1 : 0);
         }
@@ -174,6 +187,11 @@ public class SearchActivity extends AppCompatDelegateActivity {
         List<String> mProjects;
     }
 
+    private static class DocInfoResult {
+        String mFilter;
+        List<DocResult> mDocs;
+    }
+
     private final RxLoaderObserver<AccountInfoResult> mAccountSuggestionsObserver
             = new RxLoaderObserver<AccountInfoResult>() {
         @Override
@@ -184,7 +202,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                     String suggestion = getString(
                             R.string.account_suggest_format, account.name, account.email);
                     suggestions.add(new Suggestion(response.mFilter, response.mPartial,
-                            suggestion, R.drawable.ic_search, false));
+                            suggestion, null, R.drawable.ic_search, false));
                 }
                 mBinding.searchView.swapSuggestions(suggestions);
             }
@@ -202,11 +220,26 @@ public class SearchActivity extends AppCompatDelegateActivity {
                     try {
                         suggestions.add(new Suggestion(
                                 result.mFilter, result.mPartial,
-                                URLDecoder.decode(project, "UTF-8"),
+                                URLDecoder.decode(project, "UTF-8"), null,
                                 R.drawable.ic_search, false));
                     } catch (UnsupportedEncodingException ex) {
                         // Ignore
                     }
+                }
+                mBinding.searchView.swapSuggestions(suggestions);
+            }
+        }
+    };
+
+    private final RxLoaderObserver<DocInfoResult> mDocSuggestionsObserver
+            = new RxLoaderObserver<DocInfoResult>() {
+        @Override
+        public void onNext(DocInfoResult response) {
+            if (mBinding.searchView != null) {
+                List<Suggestion> suggestions = new ArrayList<>(response.mDocs.size());
+                for (DocResult doc : response.mDocs) {
+                    suggestions.add(new Suggestion(response.mFilter, "",
+                            doc.title, doc.url, R.drawable.ic_search, false));
                 }
                 mBinding.searchView.swapSuggestions(suggestions);
             }
@@ -231,6 +264,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private RxLoader2<String, String, AccountInfoResult> mAccountSuggestionsLoader;
     private RxLoader2<String, String, ProjectInfoResult> mProjectSuggestionsLoader;
+    private RxLoader1<String, DocInfoResult> mDocSuggestionsLoader;
 
     private List<String> mSuggestions;
 
@@ -260,6 +294,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 "accounts", this::fetchAccountSuggestions, mAccountSuggestionsObserver);
         mProjectSuggestionsLoader = loaderManager.create(
                 "projects", this::fetchProjectSuggestions, mProjectSuggestionsObserver);
+        mDocSuggestionsLoader = loaderManager.create(
+                "docs", this::fetchDocSuggestions, mDocSuggestionsObserver);
 
         // Configure the search view
         mBinding.searchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
@@ -273,13 +309,13 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 }
 
                 // Directly complete the search
-                performSearch(s.mSuggestionText);
+                performSearch(s.mSuggestionText, s.mSuggestionData);
                 return false;
             }
 
             @Override
             public void onSearchAction(String currentQuery) {
-                performSearch(currentQuery);
+                performSearch(currentQuery, null);
             }
         });
         mBinding.searchView.setOnQueryChangeListener((oldFilter, newFilter) -> {
@@ -398,6 +434,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
             case Constants.SEARCH_MODE_CUSTOM:
                 mBinding.searchView.setSearchHint(getString(R.string.search_by_custom_hint));
                 break;
+            case Constants.SEARCH_MODE_DOCS:
+                mBinding.searchView.setSearchHint(getString(R.string.search_by_docs_hint));
+                break;
         }
 
         mBinding.searchView.setSearchText(null);
@@ -435,14 +474,16 @@ public class SearchActivity extends AppCompatDelegateActivity {
             return;
         }
 
-        String[] history = Preferences.getAccountSearchHistory(this, mAccount, mCurrentOption);
         ArrayList<Suggestion> suggestions = new ArrayList<>();
-        if (history != null) {
-            for (String s : history) {
-                suggestions.add(new Suggestion("", "", s, R.drawable.ic_history, true));
+        if (mCurrentOption != Constants.SEARCH_MODE_DOCS) {
+            String[] history = Preferences.getAccountSearchHistory(this, mAccount, mCurrentOption);
+            if (history != null) {
+                for (String s : history) {
+                    suggestions.add(new Suggestion("", "", s, null, R.drawable.ic_history, true));
+                }
             }
+            Collections.reverse(suggestions);
         }
-        Collections.reverse(suggestions);
         mBinding.searchView.swapSuggestions(suggestions);
     }
 
@@ -466,6 +507,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
             case Constants.SEARCH_MODE_CUSTOM:
                 requestCustomSuggestions(filter);
                 break;
+            case Constants.SEARCH_MODE_DOCS:
+                requestDocSuggestions(filter);
+                break;
         }
     }
 
@@ -473,7 +517,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mBinding.searchView.swapSuggestions(new ArrayList<>());
     }
 
-    private void performSearch(String query) {
+    private void performSearch(String query, String data) {
         if (TextUtils.isEmpty(query)) {
             clearSuggestions();
             return;
@@ -530,6 +574,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
                     return;
                 }
                 break;
+            case Constants.SEARCH_MODE_DOCS:
+                if (!TextUtils.isEmpty(data)) {
+                    final GerritApi api = ModelHelper.getGerritApi(this);
+                    //noinspection ConstantConditions
+                    ActivityHelper.openUriInCustomTabs(this, api.getDocumentationUri(data));
+                    finish();
+                }
+                return;
         }
 
         // Open the activity
@@ -592,6 +644,27 @@ public class SearchActivity extends AppCompatDelegateActivity {
     private void requestProjectSuggestions(String filter, String partial) {
         mProjectSuggestionsLoader.clear();
         mProjectSuggestionsLoader.restart(filter, partial);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<DocInfoResult> fetchDocSuggestions(String filter) {
+        final GerritApi api = ModelHelper.getGerritApi(this);
+        return SafeObservable.fromNullCallable(() -> {
+                    DocInfoResult result = new DocInfoResult();
+                    result.mFilter = filter;
+                    result.mDocs = api.findDocumentation(filter).blockingFirst();
+                    if (result.mDocs.size() > MAX_SUGGESTIONS) {
+                        result.mDocs = result.mDocs.subList(0, MAX_SUGGESTIONS);
+                    }
+                    return result;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private void requestDocSuggestions(String filter) {
+        mDocSuggestionsLoader.clear();
+        mDocSuggestionsLoader.restart(filter);
     }
 
     @SuppressWarnings("Convert2streamapi")
@@ -664,7 +737,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         }
         for (String s : mSuggestions) {
             if (s.startsWith(f) && !s.trim().equals(f)) {
-                suggestions.add(new Suggestion(f, partial, s, R.drawable.ic_search, false));
+                suggestions.add(new Suggestion(f, partial, s, null, R.drawable.ic_search, false));
             }
         }
         mBinding.searchView.swapSuggestions(suggestions);

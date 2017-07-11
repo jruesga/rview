@@ -103,6 +103,7 @@
         <item>@string/search_by_user</item>
         <item>@string/search_by_commit_message</item>
         <item>@string/search_by_custom</item>
+        <item>@string/search_by_docs</item>
     </string-array>
     <integer-array name="search_options_icons" translatable="false">
         <item>@drawable/ic_work</item>
@@ -111,6 +112,7 @@
         <item>@drawable/ic_account_circle</item>
         <item>@drawable/ic_comment</item>
         <item>@drawable/ic_custom_search</item>
+        <item>@drawable/ic_documentation</item>
     </integer-array>
 
     <string-array name="notifications_events_labels" translatable="false">

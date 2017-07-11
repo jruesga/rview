@@ -63,6 +63,8 @@ class GerritApiClient implements GerritApi {
     ServerVersion mServerVersion;
     private List<Features> mSupportedFeatures = new ArrayList<>();
 
+    private static final String AUTHENTICATED_PATH = "/a/";
+
     private final ApiVersionMediator mMediator = new ApiVersionMediator() {
         @Override
         public WhitespaceType resolveWhiteSpaceType(WhitespaceType type) {
@@ -175,8 +177,9 @@ class GerritApiClient implements GerritApi {
             // Should process the request as an unauthenticated request?
             if (original.header("X-Gerrit-Unauthenticated") != null) {
                 HttpUrl url = original.url();
-                if (url.encodedPath().startsWith("/a/")) {
-                    requestBuilder.url(original.url().toString().replaceFirst("/a/", "/"));
+                if (url.encodedPath().startsWith(AUTHENTICATED_PATH)) {
+                    requestBuilder.url(original.url().toString()
+                            .replaceFirst(AUTHENTICATED_PATH, "/"));
                 }
             }
             Request request = requestBuilder.build();
@@ -254,7 +257,7 @@ class GerritApiClient implements GerritApi {
     // ===============================
 
     private String toUnauthenticatedEndpoint(String endPoint) {
-        return endPoint.endsWith("/a/")
+        return endPoint.endsWith(AUTHENTICATED_PATH)
                 ? endPoint.substring(0, endPoint.length() - 2)
                 : endPoint;
     }
@@ -291,6 +294,12 @@ class GerritApiClient implements GerritApi {
     public Uri getAvatarUri(String accountId, int size) {
         return Uri.parse(String.format(Locale.US, "%saccounts/%s/avatar?s=%d",
                 toUnauthenticatedEndpoint(mEndPoint), accountId, size));
+    }
+
+    @Override
+    public Uri getDocumentationUri(@NonNull String docPath) {
+        return Uri.parse(String.format(Locale.US, "%s%s",
+                toUnauthenticatedEndpoint(mEndPoint), docPath));
     }
 
     @Override

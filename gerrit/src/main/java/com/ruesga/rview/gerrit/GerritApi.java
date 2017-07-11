@@ -81,6 +81,11 @@ public interface GerritApi {
     Uri getAvatarUri(String accountId, int size);
 
     /**
+     * Return the uri of a documentation url
+     */
+    Uri getDocumentationUri(@NonNull String docPath);
+
+    /**
      * Return the uri for download a complete change's revision
      */
     Uri getDownloadRevisionUri(
