@@ -43,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Observable;
 import me.tatarka.rxloader2.safe.SafeObservable;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -169,6 +170,14 @@ class GerritApiClient implements GerritApi {
             if (!mAbstractionLayer.isDebugBuild()) {
                 requestBuilder.header("Accept",
                         "application/octet-stream, text/plain, application/json");
+            }
+
+            // Should process the request as an unauthenticated request?
+            if (original.header("X-Gerrit-Unauthenticated") != null) {
+                HttpUrl url = original.url();
+                if (url.encodedPath().startsWith("/a/")) {
+                    requestBuilder.url(original.url().toString().replaceFirst("/a/", "/"));
+                }
             }
             Request request = requestBuilder.build();
             return chain.proceed(request);

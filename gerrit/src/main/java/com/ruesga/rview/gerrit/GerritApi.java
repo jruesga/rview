@@ -2066,8 +2066,9 @@ public interface GerritApi {
     /**
      * @link "https://review.lineageos.org/Documentation/rest-api-documentation.html#search-documentation"
      */
+    @Headers({"X-Gerrit-Unauthenticated: true"})
     @GET("Documentation/")
-    Observable<List<DocResult>> findDocumentation(@NonNull @Path("q") String keyword);
+    Observable<List<DocResult>> findDocumentation(@NonNull @Query("q") String keyword);
 
 
 
