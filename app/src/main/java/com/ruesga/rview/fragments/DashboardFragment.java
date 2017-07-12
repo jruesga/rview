@@ -26,6 +26,7 @@ public class DashboardFragment extends PageableFragment {
 
     private String[] mDashboardTabs;
     private String[] mDashboardFilters;
+    private String[] mDashboardReverse;
 
     public static DashboardFragment newInstance() {
         return new DashboardFragment();
@@ -35,6 +36,7 @@ public class DashboardFragment extends PageableFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         mDashboardTabs = getResources().getStringArray(R.array.dashboard_titles);
         mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters);
+        mDashboardReverse = getResources().getStringArray(R.array.dashboard_reverse);
 
         super.onActivityCreated(savedInstanceState);
     }
@@ -46,7 +48,8 @@ public class DashboardFragment extends PageableFragment {
 
     @Override
     public Fragment getFragment(int position) {
-        return ChangeListByFilterFragment.newInstance(mDashboardFilters[position], true, true);
+        return ChangeListByFilterFragment.newInstance(mDashboardFilters[position],
+                Boolean.parseBoolean(mDashboardReverse[position]), true, true);
     }
 
     @Override

@@ -35,6 +35,7 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.preferences.Preferences;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -78,20 +79,22 @@ public class ChangeListByFilterFragment extends ChangeListFragment
         };
 
     private static final String EXTRA_FILTER = "filter";
+    private static final String EXTRA_REVERSE = "reverse";
     private static final String EXTRA_HAS_SEARCH = "hasSearch";
     private static final String EXTRA_HAS_FAB = "hasFab";
 
     private RxLoader1<ChangeInput, ChangeInfo> mNewChangeLoader;
 
     public static ChangeListByFilterFragment newInstance(String filter) {
-        return newInstance(filter, false, false);
+        return newInstance(filter, false, false, false);
     }
 
     public static ChangeListByFilterFragment newInstance(
-            String filter, boolean hasSearch, boolean hasFab) {
+            String filter, boolean reverse, boolean hasSearch, boolean hasFab) {
         ChangeListByFilterFragment fragment = new ChangeListByFilterFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_FILTER, filter);
+        arguments.putBoolean(EXTRA_REVERSE, reverse);
         arguments.putBoolean(EXTRA_HAS_SEARCH, hasSearch);
         arguments.putBoolean(EXTRA_HAS_FAB, hasFab);
         fragment.setArguments(arguments);
@@ -138,11 +141,36 @@ public class ChangeListByFilterFragment extends ChangeListFragment
     @SuppressWarnings("ConstantConditions")
     public Observable<List<ChangeInfo>> fetchChanges(Integer count, Integer start) {
         final ChangeQuery query = ChangeQuery.parse(getArguments().getString(EXTRA_FILTER));
+        final boolean reverse = getArguments().getBoolean(EXTRA_REVERSE, false);
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
                 Observable.just(getCurrentData(start <= 0)),
-                api.getChanges(query, count, Math.max(0, start), OPTIONS),
+                SafeObservable.fromCallable(() -> {
+                    if (reverse) {
+                        // We don't want endless scroll (since we are going to fetch all available
+                        // changes)
+                        notifyNoMoreItems();
+
+                        // Fetch all the available changes and reverse its order
+                        List<ChangeInfo> changes = new ArrayList<>();
+                        int s = 0;
+                        while (true) {
+                            List<ChangeInfo> fetched = api.getChanges(
+                                    query, count, Math.max(0, s), OPTIONS).blockingFirst();
+                            changes.addAll(fetched);
+                            if (fetched.size() < count) {
+                                break;
+                            }
+                            s += count;
+                        }
+                        Collections.reverse(changes);
+                        return changes;
+                    }
+
+                    // Normal fetch
+                    return api.getChanges(query, count, Math.max(0, start), OPTIONS).blockingFirst();
+                }),
                 Observable.just(count),
                 this::combineChanges
             )

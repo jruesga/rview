@@ -62,6 +62,11 @@
         <item>is:open AND (reviewer:self AND (-(owner:self)))</item>
         <item>is:closed AND (owner:self OR (reviewer:self)) AND (-(age:4w)))</item>
     </string-array>
+    <string-array name="dashboard_reverse" translatable="false">
+        <item>true</item>
+        <item>false</item>
+        <item>false</item>
+    </string-array>
 
     <string-array name="account_fetched_items_values" translatable="false">
         <item>25</item>

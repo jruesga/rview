@@ -939,7 +939,7 @@ public class MainActivity extends ChangeListBaseActivity {
         if (oldFragment != null) {
             tx.remove(oldFragment);
         }
-        Fragment newFragment = ChangeListByFilterFragment.newInstance(filter, true, true);
+        Fragment newFragment = ChangeListByFilterFragment.newInstance(filter, false, true, true);
         tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
 
         // Select the drawer item
