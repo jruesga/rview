@@ -37,9 +37,9 @@ public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButto
 
         final Resources r = context.getResources();
         mHideMinScrollSlop = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 5, r.getDisplayMetrics());
+                TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics());
         mShowMinScrollSlop = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, 5, r.getDisplayMetrics()) * -1f;
+                TypedValue.COMPLEX_UNIT_DIP, 8, r.getDisplayMetrics()) * -1f;
     }
 
     @Override
