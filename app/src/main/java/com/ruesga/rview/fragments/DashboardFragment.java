@@ -21,6 +21,8 @@ import android.support.v4.app.Fragment;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
+import com.ruesga.rview.model.Account;
+import com.ruesga.rview.preferences.Preferences;
 
 public class DashboardFragment extends PageableFragment {
 
@@ -34,8 +36,15 @@ public class DashboardFragment extends PageableFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        final Account account = Preferences.getAccount(getActivity());
+
         mDashboardTabs = getResources().getStringArray(R.array.dashboard_titles);
-        mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters);
+        // Dashboard filters changed between versions just sure to use the proper ones
+        if (account != null && account.getServerVersion().getVersion() >= 2.14d) {
+            mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters_2_14);
+        } else {
+            mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters);
+        }
         mDashboardReverse = getResources().getStringArray(R.array.dashboard_reverse);
 
         super.onActivityCreated(savedInstanceState);
