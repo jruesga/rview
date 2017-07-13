@@ -23,11 +23,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.DiffViewerFragment;
-import com.ruesga.rview.fragments.KeyEventBindable;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.SerializationManager;
@@ -144,16 +142,5 @@ public class DiffViewerActivity extends BaseActivity {
     @Override
     public ContentBinding getContentBinding() {
         return mBinding;
-    }
-
-    @Override
-    public boolean onKeyDown(int keycode, KeyEvent e) {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-        if (fragment != null && fragment instanceof KeyEventBindable) {
-            if (((KeyEventBindable) fragment).onKeyDown(keycode, e)) {
-                return true;
-            }
-        }
-        return super.onKeyDown(keycode, e);
     }
 }

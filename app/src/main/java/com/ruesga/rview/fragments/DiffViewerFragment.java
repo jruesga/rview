@@ -32,7 +32,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.ListPopupWindow;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -87,7 +86,7 @@ import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
-public class DiffViewerFragment extends Fragment implements KeyEventBindable, OnDiffCompleteListener {
+public class DiffViewerFragment extends Fragment implements OnDiffCompleteListener {
 
     private static final String TAG = "DiffViewerFragment";
 
@@ -322,17 +321,6 @@ public class DiffViewerFragment extends Fragment implements KeyEventBindable, On
             ((BaseActivity) getActivity()).handleException(TAG, error);
         }
     };
-
-    @Override
-    public boolean onKeyDown(int keycode, KeyEvent e) {
-        switch(keycode) {
-            case KeyEvent.KEYCODE_MENU:
-                openOptionsMenu();
-                return true;
-        }
-
-        return false;
-    }
 
     @Override
     public void onDiffComplete(boolean isBinary, boolean hasImagePreview) {

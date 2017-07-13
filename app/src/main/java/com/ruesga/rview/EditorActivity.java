@@ -28,7 +28,6 @@ import android.view.MenuItem;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.EditorFragment;
 import com.ruesga.rview.fragments.KeyEventBindable;
-import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.preferences.Constants;
 
 public class EditorActivity extends BaseActivity {
@@ -144,6 +143,19 @@ public class EditorActivity extends BaseActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+            if (fragment != null && fragment instanceof KeyEventBindable) {
+                if (((KeyEventBindable) fragment).onKeyDown(event.getKeyCode(), event)) {
+                    return true;
+                }
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override

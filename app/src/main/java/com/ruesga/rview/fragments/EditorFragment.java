@@ -862,10 +862,6 @@ public class EditorFragment extends Fragment
     @Override
     public boolean onKeyDown(int keycode, KeyEvent e) {
         switch(keycode) {
-            case KeyEvent.KEYCODE_MENU:
-                openOptionsMenu();
-                return true;
-
             case KeyEvent.KEYCODE_BACK:
                 if (mBinding.editor.isDirty()) {
                     readFileContent(this::performCancelEdit);

@@ -38,6 +38,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -425,6 +426,61 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         TextView tv = getContentBinding().drawerOptionsView
                 .getHeaderView(0).findViewById(R.id.options_title);
         tv.setText(title);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch(event.getKeyCode()) {
+                case KeyEvent.KEYCODE_MENU:
+                    if (getContentBinding().drawerLayout != null &&
+                            getContentBinding().drawerLayout.getDrawerLockMode(
+                                    GravityCompat.START) != DrawerLayout.LOCK_MODE_LOCKED_CLOSED) {
+                        if (getContentBinding().drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                            getContentBinding().drawerLayout.closeDrawer(GravityCompat.START);
+                        } else {
+                            getContentBinding().drawerLayout.openDrawer(GravityCompat.START);
+                        }
+                        return true;
+                    } else if (getOptionsMenu() != null && getOptionsMenu().getMenu() != null
+                            && getOptionsMenu().getMenu().size() > 0) {
+                        if (getContentBinding().drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                            closeOptionsDrawer();
+                        } else {
+                            openOptionsDrawer();
+                        }
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch(keyCode) {
+            case KeyEvent.KEYCODE_MENU:
+                if (getContentBinding().drawerLayout != null &&
+                        getContentBinding().drawerLayout.getDrawerLockMode(
+                                GravityCompat.START) != DrawerLayout.LOCK_MODE_LOCKED_CLOSED) {
+                    if (getContentBinding().drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        getContentBinding().drawerLayout.closeDrawer(GravityCompat.START);
+                    } else {
+                        getContentBinding().drawerLayout.openDrawer(GravityCompat.START);
+                    }
+                    return true;
+                } else if (getOptionsMenu() != null && getOptionsMenu().getMenu() != null
+                        && getOptionsMenu().getMenu().size() > 0) {
+                    if (getContentBinding().drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                        closeOptionsDrawer();
+                    } else {
+                        openOptionsDrawer();
+                    }
+                    return true;
+                }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
