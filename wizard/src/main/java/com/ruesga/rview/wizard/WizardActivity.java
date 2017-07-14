@@ -256,7 +256,9 @@ public abstract class WizardActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mBinding.unbind();
+        if (mBinding != null) {
+            mBinding.unbind();
+        }
         if (mHeaderAnimator != null && mIsHeaderAnimatorRunning) {
             mHeaderAnimator.cancel();
         }
