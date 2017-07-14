@@ -460,6 +460,11 @@ public class DiffViewerFragment extends Fragment implements OnDiffCompleteListen
             mChange = SerializationManager.getInstance().fromJson(
                     new String(CacheHelper.readAccountDiffCacheFile(
                             getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
+            if (!mChange.revisions.containsKey(mRevisionId)) {
+                Log.e(TAG, "Don't have a valid revision " + mRevisionId + " for change " + mChange.legacyChangeId);
+                getActivity().finish();
+                return;
+            }
 
             // Deserialize the files
             mFiles.clear();
