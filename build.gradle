@@ -34,7 +34,7 @@ ext {
         prettytime                  : '4.0.1.Final',
         flexboxlayout               : '0.3.0',
         floatingsearchview          : '2d435bead5',
-        androidsvg                  : '91e06d8a3a',
+        androidsvg                  : '43ab380edd',
         aboutlibraries              : '5.9.6',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.6.8',
