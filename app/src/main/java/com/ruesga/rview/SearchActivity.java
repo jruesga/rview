@@ -408,7 +408,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             switch (event.getKeyCode()) {
                 case KeyEvent.KEYCODE_MENU:
-                    mBinding.searchView.openMenu(true);
+                    performShowOptions();
                     return true;
             }
         }
@@ -420,7 +420,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
     public boolean onKeyDown(int keycode, KeyEvent e) {
         switch(keycode) {
             case KeyEvent.KEYCODE_MENU:
-                mBinding.searchView.openMenu(true);
+                performShowOptions();
                 return true;
         }
 
