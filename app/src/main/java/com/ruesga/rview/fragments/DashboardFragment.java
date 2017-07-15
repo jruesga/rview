@@ -40,7 +40,8 @@ public class DashboardFragment extends PageableFragment {
 
         mDashboardTabs = getResources().getStringArray(R.array.dashboard_titles);
         // Dashboard filters changed between versions just sure to use the proper ones
-        if (account != null && account.getServerVersion().getVersion() >= 2.14d) {
+        if (account != null && account.getServerVersion() != null
+                && account.getServerVersion().getVersion() >= 2.14d) {
             mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters_2_14);
         } else {
             mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters);
