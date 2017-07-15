@@ -67,8 +67,13 @@
         <item>is:open AND (reviewer:self AND (-(owner:self)) AND (-(star:ignore)))</item>
         <item>is:closed AND (owner:self OR (reviewer:self) OR (assignee:self)) AND (-(age:4w)))</item>
     </string-array>
-    <string-array name="dashboard_reverse" translatable="false">
+    <string-array name="dashboard_sort" translatable="false">
         <item>true</item>
+        <item>false</item>
+        <item>false</item>
+    </string-array>
+    <string-array name="dashboard_sort_inverse" translatable="false">
+        <item>false</item>
         <item>false</item>
         <item>false</item>
     </string-array>

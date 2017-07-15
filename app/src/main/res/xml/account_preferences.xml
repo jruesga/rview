@@ -51,6 +51,18 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="account_dashboard_category"
+        android:title="@string/account_settings_dashboard_category">
+
+        <SwitchPreference
+            android:key="account_dashboard_outgoing_sort"
+            android:title="@string/account_settings_dashboard_outgoing_sort"
+            android:summaryOn="@string/account_settings_dashboard_outgoing_sort_on"
+            android:summaryOff="@string/account_settings_dashboard_outgoing_sort_off"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="account_messages_category"
         android:title="@string/account_settings_messages_category">
 

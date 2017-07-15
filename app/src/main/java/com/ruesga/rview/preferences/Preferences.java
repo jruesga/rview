@@ -45,6 +45,8 @@ import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_CATEGORY;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_STATUSES;
@@ -599,5 +601,10 @@ public class Preferences {
             }
         }
         return false;
+    }
+
+    public static boolean isAccountDashboardOngoingSort(Context context, Account account) {
+        return account == null || getAccountPreferences(context, account)
+                .getBoolean(PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT, false);
     }
 }

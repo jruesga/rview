@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
-import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
@@ -46,7 +45,10 @@ public class DashboardFragment extends PageableFragment {
         } else {
             mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters);
         }
-        mDashboardReverse = getResources().getStringArray(R.array.dashboard_reverse);
+        mDashboardReverse = getResources().getStringArray(
+                Preferences.isAccountDashboardOngoingSort(getActivity(), account)
+                    ? R.array.dashboard_sort_inverse
+                    : R.array.dashboard_sort);
 
         super.onActivityCreated(savedInstanceState);
     }

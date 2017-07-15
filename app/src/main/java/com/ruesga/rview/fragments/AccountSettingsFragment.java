@@ -55,6 +55,7 @@ import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_STATUSES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_EXTERNAL_CATEGORY;
@@ -94,6 +95,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
 
     private ListPreference mHomePage;
     private Preference mSearchHistoryClear;
+    private PreferenceCategory mDashboardCategory;
     private PreferenceCategory mNotificationsCategory;
     private Preference mNotificationsAdvise;
     private Preference mNotificationsEnabled;
@@ -150,6 +152,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         configureToggleCI();
         configureSearch();
         configureFetchItems();
+        configureDashboard();
         configureNotifications();
         configureHandleLinks();
     }
@@ -251,6 +254,14 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     private void updateHomePageSummary(String value) {
         int index = Arrays.asList(mHomePage.getEntryValues()).indexOf(value);
         mHomePage.setSummary(mHomePage.getEntries()[index]);
+    }
+
+    private void configureDashboard() {
+        if (mAccount == null || !mAccount.hasAuthenticatedAccessMode()) {
+            mDashboardCategory =
+                    (PreferenceCategory) findPreference(PREF_ACCOUNT_DASHBOARD_CATEGORY);
+            getPreferenceScreen().removePreference(mDashboardCategory);
+        }
     }
 
     private void configureNotifications() {
