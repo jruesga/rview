@@ -197,6 +197,9 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mEmptyState.state = result != null && !result.isEmpty()
                     ? EmptyState.NORMAL_STATE : EmptyState.NO_RESULTS_STATE;
             mBinding.setEmpty(mEmptyState);
+
+            showProgress(false);
+            ((BaseActivity) getActivity()).setupFab(getFabPressedListener());
         }
 
         @Override
@@ -205,6 +208,8 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
             mBinding.setEmpty(mEmptyState);
 
+            showProgress(false);
+            ((BaseActivity) getActivity()).setupFab(getFabPressedListener());
             mChangesLoader.clear();
             handleException(error);
         }
@@ -212,12 +217,6 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         @Override
         public void onStarted() {
             showProgress(true);
-        }
-
-        @Override
-        public void onComplete() {
-            showProgress(false);
-            ((BaseActivity) getActivity()).setupFab(getFabPressedListener());
         }
     };
 
