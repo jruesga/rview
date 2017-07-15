@@ -33,6 +33,8 @@ public class StringHelper {
     private static final Pattern A_NON_WORD_CHARACTER_AT_START
             = Pattern.compile("[^[a-zA-Z]].*", Pattern.MULTILINE);
     private static final Pattern NON_WHITESPACE = Pattern.compile("\\w");
+    private static final String NON_WORD_CHARACTER = "[^[0-9a-zA-Z],;]";
+    private static final String INTERN_QUOTE = "\n > ";
 
     private static final String QUOTE_START_TAG = "[QUOTE]";
     private static final String QUOTE_END_TAG = "[/QUOTE]";
@@ -93,6 +95,19 @@ public class StringHelper {
             }
         }
         return sb.toString().trim();
+    }
+
+    public static String prepareForQuote(String message) {
+        int i = message.indexOf(INTERN_QUOTE);
+        while (i != -1) {
+            if (i > 0 && !message.substring(i - 1, i).matches(NON_WORD_CHARACTER)) {
+                message = message.replaceFirst(INTERN_QUOTE, "\n");
+            } else {
+                message = message.replaceFirst(INTERN_QUOTE, "\n >");
+            }
+            i = message.indexOf(INTERN_QUOTE);
+        }
+        return message;
     }
 
     public static String obtainQuote(String message) {
