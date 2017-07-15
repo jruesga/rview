@@ -36,6 +36,7 @@ import com.ruesga.rview.preferences.Preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -164,7 +165,9 @@ public class ChangeListByFilterFragment extends ChangeListFragment
                             }
                             s += count;
                         }
-                        Collections.reverse(changes);
+
+                        // Sort by created date
+                        Collections.sort(changes, (c1, c2) -> c1.created.compareTo(c2.created));
                         return changes;
                     }
 
