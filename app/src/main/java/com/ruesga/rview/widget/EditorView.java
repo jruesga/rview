@@ -114,7 +114,7 @@ public class EditorView extends FrameLayout {
 
     @SuppressLint("SetJavaScriptEnabled")
     private WebView createWebView() {
-        WebView webview = new WebView(getContext());
+        WebView webview = new AceWebView(getContext());
         webview.setLayoutParams(new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         webview.setWebViewClient(new WebViewClient() {
