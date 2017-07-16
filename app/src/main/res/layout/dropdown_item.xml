@@ -22,7 +22,7 @@
     <data>
         <import type="android.view.View" />
         <variable name="isSelected" type="Boolean" />
-        <variable name="text" type="String" />
+        <variable name="text" type="CharSequence" />
         <variable name="icon" type="Integer" />
     </data>
 
