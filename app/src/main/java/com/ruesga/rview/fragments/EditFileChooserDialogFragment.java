@@ -42,6 +42,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
 
     public static final String TAG = "EditFileChooserDialogFragment";
 
+    @Keep
     public enum MODE {
         ADD, DELETE, RENAME
     }
