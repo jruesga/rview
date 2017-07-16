@@ -44,6 +44,7 @@ import com.ruesga.rview.gerrit.GerritServiceFactory;
 import com.ruesga.rview.gerrit.NoConnectivityException;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.misc.ExceptionHelper;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.wizard.WizardActivity;
@@ -68,6 +69,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
     public static final String STATE_REPO_URL = "repo.url";
     public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCertificates";
     private static final String STATE_REPO_CONFIRMED_URL = "repo.confirmed.url";
+    public static final String STATE_GERRIT_VERSION = "gerrit.version";
 
     @Keep
     @SuppressWarnings("unused")
@@ -105,6 +107,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
 
     private WizardRepositoryPageFragmentBinding mBinding;
     private Model mModel = new Model();
+    private ServerVersion mServerVersion;
 
     @Nullable
     @Override
@@ -147,6 +150,11 @@ public class RepositoryPageFragment extends WizardPageFragment {
         bundle.putString(STATE_REPO_URL, mModel.url);
         bundle.putBoolean(STATE_REPO_TRUST_ALL_CERTIFICATES, mModel.trustAllCertificates);
         bundle.putString(STATE_REPO_CONFIRMED_URL, mModel.urlConfirmed);
+        if (mServerVersion != null) {
+            bundle.putString(STATE_GERRIT_VERSION,
+                    SerializationManager.getInstance().toJson(mServerVersion));
+
+        }
         return bundle;
     }
 
@@ -158,6 +166,11 @@ public class RepositoryPageFragment extends WizardPageFragment {
         mModel.urlConfirmed = savedState.getString(STATE_REPO_CONFIRMED_URL);
         mModel.wasConfirmed = mModel.url != null && mModel.urlConfirmed != null
                 && !mModel.urlConfirmed.isEmpty() && mModel.url.equals(mModel.urlConfirmed);
+        String serverVersion = savedState.getString(STATE_GERRIT_VERSION);
+        if (!TextUtils.isEmpty(serverVersion)) {
+            mServerVersion = SerializationManager.getInstance().fromJson(
+                    serverVersion, ServerVersion.class);
+        }
         if (mBinding != null) {
             mBinding.setModel(mModel);
         }
@@ -267,6 +280,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
         Log.i(TAG, "Gerrit repository resolved. Server version " + version);
 
         if (version.getVersion() >= Constants.MINIMAL_SUPPORTED_VERSION) {
+            mServerVersion = version;
             mModel.url = endpoint;
             mModel.urlConfirmed = mModel.url;
             mModel.wasConfirmed = true;

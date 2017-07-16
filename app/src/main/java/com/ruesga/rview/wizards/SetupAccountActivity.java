@@ -17,8 +17,11 @@ package com.ruesga.rview.wizards;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.ServerInfo;
+import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
@@ -76,6 +79,19 @@ public class SetupAccountActivity extends WizardActivity {
         if (authenticatedMode) {
             account.mToken = accountPassword;
         }
+
+        // Save fetched server data
+        String json = savedState.getString(AccountPageFragment.STATE_GERRIT_VERSION);
+        if (!TextUtils.isEmpty(json)) {
+            account.mServerVersion = SerializationManager.getInstance().fromJson(
+                    json, ServerVersion.class);
+        }
+        json = savedState.getString(AccountPageFragment.STATE_GERRIT_CONFIG);
+        if (!TextUtils.isEmpty(json)) {
+            account.mServerInfo = SerializationManager.getInstance().fromJson(
+                    json, ServerInfo.class);
+        }
+
 
         // We have an account, so assume that we ended the "first run" experience
         Preferences.setFirstRun(this);

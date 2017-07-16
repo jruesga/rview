@@ -27,6 +27,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
@@ -78,6 +79,8 @@ public class AccountPageFragment extends WizardPageFragment {
     public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCertificates";
     public static final String STATE_SINGLE_PAGE = "page.single.page";
     public static final String STATE_AUTHENTICATION_FAILURE = "page.authentication.failure";
+    public static final String STATE_GERRIT_VERSION = "gerrit.version";
+    public static final String STATE_GERRIT_CONFIG = "gerrit.config";
 
     @Keep
     @SuppressWarnings("unused")
@@ -130,6 +133,8 @@ public class AccountPageFragment extends WizardPageFragment {
     private WizardAccountPageFragmentBinding mBinding;
     private Model mModel = new Model();
     private EventHandlers mEventHandlers;
+    private ServerVersion mServerVersion;
+    private ServerInfo mServerInfo;
 
     @Nullable
     @Override
@@ -207,6 +212,17 @@ public class AccountPageFragment extends WizardPageFragment {
 
         bundle.putBoolean(STATE_AUTHENTICATION_FAILURE, mModel.authenticationFailure);
         bundle.putBoolean(STATE_SINGLE_PAGE, mModel.singlePage);
+
+        if (mServerVersion != null) {
+            bundle.putString(STATE_GERRIT_VERSION,
+                    SerializationManager.getInstance().toJson(mServerVersion));
+
+        }
+        if (mServerInfo != null) {
+            bundle.putString(STATE_GERRIT_CONFIG,
+                    SerializationManager.getInstance().toJson(mServerInfo));
+
+        }
         return bundle;
     }
 
@@ -238,6 +254,18 @@ public class AccountPageFragment extends WizardPageFragment {
         if (savedState.containsKey(STATE_ACCOUNT_CONFIRMED)) {
             mModel.wasConfirmed = savedState.getBoolean(STATE_ACCOUNT_CONFIRMED);
         }
+
+        String serverVersion = savedState.getString(STATE_GERRIT_VERSION);
+        if (!TextUtils.isEmpty(serverVersion)) {
+            mServerVersion = SerializationManager.getInstance().fromJson(
+                    serverVersion, ServerVersion.class);
+        }
+        String serverConfig = savedState.getString(STATE_GERRIT_CONFIG);
+        if (!TextUtils.isEmpty(serverConfig)) {
+            mServerInfo = SerializationManager.getInstance().fromJson(
+                    serverConfig, ServerInfo.class);
+        }
+
         if (mBinding != null) {
             mBinding.setModel(mModel);
         }
@@ -332,7 +360,16 @@ public class AccountPageFragment extends WizardPageFragment {
                 if (getActivity() == null) {
                     throw new NoActivityAttachedException();
                 }
-                return logIn() && checkServerVersion();
+
+                // Login and obtain version. Also call getAnonymousCowardName to obtain
+                // server config
+                boolean ret = logIn() && checkServerVersion();
+                try {
+                    getAnonymousCowardName();
+                } catch (Exception ex) {
+                    // Ignore
+                }
+                return ret;
             } catch (Exception ex) {
                 postUpdateErrorMessage(ex);
                 mModel.wasConfirmed = false;
@@ -359,16 +396,18 @@ public class AccountPageFragment extends WizardPageFragment {
         if (version.getVersion() < Constants.MINIMAL_SUPPORTED_VERSION) {
             throw new UnsupportedServerVersionException();
         }
+        mServerVersion = version;
         return true;
     }
 
-    private String getAnonymousCowardName() {
+    private String getAnonymousCowardName() throws Exception {
         try {
             Context ctx = getActivity().getApplicationContext();
             Authorization authorization = new Authorization(
                     mModel.username, mModel.password, mModel.repoTrustAllCertificates);
             GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
             ServerInfo serverInfo = client.getServerInfo().blockingFirst();
+            mServerInfo = serverInfo;
             return serverInfo.user.anonymousCowardName;
         } catch (Exception ex) {
             if (ExceptionHelper.isAuthenticationException(ex)) {
