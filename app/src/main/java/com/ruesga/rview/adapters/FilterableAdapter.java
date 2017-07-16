@@ -17,6 +17,7 @@ package com.ruesga.rview.adapters;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,10 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
     }
 
     public boolean needsConstraintForQuery() {
+        return true;
+    }
+
+    public boolean needsCaseMatches() {
         return false;
     }
 
@@ -113,18 +118,28 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
             FilterableAdapter innerClass = mInnerClass.get();
 
             FilterResults results = new FilterResults();
-            if (innerClass != null && constraint != null) {
+            if (innerClass != null) {
                 // Fetch if needed
-                if (innerClass.needsConstraintForQuery() || innerClass.mResults == null) {
+                if (!innerClass.needsConstraintForQuery()
+                        || (innerClass.needsConstraintForQuery() && !TextUtils.isEmpty(constraint))
+                        || innerClass.mResults == null) {
                     innerClass.mResults = innerClass.getResults(constraint);
+                } else {
+                    innerClass.mResults = null;
                 }
 
                 // Filter results
                 mTemp.clear();
                 if (innerClass.mResults != null) {
                     for (CharSequence v : innerClass.mResults) {
-                        if (v.toString().contains(constraint)) {
-                            mTemp.add(v);
+                        if (!TextUtils.isEmpty(constraint)) {
+                            final String s = v.toString();
+                            final String c = constraint.toString();
+                            if ((innerClass.needsCaseMatches() && s.contains(c))
+                                    || (!innerClass.needsCaseMatches() &&
+                                            s.toLowerCase().contains(c.toLowerCase()))) {
+                                mTemp.add(v);
+                            }
                         }
                         final int maxResults = innerClass.getMaxResults();
                         if (maxResults > 0 &&  mTemp.size() >= maxResults) {
