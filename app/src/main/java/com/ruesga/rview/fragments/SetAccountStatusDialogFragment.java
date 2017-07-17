@@ -16,8 +16,10 @@
 package com.ruesga.rview.fragments;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Keep;
@@ -27,6 +29,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -130,6 +133,20 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
         }
     };
 
+    private final BroadcastReceiver mAccountStatusChangedReceiver = new BroadcastReceiver() {
+        @Override
+        @SuppressWarnings("ConstantConditions")
+        public void onReceive(Context context, Intent intent) {
+            if (mAccount != null && intent != null) {
+                String account = intent.getStringExtra(AccountStatusFetcherService.EXTRA_ACCOUNT);
+                if (mAccount.getAccountHash().equals(account)) {
+                    mAccount = Preferences.getAccount(context);
+                    updateModel(mAccount.mAccount.status);
+                }
+            }
+        }
+    };
+
     private SetAccountStatusDialogBinding mBinding;
     private Model mModel = new Model();
     private EventHandlers mEventHandlers;
@@ -183,8 +200,16 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mBinding.status.removeTextChangedListener(mTextWatcher);
-        mBinding.unbind();
+        if (mBinding != null) {
+            mBinding.status.removeTextChangedListener(mTextWatcher);
+            mBinding.unbind();
+        }
+
+        // Unregister services
+        if (getActivity() != null) {
+            LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(
+                    mAccountStatusChangedReceiver);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -208,7 +233,14 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
 
             // Fetch or join current loader
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-            mSetAccountStateLoader = loaderManager.create("set", this::setAccountState, mSetAccountStateObserver);
+            mSetAccountStateLoader = loaderManager.create(
+                    "set", this::setAccountState, mSetAccountStateObserver);
+
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
+            LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
+                    mAccountStatusChangedReceiver, filter);
+            fetchAccountStatus(mAccount);
         }
     }
 
@@ -226,7 +258,9 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
         mModel.description = EmojiHelper.getSuggestedDescriptionFromEmoji(getActivity(), status);
         mModel.status = status;
         mModel.isSuggestion = EmojiHelper.isSuggestedEmojiStatus(getActivity(), status);
-        mBinding.setModel(mModel);
+        if (mBinding != null) {
+            mBinding.setModel(mModel);
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -252,5 +286,19 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
         mModel.status = null;
         mModel.isSuggestion = false;
         mBinding.setModel(mModel);
+    }
+
+    private void fetchAccountStatus(Account account) {
+        // This is running while the app is in foreground so there is not risk on
+        // perform this operation. In addition, we need the account information asap, so
+        // just try to start the service directly.
+        try {
+            Intent intent = new Intent(getActivity(), AccountStatusFetcherService.class);
+            intent.setAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
+            intent.putExtra(AccountStatusFetcherService.EXTRA_ACCOUNT, account.getAccountHash());
+            getActivity().startService(intent);
+        } catch (IllegalStateException ex) {
+            Log.w(TAG, "Can't start account fetcher service.", ex);
+        }
     }
 }
