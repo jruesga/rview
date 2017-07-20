@@ -2690,9 +2690,10 @@ public class ChangeDetailsFragment extends Fragment implements
                     mActionLoader.restart(ModelHelper.ACTION_REBASE, new String[]{(String) o[0]});
                     break;
                 case REQUEST_CODE_CHERRY_PICK:
+                    String[] result = (String[]) o[0];
                     mActionLoader.clear();
                     mActionLoader.restart(ModelHelper.ACTION_CHERRY_PICK,
-                            new String[]{(String) o[0], (String) o[1]});
+                            new String[]{result[0], result[1]});
                     break;
                 case REQUEST_CODE_MOVE_BRANCH:
                     mMoveBranchLoader.clear();
