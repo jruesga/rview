@@ -24,6 +24,6 @@ public class BranchInfo {
     @SerializedName("ref") public String ref;
     @SerializedName("revision") public String revision;
     @SerializedName("can_delete") public boolean canDelete;
-    @SerializedName("web_links") public WebLinkInfo webLinks;
+    @SerializedName("web_links") public WebLinkInfo[] webLinks;
 }
 
