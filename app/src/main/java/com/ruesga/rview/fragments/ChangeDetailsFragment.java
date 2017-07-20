@@ -1389,8 +1389,18 @@ public class ChangeDetailsFragment extends Fragment implements
             mFileAdapter = new FileAdapter(mEventHandlers,
                     Preferences.isAccountShortFilenames(getContext(), mAccount));
             mBinding.fileInfo.list.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.VERTICAL, false));
-            mBinding.fileInfo.list.setNestedScrollingEnabled(false);
+                    getActivity(), LinearLayoutManager.VERTICAL, false) {
+                @Override
+                public boolean canScrollHorizontally() {
+                    return false;
+                }
+
+                @Override
+                public boolean canScrollVertically() {
+                    return false;
+                }
+            });
+            mBinding.fileInfo.list.setNestedScrollingEnabled(true);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
 
@@ -1404,9 +1414,19 @@ public class ChangeDetailsFragment extends Fragment implements
                     getContext(), LinearLayoutManager.VERTICAL);
             messageDivider.setMargins(leftPadding, 0);
             mBinding.messageInfo.list.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.VERTICAL, false));
+                    getActivity(), LinearLayoutManager.VERTICAL, false) {
+                @Override
+                public boolean canScrollHorizontally() {
+                    return false;
+                }
+
+                @Override
+                public boolean canScrollVertically() {
+                    return false;
+                }
+            });
+            mBinding.messageInfo.list.setNestedScrollingEnabled(true);
             mBinding.messageInfo.list.addItemDecoration(messageDivider);
-            mBinding.messageInfo.list.setNestedScrollingEnabled(false);
             mBinding.messageInfo.list.setAdapter(mMessageAdapter);
 
             mBinding.fastScroller.listenTo(() -> {
