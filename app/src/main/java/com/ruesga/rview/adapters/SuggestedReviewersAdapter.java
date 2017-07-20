@@ -191,7 +191,8 @@ public class SuggestedReviewersAdapter extends BaseAdapter implements Filterable
                 Iterator<SuggestedReviewerInfo> it = reviewers.iterator();
                 while (it.hasNext()) {
                     SuggestedReviewerInfo reviewer = it.next();
-                    if (reviewer.account.accountId == mAccount.mAccount.accountId) {
+                    if (reviewer.account != null
+                            && reviewer.account.accountId == mAccount.mAccount.accountId) {
                         it.remove();
                         return;
                     }
