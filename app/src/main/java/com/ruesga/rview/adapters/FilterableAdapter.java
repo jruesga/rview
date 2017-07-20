@@ -87,6 +87,7 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
         binding.setText(result);
         binding.setIcon(null);
         binding.setIsSelected(false);
+        binding.setMaxLines(2);
         binding.executePendingBindings();
 
         return v;

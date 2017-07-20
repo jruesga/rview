@@ -24,6 +24,7 @@
         <variable name="isSelected" type="Boolean" />
         <variable name="text" type="CharSequence" />
         <variable name="icon" type="Integer" />
+        <variable name="maxLines" type="Integer" />
     </data>
 
     <FrameLayout
@@ -54,7 +55,7 @@
                 android:layout_marginStart="8dp"
                 android:minWidth="@dimen/dropdown_min_width"
                 android:text="@{text}"
-                android:maxLines="1"
+                android:maxLines="@{maxLines}"
                 android:ellipsize="end"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"

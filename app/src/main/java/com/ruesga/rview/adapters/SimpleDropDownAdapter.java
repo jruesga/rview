@@ -82,6 +82,7 @@ public class SimpleDropDownAdapter extends BaseAdapter {
         DropdownItemBinding binding = (DropdownItemBinding) v.getTag();
         binding.setText(s);
         binding.setIcon(icon);
+        binding.setMaxLines(1);
         binding.setIsSelected(s.equals(mValue));
         binding.executePendingBindings();
 
