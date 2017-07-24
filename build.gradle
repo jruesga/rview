@@ -16,14 +16,14 @@
 
 ext {
     libraries = [
-        support                     : '26.0.0-beta2',
+        support                     : '26.0.0',
         firebase                    : '11.0.2',
         gson                        : '2.8.1',
         retrofit2                   : '2.3.0',
         okhttp3                     : '3.8.1',
         okio                        : '1.13.0',
-        okhttp_digest               : 'f8af82f343',
-        rxjava                      : '2.1.1',
+        okhttp_digest               : 'a9b27ee4ca',
+        rxjava                      : '2.1.2',
         rxandroid                   : '2.0.1',
         rxloader2                   : '1c07294ba2',
         commons_io                  : '2.5',
@@ -34,7 +34,7 @@ ext {
         prettytime                  : '4.0.1.Final',
         flexboxlayout               : '0.3.0',
         floatingsearchview          : '2d435bead5',
-        androidsvg                  : '43ab380edd',
+        androidsvg                  : '418cf67684',
         aboutlibraries              : '5.9.6',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.6.8',
@@ -61,10 +61,10 @@ allprojects {
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:2.3.3'
-            classpath 'me.tatarka:gradle-retrolambda:3.6.1'
-            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.1'
+            classpath 'me.tatarka:gradle-retrolambda:3.7.0'
+            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.7.3'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.22.2'
+            classpath 'io.fabric.tools:gradle:1.23.0'
         }
     }
 
