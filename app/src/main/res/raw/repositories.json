@@ -44,5 +44,6 @@
   {"name":"TWRP", "url":"https://gerrit.twrp.me/"},
   {"name":"Unlegacy Android", "url":"https://gerrit.unlegacy-android.org/"},
   {"name":"Wireshark", "url":"https://code.wireshark.org/review/", "ci_accounts": "^(.* Buildbot)$"},
+  {"name":"XOSP", "url":"http://review.xosp.org/"},
   {"name":"Zephyr", "url":"https://gerrit.zephyrproject.org/r/", "ci_accounts": "^(Zephyr JobBuilder)$"}
 ]
