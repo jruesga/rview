@@ -380,8 +380,10 @@ public class AccountPageFragment extends WizardPageFragment {
 
     private boolean logIn() {
         Context ctx = getActivity().getApplicationContext();
+        final String username = mModel.authenticatedAccess ? mModel.username : null;
+        final String password = mModel.authenticatedAccess ? mModel.password : null;
         Authorization authorization = new Authorization(
-                mModel.username, mModel.password, mModel.repoTrustAllCertificates);
+                username, password, mModel.repoTrustAllCertificates);
         GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
         mModel.accountInfo = client.getAccount(GerritApi.SELF_ACCOUNT).blockingFirst();
         return mModel.accountInfo != null;
@@ -389,8 +391,10 @@ public class AccountPageFragment extends WizardPageFragment {
 
     private boolean checkServerVersion() throws UnsupportedServerVersionException {
         Context ctx = getActivity().getApplicationContext();
+        final String username = mModel.authenticatedAccess ? mModel.username : null;
+        final String password = mModel.authenticatedAccess ? mModel.password : null;
         Authorization authorization = new Authorization(
-                mModel.username, mModel.password, mModel.repoTrustAllCertificates);
+                username, password, mModel.repoTrustAllCertificates);
         GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
         ServerVersion version = client.getServerVersion().blockingFirst();
         if (version.getVersion() < Constants.MINIMAL_SUPPORTED_VERSION) {
@@ -403,8 +407,10 @@ public class AccountPageFragment extends WizardPageFragment {
     private String getAnonymousCowardName() throws Exception {
         try {
             Context ctx = getActivity().getApplicationContext();
+            final String username = mModel.authenticatedAccess ? mModel.username : null;
+            final String password = mModel.authenticatedAccess ? mModel.password : null;
             Authorization authorization = new Authorization(
-                    mModel.username, mModel.password, mModel.repoTrustAllCertificates);
+                    username, password, mModel.repoTrustAllCertificates);
             GerritApi client = GerritServiceFactory.getInstance(ctx, mModel.repoUrl, authorization);
             ServerInfo serverInfo = client.getServerInfo().blockingFirst();
             mServerInfo = serverInfo;

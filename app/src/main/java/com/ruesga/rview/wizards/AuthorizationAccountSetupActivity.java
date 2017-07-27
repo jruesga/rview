@@ -19,8 +19,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.ruesga.rview.MainActivity;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.Formatter;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.wizard.WizardActivity;
@@ -63,6 +65,9 @@ public class AuthorizationAccountSetupActivity extends WizardActivity {
         if (account != null) {
             boolean authenticatedMode = savedState.getBoolean(
                     AccountPageFragment.STATE_ACCOUNT_ACCESS_MODE);
+            account.mAccount = SerializationManager.getInstance().fromJson(
+                    savedState.getString(AccountPageFragment.STATE_ACCOUNT_INFO),
+                            AccountInfo.class);
             if (authenticatedMode) {
                 account.mToken = savedState.getString(AccountPageFragment.STATE_ACCOUNT_PASSWORD);
             }
