@@ -124,8 +124,11 @@ public class AccountPageFragment extends WizardPageFragment {
 
         public void onClickPressed(View view) {
             if (view.getId() == R.id.access_mode_switcher_layout) {
-                mFragment.mBinding.accessModeSwitcher.setChecked(
-                        !mFragment.mBinding.accessModeSwitcher.isChecked());
+                boolean checked = mFragment.mBinding.accessModeSwitcher.isChecked();
+                mFragment.mBinding.accessModeSwitcher.setChecked(!checked);
+                if (checked && mFragment.getActivity() != null) {
+                    ((WizardActivity) mFragment.getActivity()).closeKeyboardIfNeeded();
+                }
             }
         }
     }
@@ -158,6 +161,10 @@ public class AccountPageFragment extends WizardPageFragment {
         mBinding.setHandlers(mEventHandlers);
 
         mBinding.accessModeSwitcher.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (!isChecked && getActivity() != null) {
+                ((WizardActivity) getActivity()).closeKeyboardIfNeeded();
+            }
+
             mModel.authenticatedAccess = isChecked;
             mBinding.accountUsername.setError(null);
             mBinding.accountUsername.clearFocus();

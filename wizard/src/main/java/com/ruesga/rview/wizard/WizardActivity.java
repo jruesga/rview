@@ -567,7 +567,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         return animator;
     }
 
-    private void closeKeyboardIfNeeded() {
+    public void closeKeyboardIfNeeded() {
         View view = this.getCurrentFocus();
         if (view != null) {
             InputMethodManager inputMethodManager =
