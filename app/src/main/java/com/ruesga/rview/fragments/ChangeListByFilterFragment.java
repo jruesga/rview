@@ -36,7 +36,6 @@ import com.ruesga.rview.preferences.Preferences;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.reactivex.Observable;

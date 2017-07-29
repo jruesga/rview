@@ -45,7 +45,6 @@ import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
-import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;

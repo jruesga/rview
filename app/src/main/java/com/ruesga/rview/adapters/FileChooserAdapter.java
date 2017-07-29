@@ -18,13 +18,11 @@ package com.ruesga.rview.adapters;
 import android.content.Context;
 
 import com.ruesga.rview.gerrit.GerritApi;
-import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.preferences.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FileChooserAdapter extends FilterableAdapter {
 

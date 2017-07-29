@@ -95,7 +95,6 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
 
     private ListPreference mHomePage;
     private Preference mSearchHistoryClear;
-    private PreferenceCategory mDashboardCategory;
     private PreferenceCategory mNotificationsCategory;
     private Preference mNotificationsAdvise;
     private Preference mNotificationsEnabled;
@@ -258,9 +257,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
 
     private void configureDashboard() {
         if (mAccount == null || !mAccount.hasAuthenticatedAccessMode()) {
-            mDashboardCategory =
-                    (PreferenceCategory) findPreference(PREF_ACCOUNT_DASHBOARD_CATEGORY);
-            getPreferenceScreen().removePreference(mDashboardCategory);
+            PreferenceCategory dashboardCategory = (PreferenceCategory) findPreference(PREF_ACCOUNT_DASHBOARD_CATEGORY);
+            getPreferenceScreen().removePreference(dashboardCategory);
         }
     }
 
