@@ -625,7 +625,8 @@ public class EditorFragment extends Fragment
             if (mEditActionsBinding != null) {
                 mEditActionsBinding.setIsDirty(mBinding.editor.isDirty());
 
-                boolean wasDeleted = mFileInfo.get(mFile).status.equals(FileStatus.D);
+                boolean wasDeleted = mFileInfo.get(mFile) != null
+                        && mFileInfo.get(mFile).status.equals(FileStatus.D);
                 boolean isOp = mEditOps.containsKey(mFile);
                 mEditActionsBinding.setCanPublish(mIsDirty);
                 mEditActionsBinding.setCanDeleteCurrent(
