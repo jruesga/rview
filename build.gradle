@@ -16,7 +16,7 @@
 
 ext {
     libraries = [
-        support                     : '26.0.0',
+        support                     : '26.0.1',
         firebase                    : '11.0.4',
         gson                        : '2.8.1',
         retrofit2                   : '2.3.0',
@@ -35,7 +35,7 @@ ext {
         flexboxlayout               : '0.3.0',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '418cf67684',
-        aboutlibraries              : '5.9.6',
+        aboutlibraries              : '5.9.7',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.6.8',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
