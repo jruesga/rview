@@ -51,6 +51,11 @@ public interface GerritApi {
     double API_VERSION = 2.14;
 
     /**
+     * The current minimum supported Gerrit api version.
+     */
+    double MIN_API_VERSION = 2.11;
+
+    /**
      * The uri of the page where to obtain the http password.
      */
     String HTTP_PASSWORD_URI = "#/settings/http-password";

@@ -268,6 +268,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     private List<String> mSuggestions;
 
+    private static final ServerVersion MIN_VERSION = new ServerVersion(
+            String.valueOf(GerritApi.MIN_API_VERSION));
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -722,7 +725,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
             final int index = Arrays.asList(ChangeQuery.FIELDS_NAMES).indexOf(token);
             if (index != -1) {
                 Double version = ChangeQuery.SUPPORTED_VERSION[index];
-                ServerVersion serverVersion = mAccount.getServerVersion();
+                ServerVersion serverVersion =
+                        mAccount == null ? MIN_VERSION : mAccount.getServerVersion();
                 if (version == null || (serverVersion != null
                         && version <= serverVersion.getVersion())) {
                     Class clazz = ChangeQuery.SUGGEST_TYPES[index];
@@ -785,7 +789,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
         int count = ChangeQuery.FIELDS_NAMES.length;
         for (int i = 0; i < count; i++) {
             Double version = ChangeQuery.SUPPORTED_VERSION[i];
-            ServerVersion serverVersion = mAccount.getServerVersion();
+            ServerVersion serverVersion =
+                    mAccount == null ? MIN_VERSION : mAccount.getServerVersion();
             if (version == null || (serverVersion != null
                     && version <= serverVersion.getVersion())) {
                 mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":");
