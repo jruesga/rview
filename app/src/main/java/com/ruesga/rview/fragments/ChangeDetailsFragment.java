@@ -2649,7 +2649,8 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     private String resolveDiffAgainstRevision(String base) {
-        if (base == null) {
+        if (base == null || mResponse == null || mResponse.mChange == null
+                || mResponse.mChange.revisions == null) {
             return null;
         }
 
