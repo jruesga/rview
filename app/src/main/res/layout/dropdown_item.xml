@@ -55,7 +55,7 @@
                 android:layout_marginStart="8dp"
                 android:minWidth="@dimen/dropdown_min_width"
                 android:text="@{text}"
-                android:maxLines="@{maxLines}"
+                android:maxLines="@{safeUnbox(maxLines)}"
                 android:ellipsize="end"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
