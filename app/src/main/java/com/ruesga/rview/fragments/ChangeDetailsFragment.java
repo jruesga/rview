@@ -1386,7 +1386,9 @@ public class ChangeDetailsFragment extends Fragment implements
 
             mEventHandlers = new EventHandlers(this);
 
-            final LinearLayoutManager layoutManager = new LinearLayoutManager(
+            mFileAdapter = new FileAdapter(mEventHandlers,
+                    Preferences.isAccountShortFilenames(getContext(), mAccount));
+            mBinding.fileInfo.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false) {
                 @Override
                 public boolean canScrollHorizontally() {
@@ -1397,11 +1399,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 public boolean canScrollVertically() {
                     return false;
                 }
-            };
-
-            mFileAdapter = new FileAdapter(mEventHandlers,
-                    Preferences.isAccountShortFilenames(getContext(), mAccount));
-            mBinding.fileInfo.list.setLayoutManager(layoutManager);
+            });
             mBinding.fileInfo.list.setNestedScrollingEnabled(true);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
@@ -1415,7 +1413,18 @@ public class ChangeDetailsFragment extends Fragment implements
             DividerItemDecoration messageDivider = new DividerItemDecoration(
                     getContext(), LinearLayoutManager.VERTICAL);
             messageDivider.setMargins(leftPadding, 0);
-            mBinding.messageInfo.list.setLayoutManager(layoutManager);
+            mBinding.messageInfo.list.setLayoutManager(new LinearLayoutManager(
+                    getActivity(), LinearLayoutManager.VERTICAL, false) {
+                @Override
+                public boolean canScrollHorizontally() {
+                    return false;
+                }
+
+                @Override
+                public boolean canScrollVertically() {
+                    return false;
+                }
+            });
             mBinding.messageInfo.list.setNestedScrollingEnabled(true);
             mBinding.messageInfo.list.addItemDecoration(messageDivider);
             mBinding.messageInfo.list.setAdapter(mMessageAdapter);
