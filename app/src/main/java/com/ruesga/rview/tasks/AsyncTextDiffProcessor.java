@@ -386,9 +386,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         m.lineNumberA = String.valueOf(m.a);
                         m.lineNumberB = String.valueOf(m.b);
                         if (mMode == DiffView.SIDE_BY_SIDE_MODE) {
-                            m.lineA = m.lineB = processHighlights(diff.ab[k]);
+                            m.lineA = m.lineB = processHighlights(prepareTabs(diff.ab[k]));
                         } else {
-                            m.lineA = processHighlights(diff.ab[k]);
+                            m.lineA = processHighlights(prepareTabs(diff.ab[k]));
                         }
                         m.colorA = m.colorB = noColor;
                         skip.skippedLines[l] = m;
