@@ -53,8 +53,9 @@ public class StringHelper {
     private static final Pattern REPLACED_QUOTE4 = Pattern.compile(NON_PRINTABLE_CHAR + "\n");
 
     public static final Pattern GERRIT_CHANGE = Pattern.compile("I[0-9a-f]{8,40}");
-    public static final Pattern GERRIT_CHANGE_ID = Pattern.compile("\\d+");
     public static final Pattern GERRIT_COMMIT = Pattern.compile("[0-9a-f]{7,40}");
+    public static final Pattern GERRIT_CHANGE_ID = Pattern.compile("\\d+");
+    public static final Pattern GERRIT_ENCODED_CHANGE_ID = Pattern.compile("\\d+:\\d+(\\.\\.\\d+)?:.*");
 
     public static String[] obtainParagraphs(String message) {
         return message.split("\\r?\\n\\r?\\n");
