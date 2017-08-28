@@ -111,9 +111,10 @@ public class GerritServiceFactory {
 
     private final static Map<String, GerritApiClient> sInstances = new HashMap<>();
 
-    public static GerritApiClient getInstance(
-            @NonNull Context applicationContext, @NonNull String endpoint) {
-        return getInstance(applicationContext, endpoint, new Authorization());
+    public static GerritApiClient getInstance(@NonNull Context applicationContext,
+            @NonNull String endpoint, boolean trustAllServerCertificates) {
+        return getInstance(applicationContext, endpoint, new Authorization(
+                null, null, trustAllServerCertificates));
     }
 
     public static GerritApiClient getInstance(@NonNull Context applicationContext,
