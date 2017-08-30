@@ -651,4 +651,9 @@ public class ModelHelper {
         }
         return "0";
     }
+
+    public static boolean isOnBehalfOf(ChangeMessageInfo changeMessage) {
+        return changeMessage != null && changeMessage.realAuthor != null &&
+                changeMessage.author.accountId != changeMessage.realAuthor.accountId;
+    }
 }

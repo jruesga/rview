@@ -46,18 +46,17 @@
             android:onClick="@{handlers::onMessageAvatarPressed}"
             tools:ignore="ContentDescription"/>
 
-        <com.ruesga.rview.widget.StyleableTextView
-            android:id="@+id/author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/avatar"
-            android:layout_toEndOf="@id/avatar"
-            android:layout_alignParentTop="true"
-            app:accountDisplayName="@{model.author}"
+        <com.ruesga.rview.widget.FixedSizeImageView
+            android:id="@+id/on_behalf_of_avatar"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
             android:tag="@{index}"
-            app:fontFamilyType="bold"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorPrimary" />
+            android:visibility="@{com.ruesga.rview.misc.ModelHelper.isOnBehalfOf(model) ? View.VISIBLE : View.GONE}"
+            android:onClick="@{handlers::onMessageAvatarPressed}"
+            tools:ignore="ContentDescription"/>
 
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/timestamp"
@@ -65,9 +64,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
-            android:layout_toRightOf="@id/author"
-            android:layout_toEndOf="@id/author"
-            android:layout_alignBaseline="@id/author"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_alignWithParentIfMissing="true"
@@ -78,6 +74,22 @@
             app:prettyDateTime="@{model.date}"
             android:textAppearance="@style/TextAppearance.VerySmall"
             tools:ignore="Deprecated" />
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/avatar"
+            android:layout_toEndOf="@id/avatar"
+            android:layout_toLeftOf="@id/timestamp"
+            android:layout_toStartOf="@id/timestamp"
+            android:layout_alignBaseline="@id/timestamp"
+            android:layout_alignParentTop="true"
+            app:changeMessageAccount="@{model}"
+            android:tag="@{index}"
+            app:fontFamilyType="bold"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary" />
 
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/folded_message"

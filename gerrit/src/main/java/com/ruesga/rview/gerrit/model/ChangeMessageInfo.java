@@ -25,6 +25,7 @@ import java.util.Date;
 public class ChangeMessageInfo {
     @SerializedName("id") public String id;
     @SerializedName("author") public AccountInfo author;
+    @SerializedName("real_author") public AccountInfo realAuthor;
     @SerializedName("date") public Date date;
     @SerializedName("message") public String message;
     @SerializedName("tag") public String tag;

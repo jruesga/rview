@@ -600,6 +600,11 @@ public class ChangeDetailsFragment extends Fragment implements
             PicassoHelper.bindAvatar(context, mPicasso,
                     message.author, holder.mBinding.avatar,
                     PicassoHelper.getDefaultAvatar(context, R.color.primaryDarkForeground));
+            if (ModelHelper.isOnBehalfOf(message)) {
+                PicassoHelper.bindAvatar(context, mPicasso,
+                        message.realAuthor, holder.mBinding.onBehalfOfAvatar,
+                        PicassoHelper.getDefaultAvatar(context, R.color.primaryDarkForeground));
+            }
             holder.mBinding.setIsAuthenticated(mIsAuthenticated);
             holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);

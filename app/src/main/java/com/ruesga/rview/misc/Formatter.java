@@ -22,6 +22,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Keep;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -37,6 +38,7 @@ import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.CommitInfo;
@@ -106,6 +108,26 @@ public class Formatter {
         view.setText(getPrettyTime(view.getContext()).format(date));
     }
 
+    @SuppressWarnings("deprecation")
+    @BindingAdapter("changeMessageAccount")
+    public static void toChangeMessageAccount(TextView view, ChangeMessageInfo changeMessage) {
+        if (changeMessage == null) {
+            toAccountDisplayName(view, null);
+            return;
+        }
+
+        if (ModelHelper.isOnBehalfOf(changeMessage)) {
+            view.setText(Html.fromHtml(
+                    view.getContext().getString(R.string.change_details_on_behalf_of,
+                            toAccountDisplayName(changeMessage.realAuthor),
+                            toAccountDisplayName(changeMessage.author))));
+            view.setTypeface(TypefaceCache.getTypeface(view.getContext(), TypefaceCache.TF_REGULAR));
+            return;
+        }
+
+        toAccountDisplayName(view, changeMessage.author);
+    }
+
     @BindingAdapter("accountDisplayName")
     public static void toAccountDisplayName(TextView view, AccountInfo accountInfo) {
         if (accountInfo == null) {
@@ -113,6 +135,10 @@ public class Formatter {
             return;
         }
 
+        view.setText(toAccountDisplayName(accountInfo));
+    }
+
+    private static String toAccountDisplayName(AccountInfo accountInfo) {
         // Display Name
         String accountDisplayName = null;
         switch (sDisplayFormat) {
@@ -144,7 +170,7 @@ public class Formatter {
             accountDisplayName += " " + accountInfo.status;
         }
 
-        view.setText(accountDisplayName);
+        return accountDisplayName;
     }
 
     @BindingAdapter({"draftAccountDisplayName", "isDraft"})
