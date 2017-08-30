@@ -69,7 +69,10 @@ public class UriHelper {
         }
 
         String target = "-1";
-        if (query.startsWith("/#/c/") || query.startsWith("/c/")) {
+        if (query.contains("/+/")) {
+            int start = query.indexOf("/+/") + 3;
+            target = query.substring(start);
+        } else if (query.startsWith("/#/c/") || query.startsWith("/c/")) {
             int start = query.indexOf("/c/") + 3;
             target = query.substring(start);
         } else {

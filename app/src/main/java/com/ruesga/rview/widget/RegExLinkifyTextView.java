@@ -112,6 +112,11 @@ public class RegExLinkifyTextView extends StyleableTextView {
                 "http(s)?://" + uri + "((\\?polygerrit=\\d)?(#/)?c/)?(\\d)+(/(((\\d)+\\.\\.)?(\\d)+)?(/(\\S)*+)?)?",
                 "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
                 group -> UriHelper.extractChangeId(group, repository)));
+        regexLinks.add(new RegExLink(
+                Constants.CUSTOM_URI_CHANGE_ID,
+                "http(s)?://" + uri + "(\\?polygerrit=\\d)?(#/)?c/.*/\\+/\\d+(/(\\S)*+)?",
+                "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
+                group -> UriHelper.extractChangeId(group, repository)));
 
         // Queries
         regexLinks.add(new RegExLink(
@@ -168,6 +173,12 @@ public class RegExLinkifyTextView extends StyleableTextView {
                             for (ClickableSpan s : old) {
                                 span.removeSpan(s);
                             }
+                        }
+
+                        // Avoid to apply more than one clickable span over the same range
+                        ClickableSpan[] spans = span.getSpans(start, end, ClickableSpan.class);
+                        if (spans != null && spans.length > 0) {
+                            continue;
                         }
 
                         span.setSpan(new ClickableSpan() {
