@@ -232,17 +232,20 @@ public class EditorFragment extends Fragment
             requestFileContent();
 
             showProgress(false);
+            mLocked = false;
         }
 
         @Override
         public void onError(Throwable error) {
             ((BaseActivity) getActivity()).handleException(TAG, error, null);
             showProgress(false);
+            mLocked = false;
         }
 
         @Override
         public void onStarted() {
             showProgress(true);
+            mLocked = true;
         }
     };
 
@@ -255,6 +258,7 @@ public class EditorFragment extends Fragment
             showProgress(false);
 
             mPublishLoader.clear();
+            mLocked = false;
         }
 
         @Override
@@ -266,11 +270,13 @@ public class EditorFragment extends Fragment
             requestCancelEdit();
 
             mPublishLoader.clear();
+            mLocked = false;
         }
 
         @Override
         public void onStarted() {
             showProgress(true);
+            mLocked = true;
         }
     };
 
