@@ -9,7 +9,7 @@
   {"name":"Automotive Linux", "url":"https://gerrit.automotivelinux.org/gerrit/", "ci_accounts": "^(Jenkins Job .*)$"},
   {"name":"CandyRoms", "url":"https://gerrit.bbqdroid.org/"},
   {"name":"CarbonROM", "url":"https://review.carbonrom.org/"},
-  {"name":"Chromium", "url":"https://chromium-review.googlesource.com/", "ci_accounts": "^(ChromeOS Commit Bot)$"},
+  {"name":"Chromium", "url":"https://chromium-review.googlesource.com/", "ci_accounts": "^(.* Bot)$"},
   {"name":"Cloudera", "url":"https://gerrit.cloudera.org/", "ci_accounts": "^(.* Jenkins)$"},
   {"name":"CoreBoot", "url":"https://review.coreboot.org/", "ci_accounts": "^(.*Jenkins.*)$"},
   {"name":"Deepin", "url":"https://cr.deepin.io/", "ci_accounts": "^(jenkins)$"},
