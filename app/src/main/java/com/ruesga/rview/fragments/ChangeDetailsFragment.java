@@ -1556,7 +1556,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnReviewerRemovedListener)
-                .withRemovableReviewers(open)
+                .withRemovableReviewers(mAccount.hasAuthenticatedAccessMode() && open)
                 .withFilterCIAccounts(mHideCIMessages)
                 .withReviewerStatus(supportsCC ? ReviewerStatus.REVIEWER : null)
                 .from(response.mChange);
@@ -1565,14 +1565,15 @@ public class ChangeDetailsFragment extends Fragment implements
                     .with(mPicasso)
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnReviewerRemovedListener)
-                    .withRemovableReviewers(open)
+                    .withRemovableReviewers(mAccount.hasAuthenticatedAccessMode() && open)
                     .withFilterCIAccounts(mHideCIMessages)
                     .withReviewerStatus(ReviewerStatus.CC)
                     .from(response.mChange);
         }
         mBinding.changeInfo.labels
                 .with(mPicasso)
-                .withRemovableReviewers(open && supportVotes, response.mChange.removableReviewers)
+                .withRemovableReviewers(mAccount.hasAuthenticatedAccessMode() &&
+                        open && supportVotes, response.mChange.removableReviewers)
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnReviewerRemovedVoteListener)
                 .from(response.mChange);
