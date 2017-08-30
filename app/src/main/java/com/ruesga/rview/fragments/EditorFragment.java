@@ -630,9 +630,9 @@ public class EditorFragment extends Fragment
                 boolean isOp = mEditOps.containsKey(mFile);
                 mEditActionsBinding.setCanPublish(mIsDirty);
                 mEditActionsBinding.setCanDeleteCurrent(
-                        !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted && !isOp);
+                        !Constants.COMMIT_MESSAGE.equals(mFile) && !wasDeleted && !isOp);
                 mEditActionsBinding.setCanRenameCurrent(
-                        !mFile.equals(Constants.COMMIT_MESSAGE) && !wasDeleted && !isOp);
+                        !Constants.COMMIT_MESSAGE.equals(mFile) && !wasDeleted && !isOp);
             }
 
             // Open drawer
