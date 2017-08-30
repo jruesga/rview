@@ -80,19 +80,25 @@ public class StringHelper {
         String[] lines = message.split("\\r?\\n");
         StringBuilder sb = new StringBuilder();
         int count = lines.length;
+        boolean trim = false;
         for (int i = 0; i < count; i++) {
             String line = lines[i];
             String trimmed = line.trim();
-            sb.append(line);
+            sb.append(trim ? trimmed : line);
             if (trimmed.isEmpty() || A_NON_WORD_CHARACTER_AT_END.matcher(trimmed).matches()) {
                 sb.append("\n");
+                trim = false;
             } else if (i < (count - 1)) {
                 String next = lines[i + 1].trim();
                 if (next.isEmpty() || A_NON_WORD_CHARACTER_AT_START.matcher(next).matches()) {
                     sb.append("\n");
+                    trim = false;
                 } else {
                     sb.append(" ");
+                    trim = true;
                 }
+            } else {
+                trim = false;
             }
         }
         return sb.toString().trim();
