@@ -48,6 +48,11 @@ dependencies {
     compile "com.github.jruesga:floatingsearchview:${libraries.floatingsearchview}"
     compile "com.github.BigBadaboom:androidsvg:${libraries.androidsvg}"
     compile ("com.mikepenz:aboutlibraries:${libraries.aboutlibraries}@aar") { transitive = true }
+
+    testCompile "junit:junit:${testLibraries.junit}"
+    testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
+    testCompile "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
+    testCompile "org.mockito:mockito-core:${testLibraries.mockito}"
 }
 
 android {
