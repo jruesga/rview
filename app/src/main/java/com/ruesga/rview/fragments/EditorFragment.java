@@ -226,7 +226,7 @@ public class EditorFragment extends Fragment
 
             // At least commit message should be present
             mFile = mFiles.get(0);
-            mCurrentFile = 0;
+            mLastFile = mCurrentFile = 0;
 
             updateModel();
             requestFileContent();
@@ -320,6 +320,8 @@ public class EditorFragment extends Fragment
                 mBinding.setAdvise(null);
             }
 
+            mLastFile = mCurrentFile;
+
             showProgress(false);
 
             mContentLoader.clear();
@@ -333,6 +335,11 @@ public class EditorFragment extends Fragment
 
             mContentLoader.clear();
             mLocked = false;
+
+            // Restore the previous position
+            if (mCurrentFile != mLastFile) {
+                switchToPosition(mLastFile);
+            }
         }
 
         @Override
@@ -425,6 +432,7 @@ public class EditorFragment extends Fragment
     private Map<String, Op> mEditOps = new HashMap<>();
     private String mFile;
     private int mCurrentFile;
+    private int mLastFile;
     private boolean mIsDirty;
 
     private String mContentFile;
@@ -529,6 +537,7 @@ public class EditorFragment extends Fragment
         outState.putString("file_infos", SerializationManager.getInstance().toJson(mFileInfo));
         outState.putString(Constants.EXTRA_FILE, mFile);
         outState.putInt("current_file", mCurrentFile);
+        outState.putInt("last_file", mLastFile);
         outState.putBoolean("is_dirty", mIsDirty);
     }
 
@@ -576,6 +585,7 @@ public class EditorFragment extends Fragment
                 }
 
                 mCurrentFile = savedInstanceState.getInt("current_file");
+                mLastFile = savedInstanceState.getInt("last_file");
                 mIsDirty = savedInstanceState.getBoolean("is_dirty");
                 createFileHashes();
 
@@ -1115,6 +1125,7 @@ public class EditorFragment extends Fragment
         }
 
         mFile = mFiles.get(position);
+        mLastFile = mCurrentFile;
         mCurrentFile = position;
         updateModel();
 
