@@ -380,7 +380,7 @@
                     android:text="@string/change_details_edit_message"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="@color/primaryDarkForeground"
-                    android:visibility="@{(safeUnbox(isAuthenticated) &amp;&amp; safeUnbox(isCurrentRevision)) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{(safeUnbox(isAuthenticated) &amp;&amp; safeUnbox(isCurrentRevision) &amp;&amp; (change.status.equals(ChangeStatus.NEW) || change.status.equals(ChangeStatus.DRAFT))) ? View.VISIBLE : View.GONE}"
                     app:fontFamilyType="boldCondensed"
                     app:allCaps="true"
                     android:textSize="12sp"
