@@ -120,13 +120,13 @@ public class AccountChipView extends FrameLayout {
     }
 
     private void onAccountChipClicked(AccountInfo account) {
-        if (mOnAccountChipClickedListener != null) {
+        if (mOnAccountChipClickedListener != null && account.accountId > 0) {
             mOnAccountChipClickedListener.onAccountChipClicked(account, mTag);
         }
     }
 
     private void onAccountChipRemoved(AccountInfo account) {
-        if (mOnAccountChipRemovedListener != null) {
+        if (mOnAccountChipRemovedListener != null && account.accountId > 0) {
             mOnAccountChipRemovedListener.onAccountChipRemoved(account, mTag);
         }
     }

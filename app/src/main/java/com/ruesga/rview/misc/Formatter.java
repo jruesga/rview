@@ -130,6 +130,12 @@ public class Formatter {
             accountDisplayName = accountInfo.username;
         }
         if (TextUtils.isEmpty(accountDisplayName)) {
+            accountDisplayName = accountInfo.name;
+        }
+        if (TextUtils.isEmpty(accountDisplayName)) {
+            accountDisplayName = accountInfo.email;
+        }
+        if (TextUtils.isEmpty(accountDisplayName)) {
             accountDisplayName = String.valueOf(accountInfo.accountId);
         }
 
