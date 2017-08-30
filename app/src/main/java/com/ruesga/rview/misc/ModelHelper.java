@@ -638,4 +638,17 @@ public class ModelHelper {
                 return R.drawable.ic_modify_circle_outline;
         }
     }
+
+    public static String toAccountId(AccountInfo account) {
+        if (account.accountId > 0) {
+            return String.valueOf(account.accountId);
+        }
+        if (!TextUtils.isEmpty(account.username)) {
+            return account.username;
+        }
+        if (!TextUtils.isEmpty(account.email)) {
+            return account.email;
+        }
+        return "0";
+    }
 }

@@ -1822,7 +1822,7 @@ public class ChangeDetailsFragment extends Fragment implements
         return SafeObservable.fromNullCallable(() -> {
                     api.deleteChangeReviewer(
                             String.valueOf(mLegacyChangeId),
-                            String.valueOf(account.accountId)).blockingFirst();
+                            ModelHelper.toAccountId(account)).blockingFirst();
                     return account;
                 })
                 .subscribeOn(Schedulers.io())
@@ -2185,12 +2185,17 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     private void performAccountClicked(AccountInfo account, Object tag) {
+        if (account.accountId == 0) {
+            // Nothing relevant to display
+            return;
+        }
+
         ChangeQuery filter = new ChangeQuery().owner(ModelHelper.getSafeAccountOwner(account));
         String title = getString(R.string.account_details);
         String displayName = ModelHelper.getAccountDisplayName(account);
         String extra = SerializationManager.getInstance().toJson(account);
         ActivityHelper.openStatsActivity(getContext(), title, displayName,
-                StatsFragment.ACCOUNT_STATS, String.valueOf(account.accountId), filter, extra);
+                StatsFragment.ACCOUNT_STATS, ModelHelper.toAccountId(account), filter, extra);
     }
 
     private void performRemoveReviewer(AccountInfo account, Object tag) {
