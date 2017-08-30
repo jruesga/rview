@@ -689,7 +689,8 @@ public class EditorFragment extends Fragment
                                 return "".getBytes();
                             }
 
-                            String file = info.status.equals(FileStatus.R) ? info.oldPath : mFile;
+                            String file = info.status.equals(FileStatus.R) &&
+                                    mEditOps.containsKey(mFile) ? info.oldPath : mFile;
                             try {
                                 ResponseBody body = api.getChangeRevisionFileContent(
                                         String.valueOf(mLegacyChangeId),
