@@ -51,6 +51,7 @@ import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
@@ -716,5 +717,29 @@ public class Formatter {
             return commitHash.substring(0, 8);
         }
         return commitHash;
+    }
+
+    @BindingAdapter("buildStatus")
+    public static void toBuildStatis(ImageView v, ContinuousIntegrationInfo.BuildStatus status) {
+        if (status == null) {
+            v.setImageDrawable(null);
+            return;
+        }
+
+        switch (status) {
+            case SUCCESS:
+                v.setImageResource(R.drawable.ic_status_success);
+                break;
+            case FAILURE:
+                v.setImageResource(R.drawable.ic_status_failure);
+                break;
+            case SKIPPED:
+                v.setImageResource(R.drawable.ic_status_skipped);
+                break;
+            case RUNNING:
+            default:
+                v.setImageResource(R.drawable.ic_status_running);
+                break;
+        }
     }
 }

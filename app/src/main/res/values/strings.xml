@@ -223,6 +223,8 @@
     <string name="change_details_action_hide_ci_messages">Hide CI</string>
     <string name="change_details_action_show_ci_messages">Show CI</string>
     <string name="change_details_on_behalf_of">&lt;b&gt;<xliff:g id="real_author" example="John Doe">%1$s</xliff:g>&lt;/b&gt; on behalf of &lt;b&gt;<xliff:g id="author" example="John Doe">%2$s</xliff:g>&lt;/b&gt;</string>
+    <string name="change_details_continuous_integration">Continuous Integration</string>
+    <string name="change_details_continuous_integration_empty">No continuous integration jobs found</string>
 
     <!-- Change edit -->
     <string name="change_edit_title">Edit #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>

@@ -31,6 +31,8 @@ import static org.junit.Assert.assertEquals;
 
 public class ContinuousIntegrationHelperTest {
 
+    private static final int DEFAULT_PATCHSET_NUMBER = 1;
+
     @Test
     public void testExtractContinuousIntegrationInfo() {
         List<ContinuousIntegrationInfo> cis;
@@ -123,17 +125,12 @@ public class ContinuousIntegrationHelperTest {
                 new InputStreamReader(
                         ContinuousIntegrationHelperTest.class.getResourceAsStream(
                                 "/com/ruesga/rview/misc/ci-" + id.toLowerCase() + ".txt")), type);
+
         List<ContinuousIntegrationInfo> cis =
                 ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
-                    1, messages, repository);
+                        DEFAULT_PATCHSET_NUMBER, messages.toArray(
+                                new ChangeMessageInfo[messages.size()]), repository);
         Collections.sort(cis);
-
-        System.out.println("== " + id);
-        for (ContinuousIntegrationInfo ci : cis) {
-            System.out.println(ci);
-        }
-        System.out.println();
-
         return cis;
     }
 }

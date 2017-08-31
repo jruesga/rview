@@ -117,14 +117,29 @@ public class BindingAdapters {
         v.setVisibility(o == null ? View.GONE : View.VISIBLE);
     }
 
+    @BindingAdapter("bindNotNull")
+    public static void bindNotNull(View v, Object o) {
+        v.setVisibility(o == null ? View.VISIBLE : View.GONE);
+    }
+
     @BindingAdapter("bindEmptyList")
     public static void bindEmptyList(View v, List<?> o) {
         v.setVisibility(o == null || o.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
+    @BindingAdapter("bindNotEmptyList")
+    public static void bindNotEmptyList(View v, List<?> o) {
+        v.setVisibility(o == null || o.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
     @BindingAdapter("bindEmptyMap")
     public static void bindEmptyMap(View v, Map<?, ?> o) {
         v.setVisibility(o == null || o.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    @BindingAdapter("bindNotEmptyMap")
+    public static void bindNotEmptyMap(View v, Map<?, ?> o) {
+        v.setVisibility(o == null || o.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     @BindingAdapter("bindBackgroundTint")

@@ -36,6 +36,8 @@
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <!--suppress AndroidDomInspection -->
         <variable name="actions" type="java.util.Map&lt;String, com.ruesga.rview.gerrit.model.ActionInfo&gt;" />
+        <!--suppress AndroidDomInspection -->
+        <variable name="ci" type="java.util.List&lt;com.ruesga.rview.model.ContinuousIntegrationInfo&gt;" />
         <variable name="submitType" type="com.ruesga.rview.gerrit.model.SubmitType" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
         <variable name="serverInfo" type="com.ruesga.rview.gerrit.model.ServerInfo" />
@@ -587,6 +589,55 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     app:bindEmptyMap="@{model.labels}" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"
+                app:bindNull="@{ci}">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="?android:attr/listDivider"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_details_continuous_integration"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+
+                <com.ruesga.rview.widget.ContinuousIntegrationView
+                    android:id="@+id/ci"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:bindEmptyList="@{ci}"
+                    app:flexWrap="wrap"
+                    app:alignItems="flex_start"
+                    app:alignContent="flex_start" />
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/change_details_continuous_integration_empty"
+                    app:bindNotEmptyList="@{ci}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{(!safeUnbox(isCurrentRevision) || submitType == null) ? View.GONE : View.VISIBLE}"
+                android:orientation="vertical">
 
                 <View
                     android:layout_width="match_parent"

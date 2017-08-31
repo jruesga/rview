@@ -22,7 +22,6 @@ import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.ContinuousIntegrationInfo.BuildStatus;
 import com.ruesga.rview.model.Repository;
 
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +38,7 @@ public class ContinuousIntegrationHelper {
     private static final String TAG = "ContinuousIntegration";
 
     public static List<ContinuousIntegrationInfo> extractContinuousIntegrationInfo(
-            int patchSet, List<ChangeMessageInfo> messages, Repository repository) {
+            int patchSet, ChangeMessageInfo[] messages, Repository repository) {
         List<ContinuousIntegrationInfo> ci = new ArrayList<>();
         Set<String> ciNames = new HashSet<>();
         try {

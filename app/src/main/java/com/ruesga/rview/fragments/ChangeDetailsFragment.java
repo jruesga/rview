@@ -93,18 +93,21 @@ import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.ContinuousIntegrationHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
+import com.ruesga.rview.widget.ContinuousIntegrationView.OnContinuousIntegrationPressed;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.LinesWithCommentsView.OnLineClickListener;
 import com.ruesga.rview.widget.TagEditTextView.Tag;
@@ -656,6 +659,7 @@ public class ChangeDetailsFragment extends Fragment implements
         Map<String, Integer> mDraftComments;
         ConfigInfo mProjectConfig;
         Map<String, LinkedHashMap<String, List<CommentInfo>>> mMessagesWithComments = new HashMap<>();
+        List<ContinuousIntegrationInfo> mCI;
     }
 
     private final RxLoaderObserver<DataResponse> mChangeObserver =
@@ -1200,6 +1204,8 @@ public class ChangeDetailsFragment extends Fragment implements
             = this::performRemoveReviewerVote;
     private final OnAccountChipRemovedListener mOnAssigneeRemovedListener =
             (account, tag) -> onAssigneeSelected(null);
+    private final OnContinuousIntegrationPressed mOnContinuousIntegrationPressed
+            = this::performContinuousIntegrationPressed;
 
     private ChangeDetailsFragmentBinding mBinding;
     private Picasso mPicasso;
@@ -1593,6 +1599,10 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
         mBinding.changeInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
+        mBinding.changeInfo.setCi(response.mCI);
+        mBinding.changeInfo.ci
+                .listenOn(mOnContinuousIntegrationPressed)
+                .from(response.mCI);
     }
 
     private void updateReviewInfo(DataResponse response) {
@@ -2018,6 +2028,17 @@ public class ChangeDetailsFragment extends Fragment implements
             response.mActions.putAll(response.mChange.actions);
         }
 
+        // Continuous Integration
+        response.mCI = null;
+        if (getActivity() != null) {
+            Repository repository = ModelHelper.findRepositoryForAccount(getActivity(), mAccount);
+            if (repository != null && !TextUtils.isEmpty(repository.mCiAccounts)) {
+                response.mCI = ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
+                        response.mChange.revisions.get(response.mChange.currentRevision).number,
+                        response.mChange.messages, repository);
+            }
+        }
+
         response.mSubmitType = submitType;
         response.mInlineComments = inlineComments;
         response.mDraftComments = draftComments;
@@ -2188,6 +2209,10 @@ public class ChangeDetailsFragment extends Fragment implements
             mStarredLoader.clear();
             mStarredLoader.restart(starred);
         }
+    }
+
+    private void performContinuousIntegrationPressed(ContinuousIntegrationInfo ci) {
+        ActivityHelper.openUri(getActivity(), Uri.parse(ci.mUrl), true);
     }
 
     private void performAccountClicked(AccountInfo account, Object tag) {

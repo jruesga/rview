@@ -29,6 +29,11 @@
     <color name="selectedItem">#e3e8f7</color>
     <color name="translucentStatusBarColor">@android:color/transparent</color>
 
+    <color name="success">#c88bc34a</color>
+    <color name="failure">#c8ed7067</color>
+    <color name="skipped">#c8cccccc</color>
+    <color name="running">#c8fcf286</color>
+
     <color name="diffLineBackgroundColor">#f5f5f5</color>
     <color name="diffAddedBackgroundColor">#cce2cd</color>
     <color name="diffDeletedBackgroundColor">#e2cccc</color>

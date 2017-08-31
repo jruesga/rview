@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class ContinuousIntegrationInfo implements Parcelable, Comparable<ContinuousIntegrationInfo> {
     public enum BuildStatus {
-        SUCCESS, FAILURE, SKIPPED
+        SUCCESS, FAILURE, SKIPPED, RUNNING
     }
 
     @SerializedName("name") public String mName;
@@ -74,14 +74,5 @@ public class ContinuousIntegrationInfo implements Parcelable, Comparable<Continu
             compare = mUrl.compareTo(ci.mUrl);
         }
         return compare;
-    }
-
-    @Override
-    public String toString() {
-        return "ContinuousIntegrationInfo{" +
-                "mName='" + mName + '\'' +
-                ", mUrl='" + mUrl + '\'' +
-                ", mStatus=" + mStatus +
-                '}';
     }
 }
