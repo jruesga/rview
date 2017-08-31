@@ -84,7 +84,7 @@ public class ContinuousIntegrationView extends FlexboxLayout {
     }
 
     public ContinuousIntegrationView from(List<ContinuousIntegrationInfo> ci) {
-        int count = ci.size();
+        int count = ci == null ? 0 : ci.size();
         int children = getChildCount();
         if (count > children) {
             for (int i = children; i < count; i++) {
