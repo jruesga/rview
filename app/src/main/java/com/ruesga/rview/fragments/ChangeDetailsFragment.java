@@ -2033,8 +2033,10 @@ public class ChangeDetailsFragment extends Fragment implements
         if (getActivity() != null) {
             Repository repository = ModelHelper.findRepositoryForAccount(getActivity(), mAccount);
             if (repository != null && !TextUtils.isEmpty(repository.mCiAccounts)) {
+                final String revisionId = TextUtils.isEmpty(mCurrentRevision)
+                        ? response.mChange.currentRevision : mCurrentRevision;
                 response.mCI = ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
-                        response.mChange.revisions.get(response.mChange.currentRevision).number,
+                        response.mChange.revisions.get(revisionId).number,
                         response.mChange.messages, repository);
             }
         }
