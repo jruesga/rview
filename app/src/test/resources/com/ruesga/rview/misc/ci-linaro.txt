@@ -1,0 +1,50 @@
+[
+    {
+        "id": "fa81d914_2a171fa5",
+        "author": {
+            "_account_id": 1000264,
+            "name": "lava-bot",
+            "email": "",
+            "username": "lava-bot"
+        },
+        "date": "2017-06-27 10:27:09.849000000",
+        "message": "Patch Set 1:\n\n\"Build Successful \n\nhttps://ci.linaro.org/job/linaro-art-scripts-presubmit/664/ : SUCCESS\"",
+        "_revision_number": 1
+    },
+    {
+        "id": "17d5f52c_7e3be02b",
+        "author": {
+            "_account_id": 1000264,
+            "name": "lava-bot",
+            "email": "",
+            "username": "lava-bot"
+        },
+        "date": "2017-08-30 07:28:23.746000000",
+        "message": "Patch Set 1:\n\n\"Build Started https://ci.linaro.org/job/android-lcr-reference-hikey-o/8/ (2/3)\"",
+        "_revision_number": 1
+    },
+    {
+        "id": "4eb77918_42a87a02",
+        "author": {
+            "_account_id": 1000264,
+            "name": "lava-bot",
+            "email": "",
+            "username": "lava-bot"
+        },
+        "date": "2017-08-30 08:13:05.363000000",
+        "message": "Patch Set 1:\n\n\"Build Started https://ci.linaro.org/job/android-lcr-reference-juno-o/4/ (3/3)\"",
+        "_revision_number": 1
+    },
+    {
+        "id": "b56060ed_4403df16",
+        "author": {
+            "_account_id": 1000264,
+            "name": "lava-bot",
+            "email": "",
+            "username": "lava-bot"
+        },
+        "date": "2017-08-30 10:15:23.005000000",
+        "message": "Patch Set 1:\n\n\"Build Failed \n\nhttps://ci.linaro.org/job/android-lcr-reference-x15-o/3/ : FAILURE\n\nhttps://ci.linaro.org/job/android-lcr-reference-hikey-o/8/ : SUCCESS\n\nhttps://ci.linaro.org/job/android-lcr-reference-juno-o/4/ : SUCCESS\"",
+        "_revision_number": 1
+    }
+]

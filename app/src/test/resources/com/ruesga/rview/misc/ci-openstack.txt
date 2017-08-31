@@ -1,0 +1,133 @@
+[
+    {
+        "id": "7f287b81_cfa6d9c1",
+        "author": {
+            "_account_id": 24815,
+            "name": "Lenovo Storage CI",
+            "email": "cinder+lenovo@tristero.net",
+            "username": "lenovo-ci"
+        },
+        "date": "2017-08-30 20:04:36.000000000",
+        "message": "Patch Set 1:\n\nBuild failed. To recheck use 'lenovo-ci: recheck'.  For 3rd party ci contact info: https://wiki.openstack.org/wiki/ThirdPartySystems/Lenovo_Storage_CI\n\n- lenovo-fc http://os-logs.tristero.net/85/499285/1/check/lenovo-fc/5842d19 : FAILURE in 43s\n- lenovo-iscsi http://os-logs.tristero.net/85/499285/1/check/lenovo-iscsi/1f65595 : FAILURE in 45s",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_afa94d90",
+        "author": {
+            "_account_id": 23613,
+            "name": "NEC Cinder CI",
+            "email": "nec-cinder-ci@istorage.jp.nec.com",
+            "username": "nec-cinder-ci"
+        },
+        "date": "2017-08-30 20:04:48.000000000",
+        "message": "Patch Set 1:\n\nBuild failed.  To recheck use 'run-NEC Cinder CI'.  For 3rd party ci contact info: https://wiki.openstack.org/wiki/ThirdPartySystems\n\n- NEC-ISCSI http://FL9-119-243-99-132.tky.mesh.ad.jp/NEC-ISCSI/85/499285/1/check/NEC-ISCSI/4ad6c31 : FAILURE in 1m 00s\n- NEC-FC http://FL9-119-243-99-132.tky.mesh.ad.jp/NEC-FC/85/499285/1/check/NEC-FC/6499124 : FAILURE in 1m 05s",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_6f97e549",
+        "author": {
+            "_account_id": 24863,
+            "name": "Veritas Access CI",
+            "email": "DL-VTAS-ENG-SDIO-Access-Opensource@veritas.com",
+            "username": "vtas-access-ci"
+        },
+        "date": "2017-08-30 20:04:57.000000000",
+        "message": "Patch Set 1:\n\nBuild failed. For 3rd party CI contact info: https://wiki.openstack.org/wiki/ThirdPartySystems\n\n- dsvm-veritas-access-cinder-driver http://52.42.67.99/85/499285/1/check/dsvm-veritas-access-cinder-driver/6ecc220 : FAILURE in 1m 05s",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_ef8cf536",
+        "author": {
+            "_account_id": 24502,
+            "name": "Veritas HyperScale CI",
+            "email": "DL-VTAS-ENG-SDIO-HyperScale-Opensource@veritas.com",
+            "username": "veritas-hyperscale-ci"
+        },
+        "date": "2017-08-30 20:05:13.000000000",
+        "message": "Patch Set 1:\n\nBuild failed. For 3rd party CI contact info: https://wiki.openstack.org/wiki/ThirdPartySystems\n\n- dsvm-veritas-hyperscale-cinder-driver http://52.35.51.88/85/499285/1/check/dsvm-veritas-hyperscale-cinder-driver/02da9d2 : FAILURE in 1m 19s",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_8fb331e9",
+        "author": {
+            "_account_id": 19933,
+            "name": "ZadaraStorage VPSA CI",
+            "email": "openstack-dev@zadarastorage.com",
+            "username": "zadara"
+        },
+        "date": "2017-08-30 20:08:54.000000000",
+        "message": "Patch Set 1:\n\nBuild succeeded (check pipeline). Use run-ZadaraStorage VPSA CI to recheck. For information, see https://wiki.openstack.org/wiki/ThirdPartySystems/ZadaraStorage_VPSA_CI.\n\n- dsvm-tempest-zadara-driver http://openstack-ci-logs.zadarastorage.com/85/499285/1/check/dsvm-tempest-zadara-driver/a1691cd : FAILURE in 5m 23s (non-voting)",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_21d8d1ec",
+        "author": {
+            "_account_id": 12369,
+            "name": "Pure Storage CI",
+            "email": "cinder.ci@purestorage.com",
+            "username": "purestorage-cinder-ci"
+        },
+        "date": "2017-08-30 20:55:51.000000000",
+        "message": "Patch Set 1:\n\nBuild failed.  For information on how to proceed, see https://wiki.openstack.org/wiki/GerritJenkinsGit#Test_Failures\n\n- PureISCSIDriver-tempest-dsvm-xenial-aio-multipath-chap http://openstack-logs.purestorage.com/85/499285/1/check/PureISCSIDriver-tempest-dsvm-xenial-aio-multipath-chap/e6d4587 : SUCCESS in 52m 15s\n- PureISCSIDriver-tempest-dsvm-xenial-mn-multipath http://openstack-logs.purestorage.com/85/499285/1/check/PureISCSIDriver-tempest-dsvm-xenial-mn-multipath/b83be7d : FAILURE in 39m 36s\n- PureFCDriver-tempest-dsvm-xenial-aio-multipath http://openstack-logs.purestorage.com/85/499285/1/check/PureFCDriver-tempest-dsvm-xenial-aio-multipath/e57c9e3 : SUCCESS in 41m 13s\n\nhttps://wiki.openstack.org/wiki/ThirdPartySystems/Pure_Storage_CI",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_e1008904",
+        "author": {
+            "_account_id": 16897,
+            "name": "Virtuozzo Storage CI",
+            "email": "vzstorage-ci@virtuozzo.com",
+            "username": "vzstorage-ci"
+        },
+        "date": "2017-08-30 21:04:25.000000000",
+        "message": "Patch Set 1:\n\nBuild succeeded.\n\n- dsvm-tempest-kvm http://openstack-3rd-party-storage-ci-logs.virtuozzo.com/85/499285/1/check/dsvm-tempest-kvm/74402fc : SUCCESS in 1h 00m 32s\n\nFor information, see https://wiki.openstack.org/wiki/ThirdPartySystems/Virtuozzo_Storage_CI Make the comment 'run-Virtuozzo Storage CI' to recheck",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_c407dbc9",
+        "author": {
+            "_account_id": 10118,
+            "name": "IBM PowerKVM CI",
+            "email": "kvmpower@linux.vnet.ibm.com",
+            "username": "powerkvm"
+        },
+        "date": "2017-08-30 21:15:31.000000000",
+        "message": "Patch Set 1:\n\nBuild succeeded. Test completed on IBM PowerKVM platform. For rechecking only on the IBM PowerKVM CI, add a review comment with pkvm: recheck. For contact and more information, see https://wiki.openstack.org/wiki/PowerKVM\n\n- tempest-dsvm-full-xenial http://dal05.objectstorage.softlayer.net/v1/AUTH_3d8e6ecb-f597-448c-8ec2-164e9f710dd6/pkvmci/cinder/85/499285/1/check/tempest-dsvm-full-xenial/82055d5/ : SUCCESS in 1h 11m 50s",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_840d53e9",
+        "author": {
+            "_account_id": 15831,
+            "name": "Infortrend CI",
+            "email": "johnny800503.work@gmail.com",
+            "username": "InfortrendCI"
+        },
+        "date": "2017-08-30 21:15:55.000000000",
+        "message": "Patch Set 1:\n\nBuild failed.  For information on how to proceed, see https://wiki.openstack.org/wiki/GerritJenkinsGit#Test_Failures. For 3rd party ci contact info: https://wiki.openstack.org/wiki/ThirdPartySystems/Infortrend_Storage_CI\n\n- infortrend-cinder-volume-iscsi http://openstack.infortrend.com/85/499285/1/check/infortrend-cinder-volume-iscsi/d51da9d : FAILURE in 19m 27s\n- infortrend-cinder-volume-fc http://openstack.infortrend.com/85/499285/1/check/infortrend-cinder-volume-fc/6ea4680 : FAILURE in 22m 11s",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_c497dbeb",
+        "author": {
+            "_account_id": 18120,
+            "name": "Fujitsu ETERNUS CI",
+            "email": "fj-lsoft-eternusci@dl.jp.fujitsu.com",
+            "username": "Fujitsu_ETERNUS_CI"
+        },
+        "date": "2017-08-30 21:37:37.000000000",
+        "message": "Patch Set 1:\n\nBuild succeeded\n  - For information of Fujitsu ETERNUS CI, see:\n    https://wiki.openstack.org/wiki/ThirdPartySystems/Fujitsu_ETERNUS_CI\n\n- fujitsu-eternus-dx-iscsi http://openstackci.jp.fujitsu.com/Eternusci/85/499285/1/check/fujitsu-eternus-dx-iscsi/7855f4a : SUCCESS in 1h 33m 47s\n- fujitsu-eternus-dx-fc http://openstackci.jp.fujitsu.com/Eternusci/85/499285/1/check/fujitsu-eternus-dx-fc/3401d9e : SUCCESS in 1h 31m 11s",
+        "_revision_number": 1
+    },
+    {
+        "id": "7f287b81_8412f360",
+        "author": {
+            "_account_id": 3,
+            "name": "Jenkins",
+            "username": "jenkins"
+        },
+        "date": "2017-08-30 21:43:46.000000000",
+        "message": "Patch Set 1: Verified-1\n\nBuild failed (check pipeline).  For information on how to proceed, see http://docs.openstack.org/infra/manual/developers.html#automated-testing\n\n- gate-cinder-docs-ubuntu-xenial http://docs-draft.openstack.org/85/499285/1/check/gate-cinder-docs-ubuntu-xenial/532395d//doc/build/html/ : SUCCESS in 16m 29s\n- gate-cinder-pep8-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-cinder-pep8-ubuntu-xenial/a3bf308/ : SUCCESS in 7m 40s\n- gate-cinder-python27-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-cinder-python27-ubuntu-xenial/7b9e8dd/ : SUCCESS in 6m 58s\n- gate-cinder-python35 http://logs.openstack.org/85/499285/1/check/gate-cinder-python35/c1ff2cc/ : SUCCESS in 6m 35s\n- gate-tempest-dsvm-neutron-full-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-tempest-dsvm-neutron-full-ubuntu-xenial/3e5fa63/ : SUCCESS in 1h 38m 42s\n- gate-grenade-dsvm-neutron-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-grenade-dsvm-neutron-ubuntu-xenial/21d1696/ : SUCCESS in 53m 05s\n- gate-tempest-dsvm-py35-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-tempest-dsvm-py35-ubuntu-xenial/c500128/ : FAILURE in 1h 14m 46s\n- gate-cinder-api-ref http://docs-draft.openstack.org/85/499285/1/check/gate-cinder-api-ref/2e03b13//api-ref/build/html/ : SUCCESS in 3m 33s\n- gate-cinder-pylint-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-cinder-pylint-ubuntu-xenial/e00d972/ : SUCCESS in 12m 38s (non-voting)\n- gate-rally-dsvm-cinder-ubuntu-xenial-nv http://logs.openstack.org/85/499285/1/check/gate-rally-dsvm-cinder-ubuntu-xenial-nv/223b1a4/ : SUCCESS in 34m 22s (non-voting)\n- gate-tempest-dsvm-full-devstack-plugin-ceph-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-tempest-dsvm-full-devstack-plugin-ceph-ubuntu-xenial/5a2f199/ : SUCCESS in 1h 20m 22s (non-voting)\n- gate-cinder-tox-functional-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-cinder-tox-functional-ubuntu-xenial/21d5bcc/ : SUCCESS in 3m 59s (non-voting)\n- gate-cinder-tox-compliance-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-cinder-tox-compliance-ubuntu-xenial/8af3203/ : SUCCESS in 4m 29s\n- gate-cinder-tox-bandit-baseline-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-cinder-tox-bandit-baseline-ubuntu-xenial/ab098fd/ : SUCCESS in 5m 21s (non-voting)\n- gate-grenade-dsvm-cinder-mn-sub-volbak-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-grenade-dsvm-cinder-mn-sub-volbak-ubuntu-xenial/59bc35a/ : SUCCESS in 1h 01m 37s\n- gate-tempest-dsvm-lvm-multibackend-ubuntu-xenial-nv http://logs.openstack.org/85/499285/1/check/gate-tempest-dsvm-lvm-multibackend-ubuntu-xenial-nv/c8f6a5d/ : FAILURE in 1h 22m 07s (non-voting)\n- gate-tempest-dsvm-full-sheepdog-ubuntu-xenial-nv http://logs.openstack.org/85/499285/1/check/gate-tempest-dsvm-full-sheepdog-ubuntu-xenial-nv/0871537/ : FAILURE in 1h 16m 10s (non-voting)\n- gate-tempest-dsvm-full-drbd-devstack-ubuntu-xenial-nv http://logs.openstack.org/85/499285/1/check/gate-tempest-dsvm-full-drbd-devstack-ubuntu-xenial-nv/59b7910/ : SUCCESS in 1h 15m 41s (non-voting)\n- gate-tempest-dsvm-full-lio-ubuntu-xenial http://logs.openstack.org/85/499285/1/check/gate-tempest-dsvm-full-lio-ubuntu-xenial/25d5f0d/ : FAILURE in 1h 13m 14s (non-voting)\n- gate-tempest-dsvm-full-devstack-plugin-nfs-nv http://logs.openstack.org/85/499285/1/check/gate-tempest-dsvm-full-devstack-plugin-nfs-nv/f627066/ : FAILURE in 1h 15m 43s (non-voting)",
+        "_revision_number": 1
+    }
+]

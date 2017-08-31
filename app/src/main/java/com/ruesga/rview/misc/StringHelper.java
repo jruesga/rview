@@ -57,6 +57,8 @@ public class StringHelper {
     public static final Pattern GERRIT_CHANGE_ID = Pattern.compile("\\d+");
     public static final Pattern GERRIT_ENCODED_CHANGE_ID = Pattern.compile("\\d+:\\d+(\\.\\.\\d+)?:.*");
 
+    private static final Pattern NUMERIC_REGEXP = Pattern.compile("\\d+");
+
     public static String[] obtainParagraphs(String message) {
         return message.split("\\r?\\n\\r?\\n");
     }
@@ -260,5 +262,9 @@ public class StringHelper {
             mediaType = "application/octet-stream";
         }
         return mediaType;
+    }
+
+    public static boolean isOnlyNumeric(String s) {
+        return NUMERIC_REGEXP.matcher(s).matches();
     }
 }

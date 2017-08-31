@@ -599,6 +599,11 @@ public class ModelHelper {
         return src;
     }
 
+    public static boolean isCIAccount(AccountInfo account, Repository repository) {
+        Pattern pattern = Pattern.compile(repository.mCiAccounts, Pattern.MULTILINE);
+        return account != null && account.name != null && pattern.matcher(account.name).matches();
+    }
+
     public static void updateChangeMessageInfo(
             Context ctx, Account account, ChangeInfo change, ReviewInput input) {
         // Copy the old structure
