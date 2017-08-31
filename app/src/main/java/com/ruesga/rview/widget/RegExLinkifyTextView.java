@@ -146,9 +146,9 @@ public class RegExLinkifyTextView extends StyleableTextView {
                         int start = matcher.start();
                         int end = matcher.end();
 
-                        // Try to deal with phrases "." catches by the regexp (this shouldn't
+                        // Try to deal with ".", ")", "]" catches by the regexp (this shouldn't
                         // be the case for the 99% of the urls). Also trim up spaces.
-                        if (group.endsWith("/.")) {
+                        if (group.endsWith("/.") || group.endsWith(")") || group.endsWith("]")) {
                             group = group.substring(0, group.length() - 1);
                             end--;
                         }
