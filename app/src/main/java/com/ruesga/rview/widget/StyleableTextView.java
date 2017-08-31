@@ -88,6 +88,7 @@ public class StyleableTextView extends SelectableCompatTextView {
             setTypeface(TypefaceCache.getTypeface(getContext(), mTypefaceValue));
         }
         if (allCaps) {
+            //noinspection RestrictedApi
             setTransformationMethod(new AllCapsTransformationMethod(getContext()));
         }
     }

@@ -18,7 +18,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/menu_more"
         android:title="@string/menu_options"
         android:icon="@drawable/ic_more_vertical"
         app:showAsAction="ifRoom" />

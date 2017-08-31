@@ -288,6 +288,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.menu_search);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            //noinspection RestrictedApi
             getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(false);
         }
 

@@ -51,7 +51,7 @@ import com.ruesga.rview.drawer.DrawerNavigationMenuItemView.OnMenuButtonClickLis
 
 import java.util.ArrayList;
 
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused", "WeakerAccess", "RestrictedApi"})
 class DrawerNavigationMenuPresenter implements MenuPresenter {
 
     private static final String STATE_HIERARCHY = "drawer:menu:list";

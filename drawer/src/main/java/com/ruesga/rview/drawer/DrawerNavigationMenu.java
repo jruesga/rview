@@ -26,7 +26,7 @@ import android.view.SubMenu;
  * This is a {@link MenuBuilder} that returns an instance of {@link DrawerNavigationSubMenu} instead of
  * {@link SubMenuBuilder} when a sub menu is created.
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "RestrictedApi"})
 public class DrawerNavigationMenu extends MenuBuilder {
 
     DrawerNavigationMenu(Context context) {

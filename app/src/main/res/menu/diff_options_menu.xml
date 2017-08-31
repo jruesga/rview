@@ -59,7 +59,6 @@
     <group
         android:checkableBehavior="none">
         <item
-            android:id="@+id/text_size"
             android:title="@string/options_text_size">
             <menu>
                 <item

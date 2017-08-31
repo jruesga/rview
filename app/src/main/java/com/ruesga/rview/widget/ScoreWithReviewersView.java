@@ -97,6 +97,7 @@ public class ScoreWithReviewersView extends LinearLayout {
             ScoreWithReviewItemBinding binding = mBindings.get(n);
             int value = entry.getKey();
             binding.setScore(value);
+            //noinspection RestrictedApi
             binding.scoreItem.setSupportBackgroundTintList(
                     ContextCompat.getColorStateList(getContext(),
                         value < 0 ? R.color.rejected : R.color.approved));

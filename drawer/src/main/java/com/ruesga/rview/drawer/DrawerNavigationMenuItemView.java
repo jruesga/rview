@@ -16,6 +16,7 @@
 
 package com.ruesga.rview.drawer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -43,7 +44,7 @@ import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-@SuppressWarnings({"deprecation", "unused"})
+@SuppressWarnings({"deprecation", "unused", "RestrictedApi"})
 public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         implements MenuView.ItemView, OnMiniDrawerNavigationOpenStatusChangedListener {
 
@@ -251,6 +252,7 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     }
 
     @Override
+    @SuppressLint("PrivateResource")
     public void setIcon(Drawable icon) {
         if (icon != null) {
             if (mShouldTintedIcon && mHasIconTintList) {

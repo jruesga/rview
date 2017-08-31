@@ -183,6 +183,7 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
 
     @Override
     public void setupDialog(Dialog dialog, int style) {
+        //noinspection RestrictedApi
         super.setupDialog(dialog, style);
 
         dialog.setOnShowListener(dialog1 -> {

@@ -76,7 +76,7 @@ import java.util.List;
  *     &lt;/com.ruesga.rview.drawer.DrawerLayout&gt;
  * </pre>
  */
-@SuppressWarnings({"unused", "JavaDoc", "deprecation"})
+@SuppressWarnings({"unused", "JavaDoc", "deprecation", "RestrictedApi"})
 public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
 
     public static final String SEPARATOR = "\u0001";

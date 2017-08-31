@@ -18,11 +18,9 @@
     <group
         android:checkableBehavior="none">
         <item
-            android:id="@+id/filter"
             android:title="@string/options_actions">
             <menu>
                 <item
-                    android:id="@+id/save"
                     android:title="@string/options_save_filter"
                     android:icon="@drawable/ic_save"/>
             </menu>

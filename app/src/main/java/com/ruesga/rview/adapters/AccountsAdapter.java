@@ -32,11 +32,13 @@ import com.ruesga.rview.databinding.ReviewerDropdownItemBinding;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AccountsAdapter extends BaseAdapter implements Filterable {
 
@@ -106,12 +108,13 @@ public class AccountsAdapter extends BaseAdapter implements Filterable {
     }
 
     private Spannable highlightOccurrences(String s) {
-        String constraint = mFilter.mConstraint.toString().toLowerCase();
+        final Locale locale = AndroidHelper.getCurrentLocale(mContext);
+        String constraint = mFilter.mConstraint.toString().toLowerCase(locale);
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(s);
 
         int index = 0;
         int len = constraint.length();
-        String s1 = s.toLowerCase();
+        String s1 = s.toLowerCase(locale);
         while (true) {
             index = s1.indexOf(constraint, index);
             if (index == -1) {

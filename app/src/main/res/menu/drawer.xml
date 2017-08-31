@@ -21,19 +21,16 @@
         <item android:title="@string/menu_all_changes_category">
             <menu>
                 <item
-                    android:id="@+id/menu_open"
                     android:icon="@drawable/ic_open_discussion"
                     android:title="@string/menu_open"
                     android:orderInCategory="0"
                     android:checkable="true"/>
                 <item
-                    android:id="@+id/menu_merged"
                     android:icon="@drawable/ic_merged"
                     android:title="@string/menu_merged"
                     android:orderInCategory="1"
                     android:checkable="true"/>
                 <item
-                    android:id="@+id/menu_abandoned"
                     android:icon="@drawable/ic_abandoned"
                     android:title="@string/menu_abandoned"
                     android:orderInCategory="2"
@@ -77,7 +74,7 @@
         android:checkableBehavior="all">
         <item android:title="@string/menu_my_filters_category">
             <menu
-                android:id="@+id/category_my_filters_group">
+                >
                 <!-- Custom filters goes here -->
             </menu>
         </item>
@@ -87,7 +84,7 @@
         android:checkableBehavior="none">
         <item android:title="@string/menu_account_category">
             <menu
-                android:id="@+id/category_account_group">
+                >
                 <item
                     android:id="@+id/menu_account_settings"
                     android:icon="@drawable/ic_settings"
@@ -120,7 +117,7 @@
         android:checkableBehavior="none">
         <item android:title="@string/menu_other_accounts_category">
             <menu
-                android:id="@+id/category_other_accounts_group">
+                >
                 <item
                     android:id="@+id/menu_add_account"
                     android:icon="@drawable/ic_add_circle_outline"

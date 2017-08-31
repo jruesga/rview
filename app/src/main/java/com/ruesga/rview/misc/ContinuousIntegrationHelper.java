@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 
@@ -138,7 +139,7 @@ public class ContinuousIntegrationHelper {
                 continue;
             }
 
-            if (l.toLowerCase().contains(part.toLowerCase())) {
+            if (l.toLowerCase(Locale.US).contains(part.toLowerCase(Locale.US))) {
                 // Found a valid job name
                 return part;
             }

@@ -26,10 +26,12 @@ import android.widget.Filterable;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.DropdownItemBinding;
+import com.ruesga.rview.misc.AndroidHelper;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public abstract class FilterableAdapter extends android.widget.BaseAdapter implements Filterable {
 
@@ -120,6 +122,8 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
 
             FilterResults results = new FilterResults();
             if (innerClass != null) {
+                final Locale locale = AndroidHelper.getCurrentLocale(innerClass.getContext());
+
                 // Fetch if needed
                 if (!innerClass.needsConstraintForQuery()
                         || (innerClass.needsConstraintForQuery() && !TextUtils.isEmpty(constraint))
@@ -138,7 +142,7 @@ public abstract class FilterableAdapter extends android.widget.BaseAdapter imple
                             final String c = constraint.toString();
                             if ((innerClass.needsCaseMatches() && s.contains(c))
                                     || (!innerClass.needsCaseMatches() &&
-                                            s.toLowerCase().contains(c.toLowerCase()))) {
+                                            s.toLowerCase(locale).contains(c.toLowerCase(locale)))) {
                                 mTemp.add(v);
                             }
                         }

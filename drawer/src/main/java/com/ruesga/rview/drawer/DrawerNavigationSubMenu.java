@@ -25,7 +25,7 @@ import android.support.v7.view.menu.SubMenuBuilder;
  * This is a {@link SubMenuBuilder} that it notifies the parent {@link DrawerNavigationMenu} of its menu
  * updates.
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "RestrictedApi"})
 public class DrawerNavigationSubMenu extends SubMenuBuilder {
 
     DrawerNavigationSubMenu(Context context, DrawerNavigationMenu menu, MenuItemImpl item) {

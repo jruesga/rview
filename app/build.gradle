@@ -77,6 +77,11 @@ android {
         enabled = true
     }
 
+    lintOptions {
+        // TODO remove this once we upgrade to gradle-tools 3.x
+        disable 'IconLauncherFormat'
+    }
+
     signingConfigs {
         release {
             if (rootProject.file('release.properties').exists()) {

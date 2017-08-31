@@ -620,11 +620,14 @@ public class MainActivity extends ChangeListBaseActivity {
         // Remove all custom filters and re-add them
         final DrawerNavigationMenu menu =
                 (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
+        //noinspection RestrictedApi
         int myFiltersGroupIndex = menu.findGroupIndex(R.id.category_my_filters);
+        //noinspection RestrictedApi
         MenuItem group = menu.getItem(myFiltersGroupIndex);
         SubMenu myFiltersSubMenu = group.getSubMenu();
         int count = myFiltersSubMenu.size() - 1;
         for (int i = count; i >= 0; i--) {
+            //noinspection RestrictedApi
             ((DrawerNavigationSubMenu)myFiltersSubMenu).removeItemAt(i);
         }
 
@@ -645,6 +648,7 @@ public class MainActivity extends ChangeListBaseActivity {
             }
         }
 
+        //noinspection RestrictedApi
         menu.setGroupVisible(R.id.category_my_filters,
                 !mModel.isAccountExpanded && mCustomFilters != null && !mCustomFilters.isEmpty());
         mBinding.drawerNavigationView.setCheckedItem(mModel.currentNavigationItemId);
@@ -654,11 +658,14 @@ public class MainActivity extends ChangeListBaseActivity {
         // Remove all accounts and re-add them
         final DrawerNavigationMenu menu =
                 (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
+        //noinspection RestrictedApi
         int otherAccountGroupIndex = menu.findGroupIndex(R.id.category_other_accounts);
+        //noinspection RestrictedApi
         MenuItem group = menu.getItem(otherAccountGroupIndex);
         SubMenu otherAccountsSubMenu = group.getSubMenu();
         int count = otherAccountsSubMenu.size() - 1;
         for (int i = count; i > 0; i--) {
+            //noinspection RestrictedApi
             ((DrawerNavigationSubMenu) otherAccountsSubMenu).removeItemAt(i);
         }
         int i = 0;
@@ -709,6 +716,7 @@ public class MainActivity extends ChangeListBaseActivity {
             title += DrawerNavigationView.SEPARATOR +
                     EmojiHelper.resolveEmojiStatus(this, mAccount.mAccount.status);
         }
+        //noinspection RestrictedApi
         MenuItem item = menu.findItem(R.id.menu_account_status);
         item.setTitle(title);
     }
