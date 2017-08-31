@@ -21,6 +21,8 @@ import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.Repository;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -29,12 +31,13 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ContinuousIntegrationHelperTest {
 
     private static final int DEFAULT_PATCHSET_NUMBER = 1;
 
     @Test
-    public void testExtractContinuousIntegrationInfo() {
+    public void testExtractContinuousIntegrationInfo() throws Exception {
         List<ContinuousIntegrationInfo> cis;
 
         // AOSP
@@ -116,7 +119,7 @@ public class ContinuousIntegrationHelperTest {
     }
 
     private List<ContinuousIntegrationInfo> extractContinuousIntegrationInfo(
-            final String id, final String url, final String ciAccounts) {
+            final String id, final String url, final String ciAccounts) throws Exception {
         final Repository repository = new Repository(id, url, false);
         repository.mCiAccounts = ciAccounts;
 
@@ -124,7 +127,7 @@ public class ContinuousIntegrationHelperTest {
         List<ChangeMessageInfo> messages = SerializationManager.getInstance().fromJson(
                 new InputStreamReader(
                         ContinuousIntegrationHelperTest.class.getResourceAsStream(
-                                "/com/ruesga/rview/misc/ci-" + id.toLowerCase() + ".txt")), type);
+                                "/com/ruesga/rview/misc/ci-" + id.toLowerCase() + ".txt"), "UTF-8"), type);
 
         List<ContinuousIntegrationInfo> cis =
                 ContinuousIntegrationHelper.extractContinuousIntegrationInfo(

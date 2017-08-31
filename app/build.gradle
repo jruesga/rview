@@ -53,6 +53,10 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
     testCompile "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
     testCompile "org.mockito:mockito-core:${testLibraries.mockito}"
+    androidTestCompile "com.android.support:support-annotations:${testLibraries.support}"
+    androidTestCompile "com.android.support.test:runner:${testLibraries.test}"
+    androidTestCompile "com.android.support.test:rules:${testLibraries.test}"
+
 }
 
 android {

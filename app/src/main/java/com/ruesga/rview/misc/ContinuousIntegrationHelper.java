@@ -104,11 +104,11 @@ public class ContinuousIntegrationHelper {
         }
 
         if (line.contains("PASS: ") || line.contains(": SUCCESS")
-                || (line.contains(" succeeded (") && line.contains(" - ")) || line.contains("✅")) {
+                || (line.contains(" succeeded (") && line.contains(" - ")) || line.contains("\u2705")) {
             return BuildStatus.SUCCESS;
         }
         if (line.contains("FAIL: ") || line.contains(": FAILURE")
-                || (line.contains(" failed (") && line.contains(" - ")) || line.contains("❌")) {
+                || (line.contains(" failed (") && line.contains(" - ")) || line.contains("\u274C")) {
             return BuildStatus.FAILURE;
         }
         if (line.contains("SKIPPED: ") || line.contains(": ABORTED")) {
