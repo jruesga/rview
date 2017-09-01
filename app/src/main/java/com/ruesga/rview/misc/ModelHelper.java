@@ -41,6 +41,7 @@ import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.gerrit.model.ReviewInput;
 import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
+import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
@@ -660,5 +661,26 @@ public class ModelHelper {
     public static boolean isOnBehalfOf(ChangeMessageInfo changeMessage) {
         return changeMessage != null && changeMessage.realAuthor != null &&
                 changeMessage.author.accountId != changeMessage.realAuthor.accountId;
+    }
+
+    public static String extractBestRevisionId(ChangeInfo change) {
+        if (!TextUtils.isEmpty(change.currentRevision)) {
+            return change.currentRevision;
+        }
+        String revId = null;
+        if (change.revisions != null) {
+            int rev = 0;
+            for (Map.Entry<String, RevisionInfo> entry : change.revisions.entrySet()) {
+                if (entry.getValue().number > rev) {
+                    revId = entry.getKey();
+                }
+            }
+        }
+        if (TextUtils.isEmpty(revId)) {
+            // This is probably an error (and can still made the app crash), but is the
+            // best thing we can do in this situation
+            return "1";
+        }
+        return revId;
     }
 }

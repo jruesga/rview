@@ -681,7 +681,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 change = result.mChange;
                 if (mCurrentRevision == null
                         || !change.revisions.containsKey(mCurrentRevision)) {
-                    mCurrentRevision = change.currentRevision;
+                    mCurrentRevision = ModelHelper.extractBestRevisionId(change);
                 }
 
                 // Check supported features
@@ -1627,73 +1627,80 @@ public class ChangeDetailsFragment extends Fragment implements
     private Observable<DataResponse> fetchChange(String changeId) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        final String revision = mCurrentRevision == null
-                ? GerritApi.CURRENT_REVISION : mCurrentRevision;
-        return Observable.zip(
-                    SafeObservable.fromNullCallable(() -> {
-                        DataResponse dataResponse = new DataResponse();
-                        dataResponse.mChange = api.getChange(
-                                changeId, OPTIONS).blockingFirst();
+        return SafeObservable.fromNullCallable(() -> {
+                DataResponse dataResponse = new DataResponse();
+                dataResponse.mChange = api.getChange(
+                        changeId, OPTIONS).blockingFirst();
 
-                        // Obtain the project configuration
-                        if (dataResponse.mChange != null) {
-                            // Request project config
-                            dataResponse.mProjectConfig = api.getProjectConfig(
-                                    dataResponse.mChange.project).blockingFirst();
+                // Obtain the project configuration
+                if (dataResponse.mChange != null) {
+                    // Request project config
+                    dataResponse.mProjectConfig = api.getProjectConfig(
+                            dataResponse.mChange.project).blockingFirst();
 
-                            // Only request actions when we don't know which actions
-                            // the change could have for the user. In other case, we
-                            // have some logic to deal with basic actions.
-                            // Request actions could be a heavy operation in old and complex
-                            // changes, so just try to omit it.
-                            ChangeStatus status = dataResponse.mChange.status;
-                            if (mAccount.hasAuthenticatedAccessMode()
-                                    && !ChangeStatus.MERGED.equals(status)
-                                    && !ChangeStatus.ABANDONED.equals(status)) {
-                                dataResponse.mActions = api.getChangeRevisionActions(
-                                        changeId, revision).blockingFirst();
-                            } else {
-                                // At least a cherry-pick action should be present if user
-                                // is authenticated
-                                dataResponse.mActions = new HashMap<>();
-                                if (mAccount.hasAuthenticatedAccessMode()) {
-                                    dataResponse.mActions.put(
-                                            ModelHelper.ACTION_CHERRY_PICK, new ActionInfo());
-                                }
-                            }
-                        }
-
-                        return dataResponse;
-                    }),
-                    api.getChangeRevisionFiles(changeId, revision, mDiffAgainstRevision, null),
-                    api.getChangeRevisionSubmitType(changeId, revision),
-                    api.getChangeRevisionComments(changeId, revision),
-                    SafeObservable.fromNullCallable(() -> {
-                        if (mDiffAgainstRevision != null) {
-                            return api.getChangeRevisionComments(
-                                    changeId, mDiffAgainstRevision).blockingFirst();
-                        }
-                        return new HashMap<>();
-                    }),
-                    SafeObservable.fromNullCallable(() -> {
-                        // Do no fetch drafts if the account is not authenticated
+                    // Only request actions when we don't know which actions
+                    // the change could have for the user. In other case, we
+                    // have some logic to deal with basic actions.
+                    // Request actions could be a heavy operation in old and complex
+                    // changes, so just try to omit it.
+                    ChangeStatus status = dataResponse.mChange.status;
+                    if (mAccount.hasAuthenticatedAccessMode()
+                            && !ChangeStatus.MERGED.equals(status)
+                            && !ChangeStatus.ABANDONED.equals(status)) {
+                        dataResponse.mActions = api.getChangeRevisionActions(
+                                changeId, ModelHelper.extractBestRevisionId(dataResponse.mChange))
+                                        .blockingFirst();
+                    } else {
+                        // At least a cherry-pick action should be present if user
+                        // is authenticated
+                        dataResponse.mActions = new HashMap<>();
                         if (mAccount.hasAuthenticatedAccessMode()) {
-                            return api.getChangeRevisionDrafts(changeId, revision).blockingFirst();
+                            dataResponse.mActions.put(
+                                    ModelHelper.ACTION_CHERRY_PICK, new ActionInfo());
                         }
-                        return new HashMap<>();
-                    }),
-                    SafeObservable.fromNullCallable(() -> {
-                        // Do no fetch drafts if the account is not authenticated
-                        if (mDiffAgainstRevision != null && mAccount.hasAuthenticatedAccessMode()) {
-                            return api.getChangeRevisionDrafts(
-                                    changeId, mDiffAgainstRevision).blockingFirst();
-                        }
-                        return new HashMap<>();
-                    }),
-                    this::combineResponse
-                )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                    }
+                }
+
+                return dataResponse;
+            })
+            .flatMap(dataResponse -> {
+                    final String revId = ModelHelper.extractBestRevisionId(dataResponse.mChange);
+                    return Observable.zip(
+                        SafeObservable.fromNullCallable(() -> dataResponse),
+                        api.getChangeRevisionFiles(
+                                changeId, revId, mDiffAgainstRevision, null),
+                        api.getChangeRevisionSubmitType(changeId, revId),
+                        api.getChangeRevisionComments(changeId, revId),
+                        SafeObservable.fromNullCallable(() -> {
+                            if (mDiffAgainstRevision != null) {
+                                return api.getChangeRevisionComments(
+                                        changeId, mDiffAgainstRevision).blockingFirst();
+                            }
+                            return new HashMap<>();
+                        }),
+                        SafeObservable.fromNullCallable(() -> {
+                            // Do no fetch drafts if the account is not authenticated
+                            if (mAccount.hasAuthenticatedAccessMode()) {
+                                return api.getChangeRevisionDrafts(
+                                        changeId, revId).blockingFirst();
+                            }
+                            return new HashMap<>();
+                        }),
+                        SafeObservable.fromNullCallable(() -> {
+                            // Do no fetch drafts if the account is not authenticated
+                            if (mDiffAgainstRevision != null &&
+                                    mAccount.hasAuthenticatedAccessMode()) {
+                                return api.getChangeRevisionDrafts(
+                                        changeId, mDiffAgainstRevision).blockingFirst();
+                            }
+                            return new HashMap<>();
+                        }),
+                        this::combineResponse
+                    );
+                }
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -2034,7 +2041,7 @@ public class ChangeDetailsFragment extends Fragment implements
             Repository repository = ModelHelper.findRepositoryForAccount(getActivity(), mAccount);
             if (repository != null && !TextUtils.isEmpty(repository.mCiAccounts)) {
                 final String revisionId = TextUtils.isEmpty(mCurrentRevision)
-                        ? response.mChange.currentRevision : mCurrentRevision;
+                        ? ModelHelper.extractBestRevisionId(response.mChange) : mCurrentRevision;
                 response.mCI = ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
                         response.mChange.revisions.get(revisionId).number,
                         response.mChange.messages, repository);

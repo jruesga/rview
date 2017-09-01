@@ -544,7 +544,7 @@
                 android:paddingBottom="5dp"
                 android:layout_marginLeft="@dimen/label_min_width"
                 android:layout_marginStart="@dimen/label_min_width"
-                android:visibility="@{!model.mergeable &amp;&amp; !model.status.equals(ChangeStatus.MERGED) ? View.VISIBLE : View.GONE}"
+                android:visibility="@{isCurrentRevision &amp;&amp; !model.mergeable &amp;&amp; !model.status.equals(ChangeStatus.MERGED) ? View.VISIBLE : View.GONE}"
                 android:orientation="horizontal">
                 <ImageView
                     android:layout_width="16dp"
