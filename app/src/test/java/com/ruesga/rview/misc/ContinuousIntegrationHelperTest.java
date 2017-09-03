@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package com.ruesga.rview.misc;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.ruesga.rview.TestUtils;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.Repository;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,9 +49,14 @@ public class ContinuousIntegrationHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        Type type = new TypeToken<ArrayList<Repository>>() {}.getType();
-        Reader reader = new FileReader(new File("app/src/main/res/raw/repositories.json"));
-        repositories.addAll(new GsonBuilder().create().fromJson(reader, type));
+        try {
+            Type type = new TypeToken<ArrayList<Repository>>() {}.getType();
+            Reader reader = new FileReader(new File(
+                    TestUtils.getRootDirectory(), "app/src/main/res/raw/repositories.json"));
+            repositories.addAll(new GsonBuilder().create().fromJson(reader, type));
+        } catch (IOException ex) {
+            throw new FileNotFoundException(new File("app/src/main/res/raw/repositories.json").getAbsolutePath());
+        }
     }
 
     @Test

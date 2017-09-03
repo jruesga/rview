@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.RawRes;
 
+import com.ruesga.rview.TestUtils;
 import com.ruesga.rview.model.Repository;
 
 import org.junit.Test;
@@ -52,7 +53,8 @@ public class ModelHelperTest {
 
         @Override
         public InputStream openRawResource(@RawRes int id) throws NotFoundException {
-            File res = new File("app/src/main/res/raw/repositories.json");
+            File res = new File(TestUtils.getRootDirectory(),
+                    "app/src/main/res/raw/repositories.json");
             try {
                 return new BufferedInputStream(new FileInputStream(res));
             } catch (IOException ex) {
