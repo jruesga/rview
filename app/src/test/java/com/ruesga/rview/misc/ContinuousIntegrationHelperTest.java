@@ -15,17 +15,24 @@
  */
 package com.ruesga.rview.misc;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.Repository;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,13 +43,21 @@ public class ContinuousIntegrationHelperTest {
 
     private static final int DEFAULT_PATCHSET_NUMBER = 1;
 
+    private final List<Repository> repositories = new ArrayList<>();
+
+    @Before
+    public void setUp() throws Exception {
+        Type type = new TypeToken<ArrayList<Repository>>() {}.getType();
+        Reader reader = new FileReader(new File("app/src/main/res/raw/repositories.json"));
+        repositories.addAll(new GsonBuilder().create().fromJson(reader, type));
+    }
+
     @Test
     public void testExtractContinuousIntegrationInfo() throws Exception {
         List<ContinuousIntegrationInfo> cis;
 
         // AOSP
-        cis = extractContinuousIntegrationInfo("AOSP", "https://android-review.googlesource.com/",
-                "^(Deckard Autoverifier|Treehugger Robot)$");
+        cis = extractContinuousIntegrationInfo("AOSP");
         assertEquals(7, cis.size());
         assertEquals("aosp_arm64-eng", cis.get(0).mName);
         assertEquals("https://android-build.googleplex.com/builds/pending/P4720458/" +
@@ -50,8 +65,7 @@ public class ContinuousIntegrationHelperTest {
         assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
 
         // OpenStack
-        cis = extractContinuousIntegrationInfo("OpenStack", "https://review.openstack.org/",
-                "^(.* CI|Jenkins|Zuul|Elastic Recheck)$");
+        cis = extractContinuousIntegrationInfo("OpenStack");
         assertEquals(36, cis.size());
         assertEquals("dsvm-tempest-zadara-driver", cis.get(1).mName);
         assertEquals("http://openstack-ci-logs.zadarastorage.com/85/499285/1/check/dsvm-tempest-zadara-driver/a1691cd",
@@ -59,13 +73,11 @@ public class ContinuousIntegrationHelperTest {
         assertEquals(ContinuousIntegrationInfo.BuildStatus.FAILURE, cis.get(1).mStatus);
 
         // Chromium
-        cis = extractContinuousIntegrationInfo("Chromium",
-                "https://chromium-review.googlesource.com/", "^(.* Bot)$");
+        cis = extractContinuousIntegrationInfo("Chromium");
         assertEquals(0, cis.size());
 
         // Gerrit
-        cis = extractContinuousIntegrationInfo("Gerrit",
-                "https://gerrit-review.googlesource.com/", "^(GerritForge CI|Diffy Cuckoo.*)$");
+        cis = extractContinuousIntegrationInfo("Gerrit");
         assertEquals(3, cis.size());
         assertEquals("bazel/notedb", cis.get(0).mName);
         assertEquals("https://gerrit-ci.gerritforge.com/job/Gerrit-verifier-bazel/28933/console",
@@ -73,8 +85,7 @@ public class ContinuousIntegrationHelperTest {
         assertEquals(ContinuousIntegrationInfo.BuildStatus.FAILURE, cis.get(0).mStatus);
 
         // Linaro
-        cis = extractContinuousIntegrationInfo("Linaro",
-                "https://android-review.linaro.org/", "^(lava-bot)$");
+        cis = extractContinuousIntegrationInfo("Linaro");
         assertEquals(4, cis.size());
         assertEquals("android-lcr-reference-hikey-o", cis.get(0).mName);
         assertEquals("https://ci.linaro.org/job/android-lcr-reference-hikey-o/8/",
@@ -82,8 +93,7 @@ public class ContinuousIntegrationHelperTest {
         assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
 
         // LineageOs
-        cis = extractContinuousIntegrationInfo("LineageOS",
-                "https://review.lineageos.org/", "^(Jenkins)$");
+        cis = extractContinuousIntegrationInfo("LineageOS");
         assertEquals(2, cis.size());
         assertEquals("wiki", cis.get(0).mName);
         assertEquals("https://jenkins.lineageos.org/job/infra/job/wiki/246/",
@@ -91,8 +101,7 @@ public class ContinuousIntegrationHelperTest {
         assertEquals(ContinuousIntegrationInfo.BuildStatus.FAILURE, cis.get(0).mStatus);
 
         // Intel HPDD
-        cis = extractContinuousIntegrationInfo("Intel HPDD",
-                "https://review.whamcloud.com/", "^(Jenkins|HPDD Checkpatch|Misc Code Checks Robot.*|.* Buildbot|Autotest|Maloo)$");
+        cis = extractContinuousIntegrationInfo("Intel HPDD");
         assertEquals(5, cis.size());
         assertEquals("CentOS 6.7 x86_64 (BUILD)", cis.get(0).mName);
         assertEquals("http://build.lustre.org/builders/CentOS%206.7%20x86_64%20%28BUILD%29/builds/10790",
@@ -100,8 +109,7 @@ public class ContinuousIntegrationHelperTest {
         assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
 
         // ONAP
-        cis = extractContinuousIntegrationInfo("Onap",
-                "https://gerrit.onap.org/r/", "^(ONAP Jobbuilder)$");
+        cis = extractContinuousIntegrationInfo("Onap");
         assertEquals(2, cis.size());
         assertEquals("vfc-nfvo-catalog-master-catalog-verify-python", cis.get(0).mName);
         assertEquals("https://jenkins.onap.org/job/vfc-nfvo-catalog-master-catalog-verify-python/21/",
@@ -109,8 +117,7 @@ public class ContinuousIntegrationHelperTest {
         assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
 
         // Zephyr
-        cis = extractContinuousIntegrationInfo("Zephyr",
-                "https://gerrit.zephyrproject.org/r/", "^(Zephyr JobBuilder)$");
+        cis = extractContinuousIntegrationInfo("Zephyr");
         assertEquals(1, cis.size());
         assertEquals("zephyr-verify", cis.get(0).mName);
         assertEquals("https://jenkins.zephyrproject.org/job/zephyr-verify/27024/",
@@ -119,9 +126,8 @@ public class ContinuousIntegrationHelperTest {
     }
 
     private List<ContinuousIntegrationInfo> extractContinuousIntegrationInfo(
-            final String id, final String url, final String ciAccounts) throws Exception {
-        final Repository repository = new Repository(id, url, false);
-        repository.mCiAccounts = ciAccounts;
+            final String id) throws Exception {
+        final Repository repository = findRepositoryById(id);
 
         Type type = new TypeToken<List<ChangeMessageInfo>>(){}.getType();
         List<ChangeMessageInfo> messages = SerializationManager.getInstance().fromJson(
@@ -135,5 +141,14 @@ public class ContinuousIntegrationHelperTest {
                                 new ChangeMessageInfo[messages.size()]), repository);
         Collections.sort(cis);
         return cis;
+    }
+
+    private Repository findRepositoryById(String id) throws IOException {
+        for (Repository repository : repositories) {
+            if (repository.mName.equals(id)) {
+                return repository;
+            }
+        }
+        throw new IOException("Repository not found");
     }
 }
