@@ -21,16 +21,19 @@
         <item android:title="@string/menu_all_changes_category">
             <menu>
                 <item
+                    android:id="@id/menu_open"
                     android:icon="@drawable/ic_open_discussion"
                     android:title="@string/menu_open"
                     android:orderInCategory="0"
                     android:checkable="true"/>
                 <item
+                    android:id="@id/menu_merged"
                     android:icon="@drawable/ic_merged"
                     android:title="@string/menu_merged"
                     android:orderInCategory="1"
                     android:checkable="true"/>
                 <item
+                    android:id="@id/menu_abandoned"
                     android:icon="@drawable/ic_abandoned"
                     android:title="@string/menu_abandoned"
                     android:orderInCategory="2"
