@@ -1,0 +1,338 @@
+/*
+ * Copyright (C) 2017 Jorge Ruesga
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.ruesga.rview.fragments;
+
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.databinding.DataBindingUtil;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.DrawableRes;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
+import android.text.TextUtils;
+import android.util.Base64;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+
+import com.ruesga.rview.R;
+import com.ruesga.rview.databinding.SnippetContentBinding;
+import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.CacheHelper;
+import com.ruesga.rview.misc.ViewHelper;
+import com.ruesga.rview.widget.EditorView;
+import com.ruesga.rview.widget.EditorView.OnContentChangedListener;
+
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLConnection;
+
+public class SnippetFragment extends BottomSheetBaseFragment {
+
+    public static final String TAG = "SnippetFragment";
+
+    private static final String[] STORAGE_PERMISSIONS  = {
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE"
+    };
+
+    private static final int READ_CONTENT_MESSAGE = 0;
+
+    private static final String EXTRA_SNIPPET_URI = "snippet_uri";
+    private static final String EXTRA_TEMP_SNIPPET_URI = "temp_snippet_uri";
+
+    // This is just to ensure the editor set a text/plain mode
+    private static final String DEFAULT_SNIPPED_NAME = "Unnamed";
+
+    private SnippetContentBinding mBinding;
+    private final Handler mUiHandler;
+    private Uri mUri;
+    private String mMimeType;
+    private boolean mReadOnly;
+    private boolean mDirty;
+    private long mContentSize;
+    private OnContentChangedListener mContentChangedListener = this::onContentChanged;
+
+    public interface OnSnippetSavedListener {
+        void onSnippetSaved(Uri uri, String mimeType, long size);
+    }
+
+    public SnippetFragment() {
+        mUiHandler = new Handler(msg -> {
+            if (msg.what == READ_CONTENT_MESSAGE) {
+                readFileContent();
+            }
+            return false;
+        });
+    }
+
+    public static SnippetFragment newInstance(Context context) {
+        return newInstance(context, null);
+    }
+
+    public static SnippetFragment newInstance(Context context, Uri snippet) {
+        SnippetFragment fragment = new SnippetFragment();
+        Bundle arguments = new Bundle();
+        if (snippet != null) {
+            arguments.putParcelable(EXTRA_SNIPPET_URI, snippet);
+        } else {
+            try {
+                Uri uri = CacheHelper.createNewTemporaryFileUri(context, ".snippet");
+                arguments.putParcelable(EXTRA_TEMP_SNIPPET_URI, uri);
+            } catch (IOException ex) {
+                Log.e(TAG, "Can't create temporary snippet", ex);
+            }
+        }
+
+
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mUri = getArguments().getParcelable(EXTRA_SNIPPET_URI);
+        mReadOnly = mUri != null;
+        mMimeType = revolveMimeTypeFromContent(mUri);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (mBinding != null) {
+            mBinding.unbind();
+        }
+    }
+
+    @Override
+    public void inflateContent(ViewGroup parent) {
+        LayoutInflater li = LayoutInflater.from(getContext());
+        mBinding = DataBindingUtil.inflate(li, R.layout.snippet_content, parent, true);
+
+        mBinding.editor
+                .setReadOnly(mReadOnly)
+                .setWrap(true)
+                .setTextSize(14);
+        if (!mReadOnly) {
+            mBinding.editor.listenOn(mContentChangedListener);
+        }
+    }
+
+    public void onContentLayoutChanged(ViewGroup parent) {
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) mBinding.editor.getLayoutParams();
+        lp.height = parent.getMinimumHeight() -
+                lp.topMargin - lp.bottomMargin -
+                mBinding.editor.getPaddingTop() - mBinding.editor.getPaddingBottom();
+    }
+
+    @Override
+    public String[] requiredPermissions() {
+        return STORAGE_PERMISSIONS;
+    }
+
+    @Override
+    public boolean allowExpandedState() {
+        return false;
+    }
+
+    @Override
+    public void onContentReady() {
+        Uri snippetUri = getArguments().getParcelable(EXTRA_SNIPPET_URI);
+        if (snippetUri == null) {
+            snippetUri = getArguments().getParcelable(EXTRA_TEMP_SNIPPET_URI);
+        }
+        if (snippetUri != null) {
+            try {
+                ContentResolver cr = getContext().getContentResolver();
+                InputStream is = null;
+                try {
+                    is = cr.openInputStream(snippetUri);
+                    if (is != null) {
+                        byte[] data = new byte[is.available()];
+                        IOUtils.read(is, data);
+                        loadContent(data);
+                        return;
+                    }
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException ex) {
+                            // ignore
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                Log.e(TAG, "Cannot load content stream: " + snippetUri, ex);
+            }
+
+            // Display an advise
+            CoordinatorLayout decorator = ViewHelper.findFirstParentViewOfType(getContentView(),
+                    CoordinatorLayout.class);
+            if (decorator != null) {
+                AndroidHelper.showErrorSnackbar(getContext(), decorator,
+                        R.string.snippet_dialog_error);
+            }
+        }
+    }
+
+    private void loadContent(byte[] data) {
+        String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mMimeType);
+        if (TextUtils.isEmpty(ext)) {
+            ext = "txt";
+        }
+
+        mBinding.editor.scrollTo(0, 0);
+        mBinding.editor.loadEncodedContent(
+                DEFAULT_SNIPPED_NAME + "." + ext, Base64.encode(data, Base64.NO_WRAP));
+    }
+
+    @Override
+    public int getTitle() {
+        return R.string.snippet_dialog_title;
+    }
+
+    public @DrawableRes int getActionResId() {
+        return mReadOnly ? R.drawable.ic_open_in_new : R.drawable.ic_paste;
+    }
+
+    @Override
+    public void onDonePressed() {
+        readFileContent();
+        if (!mReadOnly && mContentSize > 0) {
+            Uri snippetUri = getArguments().getParcelable(EXTRA_TEMP_SNIPPET_URI);
+            if (snippetUri != null) {
+                String mimeType = revolveMimeTypeFromContent(snippetUri);
+
+                Activity a = getActivity();
+                Fragment f = getParentFragment();
+                if (f != null && f instanceof OnSnippetSavedListener) {
+                    ((OnSnippetSavedListener) f).onSnippetSaved(snippetUri, mimeType, mContentSize);
+                } else if (a != null && a instanceof OnSnippetSavedListener) {
+                    ((OnSnippetSavedListener) a).onSnippetSaved(snippetUri, mimeType, mContentSize);
+                }
+            }
+        }
+    }
+
+    public void onActionPressed() {
+        if (!mReadOnly) {
+            // Paste
+            ClipboardManager clipboard =
+                    (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard.getPrimaryClip() != null &&
+                    clipboard.getPrimaryClip().getItemCount() > 0) {
+                ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+                CharSequence data = item.getText();
+                if (data != null) {
+                    byte[] content = data.toString().getBytes();
+                    loadContent(content);
+                    mUiHandler.post(() -> saveContent(content));
+                }
+            }
+
+        } else {
+            // Open in external
+            String action = getString(R.string.action_share);
+            Uri uri = FileProvider.getUriForFile(getContext(), "com.ruesga.rview.content",
+                    new File(mUri.getPath()));
+            ActivityHelper.open(getContext(), action, uri, "text/plain");
+            dismiss();
+        }
+    }
+
+    private void onContentChanged() {
+        mDirty = true;
+        mUiHandler.removeMessages(READ_CONTENT_MESSAGE);
+        mUiHandler.sendEmptyMessageDelayed(READ_CONTENT_MESSAGE, 500L);
+    }
+
+    private void readFileContent() {
+        if (mDirty) {
+            mBinding.editor.readContent(
+                    new EditorView.OnReadContentReadyListener() {
+                        @Override
+                        public void onReadContentReady(byte[] content) {
+                            if (content.length > 0) {
+                                content = Base64.decode(content, Base64.NO_WRAP);
+                            }
+                            saveContent(content);
+                        }
+
+                        @Override
+                        public void onContentUnchanged() {
+                        }
+                    });
+            mDirty = false;
+        }
+    }
+
+    private synchronized void saveContent(byte[] content) {
+        Uri snippetUri = getArguments().getParcelable(EXTRA_TEMP_SNIPPET_URI);
+        if (snippetUri != null && getActivity() != null) {
+            try {
+                ContentResolver cr = getActivity().getContentResolver();
+                OutputStream os = cr.openOutputStream(snippetUri);
+                try {
+                    IOUtils.write(content, os);
+                    mContentSize = content.length;
+                } finally {
+                    try {
+                        if (os != null) {
+                            os.close();
+                        }
+                    } catch (IOException ex) {
+                        // ignore
+                    }
+                }
+            } catch (IOException ex) {
+                Log.e(TAG, "Cannot load content stream: " + snippetUri, ex);
+            }
+        }
+    }
+
+    private String revolveMimeTypeFromContent(Uri uri) {
+        ContentResolver cr = getActivity().getContentResolver();
+        String mimeType = null;
+        if (uri != null) {
+            try {
+                mimeType = URLConnection.guessContentTypeFromStream(cr.openInputStream(uri));
+            } catch (IOException ex) {
+                // ignore
+            }
+        }
+        if (TextUtils.isEmpty(mimeType)) {
+            mimeType = "text/plain";
+        }
+        return mimeType;
+    }
+}

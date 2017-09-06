@@ -686,7 +686,7 @@ public class MainActivity extends ChangeListBaseActivity {
                     + "false";
             MenuItem item = otherAccountsSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
 
-            PicassoHelper.bindAvatar(this, PicassoHelper.getPicassoClient(this),
+            PicassoHelper.bindAvatar(this, PicassoHelper.getAvatarPicassoClient(this),
                     account, account.mAccount, item,
                     PicassoHelper.getDefaultAvatar(this, R.color.primaryDarkForeground));
             i++;
@@ -703,7 +703,7 @@ public class MainActivity extends ChangeListBaseActivity {
         mHeaderDrawerBinding.setModel(mModel);
         mHeaderDrawerBinding.executePendingBindings();
 
-        PicassoHelper.bindAvatar(this, PicassoHelper.getPicassoClient(this),
+        PicassoHelper.bindAvatar(this, PicassoHelper.getAvatarPicassoClient(this),
                 mAccount.mAccount, mHeaderDrawerBinding.accountAvatar,
                 PicassoHelper.getDefaultAvatar(this, android.R.color.white));
     }

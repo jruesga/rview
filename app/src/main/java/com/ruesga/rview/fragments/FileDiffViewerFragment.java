@@ -848,7 +848,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(
                 getString(R.string.draft_title), subtitle, comment, getString(R.string.action_save),
-                getString(R.string.draft_hint), false, true, true, v, requestCode, requestData);
+                getString(R.string.draft_hint), false, true, true, null, v, requestCode, requestData);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 

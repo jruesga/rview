@@ -75,6 +75,11 @@ public class BindingAdapters {
         v.setSelected(selected);
     }
 
+    @BindingAdapter("bindEnable")
+    public static void bindEnable(View v, Boolean enable) {
+        v.setEnabled(enable == null ? false : enable);
+    }
+
     @BindingAdapter("bindResourceDrawable")
     public static void bindResourceDrawable(ImageView v, Integer resource) {
         if (resource == null || resource == 0) {
@@ -142,10 +147,21 @@ public class BindingAdapters {
         v.setVisibility(o == null || o.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
+    @BindingAdapter("bindImageTint")
+    public static void bindBackgroundTint(ImageView v, int color) {
+        final Drawable dw = v.getDrawable();
+        if (dw != null) {
+            DrawableCompat.setTint(dw, color);
+        }
+        v.setImageDrawable(dw);
+    }
+
     @BindingAdapter("bindBackgroundTint")
     public static void bindBackgroundTint(View v, int color) {
         final Drawable dw = v.getBackground();
-        DrawableCompat.setTint(dw, color);
+        if (dw != null) {
+            DrawableCompat.setTint(dw, color);
+        }
         v.setBackground(dw);
     }
 

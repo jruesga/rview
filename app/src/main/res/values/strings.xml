@@ -52,6 +52,7 @@
     <string name="action_assign">Assign</string>
     <string name="action_set">Set</string>
     <string name="action_rename">Rename</string>
+    <string name="action_attach">Attach</string>
 
     <!-- Menu options -->
     <string name="menu_all_changes_category">All changes</string>
@@ -92,6 +93,7 @@
     <string name="exception_browser_not_found">No browser detected. Can\'t open <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
     <string name="exception_unsupported_server_version">Gerrit server version is unsupported</string>
     <string name="exception_invalid_endpoint">Endpoint is not a Gerrit instance</string>
+    <string name="exception_data_not_available">Data is not available yet</string>
     <string name="exception_no_network_available">No network connectivity detected</string>
     <string name="exception_server_cannot_be_reached">Server instance cannot be reached</string>
     <string name="exception_unsupported_guess_mode">Server instance doesn\'t support guest accounts</string>
@@ -106,6 +108,7 @@
     <string name="exception_cannot_handle_link">Cannot handle link: <xliff:g id="url" example="http://example.com">%1$s</xliff:g></string>
     <string name="exception_cannot_share_link">No activity found to share link with</string>
     <string name="exception_item_not_found">Item not found</string>
+    <string name="exception_attachment_provider_not_logged">Attachment account was revoked. Attachment provider was disabled.</string>
 
     <!-- Formats -->
     <string name="account_suggest_format">\u0022<xliff:g id="committer_name" example="John Doe">%1$s</xliff:g> \u003c<xliff:g id="committer_email" example="john.doe@example.com">%2$s</xliff:g>\u003e\u0022</string>
@@ -225,6 +228,9 @@
     <string name="change_details_on_behalf_of">&lt;b&gt;<xliff:g id="real_author" example="John Doe">%1$s</xliff:g>&lt;/b&gt; on behalf of &lt;b&gt;<xliff:g id="author" example="John Doe">%2$s</xliff:g>&lt;/b&gt;</string>
     <string name="change_details_continuous_integration">Continuous Integration</string>
     <string name="change_details_continuous_integration_empty">No continuous integration jobs found</string>
+
+    <!-- Review Attachments -->
+    <string name="change_attachments_camera_capture_failure">Cannot not take a capture</string>
 
     <!-- Change edit -->
     <string name="change_edit_title">Edit #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>
@@ -528,6 +534,9 @@
     <string name="share_app_title">Rview</string>
     <string name="share_app_text">Check out Rview, a Gerrit client app for Android.\n\n<xliff:g id="link">%1$s</xliff:g></string>
 
+    <!-- Download file -->
+    <string name="fetching_file">Fetching file\u2026</string>
+
     <!-- Blame -->
     <string name="blame_format"><xliff:g id="commit" example="05eb62a0">%1$s</xliff:g> <xliff:g id="date" example="1/20/15">%2$s</xliff:g> <xliff:g id="author" example="John Dow">%3$s</xliff:g></string>
     <string name="fetching_blames">Fetching file blames\u2026</string>
@@ -584,5 +593,23 @@
 
     <!-- Create new change dialog -->
     <string name="create_new_change_title">Create new change</string>
+
+    <!-- Gallery chooser -->
+    <string name="gallery_chooser_title">Gallery</string>
+    <string name="gallery_chooser_loading">Collecting data. Wait\u2026</string>
+    <string name="gallery_chooser_empty">Oops, nothing found.\nGet out there and capture your world!</string>
+    <string name="gallery_chooser_error">Oops, this is embarrassing.\nAn error occurred whilst collecting media items</string>
+
+    <!-- Url chooser dialog -->
+    <string name="url_chooser_dialog_title">Choose URL</string>
+    <string name="url_chooser_dialog_hint">Url</string>
+
+    <!-- File chooser -->
+    <string name="file_chooser_dialog_title">Choose file</string>
+
+    <!-- Snippet dialog -->
+    <string name="snippet_dialog_title">Snippet</string>
+    <string name="snippet_dialog_error">Failed to load content</string>
+    <string name="snippet_dialog_snippet_file_name">Unnamed</string>
 
 </resources>

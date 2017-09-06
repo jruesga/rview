@@ -23,6 +23,7 @@ build/
 local.properties
 release.properties
 app/fabric.properties
+attachments/auth.properties
 
 # Thumbnail db
 .DS_Store

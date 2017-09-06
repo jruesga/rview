@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
+
+        <variable name="hasData" type="java.lang.Boolean" />
+        <variable name="isLocked" type="java.lang.Boolean" />
+        <variable name="isProcessing" type="java.lang.Boolean" />
+        <variable name="isAuthenticated" type="java.lang.Boolean" />
+        <variable name="isCurrentRevision" type="java.lang.Boolean" />
+
+        <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
+        <variable name="hasReviewAttachments" type="java.lang.Boolean" />
+        <variable name="attachmentsSupport" type="com.ruesga.rview.attachments.AttachmentsSupport" />
+        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="@{safeUnbox(hasData) &amp;&amp; safeUnbox(isAuthenticated) ? View.VISIBLE : View.GONE}">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
+            android:orientation="vertical">
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/HeaderLabel"
+                android:text="@string/change_details_review" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="8dp">
+
+                <com.ruesga.rview.widget.ReviewLabelsView
+                    android:id="@+id/review_labels"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginEnd="12dp"
+                    android:enabled="@{!safeUnbox(isLocked)}"
+                    android:visibility="@{(!safeUnbox(isCurrentRevision) || model.status.equals(ChangeStatus.SUBMITTED) || model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED)) ? View.GONE : View.VISIBLE}"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <FrameLayout
+                            android:id="@+id/review_block"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true">
+                            <ImageButton
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:srcCompat="@drawable/ic_send"
+                                android:tint="?attr/colorAccent"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:onClick="@{handlers::onReviewPressed}"
+                                android:scaleType="centerInside"
+                                android:enabled="@{!safeUnbox(isLocked)}"
+                                android:visibility="@{!safeUnbox(isProcessing) ? View.VISIBLE : View.GONE}"
+                                tools:ignore="ContentDescription"/>
+                            <ProgressBar
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="8dp"
+                                android:layout_gravity="center"
+                                android:visibility="@{safeUnbox(isProcessing) ? View.VISIBLE : View.GONE}"/>
+                        </FrameLayout>
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:id="@+id/review_comment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_toLeftOf="@id/review_block"
+                            android:layout_toStartOf="@id/review_block"
+                            android:gravity="top"
+                            android:layout_gravity="center_vertical"
+                            android:padding="8dp"
+                            android:background="@drawable/bg_box"
+                            android:textAppearance="?android:attr/textAppearanceSmall"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:textSize="14sp"
+                            android:minLines="3"
+                            android:inputType="textMultiLine"
+                            android:imeOptions="flagNoFullscreen"
+                            android:hint="@string/change_details_review_hint"
+                            android:enabled="@{!safeUnbox(isLocked)}" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical">
+
+                        <include
+                            layout="@layout/attachment_action_bar"
+                            app:attachmentsSupport="@{attachmentsSupport}"
+                            app:handlers="@{handlers}" />
+
+                        <com.ruesga.rview.widget.AttachmentsView
+                            android:id="@+id/review_attachments"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:padding="8dp"
+                            android:visibility="@{safeUnbox(hasReviewAttachments) ? View.VISIBLE : View.GONE}"
+                            android:background="@drawable/bg_box" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</layout>

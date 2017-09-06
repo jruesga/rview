@@ -19,6 +19,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Keep;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -34,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.attachments.Attachment;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
@@ -62,6 +65,7 @@ import com.ruesga.rview.widget.StyleableTextView;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,6 +92,7 @@ public class Formatter {
         sDisplayFormat = Preferences.getAccountDisplayFormat(context, mAccount);
         sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, mAccount);
         sDisplayAccountStatues = Preferences.isAccountDisplayStatuses(context, mAccount);
+
     }
 
     private static PrettyTime getPrettyTime(Context context) {
@@ -720,7 +725,7 @@ public class Formatter {
     }
 
     @BindingAdapter("buildStatus")
-    public static void toBuildStatis(ImageView v, ContinuousIntegrationInfo.BuildStatus status) {
+    public static void toBuildStatus(ImageView v, ContinuousIntegrationInfo.BuildStatus status) {
         if (status == null) {
             v.setImageDrawable(null);
             return;
@@ -742,4 +747,62 @@ public class Formatter {
                 break;
         }
     }
+
+    @BindingAdapter("resolveAttachmentIcon")
+    public static void resolveAttachmentIcon(ImageView v, Attachment attachment) {
+        if (attachment == null) {
+            v.setImageDrawable(null);
+            return;
+        }
+
+        String mimetype = attachment.mMimeType;
+        if ("application/octet-stream".equals(attachment.mMimeType)) {
+            attachment.mMimeType = StringHelper.getMimeType(new File(attachment.mName));
+        }
+
+        @DrawableRes int resource;
+        @ColorRes int color;
+        if (mimetype.equals("text/xml") || mimetype.equals("application/xml")
+                || mimetype.contains("+xml")) {
+            resource = R.drawable.ic_mime_xml;
+            color = R.color.mime_type_default;
+        } else if (mimetype.startsWith("image/")) {
+            resource = R.drawable.ic_mime_image;
+            color = R.color.mime_type_default;
+        } else if (mimetype.startsWith("video/")) {
+            resource = R.drawable.ic_mime_video;
+            color = R.color.mime_type_default;
+        } else if (mimetype.startsWith("audio/")) {
+            resource = R.drawable.ic_mime_audio;
+            color = R.color.mime_type_default;
+        } else if (mimetype.startsWith("text/")) {
+            resource = R.drawable.ic_mime_document;
+            color = R.color.mime_type_default;
+        } else if (mimetype.equals("application/internet-shortcut")
+                || mimetype.equals("application/x-url")) {
+            resource = R.drawable.ic_mime_url;
+            color = R.color.mime_type_default;
+        } else if (mimetype.contains("excel") || mimetype.contains("xls")
+                || mimetype.contains("spreadsheet")) {
+            resource = R.drawable.ic_mime_excel;
+            color = R.color.mime_type_excel;
+        } else if (mimetype.contains("word")) {
+            resource = R.drawable.ic_mime_word;
+            color = R.color.mime_type_word;
+        } else if (mimetype.contains("powerpoint")) {
+            resource = R.drawable.ic_mime_powerpoint;
+            color = R.color.mime_type_powerpoint;
+        } else if (mimetype.contains("pdf")) {
+            resource = R.drawable.ic_mime_pdf;
+            color = R.color.mime_type_pdf;
+        } else {
+            resource = R.drawable.ic_mime_file;
+            color = R.color.mime_type_default;
+        }
+
+        Drawable dw = ContextCompat.getDrawable(v.getContext(), resource);
+        v.setImageDrawable(BitmapUtils.tintDrawable(v.getResources(), dw,
+                ContextCompat.getColor(v.getContext(), color)));
+    }
+
 }

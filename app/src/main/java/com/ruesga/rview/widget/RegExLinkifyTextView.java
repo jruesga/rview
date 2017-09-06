@@ -66,19 +66,19 @@ public class RegExLinkifyTextView extends StyleableTextView {
 
     public static final RegExLink EMAIL_REGEX = new RegExLink(
             "email",
-            "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}",
+            StringHelper.EMAIL_REGEXP,
             "mailto:$1");
     public static final RegExLink WEB_LINK_REGEX = new RegExLink(
             "web",
-            "((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
+            StringHelper.WEB_REGEXP,
             "$1");
     public static final RegExLink GERRIT_CHANGE_ID_REGEX = new RegExLink(
             Constants.CUSTOM_URI_CHANGE,
-            "(^|\\s)(I[0-9a-f]{8,40})",
+            StringHelper.CHANGE_ID_REGEXP,
             "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE + "/$1");
     public static final RegExLink GERRIT_COMMIT_REGEX = new RegExLink(
             Constants.CUSTOM_URI_COMMIT,
-            "(^|\\s|[:.,!?\\(\\[\\{])([0-9a-f]{7,40})\\b",
+            StringHelper.COMMIT_REGEXP,
             "com.ruesga.rview://" + Constants.CUSTOM_URI_COMMIT + "/$1");
 
     private final List<RegExLink> mRegEx = new ArrayList<>();

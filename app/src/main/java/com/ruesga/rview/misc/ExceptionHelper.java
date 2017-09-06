@@ -20,9 +20,9 @@ import android.support.annotation.StringRes;
 import android.util.Log;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.attachments.EmptyMetadataException;
 import com.ruesga.rview.exceptions.IllegalQueryExpressionException;
 import com.ruesga.rview.exceptions.OperationFailedException;
-import com.ruesga.rview.gerrit.NoConnectivityException;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.preferences.Preferences;
@@ -75,8 +75,15 @@ public class ExceptionHelper {
         } else if (isException(cause, OperationFailedException.class)) {
             message = R.string.exception_operation_failed;
 
-        } else if (isException(cause, NoConnectivityException.class)) {
+        } else if (isException(cause, com.ruesga.rview.gerrit.NoConnectivityException.class)
+                || isException(cause, com.ruesga.rview.attachments.NoConnectivityException.class)) {
             message = R.string.exception_no_network_available;
+
+        } else if (isException(cause, EmptyMetadataException.class)) {
+            message = R.string.exception_data_not_available;
+
+        } else if (isException(cause, com.ruesga.rview.attachments.AuthenticationException.class)) {
+            message = R.string.exception_attachment_provider_not_logged;
 
         } else if (isException(cause, ConnectException.class)
                 || isException(cause, NoRouteToHostException.class)
@@ -118,16 +125,19 @@ public class ExceptionHelper {
     }
 
     public static int exceptionToLevel(Throwable cause) {
-        if (isException(cause, NoConnectivityException.class)
+        if (isException(cause, com.ruesga.rview.gerrit.NoConnectivityException.class)
+                || isException(cause, com.ruesga.rview.attachments.NoConnectivityException.class)
                 || isHttpException(cause, 409)
-                || isException(cause, IllegalQueryExpressionException.class)) {
+                || isException(cause, IllegalQueryExpressionException.class)
+                || isException(cause, EmptyMetadataException.class)) {
             return 1;
         }
         return 0;
     }
 
     public static boolean hasConnectivity(Throwable cause) {
-        return !(isException(cause, NoConnectivityException.class));
+        return !(isException(cause, com.ruesga.rview.gerrit.NoConnectivityException.class)
+                || isException(cause, com.ruesga.rview.attachments.NoConnectivityException.class));
     }
 
     public static boolean hasServerConnectivity(Throwable cause) {

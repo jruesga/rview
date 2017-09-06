@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -383,4 +384,5 @@ public class ChangeDetailsActivity extends BaseActivity {
         }
         return revisionId;
     }
+
 }

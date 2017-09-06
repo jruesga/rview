@@ -181,6 +181,25 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receivers.CacheCleanerReceiver"
+            android:permission="com.ruesga.rview.permissions.PRIVATE_ACCESS">
+            <intent-filter>
+                <action android:name="com.ruesga.rview.action.CLEAN_CACHE" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.ruesga.rview.content"
+            android:grantUriPermissions="true"
+            android:exported="false"
+            android:writePermission="com.ruesga.rview.permissions.PRIVATE_ACCESS">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/content_paths" />
+        </provider>
+
     </application>
 
 </manifest>

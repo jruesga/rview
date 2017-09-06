@@ -125,8 +125,9 @@ class GerritApiClient implements GerritApi {
         // OkHttp client
         OkHttpClient.Builder clientBuilder = auth.mTrustAllCertificates
                 ? OkHttpHelper.getUnsafeClientBuilder() : OkHttpHelper.getSafeClientBuilder();
-        clientBuilder.followRedirects(true)
+        clientBuilder
                 .readTimeout(20000, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .followRedirects(true)
                 .followSslRedirects(true)
                 .addInterceptor(createConnectivityCheckInterceptor())
                 .addInterceptor(createLoggingInterceptor())

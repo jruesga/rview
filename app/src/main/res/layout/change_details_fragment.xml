@@ -98,6 +98,13 @@
                 layout="@layout/empty_state"
                 app:model="@{empty}"
                 app:handlers="@{emptyHandlers}"/>
+
+            <com.ruesga.rview.attachments.AttachmentDropView
+                android:id="@+id/attachments_drop"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
         </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </layout>

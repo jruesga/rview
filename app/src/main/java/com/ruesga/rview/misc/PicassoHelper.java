@@ -21,8 +21,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -36,6 +38,7 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.squareup.picasso.Callback;
+import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.squareup.picasso.Transformation;
@@ -52,13 +55,33 @@ import okhttp3.Response;
 public class PicassoHelper {
 
     @SuppressLint("StaticFieldLeak")
-    private static Picasso sPicasso;
+    private static Picasso sDefaultPicasso, sAvatarPicasso;
 
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final static Set<Target> sTargets = new HashSet<>();
 
-    public static Picasso getPicassoClient(Context context) {
-        if (sPicasso == null) {
+    public static Picasso getDefaultPicassoClient(Context context) {
+        if (sDefaultPicasso == null) {
+            final File cacheDir = CacheHelper.getImagesCacheDir(context);
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addNetworkInterceptor(chain -> {
+                        Response originalResponse = chain.proceed(chain.request());
+                        return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();
+                    })
+                    .cache(new Cache(cacheDir, CacheHelper.MAX_DISK_CACHE))
+                    .build();
+            OkHttp3Downloader downloader = new OkHttp3Downloader(client);
+            sDefaultPicasso = new Picasso.Builder(context.getApplicationContext())
+                    .defaultBitmapConfig(Bitmap.Config.ARGB_8888)
+                    .memoryCache(new LruCache(context))
+                    .downloader(downloader)
+                    .build();
+        }
+        return sDefaultPicasso;
+    }
+
+    public static Picasso getAvatarPicassoClient(Context context) {
+        if (sAvatarPicasso == null) {
             final File cacheDir = CacheHelper.getAvatarsCacheDir(context);
             OkHttpClient client = new OkHttpClient.Builder()
                     .addNetworkInterceptor(chain -> {
@@ -81,18 +104,43 @@ public class PicassoHelper {
                     .cache(new Cache(cacheDir, CacheHelper.MAX_DISK_CACHE))
                     .build();
             OkHttp3Downloader downloader = new OkHttp3Downloader(client);
-            sPicasso = new Picasso.Builder(context.getApplicationContext())
+            sAvatarPicasso = new Picasso.Builder(context.getApplicationContext())
                     .defaultBitmapConfig(Bitmap.Config.ARGB_8888)
                     .downloader(downloader)
                     .build();
         }
-        return sPicasso;
+        return sAvatarPicasso;
     }
 
     public static Drawable getDefaultAvatar(Context context, @ColorRes int color) {
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_account_circle);
         DrawableCompat.setTint(drawable, ContextCompat.getColor(context, color));
         return drawable;
+    }
+
+    public static void bindImage(
+            Picasso picasso, ImageView view, Drawable placeholder, Uri url) {
+        Rect rect = new Rect(0, 0, view.getLayoutParams().width, view.getLayoutParams().height);
+        bindImage(picasso, view, placeholder, url, rect);
+    }
+
+    public static void bindImage(
+            Picasso picasso, ImageView view, Drawable placeholder, Uri url, Rect rect) {
+        picasso.load(url)
+                .placeholder(placeholder)
+                .resize(rect.width(), rect.height())
+                .centerCrop()
+                .into(view, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                    @Override
+                    public void onError() {
+                        view.setImageDrawable(ContextCompat.getDrawable(view.getContext(),
+                                R.drawable.ic_broken_image_with_padding));
+                    }
+                });
     }
 
     public static void bindAvatar(Context context, Picasso picasso, AccountInfo account,

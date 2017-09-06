@@ -1,0 +1,62 @@
+/*
+ * Copyright (C) 2017 Jorge Ruesga
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'com.android.library'
+apply plugin: 'me.tatarka.retrolambda'
+
+def libraries = rootProject.ext.libraries;
+
+dependencies {
+    compile "com.android.support:design:${libraries.support}"
+    compile "com.android.support:support-annotations:${libraries.support}"
+    compile "com.google.code.gson:gson:${libraries.gson}"
+    compile("com.squareup.retrofit2:retrofit:${libraries.retrofit2}") {
+        exclude group: 'io.reactivex', module: 'rxjava'
+    }
+    compile "com.squareup.retrofit2:converter-gson:${libraries.retrofit2}"
+    compile "com.squareup.retrofit2:adapter-rxjava2:${libraries.retrofit2}"
+    compile "com.squareup.okhttp3:okhttp:${libraries.okhttp3}"
+    compile "com.squareup.okhttp3:logging-interceptor:${libraries.okhttp3}"
+    compile "com.squareup.okio:okio:${libraries.okio}"
+    compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    compile "com.github.jruesga:rxloader:${libraries.rxloader2}"
+    compile "com.google.android.gms:play-services-auth:${libraries.firebase}"
+}
+
+android {
+    defaultConfig {
+        consumerProguardFiles file('proguard-consumer.txt')
+        vectorDrawables.useSupportLibrary = true
+
+        if (project.file('auth.properties').exists()) {
+            def Properties authProps = new Properties()
+            authProps.load(new FileInputStream(project.file('auth.properties')))
+
+            resValue "string", "gdrive.client_id", authProps["gdrive.client_id"]
+            resValue "string", "gdrive.client_secret", authProps["gdrive.client_secret"]
+        } else {
+            resValue "string", "gdrive.client_id", ""
+            resValue "string", "gdrive.client_secret", ""
+        }
+
+        return void;
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}

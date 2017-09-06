@@ -18,14 +18,20 @@ package com.ruesga.rview.misc;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
@@ -36,8 +42,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AndroidHelper {
+
+    private static final String TAG = "AndroidHelper";
+
+    public static boolean isKitkatOrGreater() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+    }
 
     public static boolean isLollipopOrGreater() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
@@ -121,5 +135,42 @@ public class AndroidHelper {
                     null, icon, ContextCompat.getColor(activity, R.color.primaryDark));
             activity.setTaskDescription(taskDesc);
         }
+    }
+
+    public static Intent createCaptureImageIntent(Context context) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(context.getPackageManager()) == null) {
+            return null;
+        }
+
+        try {
+            Uri uri = CacheHelper.createNewTemporaryFileUri(context, ".jpg");
+            if (uri != null) {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                return intent;
+            }
+
+        } catch (IOException ex) {
+            Log.e(TAG, "Cannot create image capture intent", ex);
+        }
+        Log.e(TAG, "Cannot create image capture intent: null");
+        return null;
+    }
+
+    public static String obtainUrlFromClipboard(Context context) {
+        String url = null;
+        ClipboardManager clipboard =
+                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard.getPrimaryClip() != null && clipboard.getPrimaryClip().getItemCount() > 0) {
+            ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+            CharSequence data = item.getText();
+            if (data != null) {
+                Matcher m = Pattern.compile(StringHelper.WEB_REGEXP).matcher(data);
+                if (m.find()) {
+                    url = m.group();
+                }
+            }
+        }
+        return url;
     }
 }

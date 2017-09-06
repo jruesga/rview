@@ -303,7 +303,8 @@ public class NotificationsHelper {
 
     private static PendingIntent getDeleteGroupNotificationPendingIntent(
             Context ctx, int groupId) {
-        Intent intent = new Intent(NotificationReceiver.ACTION_NOTIFICATION_DISMISSED);
+        Intent intent = new Intent(ctx, NotificationReceiver.class);
+        intent.setAction(NotificationReceiver.ACTION_NOTIFICATION_DISMISSED);
         intent.putExtra(Constants.EXTRA_NOTIFICATION_GROUP_ID, groupId);
 
         return PendingIntent.getBroadcast(
@@ -313,6 +314,7 @@ public class NotificationsHelper {
     private static PendingIntent getDeleteAccountNotificationPendingIntent(
             Context ctx, Account account, int notificationId) {
         Intent intent = new Intent(ctx, NotificationReceiver.class);
+        intent.setPackage(ctx.getPackageName());
         intent.setAction(NotificationReceiver.ACTION_NOTIFICATION_DISMISSED);
         intent.putExtra(Constants.EXTRA_ACCOUNT_HASH, account.getAccountHash());
 

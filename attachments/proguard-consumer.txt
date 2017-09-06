@@ -1,0 +1,34 @@
+-dontwarn android.support.v4.app.NotificationCompatBase
+-dontwarn javax.annotation.*
+-dontwarn com.google.gson.*
+-dontwarn retrofit2.*
+-dontwarn okio.*
+-dontwarn rx.internal.util.unsafe.*
+-dontwarn org.antlr.runtime.tree.*
+-dontwarn java.lang.invoke**
+
+-keep class com.ruesga.rview.attachments.gdrive.model.** { *; }
+-keep class com.ruesga.rview.attachments.gdrive.oauth.AccessToken { *; }
+
+##---------------Begin: proguard configuration for RxJava  ----------
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+   long producerIndex;
+   long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode producerNode;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
+    rx.internal.util.atomic.LinkedQueueNode consumerNode;
+}
+##---------------End: proguard configuration for RxJava  ----------
+
+
+##---------------Begin: proguard configuration for Gson  ----------
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class sun.misc.Unsafe { *; }
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+##---------------End: proguard configuration for Gson  ----------

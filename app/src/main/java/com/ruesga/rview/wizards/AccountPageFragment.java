@@ -411,7 +411,7 @@ public class AccountPageFragment extends WizardPageFragment {
         return true;
     }
 
-    private String getAnonymousCowardName() throws Exception {
+    private String getAnonymousCowardName() {
         try {
             Context ctx = getActivity().getApplicationContext();
             final String username = mModel.authenticatedAccess ? mModel.username : null;

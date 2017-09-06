@@ -25,12 +25,14 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.ruesga.rview.attachments.AttachmentsProviderFactory;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.providers.NotificationEntity;
+import com.ruesga.rview.receivers.CacheCleanerReceiver;
 import com.ruesga.rview.services.DeviceRegistrationService;
 
 import java.util.List;
@@ -86,6 +88,7 @@ public class RviewApplication extends Application {
 
         // Initialize application resources
         Formatter.refreshCachedPreferences(getApplicationContext());
+        AttachmentsProviderFactory.initialize(getApplicationContext());
 
         // Recreate notifications
         NotificationsHelper.createNotificationChannels(getApplicationContext());
@@ -96,6 +99,9 @@ public class RviewApplication extends Application {
         Intent intent = new Intent();
         intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
         DeviceRegistrationService.enqueueWork(this, intent);
+
+        // Schedule a cache clean
+        CacheCleanerReceiver.cleanCache(getApplicationContext(), true);
 
         // Enable Url Handlers
         enableExternalUrlHandlers();

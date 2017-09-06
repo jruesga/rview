@@ -37,7 +37,7 @@
         <!--suppress AndroidDomInspection -->
         <variable name="actions" type="java.util.Map&lt;String, com.ruesga.rview.gerrit.model.ActionInfo&gt;" />
         <!--suppress AndroidDomInspection -->
-        <variable name="ci" type="java.util.List&lt;com.ruesga.rview.model.ContinuousIntegrationInfo&gt;" />
+        <variable name="cii" type="java.util.List&lt;com.ruesga.rview.model.ContinuousIntegrationInfo&gt;" />
         <variable name="submitType" type="com.ruesga.rview.gerrit.model.SubmitType" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
         <variable name="serverInfo" type="com.ruesga.rview.gerrit.model.ServerInfo" />
@@ -544,7 +544,7 @@
                 android:paddingBottom="5dp"
                 android:layout_marginLeft="@dimen/label_min_width"
                 android:layout_marginStart="@dimen/label_min_width"
-                android:visibility="@{isCurrentRevision &amp;&amp; !model.mergeable &amp;&amp; !model.status.equals(ChangeStatus.MERGED) ? View.VISIBLE : View.GONE}"
+                android:visibility="@{safeUnbox(isCurrentRevision) &amp;&amp; !model.mergeable &amp;&amp; !model.status.equals(ChangeStatus.MERGED) ? View.VISIBLE : View.GONE}"
                 android:orientation="horizontal">
                 <ImageView
                     android:layout_width="16dp"
@@ -597,7 +597,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginBottom="16dp"
-                app:bindNull="@{ci}">
+                app:bindNull="@{cii}">
 
                 <View
                     android:layout_width="match_parent"
@@ -618,7 +618,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    app:bindEmptyList="@{ci}"
+                    app:bindEmptyList="@{cii}"
                     app:flexWrap="wrap"
                     app:alignItems="flex_start"
                     app:alignContent="flex_start" />
@@ -628,7 +628,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@string/change_details_continuous_integration_empty"
-                    app:bindNotEmptyList="@{ci}"
+                    app:bindNotEmptyList="@{cii}"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="12sp" />

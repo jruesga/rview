@@ -105,7 +105,7 @@ public class EditorFragment extends Fragment
         @SerializedName("old_info") public FileInfo oldInfo;
     }
 
-    private interface OnSavedContentReady {
+    interface OnSavedContentReady {
         void onContentSaved();
     }
 

@@ -34,4 +34,6 @@
     <dimen name="diff_line_indicator_width">16dp</dimen>
     <dimen name="toast_min_width">36dp</dimen>
     <dimen name="account_suggestion_text_size">18sp</dimen>
+    <dimen name="bottom_sheet_peek_max_width">650dp</dimen>
+    <dimen name="bottom_sheet_peek_height">280dp</dimen>
 </resources>

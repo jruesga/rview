@@ -123,7 +123,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             setHasStableIds(true);
             mHandlers = new ItemEventHandlers(fragment);
             mContext = fragment.getContext();
-            mPicasso = PicassoHelper.getPicassoClient(mContext);
+            mPicasso = PicassoHelper.getAvatarPicassoClient(mContext);
         }
 
         private void clear() {

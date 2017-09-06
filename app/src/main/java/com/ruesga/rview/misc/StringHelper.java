@@ -17,13 +17,21 @@ package com.ruesga.rview.misc;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import com.ruesga.rview.attachments.Attachment;
+import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringHelper {
+
+    private static final String TAG = "StringHelper";
 
     public static final String NON_PRINTABLE_CHAR = "\u0001";
     public static final String NON_PRINTABLE_CHAR2 = "\u0002";
@@ -42,6 +50,11 @@ public class StringHelper {
     private static final Pattern QUOTE_REGEXP
             = Pattern.compile("^\\[QUOTE\\](.+?)\\[/QUOTE\\]$", Pattern.MULTILINE | Pattern.DOTALL);
 
+    public static final String EMAIL_REGEXP = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
+    public static final String WEB_REGEXP ="((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.)" +
+            "{1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)";
+    public static final String CHANGE_ID_REGEXP = "(^|\\s)(I[0-9a-f]{8,40})";
+    public static final String COMMIT_REGEXP = "(^|\\s|[:.,!?\\(\\[\\{])([0-9a-f]{7,40})\\b";
 
     private static final Pattern QUOTE1 = Pattern.compile("^> ", Pattern.MULTILINE);
     private static final Pattern QUOTE2 = Pattern.compile("^>", Pattern.MULTILINE);
@@ -58,6 +71,8 @@ public class StringHelper {
     public static final Pattern GERRIT_ENCODED_CHANGE_ID = Pattern.compile("\\d+:\\d+(\\.\\.\\d+)?:.*");
 
     private static final Pattern NUMERIC_REGEXP = Pattern.compile("\\d+");
+
+    private static final Pattern ATTACHMENT_REGEXP = Pattern.compile("!\\[ATTACHMENT:\\{.*\\}\\]\\(" + WEB_REGEXP + "\\)");
 
     public static String[] obtainParagraphs(String message) {
         return message.split("\\r?\\n\\r?\\n");
@@ -227,6 +242,10 @@ public class StringHelper {
     }
 
     public static String getSafeLastPathSegment(Uri uri) {
+        if (uri == null) {
+            return null;
+        }
+
         if (uri.getLastPathSegment() != null) {
             return uri.getLastPathSegment();
         }
@@ -243,6 +262,9 @@ public class StringHelper {
     }
 
     public static String getFileExtension(File file) {
+        if (file == null) {
+            return null;
+        }
         final String name = file.getName();
         int pos = name.lastIndexOf(".");
         if (pos != -1 && !name.endsWith(".")) {
@@ -251,9 +273,21 @@ public class StringHelper {
         return null;
     }
 
+    public static String getFileNameWithoutExtension(File file) {
+        if (file == null) {
+            return null;
+        }
+        String name = file.getName();
+        String ext = getFileExtension(file);
+        if (ext == null) {
+            return name;
+        }
+        return name.substring(0, name.length() - ext.length() - 1);
+    }
+
     public static String getMimeType(File file) {
         // Extract the mime/type of the file
-        String ext = StringHelper.getFileExtension(file);
+        String ext = getFileExtension(file);
         String mediaType = null;
         if (ext != null) {
             mediaType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext);
@@ -267,4 +301,50 @@ public class StringHelper {
     public static boolean isOnlyNumeric(String s) {
         return NUMERIC_REGEXP.matcher(s).matches();
     }
+
+    public static String removeAllAttachments(String s) {
+        if (s == null) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String l : s.split("\n")) {
+            final String ll = ATTACHMENT_REGEXP.matcher(l).replaceAll("");
+            if ((ll.isEmpty() && !l.isEmpty()) || ll.trim().equals(">")) {
+                continue;
+            }
+            sb.append(ll).append("\n");
+        }
+        return sb.toString().trim();
+    }
+
+    public static List<Attachment> extractAllAttachments(ChangeMessageInfo message) {
+        List<Attachment> attachments = new ArrayList<>();
+        if (message != null && message.message != null) {
+            for (String l : message.message.split("\n")) {
+                if (!l.trim().startsWith(">")) {
+                    Matcher m = ATTACHMENT_REGEXP.matcher(l);
+                    while (m.find()) {
+                        final String group = m.group();
+                        try {
+                            Attachment attachment = SerializationManager.getInstance().fromJson(
+                                    group.substring("![ATTACHMENT:{".length() - 1,
+                                            group.indexOf("}](") + 1), Attachment.class);
+                            attachment.mMessageId = message.id;
+                            attachment.mUrl = group.substring(
+                                    group.indexOf("}](") + 3, group.length() - 1);
+                            if (!TextUtils.isEmpty(attachment.mName)
+                                    && !TextUtils.isEmpty(attachment.mMimeType)
+                                    && !TextUtils.isEmpty(attachment.mUrl)) {
+                                attachments.add(attachment);
+                            }
+                        } catch (Exception ex) {
+                            Log.w(TAG, "Can't parse attachment: " + group, ex);
+                        }
+                    }
+                }
+            }
+        }
+        return attachments;
+    }
+
 }

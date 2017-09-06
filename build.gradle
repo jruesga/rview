@@ -17,7 +17,9 @@
 ext {
     libraries = [
         support                     : '26.0.1',
-        firebase                    : '11.2.0',
+        firebase                    : '11.2.2',
+        google_api                  : '1.22.0',
+        drive_api                   : 'v3-rev81-1.22.0',
         gson                        : '2.8.1',
         retrofit2                   : '2.3.0',
         okhttp3                     : '3.8.1',
@@ -35,6 +37,7 @@ ext {
         flexboxlayout               : '0.3.0',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '418cf67684',
+        keyboardvisibilityevent     : '2.1.0',
         aboutlibraries              : '5.9.7',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.6.8',
@@ -84,6 +87,13 @@ allprojects {
 
 subprojects {
     afterEvaluate {project ->
+        dependencies {
+            testCompile "junit:junit:${testLibraries.junit}"
+            testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
+            testCompile "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
+            testCompile "org.mockito:mockito-core:${testLibraries.mockito}"
+        }
+
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
             android {
                 compileSdkVersion 26

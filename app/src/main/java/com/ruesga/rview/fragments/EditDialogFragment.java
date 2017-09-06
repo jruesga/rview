@@ -33,6 +33,8 @@ import android.widget.Button;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.EditDialogBinding;
 
+import java.util.regex.Pattern;
+
 public class EditDialogFragment extends RevealDialogFragment {
 
     public static final String TAG = "EditDialogFragment";
@@ -45,6 +47,7 @@ public class EditDialogFragment extends RevealDialogFragment {
     private static final String EXTRA_ALLOW_EMPTY = "allow_empty";
     private static final String EXTRA_ALLOW_SUGGESTIONS = "allow_suggestions";
     private static final String EXTRA_USE_MULTI_LINE = "multi_line";
+    private static final String EXTRA_REGEXP = "regexp";
 
     private static final String EXTRA_REQUEST_CODE = "request_code";
     private static final String EXTRA_REQUEST_DATA= "request_data";
@@ -56,6 +59,7 @@ public class EditDialogFragment extends RevealDialogFragment {
         public String hint;
         boolean allowEmpty;
         public boolean isMultiLine;
+        public Pattern regexp;
     }
 
     public interface OnEditChanged {
@@ -80,7 +84,8 @@ public class EditDialogFragment extends RevealDialogFragment {
 
     public static EditDialogFragment newInstance(String title, String subtitle, String value,
                 String action, String hint, boolean allowEmpty, boolean allowSuggestions,
-                boolean multiLine, View anchor, int requestCode, @Nullable Bundle data) {
+                boolean multiLine, String regexp, View anchor, int requestCode,
+                @Nullable Bundle data) {
         EditDialogFragment fragment = new EditDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_TITLE, title);
@@ -93,6 +98,9 @@ public class EditDialogFragment extends RevealDialogFragment {
         arguments.putBoolean(EXTRA_ALLOW_EMPTY, allowEmpty);
         arguments.putBoolean(EXTRA_ALLOW_SUGGESTIONS, allowSuggestions);
         arguments.putBoolean(EXTRA_USE_MULTI_LINE, multiLine);
+        if (!TextUtils.isEmpty(regexp)) {
+            arguments.putString(EXTRA_REGEXP, regexp);
+        }
         arguments.putParcelable(EXTRA_ANCHOR, computeViewOnScreen(anchor));
         arguments.putInt(EXTRA_REQUEST_CODE, requestCode);
         if (data != null) {
@@ -104,6 +112,7 @@ public class EditDialogFragment extends RevealDialogFragment {
 
     private int mRequestCode;
     private Bundle mRequestData;
+    private Pattern mRegExp = null;
 
     private EditDialogBinding mBinding;
     private final Model mModel = new Model();
@@ -145,6 +154,11 @@ public class EditDialogFragment extends RevealDialogFragment {
         if (getArguments().containsKey(EXTRA_REQUEST_DATA)) {
             mRequestData = getArguments().getBundle(EXTRA_REQUEST_DATA);
         }
+        if (getArguments().containsKey(EXTRA_REGEXP)) {
+            //noinspection ConstantConditions
+            mRegExp = Pattern.compile(getArguments().getString(EXTRA_REGEXP));
+        }
+
         mModel.subtitle = getArguments().getString(EXTRA_SUBTITLE);
         mModel.value = getArguments().getString(EXTRA_VALUE);
         mModel.hint = getArguments().getString(EXTRA_HINT);
@@ -184,7 +198,8 @@ public class EditDialogFragment extends RevealDialogFragment {
             if (button != null) {
                 button.setEnabled(
                         (!value.equals(mOriginalValue) || (value.isEmpty() && mModel.allowEmpty))
-                        && (!value.isEmpty() || (value.isEmpty() && mModel.allowEmpty)));
+                        && (!value.isEmpty() || (value.isEmpty() && mModel.allowEmpty))
+                        && (mRegExp == null || mRegExp.matcher(value).matches()));
             }
         }
     }

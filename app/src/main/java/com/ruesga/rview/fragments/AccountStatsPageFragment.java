@@ -94,7 +94,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
         }
 
         if (mPicasso == null) {
-            mPicasso = PicassoHelper.getPicassoClient(getContext());
+            mPicasso = PicassoHelper.getAvatarPicassoClient(getContext());
         }
     }
 

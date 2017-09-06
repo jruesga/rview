@@ -112,6 +112,12 @@ public class EditorView extends FrameLayout {
         addView(mWebView);
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        mWebView.getLayoutParams().height = bottom - top;
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     private WebView createWebView() {
         WebView webview = new AceWebView(getContext());
@@ -154,7 +160,9 @@ public class EditorView extends FrameLayout {
                 if (msg.equals("edt:u")) {
                     if (!mIgnoreNextUnsavedEvent) {
                         mIsDirty = true;
-                        mContentChangedListener.onContentChanged();
+                        if (mContentChangedListener != null) {
+                            mContentChangedListener.onContentChanged();
+                        }
                     }
                     mIgnoreNextUnsavedEvent = false;
                     return true;
@@ -337,7 +345,7 @@ public class EditorView extends FrameLayout {
         return (int) crc.getValue();
     }
 
-    static class SavedState extends BaseSavedState {
+    private static class SavedState extends BaseSavedState {
         boolean mReadOnly;
         boolean mWrap;
         int mTextSize;

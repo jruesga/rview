@@ -130,7 +130,7 @@ public class NotificationsFragment extends Fragment {
             setHasStableIds(true);
             mContext = fragment.getContext();
             mHandlers = new ItemEventHandlers(fragment);
-            mPicasso = PicassoHelper.getPicassoClient(mContext);
+            mPicasso = PicassoHelper.getAvatarPicassoClient(mContext);
         }
 
         private void clear() {

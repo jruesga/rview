@@ -16,18 +16,26 @@
 package com.ruesga.rview.fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.OpenableColumns;
 import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,6 +53,15 @@ import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.PatchSetsAdapter;
+import com.ruesga.rview.attachments.Attachment;
+import com.ruesga.rview.attachments.AttachmentDropView.OnAttachmentsDroppedListener;
+import com.ruesga.rview.attachments.AttachmentsProvider;
+import com.ruesga.rview.attachments.AttachmentsProviderFactory;
+import com.ruesga.rview.attachments.AttachmentsSupport;
+import com.ruesga.rview.attachments.AuthenticationException;
+import com.ruesga.rview.attachments.Provider;
+import com.ruesga.rview.attachments.fragments.ProviderChooserFragment;
+import com.ruesga.rview.attachments.services.AttachmentsContentUploadService;
 import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
 import com.ruesga.rview.databinding.FileInfoItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
@@ -95,6 +112,7 @@ import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ContinuousIntegrationHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
+import com.ruesga.rview.misc.FileHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
@@ -107,18 +125,22 @@ import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
+import com.ruesga.rview.widget.AttachmentsView.OnAttachmentDroppedListener;
+import com.ruesga.rview.widget.AttachmentsView.OnAttachmentPressedListener;
 import com.ruesga.rview.widget.ContinuousIntegrationView.OnContinuousIntegrationPressed;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.LinesWithCommentsView.OnLineClickListener;
 import com.ruesga.rview.widget.TagEditTextView.Tag;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -137,13 +159,18 @@ import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.Empty;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
+import static com.ruesga.rview.attachments.preferences.Constants.ATTACHMENT_PROVIDER_CHANGED_ACTION;
+
 public class ChangeDetailsFragment extends Fragment implements
         AddReviewerDialogFragment.OnReviewerAdded,
         EditAssigneeDialogFragment.OnAssigneeSelected,
         FilterableDialogFragment.OnFilterSelectedListener,
         EditDialogFragment.OnEditChanged,
         ConfirmDialogFragment.OnActionConfirmed,
-        TagEditDialogFragment.OnTagEditChanged {
+        TagEditDialogFragment.OnTagEditChanged,
+        GalleryChooserFragment.OnGallerySelectedListener,
+        SnippetFragment.OnSnippetSavedListener,
+        ProviderChooserFragment.OnAttachmentProviderSelectedListener {
 
     private static final String TAG = "ChangeDetailsFragment";
 
@@ -183,6 +210,10 @@ public class ChangeDetailsFragment extends Fragment implements
     private static final int REQUEST_CODE_SUBMIT_CHANGE = 9;
     private static final int REQUEST_CODE_EDIT_REVISION_DESCRIPTION = 10;
     private static final int REQUEST_CODE_TAGS = 97;
+    private static final int REQUEST_CODE_URL_CHOOSER = 98;
+
+    private static final int REQUEST_ATTACHMENT_CAMERA = 1001;
+    private static final int REQUEST_ATTACHMENT_FILE = 1002;
 
     @Keep
     public static class ListModel {
@@ -356,6 +387,19 @@ public class ChangeDetailsFragment extends Fragment implements
 
         public void onEditRevisionDescriptionPressed(View v) {
             mFragment.performEditRevisionDescription(v);
+        }
+
+        private void onAttachmentPressed(Attachment attachment) {
+            mFragment.performOpenAttachment(attachment);
+        }
+
+        private void onAttachmentDropped(Attachment attachment) {
+            mFragment.performDropAttachment(attachment);
+        }
+
+        public void onAttachmentChooser(View v) {
+            String action = (String) v.getTag();
+            mFragment.performOpenAttachmentChooser(v, action);
         }
     }
 
@@ -534,6 +578,14 @@ public class ChangeDetailsFragment extends Fragment implements
             }
         };
 
+        private final OnAttachmentPressedListener mAttachmentPressedListener
+                = new OnAttachmentPressedListener() {
+            @Override
+            public void onAttachmentPressed(Attachment attachment) {
+                mEventHandlers.onAttachmentPressed(attachment);
+            }
+        };
+
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
                 boolean isAuthenticated, boolean isFolded) {
             final Resources res = fragment.getResources();
@@ -600,6 +652,7 @@ public class ChangeDetailsFragment extends Fragment implements
             }
             Map<String, List<CommentInfo>> comments = mMessagesWithComments.get(message.id);
 
+            List<Attachment> attachments = StringHelper.extractAllAttachments(message);
             PicassoHelper.bindAvatar(context, mPicasso,
                     message.author, holder.mBinding.avatar,
                     PicassoHelper.getDefaultAvatar(context, R.color.primaryDarkForeground));
@@ -614,7 +667,11 @@ public class ChangeDetailsFragment extends Fragment implements
             holder.mBinding.comments
                     .listenOn(mLineClickListener)
                     .from(comments);
+            holder.mBinding.attachments
+                    .listenOn(mAttachmentPressedListener)
+                    .from(attachments);
             holder.mBinding.setFolded(mFolded[position]);
+            holder.mBinding.setAttachments(attachments);
             holder.mBinding.setHandlers(mEventHandlers);
             holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
         }
@@ -820,6 +877,11 @@ public class ChangeDetailsFragment extends Fragment implements
             setProcessing(false);
             mReviewLoader.clear();
 
+            // CleanUp attachment list
+            ArrayList<Attachment> attachments = new ArrayList<>(mAttachments);
+            mAttachments.clear();
+            mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
+
             // Clean the message box
             mBinding.reviewInfo.reviewComment.setText(null);
             AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
@@ -833,13 +895,20 @@ public class ChangeDetailsFragment extends Fragment implements
 
             // Fetch the whole change
             forceRefresh();
+
+            // Upload the content of the attachments (skip url shortcuts)
+            if (!attachments.isEmpty()) {
+                AttachmentsContentUploadService.enqueueWork(getActivity(), attachments);
+            }
         }
 
         @Override
         public void onError(Throwable error) {
             setProcessing(false);
-
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
+
+            // Try to update attachment bar in case provider was invalidated
+            mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
 
             mReviewLoader.clear();
         }
@@ -1181,6 +1250,56 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
+    private final RxLoaderObserver<Attachment> mAttachmentDownloadObserver
+            = new RxLoaderObserver<Attachment>() {
+        @Override
+        public void onNext(Attachment attachment) {
+            mAttachmentDownloadLoader.clear();
+            if (mDialog != null) {
+                mDialog.dismiss();
+            }
+            mDialog = null;
+
+            performInternalOpenAttachment(attachment);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            ((BaseActivity) getActivity()).handleException(TAG, error);
+
+            mAttachmentDownloadLoader.clear();
+            if (mDialog != null) {
+                mDialog.dismiss();
+            }
+            mDialog = null;
+        }
+
+        @Override
+        public void onStarted() {
+            if (mDialog != null) {
+                mDialog.dismiss();
+            }
+            mDialog = new ProgressDialog(getActivity());
+            mDialog.setMessage(getString(R.string.fetching_file));
+            mDialog.setCancelable(false);
+            mDialog.show();
+        }
+    };
+
+    private BroadcastReceiver mAttachmentProviderChanged = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            onAttachmentProviderSelection(
+                    AttachmentsProviderFactory.getAttachmentProvider(context).getType());
+        }
+    };
+
+    private OnAttachmentsDroppedListener mOnAttachmentDroppedListener = attachments -> {
+        for (Attachment attachment : attachments) {
+            addPendingAttachments(attachment);
+        }
+    };
+
     @Keep
     public static class EmptyEventHandlers extends EmptyState.EventHandlers {
         private ChangeDetailsFragment mFragment;
@@ -1209,11 +1328,13 @@ public class ChangeDetailsFragment extends Fragment implements
 
     private ChangeDetailsFragmentBinding mBinding;
     private Picasso mPicasso;
+    private ProgressDialog mDialog;
 
     private FileAdapter mFileAdapter;
     private MessageAdapter mMessageAdapter;
 
     private EventHandlers mEventHandlers;
+    private AttachmentsSupport mAttachmentsSupport;
     private final Model mModel = new Model();
     private final EmptyState mEmptyState = new EmptyState();
     private EmptyEventHandlers mEmptyHandlers;
@@ -1222,6 +1343,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private DataResponse mResponse;
     private final List<RevisionInfo> mAllRevisions = new ArrayList<>();
     private final List<RevisionInfo> mAllRevisionsWithBase = new ArrayList<>();
+    private final ArrayList<Attachment> mAttachments = new ArrayList<>();
 
     private boolean mHideTaggedMessages;
     private boolean mHideCIMessages;
@@ -1241,6 +1363,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
     private RxLoader1<String, ChangeInfo> mMoveBranchLoader;
+    private RxLoader1<Attachment, Attachment> mAttachmentDownloadLoader;
     private int mLegacyChangeId;
 
     private Map<String, Integer> savedReview;
@@ -1271,7 +1394,6 @@ public class ChangeDetailsFragment extends Fragment implements
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mCurrentRevision = getArguments().getString(Constants.EXTRA_REVISION);
         mDiffAgainstRevision = getArguments().getString(Constants.EXTRA_BASE);
-        mPicasso = PicassoHelper.getPicassoClient(getContext());
         mEmptyHandlers = new EmptyEventHandlers(this);
 
         if (savedInstanceState != null) {
@@ -1291,6 +1413,7 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.setModel(mModel);
         mBinding.setEmpty(mEmptyState);
         mBinding.setEmptyHandlers(mEmptyHandlers);
+        mBinding.attachmentsDrop.listenTo(mOnAttachmentDroppedListener);
         startLoadersWithValidContext(savedInstanceState);
 
         // Force HW acceleration in case the activity disabled it in minidrawer mode
@@ -1305,6 +1428,16 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        // Check attachment status
+        if (mBinding != null && mAttachmentsSupport != null) {
+            mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -1314,6 +1447,7 @@ public class ChangeDetailsFragment extends Fragment implements
         outState.putString("diff_against_revision", mDiffAgainstRevision);
         outState.putBoolean("hideTaggedMessages", mHideTaggedMessages);
         outState.putBoolean("hideCIMessages", mHideCIMessages);
+        outState.putParcelableArrayList("attachments", mAttachments);
     }
 
     @Override
@@ -1363,6 +1497,43 @@ public class ChangeDetailsFragment extends Fragment implements
                 mDiffAgainstRevision = null;
                 forceRefresh();
             }
+        } else if (requestCode == REQUEST_ATTACHMENT_CAMERA && resultCode == Activity.RESULT_OK) {
+            File image = FileHelper.getMostRecentFile(getContext().getFilesDir());
+            if (image != null) {
+                Attachment attachment = new Attachment();
+                attachment.mLocalUri = Uri.fromFile(image);
+                attachment.mName = StringHelper.getFileNameWithoutExtension(image);
+                attachment.mSize = image.length();
+                attachment.mMimeType = StringHelper.getMimeType(image);
+                addPendingAttachments(attachment);
+            }
+        } else if (requestCode == REQUEST_ATTACHMENT_FILE && resultCode == Activity.RESULT_OK) {
+            if (data.getData() != null) {
+                Cursor c = null;
+                try {
+                    ContentResolver cr = getContext().getContentResolver();
+                    c = cr.query(data.getData(), null, null, null, null);
+                    if (c != null) {
+                        c.moveToFirst();
+                        Attachment attachment = new Attachment();
+                        attachment.mLocalUri = data.getData();
+                        attachment.mName = StringHelper.getFileNameWithoutExtension(
+                                new File(c.getString(
+                                        c.getColumnIndex(OpenableColumns.DISPLAY_NAME))));
+                        attachment.mSize = c.getLong(c.getColumnIndex(OpenableColumns.SIZE));
+                        attachment.mMimeType = cr.getType(attachment.mLocalUri);
+                        addPendingAttachments(attachment);
+                    }
+                } finally {
+                    try {
+                        if (c != null) {
+                            c.close();
+                        }
+                    } catch (Exception ex) {
+                        // ignore
+                    }
+                }
+            }
         }
     }
 
@@ -1372,6 +1543,14 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         if (mFileAdapter == null) {
+            mPicasso = PicassoHelper.getAvatarPicassoClient(getContext());
+            mAttachmentsSupport = new AttachmentsSupport(getContext());
+
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(ATTACHMENT_PROVIDER_CHANGED_ACTION);
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(
+                    mAttachmentProviderChanged, filter);
+
             mAccount = Preferences.getAccount(getContext());
             if (mAccount != null) {
                 mModel.isAuthenticated = mAccount.hasAuthenticatedAccessMode();
@@ -1385,7 +1564,13 @@ public class ChangeDetailsFragment extends Fragment implements
                         "hideTaggedMessages", mHideTaggedMessages);
                 mHideCIMessages = savedInstanceState.getBoolean(
                         "hideCIMessages", mHideCIMessages);
+                List<Attachment> attachments = savedInstanceState.getParcelableArrayList("attachments");
+                mAttachments.clear();
+                if (attachments != null) {
+                    mAttachments.addAll(attachments);
+                }
             }
+
             Repository repo = null;
             if (mHideCIMessages) {
                 repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
@@ -1507,6 +1692,8 @@ public class ChangeDetailsFragment extends Fragment implements
                     "action", this::doAction, mActionObserver);
             mMoveBranchLoader = loaderManager.create(
                     "move_branch", this::doMoveBranch, mMoveBranchObserver);
+            mAttachmentDownloadLoader = loaderManager.create(
+                    "download_attachment", this::doAttachmentDownload, mAttachmentDownloadObserver);
             mDraftsRefreshLoader = loaderManager.create(
                     "drafts_refresh", fetchDrafts(), mDraftsRefreshObserver);
             mChangeLoader.start(String.valueOf(mLegacyChangeId));
@@ -1518,6 +1705,12 @@ public class ChangeDetailsFragment extends Fragment implements
         super.onDestroyView();
         mBinding.unbind();
         mUiHandler.removeCallbacksAndMessages(null);
+        if (mDialog != null) {
+            mDialog.dismiss();
+        }
+        mDialog = null;
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(
+                mAttachmentProviderChanged);
     }
 
     private void updatePatchSetInfo(DataResponse response) {
@@ -1599,7 +1792,7 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.changeInfo.setIsTwoPane(getResources().getBoolean(R.bool.config_is_two_pane));
         mBinding.changeInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
-        mBinding.changeInfo.setCi(response.mCI);
+        mBinding.changeInfo.setCii(response.mCI);
         mBinding.changeInfo.ci
                 .listenOn(mOnContinuousIntegrationPressed)
                 .from(response.mCI);
@@ -1612,6 +1805,21 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.reviewInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
         mBinding.reviewInfo.reviewLabels.from(response.mChange, savedReview);
+        mBinding.reviewInfo.setHasReviewAttachments(mAttachments.size() > 0);
+        AttachmentsProvider attachmentProvider =
+                AttachmentsProviderFactory.getAttachmentProvider(getContext());
+        if (!mAttachments.isEmpty() && !attachmentProvider.isProviderSupported()) {
+            mAttachments.clear();
+        }
+        mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
+        mBinding.reviewInfo.reviewAttachments
+                .listenOn(new OnAttachmentDroppedListener() {
+                    @Override
+                    public void onAttachmentDropped(Attachment attachment) {
+                        performDropAttachment(attachment);
+                    }
+                })
+                .from(mAttachments);
         savedReview = null;
     }
 
@@ -1755,6 +1963,10 @@ public class ChangeDetailsFragment extends Fragment implements
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return SafeObservable.fromNullCallable(() -> {
+                        // Create attachments metadata
+                        performCreateAttachmentMetadata(input);
+
+                        // Create the review
                         ReviewInfo response = api.setChangeRevisionReview(
                                 String.valueOf(mLegacyChangeId), mCurrentRevision, input)
                                 .blockingFirst();
@@ -1953,6 +2165,15 @@ public class ChangeDetailsFragment extends Fragment implements
                     MoveInput input = new MoveInput();
                     input.destinationBranch = newBranch;
                     return api.moveChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Observable<Attachment> doAttachmentDownload(final Attachment attachment) {
+        return SafeObservable.fromNullCallable(() -> {
+                    CacheHelper.downloadAttachmentFile(getContext(), attachment);
+                    return attachment;
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -2268,6 +2489,16 @@ public class ChangeDetailsFragment extends Fragment implements
 
     private void performReview() {
         if (!isLocked()) {
+            AttachmentsProvider provider =
+                    AttachmentsProviderFactory.getAttachmentProvider(getContext());
+            if (!mAttachments.isEmpty() && !provider.isProviderSupported()) {
+                mAttachments.clear();
+                mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
+                ((BaseActivity) getActivity()).showWarning(R.string.attachment_provider_not_supported);
+                return;
+            }
+
+
             String message = StringHelper.obtainQuoteFromMessage(
                     mBinding.reviewInfo.reviewComment.getText().toString());
             Map<String, Integer> review = mBinding.reviewInfo.reviewLabels.getReview(false);
@@ -2333,7 +2564,7 @@ public class ChangeDetailsFragment extends Fragment implements
         String message = mResponse.mChange.revisions.get(mCurrentRevision).commit.message;
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(title, null, message,
-                action, hint, false, true, true, v, REQUEST_CODE_EDIT_MESSAGE, null);
+                action, hint, false, true, true, null, v, REQUEST_CODE_EDIT_MESSAGE, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
@@ -2346,7 +2577,8 @@ public class ChangeDetailsFragment extends Fragment implements
         String message = mResponse.mChange.revisions.get(mCurrentRevision).description;
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(title, null, message,
-                action, hint, false, true, true, v, REQUEST_CODE_EDIT_REVISION_DESCRIPTION, null);
+                action, hint, false, true, true, null, v,
+                REQUEST_CODE_EDIT_REVISION_DESCRIPTION, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
@@ -2365,6 +2597,113 @@ public class ChangeDetailsFragment extends Fragment implements
         String action = getString(R.string.action_share);
         String title = getString(R.string.change_details_title, mLegacyChangeId);
         ActivityHelper.share(getContext(), action, title, uri.toString());
+    }
+
+    private void performOpenAttachment(Attachment attachment) {
+        String mimetype = attachment.mMimeType;
+        if ("application/octet-stream".equals(attachment.mMimeType)) {
+            attachment.mMimeType = StringHelper.getMimeType(new File(attachment.mName));
+        }
+
+        if (mimetype.equals("application/internet-shortcut")
+                || mimetype.equals("application/x-url")) {
+            ActivityHelper.openUriInCustomTabs(getActivity(), Uri.parse(attachment.mUrl));
+        } else {
+            if (CacheHelper.hasAttachmentFile(getContext(), attachment)) {
+                // was previously cached
+                performInternalOpenAttachment(attachment);
+            } else {
+                // it must be previously downloaded
+                mAttachmentDownloadLoader.clear();
+                mAttachmentDownloadLoader.restart(attachment);
+            }
+        }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void performDropAttachment(Attachment attachment) {
+        Iterator<Attachment> it = mAttachments.iterator();
+        while (it.hasNext()) {
+            Attachment a = it.next();
+            if (a.mLocalUri.equals(attachment.mLocalUri)) {
+                it.remove();
+                if (CacheHelper.hasAttachmentFile(getContext(), a)) {
+                    CacheHelper.getAttachmentFile(getContext(), a).delete();
+                }
+
+                updateReviewInfo(mResponse);
+                break;
+            }
+        }
+    }
+
+    private void performOpenAttachmentChooser(View v, String action) {
+        switch (action) {
+            case "camera":
+                Intent i = AndroidHelper.createCaptureImageIntent(getContext());
+                if (i == null) {
+                    ((BaseActivity) getActivity()).showWarning(
+                            R.string.change_attachments_camera_capture_failure);
+                    return;
+                }
+                startActivityForResult(i, REQUEST_ATTACHMENT_CAMERA);
+                break;
+
+            case "media":
+                GalleryChooserFragment gcf = GalleryChooserFragment.newInstance();
+                gcf.show(getChildFragmentManager(), GalleryChooserFragment.TAG);
+                break;
+
+            case "link":
+                String url = AndroidHelper.obtainUrlFromClipboard(getContext());
+                EditDialogFragment edf = EditDialogFragment.newInstance(
+                        getString(R.string.url_chooser_dialog_title), null, url,
+                        getString(R.string.action_attach),
+                        getString(R.string.url_chooser_dialog_hint),
+                        false, false, false, StringHelper.WEB_REGEXP, v,
+                        REQUEST_CODE_URL_CHOOSER, null);
+                edf.show(getChildFragmentManager(), GalleryChooserFragment.TAG);
+
+                break;
+
+            case "file":
+                if (AndroidHelper.isKitkatOrGreater()) {
+                    i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                } else {
+                    i = new Intent(Intent.ACTION_GET_CONTENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
+                }
+                i.setType("*/*");
+                startActivityForResult(Intent.createChooser(i,
+                        getString(R.string.file_chooser_dialog_title)), REQUEST_ATTACHMENT_FILE);
+                break;
+
+            case "code":
+                SnippetFragment sf = SnippetFragment.newInstance(getContext());
+                sf.show(getChildFragmentManager(), SnippetFragment.TAG);
+                break;
+
+            case "settings":
+                ProviderChooserFragment pcf = ProviderChooserFragment.newInstance();
+                pcf.show(getChildFragmentManager(), ProviderChooserFragment.TAG);
+                break;
+        }
+    }
+
+    private void performInternalOpenAttachment(Attachment attachment) {
+        // If attachment is a text file and is lower than 1MB, then open on our internal
+        // snippet editor
+        if (attachment.mMimeType.startsWith("text/") && attachment.mSize < 1048576) {
+            SnippetFragment sf = SnippetFragment.newInstance(getContext(),
+                    Uri.fromFile(CacheHelper.getAttachmentFile(getContext(), attachment)));
+            sf.show(getChildFragmentManager(), SnippetFragment.TAG);
+            return;
+        }
+
+        String action = getString(R.string.action_share);
+        Uri uri = FileProvider.getUriForFile(getContext(), "com.ruesga.rview.content",
+                CacheHelper.getAttachmentFile(getContext(), attachment));
+        ActivityHelper.open(getContext(), action, uri, attachment.mMimeType);
     }
 
     private void performShowAddReviewerDialog(AddReviewerState reviewerState, View v) {
@@ -2391,7 +2730,7 @@ public class ChangeDetailsFragment extends Fragment implements
         String hint = getString(R.string.change_topic_hint);
 
         EditDialogFragment fragment = EditDialogFragment.newInstance(title, null,
-                mResponse.mChange.topic, action, hint, true, true, false, v,
+                mResponse.mChange.topic, action, hint, true, true, false, null, v,
                 REQUEST_CODE_CHANGE_TOPIC, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
@@ -2424,7 +2763,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private void performShowRequestMessageDialog(View v, String title,
             String action, String hint, String text, boolean canBeEmpty, int requestCode) {
         EditDialogFragment fragment = EditDialogFragment.newInstance(
-                title, null, text, action, hint, canBeEmpty, true, true, v, requestCode, null);
+                title, null, text, action, hint, canBeEmpty, true, true, null, v, requestCode, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
     }
 
@@ -2815,6 +3154,20 @@ public class ChangeDetailsFragment extends Fragment implements
                     mChangeEditRevisionDescriptionLoader.clear();
                     mChangeEditRevisionDescriptionLoader.restart(descriptionInput);
                     break;
+
+                case REQUEST_CODE_URL_CHOOSER:
+                    Attachment attachment = new Attachment();
+                    // Sanitize the url
+                    if (!(newValue.toLowerCase(Locale.US).startsWith("http://") ||
+                            newValue.toLowerCase(Locale.US).startsWith("https://"))) {
+                        newValue = "http://" + newValue;
+                    }
+                    attachment.mLocalUri = Uri.parse(newValue);
+                    String name = attachment.mLocalUri.getLastPathSegment();
+                    attachment.mName = name == null ? newValue : name;
+                    attachment.mMimeType = "application/internet-shortcut";
+                    addPendingAttachments(attachment);
+                    break;
             }
         }
     }
@@ -2848,6 +3201,82 @@ public class ChangeDetailsFragment extends Fragment implements
                     mActionLoader.restart(ModelHelper.ACTION_SUBMIT, null);
                     break;
             }
+        }
+    }
+
+    @Override
+    public void onGallerySelection(List<GalleryChooserFragment.MediaItem> selection) {
+        for (GalleryChooserFragment.MediaItem media : selection) {
+            Attachment attachment = new Attachment();
+            attachment.mLocalUri = media.mUri;
+            attachment.mName = media.mTitle;
+            attachment.mSize = media.mSize;
+            attachment.mMimeType = media.mMimeType;
+            addPendingAttachments(attachment);
+        }
+    }
+
+    @Override
+    public void onSnippetSaved(Uri uri, String mimeType, long size) {
+        Attachment attachment = new Attachment();
+        attachment.mLocalUri = uri;
+        attachment.mName = getString(R.string.snippet_dialog_snippet_file_name);
+        attachment.mSize = size;
+        attachment.mMimeType = mimeType;
+        addPendingAttachments(attachment);
+    }
+
+    private void addPendingAttachments(Attachment attachment) {
+        ModelHelper.addAttachment(attachment, mAttachments);
+        updateReviewInfo(mResponse);
+        mUiHandler.post(() -> mBinding.nestedScroll.fullScroll(View.FOCUS_DOWN));
+    }
+
+    @Override
+    public void onAttachmentProviderSelection(Provider provider) {
+        mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
+
+        // Initialize the provider, if it isn't initialized previously
+        AttachmentsProvider attachmentProvider =
+                AttachmentsProviderFactory.getAttachmentProvider(getContext());
+        if (!attachmentProvider.isProviderSupported()) {
+            attachmentProvider.initialize(getChildFragmentManager());
+        }
+    }
+
+    private void performCreateAttachmentMetadata(final ReviewInput input)
+            throws AuthenticationException {
+        AttachmentsProvider attachmentsProvider =
+                AttachmentsProviderFactory.getAttachmentProvider(getContext());
+        if (!attachmentsProvider.isProviderSupported()) {
+            // Cannot upload to server
+            throw new AuthenticationException();
+        }
+
+
+        // Create attachment metadata in the remote server. Later we uploaded the content
+        // in a background service
+        attachmentsProvider.createAttachmentsMetadata(mAttachments);
+
+        // Build attachment format in review message
+        StringBuilder sb = new StringBuilder();
+        for (Attachment attachment : mAttachments) {
+            if (!TextUtils.isEmpty(attachment.mId) && !TextUtils.isEmpty(attachment.mUrl)) {
+                Attachment info = new Attachment();
+                info.mName = attachment.mName;
+                info.mMimeType = attachment.mMimeType;
+                info.mSize = attachment.mSize;
+
+                sb.append(String.format(Locale.US, "![ATTACHMENT:%s](%s)",
+                        SerializationManager.getInstance().toJson(info), attachment.mUrl));
+                sb.append("\n");
+            }
+        }
+        if (sb.length() != 0) {
+            if (input.message == null) {
+                input.message = "";
+            }
+            input.message += "\n\n" + sb.toString();
         }
     }
 }

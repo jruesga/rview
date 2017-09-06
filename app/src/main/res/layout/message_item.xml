@@ -21,12 +21,14 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.misc.StringHelper" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="index" type="java.lang.Integer" />
         <variable name="folded" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeMessageInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
         <variable name="foldHandlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
+        <variable name="attachments" type="java.util.List&lt;com.ruesga.rview.attachments.Attachment&gt;" />
     </data>
 
     <RelativeLayout
@@ -104,7 +106,7 @@
             android:singleLine="true"
             android:maxLines="1"
             android:ellipsize="end"
-            app:bindUnwrappedText="@{model.message}"
+            app:bindUnwrappedText="@{StringHelper.removeAllAttachments(model.message)}"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:visibility="@{safeUnbox(folded) ? View.VISIBLE : View.GONE}"
             android:textColor="?android:attr/textColorPrimary"
@@ -138,7 +140,7 @@
             android:layout_toLeftOf="@id/reply"
             android:layout_toStartOf="@id/reply"
             android:layout_alignWithParentIfMissing="true"
-            app:userMessage="@{model.message}"
+            app:userMessage="@{StringHelper.removeAllAttachments(model.message)}"
             app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
             android:visibility="@{!safeUnbox(folded) ? View.VISIBLE : View.GONE}"
             android:textAppearance="@style/TextAppearance.VerySmall"
@@ -156,6 +158,18 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:visibility="@{!safeUnbox(folded) ? View.VISIBLE : View.GONE}" />
+
+        <com.ruesga.rview.widget.AttachmentsView
+            android:id="@+id/attachments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_below="@id/comments"
+            android:layout_toRightOf="@id/avatar"
+            android:layout_toEndOf="@id/avatar"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:visibility="@{!safeUnbox(folded) &amp;&amp; (attachments != null &amp;&amp; !attachments.isEmpty()) ? View.VISIBLE : View.GONE}" />
 
     </RelativeLayout>
 </layout>

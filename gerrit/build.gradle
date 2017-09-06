@@ -37,10 +37,6 @@ dependencies {
     compile "com.github.jruesga:rxloader:${libraries.rxloader2}"
     compile "org.antlr:antlr-runtime:${libraries.antlrv3}"
 
-    testCompile "junit:junit:${testLibraries.junit}"
-    testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
-    testCompile "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
-    testCompile "org.mockito:mockito-core:${testLibraries.mockito}"
     testCompile "net.iharder:base64:${testLibraries.base64}"
 }
 

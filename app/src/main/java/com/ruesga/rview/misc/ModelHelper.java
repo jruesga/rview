@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.R;
+import com.ruesga.rview.attachments.Attachment;
 import com.ruesga.rview.gerrit.Authorization;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.GerritServiceFactory;
@@ -682,5 +683,14 @@ public class ModelHelper {
             return "1";
         }
         return revId;
+    }
+
+    public static void addAttachment(Attachment src, List<Attachment> dst) {
+        for (Attachment a : dst) {
+            if (a.mLocalUri.equals(src.mLocalUri)) {
+                return;
+            }
+        }
+        dst.add(src);
     }
 }

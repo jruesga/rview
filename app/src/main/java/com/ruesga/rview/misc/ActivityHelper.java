@@ -172,9 +172,33 @@ public class ActivityHelper {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressWarnings("deprecation")
+    public static void open(Context ctx, String action, Uri uri, String mimeType) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            if (mimeType == null) {
+                intent.setData(uri);
+            } else {
+                intent.setDataAndType(uri, mimeType);
+            }
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+            } else {
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+            }
+            ctx.startActivity(Intent.createChooser(intent, action));
+
+        } catch (ActivityNotFoundException ex) {
+            String msg = ctx.getString(R.string.exception_cannot_handle_link, uri.toString());
+            Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @SuppressWarnings("deprecation")
     public static void share(Context ctx, String action, String title, String text) {
         try {
-            Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+            Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_SUBJECT, title);
             intent.putExtra(Intent.EXTRA_TEXT, text);
@@ -186,7 +210,6 @@ public class ActivityHelper {
             ctx.startActivity(Intent.createChooser(intent, action));
 
         } catch (ActivityNotFoundException ex) {
-            // Fallback to default browser
             String msg = ctx.getString(R.string.exception_cannot_share_link);
             Toast.makeText(ctx, msg, Toast.LENGTH_SHORT).show();
         }

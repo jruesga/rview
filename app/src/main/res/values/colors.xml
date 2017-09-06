@@ -20,6 +20,7 @@
     <color name="primaryDarkForeground">@color/primaryDark</color>
     <color name="accent">#8d2205</color>
     <color name="alert">#ceab56</color>
+    <color name="overlay">#90000000</color>
     <color name="secondaryIconColor">#757575</color>
     <color name="approved">#2e7d32</color>
     <color name="rejected">#c62828</color>
@@ -56,9 +57,18 @@
     <color name="toastTextColor">@android:color/white</color>
     <color name="toastBackgroundColor">#b24d4c4c</color>
 
+    <color name="boxBorderColor">#e6e6e6</color>
+
     <color name="starred">#d9b864</color>
 
     <color name="quote">#9e9e9e</color>
 
     <color name="empty_state">#9e9e9e</color>
+    <color name="empty_background">#d2d2d2</color>
+
+    <color name="mime_type_word">#295598</color>
+    <color name="mime_type_excel">#1f6f43</color>
+    <color name="mime_type_powerpoint">#d04323</color>
+    <color name="mime_type_pdf">#c30b15</color>
+    <color name="mime_type_default">#47454c</color>
 </resources>
