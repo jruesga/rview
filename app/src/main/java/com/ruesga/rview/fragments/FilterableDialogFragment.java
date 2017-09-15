@@ -203,7 +203,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         return false;
     }
 
-    private boolean enabledOrDisableButtons() {
+    boolean enabledOrDisableButtons() {
         if (getDialog() != null) {
             final AlertDialog dialog = ((AlertDialog) getDialog());
             Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -223,9 +223,13 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
                 continue;
             }
             CharSequence text = getFilterView()[i].getText();
-            boolean valid = (isAllowEmpty() || !TextUtils.isEmpty(text))
-                    && (!isSelectionRequired(i) || mIsUserSelection[i]);
-            if (!valid) {
+            if (isAllowEmpty() && TextUtils.isEmpty(text)) {
+                continue;
+            }
+            if (isSelectionRequired(i) && !mIsUserSelection[i]) {
+                return false;
+            }
+            if (TextUtils.isEmpty(text)) {
                 return false;
             }
         }

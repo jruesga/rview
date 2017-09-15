@@ -98,6 +98,11 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment implemen
     }
 
     @Override
+    public boolean isValidated() {
+        return mBinding.changeBase.isChecked();
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
@@ -130,6 +135,7 @@ public class BaseChooserDialogFragment extends FilterableDialogFragment implemen
     public void onCheckedChanged(CompoundButton button, boolean checked) {
         mBinding.baseWrapper.setEnabled(checked);
         mBinding.baseWrapper.setHintEnabled(checked);
+        enabledOrDisableButtons();
     }
 
     @Override
