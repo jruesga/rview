@@ -1,7 +1,7 @@
 Rview
 =====
 
-### Description [![Build Status](https://travis-ci.org/jruesga/rview.svg?branch=master)](https://travis-ci.org/jruesga/rview)
+### Description [![Build Status](https://travis-ci.org/jruesga/rview.svg?branch=master)](https://travis-ci.org/jruesga/rview/branches) [![GitHub release](https://img.shields.io/github/release/jruesga/rview.svg)]()
 
 A Gerrit client application  for Android
 
