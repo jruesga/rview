@@ -299,7 +299,7 @@ public class EditorFragment extends Fragment
             }
 
             FileInfo info = mFileInfo.get(mFile);
-            final boolean wasDeleted = info.status.equals(FileStatus.D);
+            final boolean wasDeleted = info != null && info.status.equals(FileStatus.D);
 
             if (!wasDeleted) {
                 try {
