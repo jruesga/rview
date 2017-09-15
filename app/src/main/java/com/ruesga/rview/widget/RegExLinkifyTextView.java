@@ -49,17 +49,20 @@ public class RegExLinkifyTextView extends StyleableTextView {
         public final String mType;
         public final Pattern mPattern;
         private final String mLink;
+        private final boolean mSingleGroup;
         private final RegExLinkExtractor mExtractor;
 
-        public RegExLink(String type, String regEx, String link) {
-            this(type, regEx, link, null);
+        public RegExLink(String type, String regEx, String link, boolean singleGroup) {
+            this(type, regEx, link, singleGroup, null);
         }
 
-        private RegExLink(String type, String regEx, String link, RegExLinkExtractor extractor) {
+        private RegExLink(String type, String regEx, String link,
+                boolean singleGroup, RegExLinkExtractor extractor) {
             mType = type;
             mPattern = Pattern.compile(regEx,
                     Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             mLink = link;
+            mSingleGroup = singleGroup;
             mExtractor = extractor;
         }
     }
@@ -67,19 +70,23 @@ public class RegExLinkifyTextView extends StyleableTextView {
     public static final RegExLink EMAIL_REGEX = new RegExLink(
             "email",
             StringHelper.EMAIL_REGEXP,
-            "mailto:$1");
+            "mailto:$1",
+            false);
     public static final RegExLink WEB_LINK_REGEX = new RegExLink(
             "web",
             StringHelper.WEB_REGEXP,
-            "$1");
+            "$1",
+            false);
     public static final RegExLink GERRIT_CHANGE_ID_REGEX = new RegExLink(
             Constants.CUSTOM_URI_CHANGE,
             StringHelper.CHANGE_ID_REGEXP,
-            "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE + "/$1");
+            "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE + "/$1",
+            false);
     public static final RegExLink GERRIT_COMMIT_REGEX = new RegExLink(
             Constants.CUSTOM_URI_COMMIT,
             StringHelper.COMMIT_REGEXP,
-            "com.ruesga.rview://" + Constants.CUSTOM_URI_COMMIT + "/$1");
+            "com.ruesga.rview://" + Constants.CUSTOM_URI_COMMIT + "/$1",
+            false);
 
     private final List<RegExLink> mRegEx = new ArrayList<>();
 
@@ -111,11 +118,13 @@ public class RegExLinkifyTextView extends StyleableTextView {
                 Constants.CUSTOM_URI_CHANGE_ID,
                 "http(s)?://" + uri + "((\\?polygerrit=\\d)?(#/)?c/)?(\\d)+(/(((\\d)+\\.\\.)?(\\d)+)?(/(\\S)*+)?)?",
                 "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
+                false,
                 group -> UriHelper.extractChangeId(group, repository)));
         regexLinks.add(new RegExLink(
                 Constants.CUSTOM_URI_CHANGE_ID,
                 "http(s)?://" + uri + "(\\?polygerrit=\\d)?(#/)?c/.*/\\+/\\d+(/(\\S)*+)?",
                 "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
+                false,
                 group -> UriHelper.extractChangeId(group, repository)));
 
         // Queries
@@ -123,6 +132,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
                 Constants.CUSTOM_URI_QUERY,
                 "http(s)?://" + uri + "(\\?polygerrit=\\d)?(#/)?q/.*(\\\\s|$)",
                 "$1",
+                false,
                 null));
 
         return regexLinks;
@@ -142,9 +152,9 @@ public class RegExLinkifyTextView extends StyleableTextView {
 
                     final Matcher matcher = regEx.mPattern.matcher(text);
                     while (matcher.find()) {
-                        String group = matcher.group();
-                        int start = matcher.start();
-                        int end = matcher.end();
+                        String group = regEx.mSingleGroup ? matcher.group(1) : matcher.group();
+                        int start = regEx.mSingleGroup ? matcher.start(1) : matcher.start();
+                        int end = regEx.mSingleGroup ? matcher.end(1) : matcher.end();
 
                         // Try to deal with ".", ")", "]" catches by the regexp (this shouldn't
                         // be the case for the 99% of the urls). Also trim up spaces.

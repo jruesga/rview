@@ -371,25 +371,30 @@ public class Formatter {
                     RegExLinkifyTextView.createRepositoryRegExpLinks(mAccount.mRepository));
         }
 
-        if (info != null && info.commentLinks != null && info.commentLinks.isEmpty()) {
+        if (info != null && info.commentLinks != null) {
             for (String key : info.commentLinks.keySet()) {
                 switch (key) {
                     case "changeid":
                     case "commit":
                         break;
                     default:
+                        String match = info.commentLinks.get(key).match;
                         String link = info.commentLinks.get(key).link;
-                        if (TextUtils.isEmpty(link) &&
-                                !TextUtils.isEmpty(info.commentLinks.get(key).html)) {
-                            Matcher matcher = RegExLinkifyTextView.WEB_LINK_REGEX.mPattern.matcher(
-                                    info.commentLinks.get(key).html);
-                            if (matcher.find()) {
-                                link = matcher.group();
-                                linksScanners.add(new RegExLink(
-                                        RegExLinkifyTextView.WEB_LINK_REGEX.mType,
-                                        info.commentLinks.get(key).match, link));
-                            }
+                        String htmlLink = StringHelper.extractLinkFromHtml(
+                                info.commentLinks.get(key).html);
+                        if (TextUtils.isEmpty(match) && TextUtils.isEmpty(link)
+                                && TextUtils.isEmpty(htmlLink)) {
+                            continue;
                         }
+
+                        // Use link if available, otherwise extract the link from the html
+                        if (TextUtils.isEmpty(link)) {
+                            link = htmlLink;
+                        }
+
+                        // Add the link scanner
+                        linksScanners.add(new RegExLink(RegExLinkifyTextView.WEB_LINK_REGEX.mType,
+                                match, link, true));
                         break;
                 }
             }

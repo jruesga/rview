@@ -70,6 +70,8 @@ public class StringHelper {
     public static final Pattern GERRIT_CHANGE_ID = Pattern.compile("\\d+");
     public static final Pattern GERRIT_ENCODED_CHANGE_ID = Pattern.compile("\\d+:\\d+(\\.\\.\\d+)?:.*");
 
+    public static final Pattern LINK_HTML_REGEXP = Pattern.compile("href=\"(.*?)\"");
+
     private static final Pattern NUMERIC_REGEXP = Pattern.compile("\\d+");
 
     private static final Pattern ATTACHMENT_REGEXP = Pattern.compile("!\\[ATTACHMENT:\\{.*\\}\\]\\(" + WEB_REGEXP + "\\)");
@@ -345,6 +347,17 @@ public class StringHelper {
             }
         }
         return attachments;
+    }
+
+    public static String extractLinkFromHtml(String html) {
+        if (html == null) {
+            return null;
+        }
+        Matcher matcher = LINK_HTML_REGEXP.matcher(html);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
     }
 
 }
