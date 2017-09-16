@@ -1905,6 +1905,20 @@ public class ChangeDetailsFragment extends Fragment implements
                             }
                             return new HashMap<>();
                         }),
+                        SafeObservable.fromNullCallable(() -> {
+                            Repository repository =
+                                    ModelHelper.findRepositoryForAccount(ctx, mAccount);
+                            if (TextUtils.isEmpty(repository.mCiAccounts)) {
+                                return new ArrayList<>();
+                            }
+
+                            final String revisionId = TextUtils.isEmpty(mCurrentRevision)
+                                    ? ModelHelper.extractBestRevisionId(dataResponse.mChange)
+                                    : mCurrentRevision;
+                            int revNumber = dataResponse.mChange.revisions.get(revisionId).number;
+                            return ContinuousIntegrationHelper.getContinuousIntegrationStatus(
+                                    repository, changeId, revNumber);
+                        }),
                         this::combineResponse
                     );
                 }
@@ -2212,7 +2226,8 @@ public class ChangeDetailsFragment extends Fragment implements
             Map<String, List<CommentInfo>> revisionComments,
             Map<String, List<CommentInfo>> baseRevisionComments,
             Map<String, List<CommentInfo>> revisionDraftComments,
-            Map<String, List<CommentInfo>> baseRevisionDraftComments) {
+            Map<String, List<CommentInfo>> baseRevisionDraftComments,
+            List<ContinuousIntegrationInfo> ci) {
         // Map inline and draft comments
         Map<String, Integer> inlineComments = new HashMap<>();
         if (revisionComments != null) {
@@ -2259,8 +2274,8 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         // Continuous Integration
-        response.mCI = null;
-        if (getActivity() != null) {
+        response.mCI = ci;
+        if (getActivity() != null && ci.isEmpty()) {
             Repository repository = ModelHelper.findRepositoryForAccount(getActivity(), mAccount);
             if (repository != null && !TextUtils.isEmpty(repository.mCiAccounts)) {
                 final String revisionId = TextUtils.isEmpty(mCurrentRevision)
@@ -2444,7 +2459,9 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     private void performContinuousIntegrationPressed(ContinuousIntegrationInfo ci) {
-        ActivityHelper.openUri(getActivity(), Uri.parse(ci.mUrl), true);
+        if (!TextUtils.isEmpty(ci.mUrl)) {
+            ActivityHelper.openUriInCustomTabs(getActivity(), Uri.parse(ci.mUrl), true);
+        }
     }
 
     private void performAccountClicked(AccountInfo account, Object tag) {

@@ -26,6 +26,8 @@ public class Repository implements Parcelable, Comparable<Repository> {
     @SerializedName("name") public String mName;
     @SerializedName("url") public String mUrl;
     @SerializedName("ci_accounts") public String mCiAccounts;
+    @SerializedName("ci_status_mode") public String mCiStatusMode;
+    @SerializedName("ci_status_url") public String mCiStatusUrl;
     @SerializedName("trustAllCertificates") public boolean mTrustAllCertificates;
 
     public Repository(String name, String url, boolean trustAllCertificates) {
@@ -40,6 +42,12 @@ public class Repository implements Parcelable, Comparable<Repository> {
         mTrustAllCertificates = in.readInt() == 1;
         if (in.readInt() == 1) {
             mCiAccounts = in.readString();
+        }
+        if (in.readInt() == 1) {
+            mCiStatusMode = in.readString();
+        }
+        if (in.readInt() == 1) {
+            mCiStatusUrl = in.readString();
         }
     }
 
@@ -68,6 +76,18 @@ public class Repository implements Parcelable, Comparable<Repository> {
         if (!TextUtils.isEmpty(mCiAccounts)) {
             parcel.writeInt(1);
             parcel.writeString(mCiAccounts);
+        } else {
+            parcel.writeInt(0);
+        }
+        if (!TextUtils.isEmpty(mCiStatusMode)) {
+            parcel.writeInt(1);
+            parcel.writeString(mCiStatusMode);
+        } else {
+            parcel.writeInt(0);
+        }
+        if (!TextUtils.isEmpty(mCiStatusUrl)) {
+            parcel.writeInt(1);
+            parcel.writeString(mCiStatusUrl);
         } else {
             parcel.writeInt(0);
         }

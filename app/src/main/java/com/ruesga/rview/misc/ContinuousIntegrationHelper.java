@@ -18,6 +18,9 @@ package com.ruesga.rview.misc;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.ContinuousIntegrationInfo.BuildStatus;
@@ -33,11 +36,112 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import static com.ruesga.rview.widget.RegExLinkifyTextView.WEB_LINK_REGEX;
 
 public class ContinuousIntegrationHelper {
 
     private static final String TAG = "ContinuousIntegration";
+
+    public static List<ContinuousIntegrationInfo> getContinuousIntegrationStatus(
+            Repository repository, String changeId, int revisionNumber) {
+        List<ContinuousIntegrationInfo> ci = new ArrayList<>();
+        if (!TextUtils.isEmpty(repository.mCiStatusMode)
+                && !TextUtils.isEmpty(repository.mCiStatusUrl)) {
+            // Check status mode
+            switch (repository.mCiStatusMode) {
+                case "cq":
+                    // BuildBot CQ status type
+                    return obtainFromCQServer(repository, changeId, revisionNumber);
+            }
+        }
+        return sort(ci);
+    }
+
+    @SuppressWarnings({"ConstantConditions", "TryFinallyCanBeTryWithResources"})
+    private static List<ContinuousIntegrationInfo> obtainFromCQServer(
+            Repository repository, String changeId, int revisionNumber) {
+        List<ContinuousIntegrationInfo> statuses = new ArrayList<>();
+
+        String url = repository.mCiStatusUrl
+                .replaceFirst("\\{change\\}", changeId)
+                .replaceFirst("\\{revision\\}", String.valueOf(revisionNumber));
+
+        try {
+            OkHttpClient okhttp = NetworkingHelper.createNetworkClient();
+            Request request = new Request.Builder().url(url).build();
+
+            Response response = okhttp.newCall(request).execute();
+            try {
+                String json = response.body().string();
+                JsonObject root = new JsonParser().parse(json).getAsJsonObject();
+                if (!root.has("builds")) {
+                    return statuses;
+                }
+                JsonArray o = root.getAsJsonArray("builds");
+                int c1 = o.size();
+                for (int i = 0; i < c1; i++) {
+                    JsonObject b = o.get(i).getAsJsonObject();
+                    try {
+                        String status = b.get("status").getAsString();
+                        String ciUrl = b.get("url").getAsString();
+                        String ciName = null;
+                        JsonArray tags = b.get("tags").getAsJsonArray();
+                        int c2 = tags.size();
+                        for (int j = 0; j < c2; j++) {
+                            String tag = tags.get(j).getAsJsonPrimitive().getAsString();
+                            if (tag.startsWith("builder:")) {
+                                ciName = tag.substring(tag.indexOf(":") + 1);
+                            }
+                        }
+
+                        if (!TextUtils.isEmpty(status) && !TextUtils.isEmpty(ciUrl)
+                                && !TextUtils.isEmpty(ciName)) {
+                            BuildStatus buildStatus = BuildStatus.RUNNING;
+                            if (status.equals("COMPLETED")) {
+                                String result = b.get("result").getAsString();
+
+                                switch (result) {
+                                    case "SUCCESS":
+                                        buildStatus = BuildStatus.SUCCESS;
+                                        break;
+                                    case "FAILURE":
+                                        buildStatus = BuildStatus.FAILURE;
+                                        break;
+                                    default:
+                                        buildStatus = BuildStatus.SKIPPED;
+                                        break;
+                                }
+                            }
+
+                            ContinuousIntegrationInfo c =
+                                    findContinuousIntegrationInfo(statuses, ciName);
+                            // Attempts are sorted in reversed order, so we need the first one
+                            if (c == null) {
+                                statuses.add(
+                                        new ContinuousIntegrationInfo(ciName, ciUrl, buildStatus));
+                            }
+                        }
+
+                    } catch (Exception ex) {
+                        Log.w(TAG, "Failed to parse ci object" + b, ex);
+                    }
+
+                }
+
+            } finally {
+                response.close();
+            }
+
+        } catch (Exception ex) {
+            Log.w(TAG, "Failed to obtain ci status from " + url, ex);
+        }
+
+        return statuses;
+    }
 
     public static List<ContinuousIntegrationInfo> extractContinuousIntegrationInfo(
             int patchSet, ChangeMessageInfo[] messages, Repository repository) {
@@ -113,7 +217,7 @@ public class ContinuousIntegrationHelper {
             Log.d(TAG, "Failed to obtain continuous integration", ex);
             ci.clear();
         }
-        return ci;
+        return sort(ci);
     }
 
     private static BuildStatus getBuildStatus(String line) {
@@ -217,5 +321,20 @@ public class ContinuousIntegrationHelper {
             }
         }
         return null;
+    }
+
+    private static ContinuousIntegrationInfo findContinuousIntegrationInfo(
+            List<ContinuousIntegrationInfo> ci, String name) {
+        for (ContinuousIntegrationInfo c : ci) {
+            if (c.mName.equals(name)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private static List<ContinuousIntegrationInfo> sort(List<ContinuousIntegrationInfo> ci) {
+        Collections.sort(ci, (c1, c2) -> c1.mName.compareTo(c2.mName));
+        return ci;
     }
 }
