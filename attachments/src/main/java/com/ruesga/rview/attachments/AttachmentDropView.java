@@ -66,7 +66,7 @@ public class AttachmentDropView extends View implements View.OnDragListener {
             case DragEvent.ACTION_DRAG_STARTED:
                 AttachmentsProvider provider =
                         AttachmentsProviderFactory.getAttachmentProvider(getContext());
-                return mCallback != null && provider.isProviderSupported();
+                return mCallback != null && provider.isSupported();
             case DragEvent.ACTION_DRAG_ENTERED:
                 setBackgroundColor(ContextCompat.getColor(getContext(), R.color.attachmentOverlay));
                 return isValidDragEvent(dragEvent.getClipData());

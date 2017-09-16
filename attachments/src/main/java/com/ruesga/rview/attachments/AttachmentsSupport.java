@@ -31,11 +31,15 @@ public class AttachmentsSupport {
         mPackageManager = context.getPackageManager();
     }
 
+    public boolean isAttachmentFeatureSupported() {
+        return AttachmentsProviderFactory.getAllAvailableAttachmentProviders().size() > 0;
+    }
+
     public boolean isProviderSupported() {
         AttachmentsProvider provider =
                 AttachmentsProviderFactory.getAttachmentProvider(
                     Preferences.getProvider(mContext));
-        return provider.isProviderSupported();
+        return provider.isSupported();
     }
 
     public boolean supportsCamera() {

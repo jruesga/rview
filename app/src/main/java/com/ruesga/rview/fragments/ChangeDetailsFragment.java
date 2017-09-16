@@ -1808,7 +1808,7 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.reviewInfo.setHasReviewAttachments(mAttachments.size() > 0);
         AttachmentsProvider attachmentProvider =
                 AttachmentsProviderFactory.getAttachmentProvider(getContext());
-        if (!mAttachments.isEmpty() && !attachmentProvider.isProviderSupported()) {
+        if (!mAttachments.isEmpty() && !attachmentProvider.isSupported()) {
             mAttachments.clear();
         }
         mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
@@ -2491,7 +2491,7 @@ public class ChangeDetailsFragment extends Fragment implements
         if (!isLocked()) {
             AttachmentsProvider provider =
                     AttachmentsProviderFactory.getAttachmentProvider(getContext());
-            if (!mAttachments.isEmpty() && !provider.isProviderSupported()) {
+            if (!mAttachments.isEmpty() && !provider.isSupported()) {
                 mAttachments.clear();
                 mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
                 ((BaseActivity) getActivity()).showWarning(R.string.attachment_provider_not_supported);
@@ -3239,7 +3239,7 @@ public class ChangeDetailsFragment extends Fragment implements
         // Initialize the provider, if it isn't initialized previously
         AttachmentsProvider attachmentProvider =
                 AttachmentsProviderFactory.getAttachmentProvider(getContext());
-        if (!attachmentProvider.isProviderSupported()) {
+        if (!attachmentProvider.isSupported()) {
             attachmentProvider.initialize(getChildFragmentManager());
         }
     }
@@ -3248,7 +3248,7 @@ public class ChangeDetailsFragment extends Fragment implements
             throws AuthenticationException {
         AttachmentsProvider attachmentsProvider =
                 AttachmentsProviderFactory.getAttachmentProvider(getContext());
-        if (!attachmentsProvider.isProviderSupported()) {
+        if (!attachmentsProvider.isSupported()) {
             // Cannot upload to server
             throw new AuthenticationException();
         }

@@ -25,7 +25,8 @@ public interface AttachmentsProvider {
     Provider getType();
     @StringRes int getName();
     @DrawableRes int getIcon();
-    boolean isProviderSupported();
+    boolean isAvailable();
+    boolean isSupported();
     boolean initialize(FragmentManager fragmentManager);
     boolean createAttachmentsMetadata(List<Attachment> attachments);
     boolean uploadAttachmentsContent(List<Attachment> attachments);

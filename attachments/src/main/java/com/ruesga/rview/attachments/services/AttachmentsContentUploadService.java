@@ -58,7 +58,7 @@ public class AttachmentsContentUploadService extends JobIntentService {
     protected void onHandleWork(@NonNull Intent intent) {
         if (UPLOAD_ATTACHMENT_CONTENT_ACTION.equals(intent.getAction())) {
             AttachmentsProvider provider = AttachmentsProviderFactory.getAttachmentProvider(this);
-            if (!provider.isProviderSupported()) {
+            if (!provider.isSupported()) {
                 Log.w(TAG, "Can't upload attachments. Provider is not supported");
                 notifyUploadError();
                 return;

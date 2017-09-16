@@ -88,7 +88,8 @@ public class ProviderChooserFragment extends DialogFragment {
             setHasStableIds(true);
             mFragment = fragment;
             mHandlers = new EventHandlers(fragment);
-            mProviders = new ArrayList<>(AttachmentsProviderFactory.getAllAttachmentProviders());
+            mProviders = new ArrayList<>(
+                    AttachmentsProviderFactory.getAllAvailableAttachmentProviders());
             mCurrentProvider = Preferences.getProvider(mFragment.getContext());
         }
 

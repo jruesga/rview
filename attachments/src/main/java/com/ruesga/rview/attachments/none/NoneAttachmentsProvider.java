@@ -45,7 +45,12 @@ public class NoneAttachmentsProvider implements AttachmentsProvider {
     }
 
     @Override
-    public boolean isProviderSupported() {
+    public boolean isAvailable() {
+        return false;
+    }
+
+    @Override
+    public boolean isSupported() {
         return false;
     }
 

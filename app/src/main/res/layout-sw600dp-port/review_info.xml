@@ -137,6 +137,7 @@
 
                         <include
                             layout="@layout/attachment_action_bar"
+                            android:visibility="@{attachmentsSupport.isAttachmentFeatureSupported() ? View.VISIBLE : View.GONE}"
                             app:attachmentsSupport="@{attachmentsSupport}"
                             app:handlers="@{handlers}" />
 
@@ -146,7 +147,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
                             android:padding="8dp"
-                            android:visibility="@{safeUnbox(hasReviewAttachments) ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{attachmentsSupport.isAttachmentFeatureSupported() &amp;&amp; safeUnbox(hasReviewAttachments) ? View.VISIBLE : View.GONE}"
                             android:background="@drawable/bg_box" />
                     </LinearLayout>
                 </LinearLayout>

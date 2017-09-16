@@ -78,18 +78,20 @@ public class GDriveAttachmentsProvider implements AttachmentsProvider {
     }
 
     @Override
-    public boolean isProviderSupported() {
+    public boolean isAvailable() {
+        final String clientId = mContext.getString(R.string.gdrive_client_id);
+        final String secret = mContext.getString(R.string.gdrive_client_secret);
+        return !TextUtils.isEmpty(clientId) && !TextUtils.isEmpty(secret);
+    }
+
+    @Override
+    public boolean isSupported() {
         final boolean playServiceAvailable =
                 GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext)
                     == ConnectionResult.SUCCESS;
-        final String clientId = mContext.getString(R.string.gdrive_client_id);
-        final String secret = mContext.getString(R.string.gdrive_client_secret);
-
         AuthenticationInfo auth = Preferences.getAuthenticationInfo(mContext, Provider.GDRIVE);
         boolean hasToken = auth != null && !TextUtils.isEmpty(auth.accessToken);
-
-        return playServiceAvailable && !TextUtils.isEmpty(clientId)
-                && !TextUtils.isEmpty(secret) && hasToken;
+        return playServiceAvailable && isAvailable() && hasToken;
     }
 
     @Override

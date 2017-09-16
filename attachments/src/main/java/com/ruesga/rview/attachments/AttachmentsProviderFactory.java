@@ -22,6 +22,7 @@ import com.ruesga.rview.attachments.none.NoneAttachmentsProvider;
 import com.ruesga.rview.attachments.preferences.Preferences;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,9 +36,15 @@ public class AttachmentsProviderFactory {
         sProviders.put(Provider.GDRIVE, new GDriveAttachmentsProvider(context));
     }
 
-    public static List<AttachmentsProvider> getAllAttachmentProviders() {
+    public static List<AttachmentsProvider> getAllAvailableAttachmentProviders() {
         ArrayList<AttachmentsProvider> providers = new ArrayList<>(sProviders.values());
-        providers.remove(0);
+        Iterator<AttachmentsProvider> it = providers.iterator();
+        while (it.hasNext()) {
+            AttachmentsProvider provider = it.next();
+            if (!provider.isAvailable()) {
+                it.remove();
+            }
+        }
         return providers;
     }
 
