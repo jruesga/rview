@@ -15,9 +15,37 @@
  */
 package com.ruesga.rview;
 
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.ruesga.rview.misc.ContinuousIntegrationHelperTest;
+import com.ruesga.rview.misc.SerializationManager;
+
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.api.mockito.PowerMockito;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public final class TestUtils {
+
+    public static void mockCommonAndroidClasses() {
+        PowerMockito.mockStatic(Log.class);
+        PowerMockito.mockStatic(TextUtils.class, new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
+                String methodName = invocationOnMock.getMethod().getName();
+                switch (methodName) {
+                    case "isEmpty":
+                        String text = invocationOnMock.getArgument(0);
+                        return text == null || text.length() == 0;
+                }
+                return null;
+            }
+        });
+    }
 
     public static File getRootDirectory() {
         File test = new File("").getAbsoluteFile();
@@ -28,5 +56,12 @@ public final class TestUtils {
             return test.getParentFile();
         }
         return test;
+    }
+
+    public  static <T> T loadJson(Class<T> returnType, String resource) throws IOException {
+        return SerializationManager.getInstance().fromJson(
+                new InputStreamReader(
+                        ContinuousIntegrationHelperTest.class.getResourceAsStream(
+                                resource), "UTF-8"), returnType);
     }
 }

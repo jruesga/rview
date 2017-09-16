@@ -51,6 +51,7 @@ ext {
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
         mockito                     : '2.9.0',
+        powermock                   : '1.7.1',
         base64                      : '2.3.9'
     ]
 }
@@ -92,6 +93,9 @@ subprojects {
             testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
             testCompile "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
             testCompile "org.mockito:mockito-core:${testLibraries.mockito}"
+            testCompile "org.powermock:powermock-module-junit4:${testLibraries.powermock}"
+            testCompile "org.powermock:powermock-module-junit4-rule:${testLibraries.powermock}"
+            testCompile "org.powermock:powermock-api-mockito2:${testLibraries.powermock}"
         }
 
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
