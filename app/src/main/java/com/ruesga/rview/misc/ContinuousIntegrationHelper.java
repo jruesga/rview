@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
@@ -43,6 +44,7 @@ public class ContinuousIntegrationHelper {
         List<ContinuousIntegrationInfo> ci = new ArrayList<>();
         Set<String> ciNames = new HashSet<>();
         try {
+            boolean checkFromPrevious = false;
             for (ChangeMessageInfo message : messages) {
                 if (message.revisionNumber == patchSet) {
                     if (ModelHelper.isCIAccount(message.author, repository)) {
@@ -60,13 +62,19 @@ public class ContinuousIntegrationHelper {
                             }
 
                             Matcher webMatcher = WEB_LINK_REGEX.mPattern.matcher(line);
-                            if (webMatcher.find()) {
-                                String url = webMatcher.group();
+                            ContinuousIntegrationInfo cii = containsBuild(line, ci);
+                            if (checkFromPrevious && cii != null) {
+                                if (cii.mStatus == null || cii.mStatus.equals(BuildStatus.SUCCESS)) {
+                                    cii.mStatus = getBuildStatus(line);
+                                }
+                                if (cii.mUrl == null && webMatcher.find()) {
+                                    cii.mUrl = extractUrl(webMatcher);
+                                }
+
+                            }else if (webMatcher.find()) {
+                                String url = extractUrl(webMatcher);
                                 if (url == null) {
                                     continue;
-                                }
-                                if (url.endsWith("/.") || url.endsWith(")") || url.endsWith("]")) {
-                                    url = url.substring(0, url.length() - 1);
                                 }
 
                                 BuildStatus status = null;
@@ -85,6 +93,15 @@ public class ContinuousIntegrationHelper {
                                         break;
                                     }
                                 }
+                            } else if (line.startsWith("Building") &&
+                                    line.contains("target(s): ")) {
+                                String l = line.substring(line.indexOf("target(s): ") + 10);
+                                String[] jobs = l.trim().replaceAll("\\.", "").split(" ");
+                                for (String job : jobs) {
+                                    ci.add(new ContinuousIntegrationInfo(
+                                            job, null, BuildStatus.SUCCESS));
+                                }
+                                checkFromPrevious = true;
                             }
 
                             prevLine = line;
@@ -178,6 +195,27 @@ public class ContinuousIntegrationHelper {
         }
 
         // Can't find a valid job name
+        return null;
+    }
+
+    private static String extractUrl(Matcher m) {
+        String url = m.group();
+        if (url == null) {
+            return null;
+        }
+        if (url.endsWith("/.") || url.endsWith(")") || url.endsWith("]")) {
+            url = url.substring(0, url.length() - 1);
+        }
+        return url;
+    }
+
+    private static ContinuousIntegrationInfo containsBuild(
+            String line, List<ContinuousIntegrationInfo> cii) {
+        for (ContinuousIntegrationInfo ci : cii) {
+            if (!TextUtils.isEmpty(ci.mName) && line.contains(ci.mName)) {
+                return ci;
+            }
+        }
         return null;
     }
 }
