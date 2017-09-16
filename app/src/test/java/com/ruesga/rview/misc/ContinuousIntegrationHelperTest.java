@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview.misc;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.TestUtils;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
@@ -29,10 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,9 +47,8 @@ public class ContinuousIntegrationHelperTest {
     public void setUp() throws Exception {
         try {
             Type type = new TypeToken<ArrayList<Repository>>() {}.getType();
-            Reader reader = new FileReader(new File(
-                    TestUtils.getRootDirectory(), "app/src/main/res/raw/repositories.json"));
-            repositories.addAll(new GsonBuilder().create().fromJson(reader, type));
+            repositories.addAll(TestUtils.loadJson(type, new File(TestUtils.getRootDirectory(),
+                    "app/src/main/res/raw/repositories.json")));
         } catch (IOException ex) {
             throw new FileNotFoundException(new File("app/src/main/res/raw/repositories.json").getAbsolutePath());
         }
@@ -137,10 +132,8 @@ public class ContinuousIntegrationHelperTest {
         final Repository repository = findRepositoryById(id);
 
         Type type = new TypeToken<List<ChangeMessageInfo>>(){}.getType();
-        List<ChangeMessageInfo> messages = SerializationManager.getInstance().fromJson(
-                new InputStreamReader(
-                        ContinuousIntegrationHelperTest.class.getResourceAsStream(
-                                "/com/ruesga/rview/misc/ci-" + id.toLowerCase() + ".txt"), "UTF-8"), type);
+        List<ChangeMessageInfo> messages =
+                TestUtils.loadJson(type, "/com/ruesga/rview/misc/ci-" + id.toLowerCase() + ".txt");
 
         List<ContinuousIntegrationInfo> cis =
                 ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
