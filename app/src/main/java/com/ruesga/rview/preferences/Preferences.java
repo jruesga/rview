@@ -48,6 +48,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CI_SHOW;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
@@ -459,6 +460,11 @@ public class Preferences {
         }
         return getAccountPreferences(context, account).getInt(
                 PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY, 5);
+    }
+
+    public static boolean isAccountShowCIStatuses(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_CI_SHOW, true);
     }
 
     public static List<CustomFilter> getAccountCustomFilters(Context context, Account account) {

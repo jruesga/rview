@@ -35,7 +35,7 @@ public class NetworkingHelper {
 
     private static HttpLoggingInterceptor createLoggingInterceptor() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor(s -> Log.d(TAG, s));
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
         return logging;
     }
 }

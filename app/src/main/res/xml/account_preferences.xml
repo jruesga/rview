@@ -121,12 +121,23 @@
             android:entryValues="@array/compression_image_formats"
             android:defaultValue="JPEG" />
 
+        <!--suppress AndroidElementNotAllowed -->
         <SeekBarPreference
             android:dependency="account_attachments_image_optimizations"
             android:key="account_attachments_image_optimizations_quality"
             android:title="@string/account_settings_attachments_optimize_quality"
             android:max="10"
             android:defaultValue="5" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="account_ci_category"
+        android:title="@string/account_settings_ci_category">
+
+        <SwitchPreference
+            android:key="account_ci_show"
+            android:title="@string/account_settings_ci_category_show"
+            android:defaultValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -107,6 +107,7 @@ public class Constants {
     public static final String PREF_ACCOUNT_DASHBOARD_CATEGORY = "account_dashboard_category";
     public static final String PREF_ACCOUNT_MESSAGES_CATEGORY = "account_messages_category";
     public static final String PREF_ACCOUNT_ATTACHMENTS_CATEGORY = "account_attachments_category";
+    public static final String PREF_ACCOUNT_CI_CATEGORY = "account_ci_category";
     public static final String PREF_ACCOUNT_HOME_PAGE = "account_home_page";
     public static final String PREF_ACCOUNT_FETCHED_ITEMS = "account_fetched_items";
     public static final String PREF_ACCOUNT_DISPLAY_FORMAT = "account_display_format";
@@ -145,4 +146,5 @@ public class Constants {
             = "account_attachments_image_optimizations_format";
     public static final String PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY
             = "account_attachments_image_optimizations_quality";
+    public static final String PREF_ACCOUNT_CI_SHOW = "account_ci_show";
 }

@@ -57,6 +57,7 @@ import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_CATEGORY;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CI_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_STATUSES;
@@ -157,6 +158,7 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         configureNotifications();
         configureHandleLinks();
         configureAttachments();
+        configureContinuousIntegration();
     }
 
     private void configureHomePage() {
@@ -315,6 +317,17 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         if (category != null &&
                 AttachmentsProviderFactory.getAllAvailableAttachmentProviders().size() == 0) {
             getPreferenceScreen().removePreference(category);
+        }
+    }
+
+    private void configureContinuousIntegration() {
+        PreferenceCategory category =
+                (PreferenceCategory) findPreference(PREF_ACCOUNT_CI_CATEGORY);
+        if (category != null) {
+            Repository repository = ModelHelper.findRepositoryForAccount(getActivity(), mAccount);
+            if (repository == null || TextUtils.isEmpty(repository.mCiAccounts)) {
+                getPreferenceScreen().removePreference(category);
+            }
         }
     }
 

@@ -306,6 +306,8 @@
     <string name="account_settings_attachments_optimize_format_png" translatable="false">PNG</string>
     <string name="account_settings_attachments_optimize_format_webp" translatable="false">WEBP</string>
     <string name="account_settings_attachments_optimize_quality">Image quality</string>
+    <string name="account_settings_ci_category">Continuous integration</string>
+    <string name="account_settings_ci_category_show">Display jobs statuses</string>
     <string name="account_settings_search_category">Search</string>
     <string name="account_settings_search_clear">Clear search history</string>
     <string name="account_settings_search_clear_message">Search history cleared</string>

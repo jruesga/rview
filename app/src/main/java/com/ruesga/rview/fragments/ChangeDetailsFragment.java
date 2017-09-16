@@ -1906,9 +1906,12 @@ public class ChangeDetailsFragment extends Fragment implements
                             return new HashMap<>();
                         }),
                         SafeObservable.fromNullCallable(() -> {
+                            // Fetch external CI servers to obtain job statuses
                             Repository repository =
                                     ModelHelper.findRepositoryForAccount(ctx, mAccount);
-                            if (TextUtils.isEmpty(repository.mCiAccounts)) {
+                            if (!Preferences.isAccountShowCIStatuses(ctx, mAccount)
+                                    || repository == null
+                                    || TextUtils.isEmpty(repository.mCiAccounts)) {
                                 return new ArrayList<>();
                             }
 
@@ -2274,10 +2277,14 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         // Continuous Integration
-        response.mCI = ci;
-        if (getActivity() != null && ci.isEmpty()) {
-            Repository repository = ModelHelper.findRepositoryForAccount(getActivity(), mAccount);
-            if (repository != null && !TextUtils.isEmpty(repository.mCiAccounts)) {
+        boolean showCI = Preferences.isAccountShowCIStatuses(getActivity(), mAccount);
+        Repository repository = ModelHelper.findRepositoryForAccount(getActivity(), mAccount);
+        boolean supportsCI = repository != null && !TextUtils.isEmpty(repository.mCiAccounts);
+        if (!showCI || !supportsCI) {
+            response.mCI = null;
+        } else {
+            response.mCI = ci;
+            if (getActivity() != null && ci.isEmpty()) {
                 final String revisionId = TextUtils.isEmpty(mCurrentRevision)
                         ? ModelHelper.extractBestRevisionId(response.mChange) : mCurrentRevision;
                 response.mCI = ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
