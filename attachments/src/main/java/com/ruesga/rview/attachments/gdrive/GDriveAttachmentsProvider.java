@@ -139,7 +139,7 @@ public class GDriveAttachmentsProvider implements AttachmentsProvider {
             Log.i(TAG, "New attachment metadata created: " + metadata.id);
 
             // Assign the shared url
-            boolean image = file.mimeType.startsWith("image/") && file.mimeType.contains("+xml");
+            boolean image = file.mimeType.startsWith("image/") && !file.mimeType.contains("+xml");
             final String mode = image ? Constants.SHARED_MODE_VIEW : Constants.SHARED_MODE_DOWNLOAD;
             attachment.mId = metadata.id;
             attachment.mUrl = String.format(Locale.US, Constants.SHARED_URL, mode, metadata.id);
