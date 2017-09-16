@@ -21,6 +21,7 @@ import android.util.Log;
 import com.ruesga.rview.misc.ContinuousIntegrationHelperTest;
 import com.ruesga.rview.misc.SerializationManager;
 
+import org.apache.commons.io.IOUtils;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
@@ -63,5 +64,11 @@ public final class TestUtils {
                 new InputStreamReader(
                         ContinuousIntegrationHelperTest.class.getResourceAsStream(
                                 resource), "UTF-8"), returnType);
+    }
+
+    public  static String loadString(String resource) throws IOException {
+        return IOUtils.toString(new InputStreamReader(
+                ContinuousIntegrationHelperTest.class.getResourceAsStream(
+                        resource), "UTF-8"));
     }
 }

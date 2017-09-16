@@ -57,4 +57,13 @@ public class StringHelperTest {
         attachments = StringHelper.extractAllAttachments(message);
         assertEquals(1, attachments.size());
     }
+
+    @Test
+    public void testRemoveExtraLines() throws IOException {
+        String testMessage = TestUtils.loadString(
+                "/com/ruesga/rview/misc/removeExtraLines.msg.txt");
+        String expectedMessage = TestUtils.loadString(
+                "/com/ruesga/rview/misc/removeExtraLines.expected.txt");
+        assertEquals(expectedMessage, StringHelper.removeLineBreaks(testMessage));
+    }
 }

@@ -1,0 +1,11 @@
+The cache maintenance routines in ashmem were causing
+several security issues. Since they are not being used
+anymore by any drivers, its well to remove them entirely.
+
+Bug: 34126808
+Bug: 34173755
+Bug: 34203176
+CRs-Fixed: 1107034, 2001129, 2007786
+Change-Id: I955e33d90b888d58db5cf6bb490905283374425b
+Signed-off-by: Sudarshan Rajagopalan <sudaraja@codeaurora.org>
+Signed-off-by: Dennis Cagle <d-cagle@codeaurora.org>

@@ -36,10 +36,9 @@ public class StringHelper {
     public static final String NON_PRINTABLE_CHAR = "\u0001";
     public static final String NON_PRINTABLE_CHAR2 = "\u0002";
 
-    private static final Pattern A_NON_WORD_CHARACTER_AT_END
-            = Pattern.compile(".*[^[0-9a-zA-Z],;]", Pattern.MULTILINE);
-    private static final Pattern A_NON_WORD_CHARACTER_AT_START
-            = Pattern.compile("[^[a-zA-Z]].*", Pattern.MULTILINE);
+    private static final Pattern A_NON_WORD_CHARACTER_AT_END = Pattern.compile("[^[0-9a-zA-Z],;]");
+    private static final Pattern A_NON_WORD_CHARACTER_AT_START = Pattern.compile("[^[a-zA-Z]]");
+    private static final Pattern A_REF_LINK_LINE = Pattern.compile("([0-9a-zA-Z-])+: .*");
     private static final Pattern NON_WHITESPACE = Pattern.compile("\\w");
     private static final String NON_WORD_CHARACTER = "[^[0-9a-zA-Z],;]";
     private static final String INTERN_QUOTE = "\n > ";
@@ -104,7 +103,8 @@ public class StringHelper {
             String line = lines[i];
             String trimmed = line.trim();
             sb.append(trim ? trimmed : line);
-            if (trimmed.isEmpty() || A_NON_WORD_CHARACTER_AT_END.matcher(trimmed).matches()) {
+            if (trimmed.isEmpty() || A_NON_WORD_CHARACTER_AT_END.matcher(trimmed).matches()
+                    || A_REF_LINK_LINE.matcher(trimmed).matches()) {
                 sb.append("\n");
                 trim = false;
             } else if (i < (count - 1)) {
