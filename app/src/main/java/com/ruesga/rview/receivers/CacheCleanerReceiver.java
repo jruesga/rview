@@ -66,7 +66,7 @@ public class CacheCleanerReceiver extends BroadcastReceiver {
         File storageDir = context.getFilesDir();
         if (storageDir.exists()) {
             for (File file : storageDir.listFiles()) {
-                if (force || file.lastModified() < yesterday) {
+                if (force || (!file.isDirectory() && file.lastModified() < yesterday)) {
                     Log.d(TAG, "Deleting picture: " + file.getAbsolutePath());
                     file.delete();
                 }
