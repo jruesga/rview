@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.Resources;
@@ -30,6 +31,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.os.Build;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.Log;
@@ -416,6 +418,7 @@ public class BitmapUtils {
         return 1024;
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static int byteSizeOf(Bitmap bitmap) {
         if (AndroidHelper.isKitkatOrGreater()) {
             return bitmap.getAllocationByteCount();
