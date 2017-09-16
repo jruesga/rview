@@ -621,4 +621,7 @@
     <string name="snippet_dialog_error">Failed to load content</string>
     <string name="snippet_dialog_snippet_file_name">Unnamed</string>
 
+    <!-- Attachment Providers -->
+    <string name="attachment_provider_not_supported">Attachment provider is not supported. Attachment were removed.</string>
+
 </resources>

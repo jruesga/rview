@@ -14,8 +14,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources>
-    <color name="attachmentSelectedItem">#e3e8f7</color>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="attachmentSelectedItem" tools:ignore="UnusedAttribute">#e3e8f7</color>
     <color name="attachmentItemTint">#a9a9a9</color>
     <color name="attachmentOverlay">#50000000</color>
 </resources>

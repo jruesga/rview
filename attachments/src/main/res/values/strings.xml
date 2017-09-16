@@ -28,6 +28,4 @@
     <string name="attachment_failed_to_login">Failed to login</string>
 
     <string name="attachment_cannot_upload_attachment">Failed to upload attachments\'s content</string>
-
-    <string name="attachment_provider_not_supported">Attachment provider is not supported. Attachment were removed.</string>
 </resources>

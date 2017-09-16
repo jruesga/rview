@@ -14,7 +14,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="wizard_navbar">#e0e0e0</color>
-    <color name="wizard_text_secondary">@android:color/secondary_text_light</color>
+    <color name="wizard_text_secondary" tools:ignore="UnusedAttribute">@android:color/secondary_text_light</color>
 </resources>
