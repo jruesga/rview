@@ -88,12 +88,20 @@ public class CacheHelper {
     }
 
     public static Uri createNewTemporaryFileUri(Context context, String suffix) throws IOException {
+        File temp = createNewTemporaryFile(context, suffix);
+        if (temp != null) {
+            return FileProvider.getUriForFile(context, "com.ruesga.rview.content", temp);
+        }
+        return null;
+    }
+
+    public static File createNewTemporaryFile(Context context, String suffix) throws IOException {
         String ts = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
         File storageDir = context.getFilesDir();
         if (storageDir.exists() || storageDir.mkdirs()) {
             File file = new File(storageDir.getAbsolutePath(), ts + suffix);
             if (file.createNewFile()) {
-                return FileProvider.getUriForFile(context, "com.ruesga.rview.content", file);
+                return new File(storageDir.getAbsolutePath(), ts + suffix);
             }
         }
         return null;

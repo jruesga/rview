@@ -25,6 +25,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -109,6 +110,7 @@ import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.TopicInput;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
+import com.ruesga.rview.misc.BitmapUtils;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ContinuousIntegrationHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
@@ -3253,6 +3255,34 @@ public class ChangeDetailsFragment extends Fragment implements
             throw new AuthenticationException();
         }
 
+        // Before sent the attachment, optimize the image attachments?
+        if (Preferences.isAccountImageAttachmentsOptimizations(getContext(), mAccount)) {
+            Bitmap.CompressFormat format =
+                    Preferences.getAccountImageAttachmentsOptimizationsFormat(
+                            getContext(), mAccount);
+            // Adjust quality between 60/100 from 0/10
+            int quality = 60 + (Preferences.getAccountImageAttachmentsOptimizationsQuality(
+                    getContext(), mAccount) * 4);
+            String mimeType = "image/" + format.name().toLowerCase(Locale.US);
+            for (Attachment attachment : mAttachments) {
+                if (attachment.mMimeType.startsWith("image/")
+                        && !attachment.mMimeType.equals(mimeType)) {
+                    ContentResolver cr = getContext().getContentResolver();
+                    try {
+                        File out = BitmapUtils.optimizeImage(getContext(),
+                                cr.openInputStream(attachment.mLocalUri), format, quality);
+                        if (out != null) {
+                            attachment.mLocalUri = Uri.fromFile(out);
+                            attachment.mMimeType = mimeType;
+                            attachment.mSize = out.length();
+                        }
+                    } catch (Exception ex) {
+                        // Something fails optimizing the attachment
+                        Log.w(TAG, "Something fails optimizing the attachment", ex);
+                    }
+                }
+            }
+        }
 
         // Create attachment metadata in the remote server. Later we uploaded the content
         // in a background service

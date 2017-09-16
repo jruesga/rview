@@ -194,6 +194,12 @@
         <item>@string/account_status_sleeping</item>
     </string-array>
 
+    <string-array name="compression_image_formats">
+        <item>@string/account_settings_attachments_optimize_format_jpg</item>
+        <item>@string/account_settings_attachments_optimize_format_png</item>
+        <item>@string/account_settings_attachments_optimize_format_webp</item>
+    </string-array>
+
     <string-array name="libraries_ids" translatable="false">
         <item>crashlytics</item>
         <item>support_v4</item>

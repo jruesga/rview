@@ -18,6 +18,7 @@ package com.ruesga.rview.preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -44,6 +45,9 @@ import static com.ruesga.rview.preferences.Constants.MAX_SEARCH_HISTORY;
 import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_FORMAT;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
@@ -430,6 +434,31 @@ public class Preferences {
     public static boolean isAccountShortFilenames(Context context, Account account) {
         return account == null || getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_SHORT_FILENAMES, false);
+    }
+
+    public static boolean isAccountImageAttachmentsOptimizations(Context context, Account account) {
+        return account == null || getAccountPreferences(
+                context, account).getBoolean(PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS, false);
+    }
+
+    public static Bitmap.CompressFormat getAccountImageAttachmentsOptimizationsFormat(
+            Context context, Account account) {
+        if (account == null) {
+            return Bitmap.CompressFormat.JPEG;
+        }
+        return Bitmap.CompressFormat.valueOf(getAccountPreferences(
+                context, account).getString(
+                PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_FORMAT,
+                Bitmap.CompressFormat.JPEG.name()));
+    }
+
+    public static int getAccountImageAttachmentsOptimizationsQuality(
+            Context context, Account account) {
+        if (account == null) {
+            return 5;
+        }
+        return getAccountPreferences(context, account).getInt(
+                PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY, 5);
     }
 
     public static List<CustomFilter> getAccountCustomFilters(Context context, Account account) {

@@ -49,6 +49,10 @@ public class AndroidHelper {
 
     private static final String TAG = "AndroidHelper";
 
+    public static boolean isJellyBeanOrGreater() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+    }
+
     public static boolean isKitkatOrGreater() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
     }

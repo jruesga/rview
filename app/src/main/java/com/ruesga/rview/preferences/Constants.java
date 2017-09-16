@@ -106,6 +106,7 @@ public class Constants {
     public static final String PREF_ACCOUNT_DISPLAY_CATEGORY = "account_display_category";
     public static final String PREF_ACCOUNT_DASHBOARD_CATEGORY = "account_dashboard_category";
     public static final String PREF_ACCOUNT_MESSAGES_CATEGORY = "account_messages_category";
+    public static final String PREF_ACCOUNT_ATTACHMENTS_CATEGORY = "account_attachments_category";
     public static final String PREF_ACCOUNT_HOME_PAGE = "account_home_page";
     public static final String PREF_ACCOUNT_FETCHED_ITEMS = "account_fetched_items";
     public static final String PREF_ACCOUNT_DISPLAY_FORMAT = "account_display_format";
@@ -136,7 +137,12 @@ public class Constants {
     public static final String PREF_ACCOUNT_NOTIFICATIONS = "account_notifications";
     public static final String PREF_ACCOUNT_NOTIFICATIONS_EVENTS = "account_notifications_events";
     public static final String PREF_ACCOUNT_EXTERNAL_CATEGORY = "account_external_category";
-
     public static final String PREF_ACCOUNT_SEARCH_HISTORY = "account_search_history";
     public static final String PREF_ACCOUNT_SEARCH_CLEAR = "account_search_clear";
+    public static final String PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS
+            = "account_attachments_image_optimizations";
+    public static final String PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_FORMAT
+            = "account_attachments_image_optimizations_format";
+    public static final String PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY
+            = "account_attachments_image_optimizations_quality";
 }
