@@ -26,6 +26,7 @@ import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.ruesga.rview.attachments.AttachmentsProviderFactory;
+import com.ruesga.rview.misc.AnalyticsHelper;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
@@ -86,6 +87,7 @@ public class RviewApplication extends Application {
                     .setApiKey(getString(R.string.fcm_api_key))
                     .build();
             FirebaseApp.initializeApp(getApplicationContext(), options);
+            AnalyticsHelper.appStarted(getApplicationContext());
         } catch (Throwable ex) {
             // Ignore any firebase exception by miss-configuration
             Log.e(TAG, "Cannot configure Firebase", ex);

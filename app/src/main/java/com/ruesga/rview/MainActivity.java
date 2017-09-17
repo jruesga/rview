@@ -44,6 +44,7 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.util.Colors;
@@ -62,6 +63,7 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.AnalyticsHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.EmojiHelper;
 import com.ruesga.rview.misc.Formatter;
@@ -361,6 +363,7 @@ public class MainActivity extends ChangeListBaseActivity {
                     CacheHelper.createAccountCacheDir(this, mAccount);
                     setupAccountUrlHandlingStatus(mAccount, true);
                     NotificationsHelper.createNotificationChannel(this, mAccount);
+                    AnalyticsHelper.accountEvent(this, mAccount, true);
                 } else {
                     showWarning(R.string.account_exists);
                 }
@@ -734,6 +737,7 @@ public class MainActivity extends ChangeListBaseActivity {
         Preferences.setAccount(this, mAccount);
         Formatter.refreshCachedPreferences(this);
         fetchAccountStatus(mAccount);
+        AnalyticsHelper.accountSelected(this, mAccount);
 
         // Refresh the ui
         updateCurrentAccountDrawerInfo();
@@ -765,9 +769,11 @@ public class MainActivity extends ChangeListBaseActivity {
                 boolean currentAccount = mAccount != null &&
                         mAccount.getAccountHash().equals(acct.getAccountHash());
                 if (currentAccount) {
+                    AnalyticsHelper.accountEvent(this, mAccount, false);
                     performDeleteAccount(mAccount, true);
                     internalPerformShowAccount(false);
                 } else {
+                    AnalyticsHelper.accountEvent(this, acct, false);
                     performDeleteAccount(acct, false);
                 }
 
