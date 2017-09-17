@@ -78,13 +78,18 @@ public class RviewApplication extends Application {
 
         // Configure Firebase (just an empty stub to set empty sender ids). Senders
         // ids will be fetched from the Gerrit server instances.
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setApplicationId(getString(R.string.fcm_app_id))
-                .setApiKey(getString(R.string.fcm_api_key))
-                .setGcmSenderId(null)
-                .build();
-        FirebaseApp.initializeApp(getApplicationContext(), options);
-
+        try {
+            FirebaseOptions options = new FirebaseOptions.Builder()
+                    .setProjectId(getString(R.string.fcm_project_id))
+                    .setApplicationId(getString(R.string.fcm_app_id))
+                    .setGcmSenderId(getString(R.string.fcm_sender_id))
+                    .setApiKey(getString(R.string.fcm_api_key))
+                    .build();
+            FirebaseApp.initializeApp(getApplicationContext(), options);
+        } catch (Throwable ex) {
+            // Ignore any firebase exception by miss-configuration
+            Log.e(TAG, "Cannot configure Firebase", ex);
+        }
 
         // Initialize application resources
         Formatter.refreshCachedPreferences(getApplicationContext());

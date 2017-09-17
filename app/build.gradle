@@ -29,6 +29,7 @@ dependencies {
     compile("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") { transitive = true; }
     compile("com.crashlytics.sdk.android:crashlytics-core:${libraries.crashlytics_core}@aar") { transitive = true; }
     compile("com.crashlytics.sdk.android:answers:${libraries.crashlytics_answers}@aar") { transitive = true; }
+    compile "com.google.firebase:firebase-core:${libraries.firebase}"
     compile "com.google.firebase:firebase-messaging:${libraries.firebase}"
     compile "com.android.support:support-v4:${libraries.support}"
     compile "com.android.support:appcompat-v7:${libraries.support}"
@@ -60,8 +61,10 @@ android {
 
         applicationId 'com.ruesga.rview'
 
+        // Firebase Messaging
+        resValue "string", "fcm_project_id", "rview-43a4b"
         resValue "string", "fcm_app_id", "1:577867348267:android:01dee9b4cab97d4a"
-        resValue "string", "fcm_api_key", "<empty>"
+        resValue "string", "fcm_sender_id", "577867348267"
 
         return void;
     }
@@ -102,6 +105,8 @@ android {
         debug {
             debuggable true
             ext.enableCrashlytics = false
+            resValue "string", "fcm_api_key", "<empty>"
+            resValue "bool", "fcm_disable_analytics", "true"
 
             return void;
         }
@@ -117,9 +122,23 @@ android {
             //noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.release
 
-            // IMP! Enable your Crashlytics api key in a file called fabric.properties
-            // and add the value apiKey=<your key> to that file
+            // IMP! Enable your Crashlytics api key in a file called fabric.properties in the
+            // project directory and add the value apiKey=<your key> to that file
             ext.enableCrashlytics = project.file('fabric.properties').exists()
+
+            // IMP! Enable your Firebase api key in a file called fabric.properties in the
+            // project directory and add the value apiKey=<your key> to that file
+            if (project.file('firebase.properties').exists()) {
+                def Properties firebaseProps = new Properties()
+                firebaseProps.load(new FileInputStream(project.file('firebase.properties')))
+
+                resValue "string", "google_app_id", firebaseProps["fcmAppId"]
+                resValue "string", "fcm_api_key", firebaseProps["apiKey"]
+                resValue "bool", "fcm_disable_analytics", "false"
+            } else {
+                resValue "string", "fcm_api_key", "<empty>"
+                resValue "bool", "fcm_disable_analytics", "true"
+            }
 
             return void;
         }
