@@ -62,7 +62,8 @@ public class ContinuousIntegrationView extends FlexboxLayout {
     private final EventHandlers mEventHandlers;
 
     private final LayoutInflater mInflater;
-    private final ColorStateList mSuccessColor, mFailureColor, mSkippedColor, mRunningColor;
+    private final ColorStateList mSuccessColor, mFailureColor, mSkippedColor,
+            mRunningColor, mUnknownColor;
 
     public ContinuousIntegrationView(Context context) {
         this(context, null);
@@ -81,6 +82,7 @@ public class ContinuousIntegrationView extends FlexboxLayout {
         mFailureColor = ContextCompat.getColorStateList(getContext(), R.color.failure);
         mSkippedColor = ContextCompat.getColorStateList(getContext(), R.color.skipped);
         mRunningColor = ContextCompat.getColorStateList(getContext(), R.color.running);
+        mUnknownColor = ContextCompat.getColorStateList(getContext(), R.color.unscored);
     }
 
     public ContinuousIntegrationView from(List<ContinuousIntegrationInfo> ci) {
@@ -117,20 +119,24 @@ public class ContinuousIntegrationView extends FlexboxLayout {
 
     private void setChipBackgroundColor(CiItemBinding binding, ContinuousIntegrationInfo ci) {
         final ColorStateList color;
-        switch (ci.mStatus) {
-            case SUCCESS:
-                color = mSuccessColor;
-                break;
-            case FAILURE:
-                color = mFailureColor;
-                break;
-            case SKIPPED:
-                color = mSkippedColor;
-                break;
-            case RUNNING:
-            default:
-                color = mRunningColor;
-                break;
+        if (ci.mStatus != null) {
+            switch (ci.mStatus) {
+                case SUCCESS:
+                    color = mSuccessColor;
+                    break;
+                case FAILURE:
+                    color = mFailureColor;
+                    break;
+                case SKIPPED:
+                    color = mSkippedColor;
+                    break;
+                case RUNNING:
+                default:
+                    color = mRunningColor;
+                    break;
+            }
+        } else {
+            color = mUnknownColor;
         }
 
         if (!AndroidHelper.isLollipopOrGreater()) {
