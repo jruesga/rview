@@ -109,7 +109,7 @@
                     android:text="@{model.notification}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="?android:attr/textColorPrimary"
-                    android:maxLines="2"
+                    android:maxLines="4"
                     android:ellipsize="end"
                     android:textSize="12sp" />
             </RelativeLayout>
