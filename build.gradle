@@ -16,18 +16,18 @@
 
 ext {
     libraries = [
-        support                     : '26.0.1',
+        // https://developer.android.com/topic/libraries/support-library/revisions.html
+        support                     : '26.1.0',
+        // https://firebase.google.com/support/release-notes/android
         firebase                    : '11.2.2',
-        google_api                  : '1.22.0',
-        drive_api                   : 'v3-rev81-1.22.0',
         gson                        : '2.8.1',
         retrofit2                   : '2.3.0',
-        okhttp3                     : '3.8.1',
+        okhttp3                     : '3.9.0',
         okio                        : '1.13.0',
         okhttp_digest               : '5028761430',
         rxjava                      : '2.1.3',
         rxandroid                   : '2.0.1',
-        rxloader2                   : '1c07294ba2',
+        rxloader2                   : '244a5fddb6',
         commons_io                  : '2.5',
         antlrv3                     : '3.5.2',
         smoothprogressbar           : '1.1.0',
@@ -50,7 +50,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.9.0',
+        mockito                     : '2.10.0',
         powermock                   : '1.7.1',
         base64                      : '2.3.9'
     ]
