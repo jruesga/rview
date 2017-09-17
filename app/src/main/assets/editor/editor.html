@@ -6,6 +6,8 @@
     <script src="ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="ext-metadata.js" type="text/javascript" charset="utf-8"></script>
     <script src="crc32.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="underscore-min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="source-lang-detector-min.js" type="text/javascript" charset="utf-8"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -25,6 +27,7 @@
     var edt_last_change_event = 0;
     var edt_MAX_EXCHANGE_SIZE = 25000;
     var edt_TOO_BIG_SIZE = 100000;
+    var edt_notify_mimetype_changes = false;
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/chrome");
     editor.session.setUseWrapMode(false);
@@ -39,6 +42,10 @@
         if ((now - edt_last_change_event) > 300) {
             console.log("edt:u");
             edt_last_change_event = now;
+            if (edt_notify_mimetype_changes) {
+                var mimeType = detectLang(editor.getValue());
+                console.log("edt:mtc:" + mimeType);
+            }
         }
     });
 
@@ -51,6 +58,12 @@
     }
     function setTextSize(textSize) {
         editor.setFontSize(textSize);
+    }
+    function setNotifyMimeTypeChanges(notify) {
+        edt_notify_mimetype_changes = notify;
+    }
+    function setFileName(name) {
+        editor.session.setMode(edtFindByFileName(name));
     }
     function addPartialContent(content) {
         edt_content += content;
@@ -73,8 +86,13 @@
         editor.gotoLine(1, 0);
         edt_content = '';
     }
-    function readContent(key) {
-        var encoded = window.btoa(editor.getValue());
+    function readContent(resolveMimeType, key) {
+        var val = editor.getValue();
+        var mimeType = null;
+        if (resolveMimeType) {
+            mimeType = detectLang(val);
+        }
+        var encoded = window.btoa(val);
         var crc = -1;
         if (encoded.length > 0) {
             var s = 0;
@@ -84,6 +102,9 @@
                 s += e;
             } while (s < encoded.length);
             crc = CRC32.str(encoded);
+        }
+        if (resolveMimeType) {
+            console.log("edt:" + key + ":m:" + mimeType);
         }
         console.log("edt:" + key + ":f:" + crc);
     }

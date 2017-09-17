@@ -29,12 +29,10 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
-import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.SnippetContentBinding;
@@ -51,7 +49,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLConnection;
 
 public class SnippetFragment extends BottomSheetBaseFragment {
 
@@ -66,6 +63,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
 
     private static final String EXTRA_SNIPPET_URI = "snippet_uri";
     private static final String EXTRA_TEMP_SNIPPET_URI = "temp_snippet_uri";
+    private static final String EXTRA_SNIPPET_MIMETYPE = "snippet_mime_type";
 
     // This is just to ensure the editor set a text/plain mode
     private static final String DEFAULT_SNIPPED_NAME = "Unnamed";
@@ -93,14 +91,15 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     }
 
     public static SnippetFragment newInstance(Context context) {
-        return newInstance(context, null);
+        return newInstance(context, null, "text/plain");
     }
 
-    public static SnippetFragment newInstance(Context context, Uri snippet) {
+    public static SnippetFragment newInstance(Context context, Uri snippet, String mimeType) {
         SnippetFragment fragment = new SnippetFragment();
         Bundle arguments = new Bundle();
         if (snippet != null) {
             arguments.putParcelable(EXTRA_SNIPPET_URI, snippet);
+            arguments.putString(EXTRA_SNIPPET_MIMETYPE, mimeType);
         } else {
             try {
                 Uri uri = CacheHelper.createNewTemporaryFileUri(context, ".snippet");
@@ -119,8 +118,8 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUri = getArguments().getParcelable(EXTRA_SNIPPET_URI);
+        mMimeType = getArguments().getString(EXTRA_SNIPPET_MIMETYPE, "text/plain");
         mReadOnly = mUri != null;
-        mMimeType = revolveMimeTypeFromContent(mUri);
     }
 
     @Override
@@ -140,7 +139,8 @@ public class SnippetFragment extends BottomSheetBaseFragment {
         mBinding.editor
                 .setReadOnly(mReadOnly)
                 .setWrap(true)
-                .setTextSize(14);
+                .setTextSize(14)
+                .setNotifyMimeTypeChanges(!mReadOnly);
         if (!mReadOnly) {
             mBinding.editor.listenOn(mContentChangedListener);
         }
@@ -206,11 +206,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     }
 
     private void loadContent(byte[] data) {
-        String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mMimeType);
-        if (TextUtils.isEmpty(ext)) {
-            ext = "txt";
-        }
-
+        String ext = EditorView.resolveExtensionFromMimeType(mMimeType);
         mBinding.editor.scrollTo(0, 0);
         mBinding.editor.loadEncodedContent(
                 DEFAULT_SNIPPED_NAME + "." + ext, Base64.encode(data, Base64.NO_WRAP));
@@ -228,17 +224,16 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     @Override
     public void onDonePressed() {
         readFileContent();
+        Thread.yield();
         if (!mReadOnly && mContentSize > 0) {
             Uri snippetUri = getArguments().getParcelable(EXTRA_TEMP_SNIPPET_URI);
             if (snippetUri != null) {
-                String mimeType = revolveMimeTypeFromContent(snippetUri);
-
                 Activity a = getActivity();
                 Fragment f = getParentFragment();
                 if (f != null && f instanceof OnSnippetSavedListener) {
-                    ((OnSnippetSavedListener) f).onSnippetSaved(snippetUri, mimeType, mContentSize);
+                    ((OnSnippetSavedListener) f).onSnippetSaved(snippetUri, mMimeType, mContentSize);
                 } else if (a != null && a instanceof OnSnippetSavedListener) {
-                    ((OnSnippetSavedListener) a).onSnippetSaved(snippetUri, mimeType, mContentSize);
+                    ((OnSnippetSavedListener) a).onSnippetSaved(snippetUri, mMimeType, mContentSize);
                 }
             }
         }
@@ -281,17 +276,20 @@ public class SnippetFragment extends BottomSheetBaseFragment {
             mBinding.editor.readContent(
                     new EditorView.OnReadContentReadyListener() {
                         @Override
-                        public void onReadContentReady(byte[] content) {
+                        public void onReadContentReady(byte[] content, String mimeType) {
                             if (content.length > 0) {
                                 content = Base64.decode(content, Base64.NO_WRAP);
                             }
                             saveContent(content);
+                            if (mimeType != null) {
+                                mMimeType = mimeType;
+                            }
                         }
 
                         @Override
                         public void onContentUnchanged() {
                         }
-                    });
+                    }, !mReadOnly);
             mDirty = false;
         }
     }
@@ -318,21 +316,5 @@ public class SnippetFragment extends BottomSheetBaseFragment {
                 Log.e(TAG, "Cannot load content stream: " + snippetUri, ex);
             }
         }
-    }
-
-    private String revolveMimeTypeFromContent(Uri uri) {
-        ContentResolver cr = getActivity().getContentResolver();
-        String mimeType = null;
-        if (uri != null) {
-            try {
-                mimeType = URLConnection.guessContentTypeFromStream(cr.openInputStream(uri));
-            } catch (IOException ex) {
-                // ignore
-            }
-        }
-        if (TextUtils.isEmpty(mimeType)) {
-            mimeType = "text/plain";
-        }
-        return mimeType;
     }
 }

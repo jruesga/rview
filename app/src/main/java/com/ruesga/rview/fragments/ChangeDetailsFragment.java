@@ -2721,7 +2721,8 @@ public class ChangeDetailsFragment extends Fragment implements
         // snippet editor
         if (attachment.mMimeType.startsWith("text/") && attachment.mSize < 1048576) {
             SnippetFragment sf = SnippetFragment.newInstance(getContext(),
-                    Uri.fromFile(CacheHelper.getAttachmentFile(getContext(), attachment)));
+                    Uri.fromFile(CacheHelper.getAttachmentFile(getContext(), attachment)),
+                    attachment.mMimeType);
             sf.show(getChildFragmentManager(), SnippetFragment.TAG);
             return;
         }

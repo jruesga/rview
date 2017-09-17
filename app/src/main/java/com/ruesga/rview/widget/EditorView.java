@@ -22,12 +22,14 @@ import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringRes;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
+import android.webkit.MimeTypeMap;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -43,7 +45,7 @@ import java.util.zip.CRC32;
 public class EditorView extends FrameLayout {
 
     public interface OnReadContentReadyListener {
-        void onReadContentReady(byte[] content);
+        void onReadContentReady(byte[] content, String mimeType);
         void onContentUnchanged();
     }
 
@@ -61,11 +63,12 @@ public class EditorView extends FrameLayout {
     private WebView mWebView;
     private final Random mRandom = new Random();
 
-    private final Pattern mPattern = Pattern.compile("edt:(\\d)+:[pf]:");
+    private final Pattern mPattern = Pattern.compile("edt:(\\d)+:[pfm]:");
 
     private boolean mReadOnly = false;
     private boolean mWrap = false;
     private int mTextSize = 14;
+    private boolean mNotifyMimeTypeChanges;
     private boolean mIsDirty;
     private boolean mInitialLoad = true;
 
@@ -73,6 +76,7 @@ public class EditorView extends FrameLayout {
     private boolean mIgnoreNextUnsavedEvent;
     private String mPendingFileName;
     private byte[] mPendingContent;
+    private String mResolveMimetType = null;
 
     private OnContentChangedListener mContentChangedListener;
     private OnMessageListener mMessageListener;
@@ -130,6 +134,7 @@ public class EditorView extends FrameLayout {
                 mWebView.loadUrl("javascript: setReadOnly(" + mReadOnly + ");");
                 mWebView.loadUrl("javascript: setWrapMode(" + mWrap + ");");
                 mWebView.loadUrl("javascript: setTextSize(" + mTextSize + ");");
+                mWebView.loadUrl("javascript: setNotifyMimeTypeChanges(" + mNotifyMimeTypeChanges + ");");
                 mReady = true;
 
                 if (mPendingContent != null) {
@@ -168,6 +173,17 @@ public class EditorView extends FrameLayout {
                     return true;
                 }
 
+                if (msg.startsWith("edt:mtc:")) {
+                    String mimeType = msg.substring(msg.lastIndexOf(":") + 1);
+                    if (TextUtils.isEmpty(mimeType)) {
+                        mimeType = "text/plain";
+                    }
+                    String ext = EditorView.resolveExtensionFromMimeType(mimeType);
+                    if (mReady) {
+                        mWebView.loadUrl("javascript: setFileName('unnamed." + ext + "');");
+                    }
+                }
+
                 if (mPattern.matcher(msg).find()) {
                     String[] v = msg.split(":");
                     int key = Integer.parseInt(v[1]);
@@ -182,6 +198,9 @@ public class EditorView extends FrameLayout {
                         case "p":
                             // partial
                             o.first.append(v[3]);
+                            break;
+                        case "m":
+                            mResolveMimetType = v[3];
                             break;
                         case "f":
                             // finish
@@ -202,7 +221,7 @@ public class EditorView extends FrameLayout {
                             }
                             System.out.println("CONSOLE: computed hash: " + crc);
 
-                            o.second.onReadContentReady(content);
+                            o.second.onReadContentReady(content, mResolveMimetType);
                             mMap.remove(key);
                             break;
                     }
@@ -257,6 +276,18 @@ public class EditorView extends FrameLayout {
         return this;
     }
 
+    public boolean isNotifyMimeTypeChanges() {
+        return mNotifyMimeTypeChanges;
+    }
+
+    public EditorView setNotifyMimeTypeChanges(boolean notify) {
+        mNotifyMimeTypeChanges = notify;
+        if (mReady) {
+            mWebView.loadUrl("javascript: setNotifyMimeTypeChanges(" + notify + ");");
+        }
+        return this;
+    }
+
     public boolean isDirty() {
         return mIsDirty;
     }
@@ -303,10 +334,14 @@ public class EditorView extends FrameLayout {
     }
 
     public void readContent(OnReadContentReadyListener cb) {
+        readContent(cb, false);
+    }
+
+    public void readContent(OnReadContentReadyListener cb, boolean resolveMimeType) {
         if (mIsDirty) {
             int key = mRandom.nextInt(Short.MAX_VALUE);
             mMap.put(key, new Pair<>(new StringBuilder(), cb));
-            mWebView.loadUrl("javascript: readContent(" + key + ");");
+            mWebView.loadUrl("javascript: readContent(" + resolveMimeType + "," + key + ");");
         } else {
             cb.onContentUnchanged();
         }
@@ -343,6 +378,24 @@ public class EditorView extends FrameLayout {
         CRC32 crc = new CRC32();
         crc.update(data);
         return (int) crc.getValue();
+    }
+
+    public static String resolveExtensionFromMimeType(String mimeType) {
+        if (mimeType != null) {
+            switch (mimeType) {
+            case "text/javascript": return "js";
+            case "text/x-c": return "c";
+            case "text/x-c++": return "cpp";
+            case "text/x-python": return "py";
+            case "text/x-java": return "java";
+            case "text/html": return "html";
+            case "text/css": return "css";
+            case "text/x-ruby": return "rb";
+            case "text/x-go": return "go";
+            case "text/x-php": return "php";
+            }
+        }
+        return "txt";
     }
 
     private static class SavedState extends BaseSavedState {

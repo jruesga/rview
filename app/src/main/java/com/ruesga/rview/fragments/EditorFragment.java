@@ -820,7 +820,7 @@ public class EditorFragment extends Fragment
         mBinding.editor.readContent(
             new EditorView.OnReadContentReadyListener() {
                 @Override
-                public void onReadContentReady(byte[] content) {
+                public void onReadContentReady(byte[] content, String mimeType) {
                     if (content.length > 0) {
                         String name = getEditCachedFileName(file);
                         if (DEBUG) {
