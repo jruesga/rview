@@ -29,14 +29,14 @@
         android:layout_height="wrap_content"
         app:flexWrap="nowrap"
         app:justifyContent="space_between">
-        <ImageButton
+        <ImageView
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:padding="8dp"
             android:tag="camera"
             android:onClick="@{handlers::onAttachmentChooser}"
             app:srcCompat="@drawable/ic_camera"
-            android:tint="@color/color_accent"
+            app:bindImageTintList="@{com.ruesga.rview.R.color.color_accent}"
             app:bindEnable="@{attachmentsSupport.supportsCamera() &amp;&amp; attachmentsSupport.isProviderSupported()}"
             android:background="?attr/selectableItemBackgroundBorderless"
             tools:ignore="ContentDescription"/>
@@ -47,7 +47,7 @@
             android:tag="media"
             android:onClick="@{handlers::onAttachmentChooser}"
             app:srcCompat="@drawable/ic_image"
-            android:tint="@color/color_accent"
+            app:bindImageTintList="@{com.ruesga.rview.R.color.color_accent}"
             app:bindEnable="@{attachmentsSupport.isProviderSupported()}"
             android:background="?attr/selectableItemBackgroundBorderless"
             tools:ignore="ContentDescription"/>
@@ -58,7 +58,7 @@
             android:tag="link"
             android:onClick="@{handlers::onAttachmentChooser}"
             app:srcCompat="@drawable/ic_link"
-            android:tint="@color/color_accent"
+            app:bindImageTintList="@{com.ruesga.rview.R.color.color_accent}"
             app:bindEnable="@{attachmentsSupport.isProviderSupported()}"
             android:background="?attr/selectableItemBackgroundBorderless"
             tools:ignore="ContentDescription"/>
@@ -69,7 +69,7 @@
             android:tag="file"
             android:onClick="@{handlers::onAttachmentChooser}"
             app:srcCompat="@drawable/ic_attach"
-            android:tint="@color/color_accent"
+            app:bindImageTintList="@{com.ruesga.rview.R.color.color_accent}"
             app:bindEnable="@{attachmentsSupport.isProviderSupported()}"
             android:background="?attr/selectableItemBackgroundBorderless"
             tools:ignore="ContentDescription"/>
@@ -80,7 +80,7 @@
             android:tag="code"
             android:onClick="@{handlers::onAttachmentChooser}"
             app:srcCompat="@drawable/ic_code"
-            android:tint="@color/color_accent"
+            app:bindImageTintList="@{com.ruesga.rview.R.color.color_accent}"
             app:bindEnable="@{attachmentsSupport.isProviderSupported()}"
             android:background="?attr/selectableItemBackgroundBorderless"
             tools:ignore="ContentDescription"/>

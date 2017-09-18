@@ -148,10 +148,20 @@ public class BindingAdapters {
     }
 
     @BindingAdapter("bindImageTint")
-    public static void bindBackgroundTint(ImageView v, int color) {
+    public static void bindImageTint(ImageView v, int color) {
         final Drawable dw = v.getDrawable();
         if (dw != null) {
             DrawableCompat.setTint(dw, color);
+        }
+        v.setImageDrawable(dw);
+    }
+
+    @BindingAdapter("bindImageTintList")
+    public static void bindImageTintList(ImageView v, int colorList) {
+        Drawable dw = v.getDrawable();
+        if (dw != null) {
+            DrawableCompat.setTintList(dw,
+                    ContextCompat.getColorStateList(v.getContext(), colorList));
         }
         v.setImageDrawable(dw);
     }
