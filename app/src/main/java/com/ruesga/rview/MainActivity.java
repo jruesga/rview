@@ -44,7 +44,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.util.Colors;
@@ -248,6 +247,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 mAccountStatusChangedReceiver, filter);
         if (mAccount != null) {
             fetchAccountStatus(mAccount);
+            AnalyticsHelper.accountSelected(this, mAccount);
         }
 
         mHeaderDrawerBinding.setModel(mModel);
