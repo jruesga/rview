@@ -182,8 +182,6 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
                         mBinding.content.setMinimumHeight(
                                 (allowExpandedState() ? decorator.getHeight() : peekHeight)
                                         - mBinding.toolbar.getHeight());
-                        inflateContent(mBinding.content);
-                        onContentLayoutChanged(mBinding.content);
                         requestPermissionsIfNeeded(REQUEST_PERMISSIONS);
                     } else {
                         dismiss();
@@ -211,12 +209,14 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
                 if (ContextCompat.checkSelfPermission(getActivity(), permission)
                         != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(permissions, requestCode);
-                    break;
+                    return;
                 }
             }
         }
 
         // Permissions granted
+        inflateContent(mBinding.content);
+        onContentLayoutChanged(mBinding.content);
         onContentReady();
     }
 
@@ -231,6 +231,8 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
             }
 
             // Permissions granted
+            inflateContent(mBinding.content);
+            onContentLayoutChanged(mBinding.content);
             onContentReady();
         }
     }
