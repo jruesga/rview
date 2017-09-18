@@ -167,6 +167,10 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
             int position = (int) v.getTag();
             mFragment.onImagePressed(position);
         }
+
+        public void onRetry(View v) {
+            mFragment.onRetry();
+        }
     }
 
     private static class GalleryViewHolder extends RecyclerView.ViewHolder {
@@ -179,16 +183,16 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
     }
 
     private static class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        final Context mContext;
-        final Picasso mPicasso;
-        final int mImageWidth, mImageHeight;
-        final EventHandlers mHandlers;
+        private final Context mContext;
+        private final Picasso mPicasso;
+        private final int mImageWidth, mImageHeight;
+        private final EventHandlers mHandlers;
 
-        final List<MediaItem> mImages = new ArrayList<>();
-        final List<Boolean> mSelection = new ArrayList<>();
-        final List<MediaItem> mPrevSelection;
+        private final List<MediaItem> mImages = new ArrayList<>();
+        private final List<Boolean> mSelection = new ArrayList<>();
+        private final List<MediaItem> mPrevSelection;
 
-        final Object sync = new Object();
+        private final Object sync = new Object();
 
         private GalleryAdapter(GalleryChooserFragment fragment,
                 int imageWidth, List<MediaItem> prevSelection) {
@@ -235,8 +239,9 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
             synchronized (sync) {
                 int count = mImages.size();
                 for (int i = 0; i < count; i++) {
-                    Boolean selected = mSelection.get(i);
-                    if (selected != null && selected) {
+                    boolean selected = mSelection.size() > i
+                            && mSelection.get(i) != null && mSelection.get(i);
+                    if (selected) {
                         selection.add(mImages.get(i));
                     }
                 }
@@ -302,10 +307,9 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
             synchronized (mSync) {
                 mLoaded = true;
             }
-            mLoading = mError = false;
+            mLoading = mError = mNeedPermissions = false;
             mEmpty = images.size() == 0;
-            mBinding.setLoading(false);
-            mBinding.setEmpty(mEmpty);
+            updateState();
         }
 
         @Override
@@ -313,10 +317,9 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
             mMediaLoader.clear();
 
             Log.e(TAG, "Failed to fetch images", e);
-            mLoading = mEmpty = false;
+            mLoading = mEmpty = mNeedPermissions = false;
             mError = true;
-            mBinding.setLoading(false);
-            mBinding.setError(mError);
+            updateState();
         }
     };
 
@@ -324,14 +327,17 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
     private static final String EXTRA_IS_LOADING = "is_loading";
     private static final String EXTRA_IS_EMPTY = "is_empty";
     private static final String EXTRA_IS_ERROR = "is_error";
+    private static final String EXTRA_IS_NEED_PERMISSIONS = "is_need_permissions";
 
     private final Handler mHandler;
+    private EventHandlers mHandlers;
     private final ContentObserver mContentObserver;
     private RxLoader<List<MediaItem>> mMediaLoader;
     private GalleryChooserContentBinding mBinding;
     private GalleryAdapter mAdapter;
     private int mImageWidth;
     private boolean mEmpty = false;
+    private boolean mNeedPermissions = false;
     private boolean mError = false;
     private boolean mLoading = false;
     private boolean mLoaded = false;
@@ -368,12 +374,14 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mHandlers = new EventHandlers(this);
 
         if (savedInstanceState != null) {
             mPrevSelection = savedInstanceState.getParcelableArrayList(EXTRA_SELECTION);
             mLoading = savedInstanceState.getBoolean(EXTRA_IS_LOADING, false);
             mEmpty = savedInstanceState.getBoolean(EXTRA_IS_EMPTY, false);
             mError = savedInstanceState.getBoolean(EXTRA_IS_ERROR, false);
+            mNeedPermissions = savedInstanceState.getBoolean(EXTRA_IS_NEED_PERMISSIONS, false);
         } else if (getArguments() != null) {
             Parcelable[] parcels = getArguments().getParcelableArray(EXTRA_SELECTION);
             if (parcels != null) {
@@ -397,31 +405,31 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(EXTRA_SELECTION,
-                (ArrayList<MediaItem>) mAdapter.getSelection());
+        if (mAdapter != null) {
+            outState.putParcelableArrayList(EXTRA_SELECTION,
+                    (ArrayList<MediaItem>) mAdapter.getSelection());
+        }
         outState.putBoolean(EXTRA_IS_LOADING, mLoading);
         outState.putBoolean(EXTRA_IS_EMPTY, mEmpty);
         outState.putBoolean(EXTRA_IS_ERROR, mError);
+        outState.putBoolean(EXTRA_IS_NEED_PERMISSIONS, mNeedPermissions);
     }
 
     @Override
     public void inflateContent(ViewGroup parent) {
         LayoutInflater li = LayoutInflater.from(getContext());
         mBinding = DataBindingUtil.inflate(li, R.layout.gallery_chooser_content, parent, true);
-        mBinding.setLoading(false);
-        mBinding.setError(false);
-        mBinding.setEmpty(false);
+        updateState();
+        mBinding.setHandlers(mHandlers);
 
         // Calculate the best suitable layout width to accommodate the media views
         float desiredWidth = TypedValue.applyDimension (TypedValue.COMPLEX_UNIT_DIP,
                 144, getResources().getDisplayMetrics());
         int columns = Math.round(getMaxWidth() / desiredWidth);
         mImageWidth = getMaxWidth() / columns;
-
-        startLoadersWithValidContext();
     }
 
-    private void startLoadersWithValidContext() {
+    private void createLoadersWithValidContext() {
         if (getActivity() == null) {
             return;
         }
@@ -443,7 +451,7 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
                 synchronized (mSync) {
                     if (getActivity() != null && !mLoaded) {
                         mLoading = true;
-                        mBinding.setLoading(true);
+                        updateState();
                     }
                 }
             }, 750);
@@ -523,11 +531,30 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
 
     @Override
     public boolean allowDraggingState() {
-        return !(mLoading || mEmpty || mError);
+        return !(mLoading || mEmpty || mError || mNeedPermissions);
+    }
+
+    @Override
+    public void onLoading() {
+        mNeedPermissions = mLoading = mError = false;
+        mLoading = true;
+        updateState();
+    }
+
+    @Override
+    public void onPermissionDenied() {
+        mEmpty = mLoading = mError = false;
+        mNeedPermissions = true;
+        updateState();
     }
 
     @Override
     public void onContentReady() {
+        mNeedPermissions = false;
+        updateState();
+
+        createLoadersWithValidContext();
+
         // Request the data
         mMediaLoader.clear();
         mMediaLoader.restart();
@@ -536,7 +563,7 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
 
     @Override
     public void onDonePressed() {
-        if (!(mLoading || mEmpty || mError)) {
+        if (!(mLoading || mEmpty || mError || mNeedPermissions)) {
             Activity a = getActivity();
             Fragment f = getParentFragment();
             if (f != null && f instanceof OnGallerySelectedListener) {
@@ -547,4 +574,24 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
         }
     }
 
+    public void onRetry() {
+        requestPermissions();
+    }
+
+    private void updateState() {
+        mBinding.setLoading(mLoading);
+        mBinding.setError(mError);
+        mBinding.setEmpty(mEmpty);
+        mBinding.setNeedPermissions(mNeedPermissions);
+
+        if (mEmpty) {
+            mBinding.setMessage(getString(R.string.gallery_chooser_empty));
+        } else if (mLoading) {
+            mBinding.setMessage(getString(R.string.gallery_chooser_loading));
+        } else if (mNeedPermissions) {
+            mBinding.setMessage(getString(R.string.gallery_chooser_need_permissions));
+        } else if (mError) {
+            mBinding.setMessage(getString(R.string.gallery_chooser_error));
+        }
+    }
 }

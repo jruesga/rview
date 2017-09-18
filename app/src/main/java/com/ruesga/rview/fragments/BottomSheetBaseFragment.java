@@ -204,14 +204,19 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
         return color;
     }
 
+    void requestPermissions() {
+        requestPermissionsIfNeeded(REQUEST_PERMISSIONS);
+    }
+
     private void requestPermissionsIfNeeded(int requestCode) {
         String[] permissions = requiredPermissions();
         if (permissions != null && permissions.length > 0) {
             for (String permission : permissions) {
                 if (ContextCompat.checkSelfPermission(getActivity(), permission)
                         != PackageManager.PERMISSION_GRANTED) {
+                    onLoading();
                     requestPermissions(permissions, requestCode);
-                    break;
+                    return;
                 }
             }
         }
@@ -226,6 +231,7 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
         if (requestCode == REQUEST_PERMISSIONS) {
             for (int permissionGrant : grantResults) {
                 if (permissionGrant != PackageManager.PERMISSION_GRANTED) {
+                    onPermissionDenied();
                     return;
                 }
             }
@@ -246,6 +252,12 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
             mBinding.content.setMinimumHeight(height);
             onContentLayoutChanged(mBinding.content);
         }
+    }
+
+    public void onLoading() {
+    }
+
+    public void onPermissionDenied() {
     }
 
     public ViewGroup getContentView() {

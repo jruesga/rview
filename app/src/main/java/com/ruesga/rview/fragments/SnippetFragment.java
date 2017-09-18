@@ -75,6 +75,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     private boolean mReadOnly;
     private boolean mDirty;
     private long mContentSize;
+    private boolean mNeedPermissions;
     private OnContentChangedListener mContentChangedListener = this::onContentChanged;
 
     public interface OnSnippetSavedListener {
@@ -108,7 +109,6 @@ public class SnippetFragment extends BottomSheetBaseFragment {
                 Log.e(TAG, "Can't create temporary snippet", ex);
             }
         }
-
 
         fragment.setArguments(arguments);
         return fragment;
@@ -160,6 +160,15 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     }
 
     @Override
+    public void onPermissionDenied() {
+        mNeedPermissions = true;
+        mReadOnly = true;
+        mBinding.editor.setReadOnly(true);
+        mBinding.editor.setNotifyMimeTypeChanges(false);
+        loadContent(getString(R.string.snippet_dialog_snippet_permissions).getBytes());
+    }
+
+    @Override
     public boolean allowExpandedState() {
         return false;
     }
@@ -206,10 +215,16 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     }
 
     private void loadContent(byte[] data) {
-        String ext = EditorView.resolveExtensionFromMimeType(mMimeType);
+        final String fileName;
+        if (mNeedPermissions) {
+            fileName = DEFAULT_SNIPPED_NAME + ".txt";
+        } else {
+            String ext = EditorView.resolveExtensionFromMimeType(mMimeType);
+            fileName = DEFAULT_SNIPPED_NAME + "." + ext;
+        }
+
         mBinding.editor.scrollTo(0, 0);
-        mBinding.editor.loadEncodedContent(
-                DEFAULT_SNIPPED_NAME + "." + ext, Base64.encode(data, Base64.NO_WRAP));
+        mBinding.editor.loadEncodedContent(fileName, Base64.encode(data, Base64.NO_WRAP));
     }
 
     @Override
@@ -223,6 +238,9 @@ public class SnippetFragment extends BottomSheetBaseFragment {
 
     @Override
     public void onDonePressed() {
+        if (mNeedPermissions) {
+            return;
+        }
         readFileContent();
         Thread.yield();
         if (!mReadOnly && mContentSize > 0) {
@@ -240,6 +258,9 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     }
 
     public void onActionPressed() {
+        if (mNeedPermissions) {
+            return;
+        }
         if (!mReadOnly) {
             // Paste
             ClipboardManager clipboard =

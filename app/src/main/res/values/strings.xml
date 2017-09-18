@@ -606,6 +606,7 @@
     <!-- Gallery chooser -->
     <string name="gallery_chooser_title">Gallery</string>
     <string name="gallery_chooser_loading">Collecting data. Wait\u2026</string>
+    <string name="gallery_chooser_need_permissions">You must grant permissions to choose pictures from Gallery</string>
     <string name="gallery_chooser_empty">Oops, nothing found.\nGet out there and capture your world!</string>
     <string name="gallery_chooser_error">Oops, this is embarrassing.\nAn error occurred whilst collecting media items</string>
 
@@ -620,6 +621,7 @@
     <string name="snippet_dialog_title">Snippet</string>
     <string name="snippet_dialog_error">Failed to load content</string>
     <string name="snippet_dialog_snippet_file_name">Unnamed</string>
+    <string name="snippet_dialog_snippet_permissions">You must grant permissions to view or write snippets</string>
 
     <!-- Attachment Providers -->
     <string name="attachment_provider_not_supported">Attachment provider is not supported. Attachment were removed.</string>

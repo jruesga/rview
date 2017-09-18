@@ -55,6 +55,9 @@
     }
     function setReadOnly(readOnly) {
         editor.setReadOnly(readOnly);
+        if (readOnly) {
+            editor.session.setUseWorker(false);
+        }
     }
     function setTextSize(textSize) {
         editor.setFontSize(textSize);
