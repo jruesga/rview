@@ -1983,7 +1983,9 @@ public class ChangeDetailsFragment extends Fragment implements
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return SafeObservable.fromNullCallable(() -> {
                         // Create attachments metadata
-                        performCreateAttachmentMetadata(input);
+                        if (!mAttachments.isEmpty()) {
+                            performCreateAttachmentMetadata(input);
+                        }
 
                         // Create the review
                         ReviewInfo response = api.setChangeRevisionReview(
