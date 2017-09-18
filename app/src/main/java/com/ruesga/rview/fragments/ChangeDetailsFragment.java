@@ -3275,6 +3275,9 @@ public class ChangeDetailsFragment extends Fragment implements
             throws AuthenticationException {
         AttachmentsProvider attachmentsProvider =
                 AttachmentsProviderFactory.getAttachmentProvider(getContext());
+        if (!attachmentsProvider.isAvailable()) {
+            return;
+        }
         if (!attachmentsProvider.isSupported()) {
             // Cannot upload to server
             throw new AuthenticationException();
