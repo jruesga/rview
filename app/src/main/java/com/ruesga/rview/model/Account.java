@@ -27,6 +27,7 @@ import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.misc.UriHelper;
 
 public class Account implements Parcelable, Comparable<Account> {
     public static final int ANONYMOUS_ACCOUNT_ID = -1;
@@ -62,7 +63,7 @@ public class Account implements Parcelable, Comparable<Account> {
         if (!TextUtils.isEmpty(mRepository.mName)) {
             return mRepository.mName;
         }
-        return mRepository.mUrl;
+        return UriHelper.sanitizeEndpoint(mRepository.mUrl);
     }
 
     public boolean hasAuthenticatedAccessMode() {
@@ -83,17 +84,19 @@ public class Account implements Parcelable, Comparable<Account> {
 
     public boolean isSameAs(Account account) {
         return mRepository.mName.equals(account.mRepository.mName)
-                && mRepository.mUrl.equals(account.mRepository.mUrl)
+                && UriHelper.sanitizeEndpoint(mRepository.mUrl).equals(
+                        UriHelper.sanitizeEndpoint(account.mRepository.mUrl))
                 && mAccount.accountId == account.mAccount.accountId;
     }
 
     public String getRepositoryHash() {
-        String hashId = mRepository.mName + "-" + mRepository.mUrl;
+        String hashId = mRepository.mName + "-" + UriHelper.sanitizeEndpoint(mRepository.mUrl);
         return Base64.encodeToString(hashId.getBytes(), Base64.NO_WRAP);
     }
 
     public String getAccountHash() {
-        String hashId = mRepository.mName + "-" + mRepository.mUrl + "-" + mAccount.accountId;
+        String hashId = mRepository.mName + "-" + UriHelper.sanitizeEndpoint(mRepository.mUrl)
+                + "-" + mAccount.accountId;
         return Base64.encodeToString(hashId.getBytes(), Base64.NO_WRAP);
     }
 

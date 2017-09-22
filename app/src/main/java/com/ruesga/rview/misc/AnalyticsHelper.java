@@ -20,6 +20,7 @@ import android.os.Bundle;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ruesga.rview.R;
+import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
 
 public class AnalyticsHelper {
@@ -49,7 +50,8 @@ public class AnalyticsHelper {
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "repository");
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME,
                         account.getRepositoryDisplayName());
-                bundle.putString(FirebaseAnalytics.Param.GROUP_ID, account.mRepository.mUrl);
+                bundle.putString(FirebaseAnalytics.Param.GROUP_ID,
+                    UriHelper.sanitizeEndpoint(account.mRepository.mUrl));
                 bundle.putBoolean("authenticated", account.hasAuthenticatedAccessMode());
                 bundle.putBoolean("created", created);
                 analytics.logEvent(FirebaseAnalytics.Event.JOIN_GROUP, bundle);
@@ -70,7 +72,8 @@ public class AnalyticsHelper {
                 bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "repository");
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME,
                         account.getRepositoryDisplayName());
-                bundle.putString(FirebaseAnalytics.Param.ITEM_ID, account.mRepository.mUrl);
+                bundle.putString(FirebaseAnalytics.Param.ITEM_ID,
+                        UriHelper.sanitizeEndpoint(account.mRepository.mUrl));
                 bundle.putBoolean("authenticated", account.hasAuthenticatedAccessMode());
                 analytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }

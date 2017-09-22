@@ -70,6 +70,7 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
 import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Constants;
@@ -823,7 +824,8 @@ public class MainActivity extends ChangeListBaseActivity {
             boolean unregisterUrlHandler = true;
             List<Account> accounts = Preferences.getAccounts(getApplicationContext());
             for (Account account : accounts) {
-                if (acct.mRepository.mUrl.equals(account.mRepository.mUrl)) {
+                if (UriHelper.sanitizeEndpoint(acct.mRepository.mUrl).equals(
+                            UriHelper.sanitizeEndpoint(account.mRepository.mUrl))) {
                     unregisterUrlHandler = false;
                     break;
                 }
