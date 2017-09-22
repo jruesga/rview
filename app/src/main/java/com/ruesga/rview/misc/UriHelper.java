@@ -22,6 +22,7 @@ import com.ruesga.rview.model.Repository;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Locale;
 
 public class UriHelper {
 
@@ -87,5 +88,19 @@ public class UriHelper {
             target = target.substring(0, target.length() - 1);
         }
         return target.replaceAll("//", "/").replaceAll("/", CUSTOM_URI_TOKENIZER);
+    }
+
+    public static String sanitizeEndpoint(String endpoint) {
+        // Sanitize endpoint
+        String endpointLower = endpoint.toLowerCase(Locale.US);
+        if (!endpointLower.startsWith("http://") && !endpointLower.startsWith("https://")) {
+            endpoint = "http://" + endpoint;
+        }
+
+        if (!endpoint.endsWith("/")) {
+            endpoint += "/";
+        }
+
+        return endpoint;
     }
 }

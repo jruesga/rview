@@ -543,7 +543,8 @@ public class ModelHelper {
     public static Repository findRepositoryForAccount(Context ctx, Account account) {
         if (account != null) {
             for (Repository repository : getPredefinedRepositories(ctx)) {
-                if (repository.mUrl.equals(account.mRepository.mUrl)) {
+                if (repository.mUrl.equals(
+                        UriHelper.sanitizeEndpoint(account.mRepository.mUrl))) {
                     return repository;
                 }
             }

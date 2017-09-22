@@ -24,6 +24,7 @@ import com.ruesga.rview.gerrit.model.ServerInfo;
 import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Preferences;
@@ -55,7 +56,7 @@ public class SetupAccountActivity extends WizardActivity {
     public Intent onWizardFinished(Bundle savedState) {
         // Extra all the needed extras
         String repoName = savedState.getString(RepositoryPageFragment.STATE_REPO_NAME);
-        String repoUrl = sanitizeEndpoint(
+        String repoUrl = UriHelper.sanitizeEndpoint(
                 savedState.getString(RepositoryPageFragment.STATE_REPO_URL));
         boolean repoTrustAllCertificates =
                 savedState.getBoolean(RepositoryPageFragment.STATE_REPO_TRUST_ALL_CERTIFICATES);
@@ -104,19 +105,5 @@ public class SetupAccountActivity extends WizardActivity {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_ACCOUNT, account);
         return intent;
-    }
-
-    private static String sanitizeEndpoint(String endpoint) {
-        // Sanitize endpoint
-        String endpointLower = endpoint.toLowerCase(Locale.US);
-        if (!endpointLower.startsWith("http://") && !endpointLower.startsWith("https://")) {
-            endpoint = "http://" + endpoint;
-        }
-
-        if (!endpoint.endsWith("/")) {
-            endpoint += "/";
-        }
-
-        return endpoint;
     }
 }
