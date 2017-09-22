@@ -55,7 +55,8 @@ public class SetupAccountActivity extends WizardActivity {
     public Intent onWizardFinished(Bundle savedState) {
         // Extra all the needed extras
         String repoName = savedState.getString(RepositoryPageFragment.STATE_REPO_NAME);
-        String repoUrl = savedState.getString(RepositoryPageFragment.STATE_REPO_URL);
+        String repoUrl = sanitizeEndpoint(
+                savedState.getString(RepositoryPageFragment.STATE_REPO_URL));
         boolean repoTrustAllCertificates =
                 savedState.getBoolean(RepositoryPageFragment.STATE_REPO_TRUST_ALL_CERTIFICATES);
         String accountUsername;
@@ -105,4 +106,17 @@ public class SetupAccountActivity extends WizardActivity {
         return intent;
     }
 
+    private static String sanitizeEndpoint(String endpoint) {
+        // Sanitize endpoint
+        String endpointLower = endpoint.toLowerCase(Locale.US);
+        if (!endpointLower.startsWith("http://") && !endpointLower.startsWith("https://")) {
+            endpoint = "http://" + endpoint;
+        }
+
+        if (!endpoint.endsWith("/")) {
+            endpoint += "/";
+        }
+
+        return endpoint;
+    }
 }
