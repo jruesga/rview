@@ -86,7 +86,7 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
         }
 
         private MediaItem(Parcel in) {
-            mUri = in.readParcelable(Uri.class.getClassLoader());
+            mUri = Uri.CREATOR.createFromParcel(in);
             mId = Long.parseLong(mUri.getLastPathSegment());
             if (in.readInt() == 1) {
                 mTitle = in.readString();
@@ -105,10 +105,7 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
 
         @Override
         public void writeToParcel(Parcel parcel, int i) {
-            parcel.writeInt(mUri != null ? 1 : 0);
-            if (mUri != null) {
-                parcel.writeParcelable(mUri, i);
-            }
+            Uri.writeToParcel(parcel, mUri);
             parcel.writeInt(mTitle != null ? 1 : 0);
             if (mTitle != null) {
                 parcel.writeString(mTitle);
@@ -408,6 +405,8 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
         if (mAdapter != null) {
             outState.putParcelableArrayList(EXTRA_SELECTION,
                     (ArrayList<MediaItem>) mAdapter.getSelection());
+        } else {
+            outState.putParcelableArrayList(EXTRA_SELECTION, new ArrayList<>());
         }
         outState.putBoolean(EXTRA_IS_LOADING, mLoading);
         outState.putBoolean(EXTRA_IS_EMPTY, mEmpty);

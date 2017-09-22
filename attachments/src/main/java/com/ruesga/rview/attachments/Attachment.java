@@ -52,9 +52,7 @@ public class Attachment implements Parcelable {
             mUrl = in.readString();
         }
         mSize = in.readLong();
-        if (in.readInt() == 1) {
-            mLocalUri = in.readParcelable(getClass().getClassLoader());
-        }
+        mLocalUri = Uri.CREATOR.createFromParcel(in);
     }
 
     public static final Creator<Attachment> CREATOR = new Creator<Attachment>() {
@@ -97,9 +95,6 @@ public class Attachment implements Parcelable {
             parcel.writeString(mUrl);
         }
         parcel.writeLong(mSize);
-        parcel.writeInt(mLocalUri != null ? 1 : 0);
-        if (mLocalUri != null) {
-            parcel.writeParcelable(mLocalUri, 0);
-        }
+        Uri.writeToParcel(parcel, mLocalUri);
     }
 }
