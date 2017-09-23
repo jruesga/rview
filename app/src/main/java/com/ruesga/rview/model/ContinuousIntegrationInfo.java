@@ -18,6 +18,7 @@ package com.ruesga.rview.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -37,9 +38,15 @@ public class ContinuousIntegrationInfo implements Parcelable, Comparable<Continu
     }
 
     protected ContinuousIntegrationInfo(Parcel in) {
-        mName = in.readString();
-        mUrl = in.readString();
-        mStatus = BuildStatus.valueOf(in.readString());
+        if (in.readInt() == 1) {
+            mName = in.readString();
+        }
+        if (in.readInt() == 1) {
+            mUrl = in.readString();
+        }
+        if (in.readInt() == 1) {
+            mStatus = BuildStatus.valueOf(in.readString());
+        }
     }
 
     public static final Creator<ContinuousIntegrationInfo> CREATOR =
@@ -62,9 +69,24 @@ public class ContinuousIntegrationInfo implements Parcelable, Comparable<Continu
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(mName);
-        parcel.writeString(mUrl);
-        parcel.writeString(mStatus.name());
+        if (!TextUtils.isEmpty(mName)) {
+            parcel.writeInt(1);
+            parcel.writeString(mName);
+        } else {
+            parcel.writeInt(0);
+        }
+        if (!TextUtils.isEmpty(mUrl)) {
+            parcel.writeInt(1);
+            parcel.writeString(mUrl);
+        } else {
+            parcel.writeInt(0);
+        }
+        if (mStatus != null) {
+            parcel.writeInt(1);
+            parcel.writeString(mStatus.name());
+        } else {
+            parcel.writeInt(0);
+        }
     }
 
     @Override
