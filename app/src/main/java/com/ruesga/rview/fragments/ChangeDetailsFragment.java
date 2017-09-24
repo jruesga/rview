@@ -173,7 +173,8 @@ public class ChangeDetailsFragment extends Fragment implements
         TagEditDialogFragment.OnTagEditChanged,
         GalleryChooserFragment.OnGallerySelectedListener,
         SnippetFragment.OnSnippetSavedListener,
-        ProviderChooserFragment.OnAttachmentProviderSelectedListener {
+        ProviderChooserFragment.OnAttachmentProviderSelectedListener,
+        FilesDialogFragment.OnFilePressed {
 
     private static final String TAG = "ChangeDetailsFragment";
 
@@ -369,7 +370,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         public void onMoreFilesPressed(View v) {
-            mFragment.performOpenFileDiff(Constants.COMMIT_MESSAGE);
+            mFragment.performShowMoreFiles(v);
         }
 
         public void onApplyFilterPressed(View v) {
@@ -479,6 +480,10 @@ public class ChangeDetailsFragment extends Fragment implements
             mIsShortFilenames = isShortFilenames;
         }
 
+        List<FileItemModel> getAllItems() {
+            return new ArrayList<>(mAllFiles);
+        }
+
         void update(ListModel listModel, Map<String, FileInfo> files, Map<String,
                 Integer> inlineComments, Map<String, Integer> draftComments) {
             mFiles.clear();
@@ -579,10 +584,9 @@ public class ChangeDetailsFragment extends Fragment implements
             } else if (viewType == MORE_ITEMS_VIEW_TYPE) {
                 return new MoreFilesViewHolder(DataBindingUtil.inflate(
                         inflater, R.layout.more_files, parent, false));
-            } else {
-                return new FileInfoViewHolder(DataBindingUtil.inflate(
-                        inflater, R.layout.file_info_item, parent, false));
             }
+            return new FileInfoViewHolder(DataBindingUtil.inflate(
+                    inflater, R.layout.file_info_item, parent, false));
         }
 
         @Override
@@ -3277,6 +3281,17 @@ public class ChangeDetailsFragment extends Fragment implements
                     break;
             }
         }
+    }
+
+    private void performShowMoreFiles(View v) {
+        FilesDialogFragment fragment = FilesDialogFragment.newInstance(
+                mFileAdapter.getAllItems(), false, v);
+        fragment.show(getChildFragmentManager(), FilesDialogFragment.TAG);
+    }
+
+    @Override
+    public void onFilePressed(String file) {
+        performOpenFileDiff(file);
     }
 
     @Override
