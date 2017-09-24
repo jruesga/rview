@@ -72,7 +72,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
 
 @Keep
 @SuppressWarnings("unused")
@@ -511,6 +510,12 @@ public class Formatter {
     @BindingAdapter("file")
     public static void toFile(TextView view, String path) {
         view.setText(path.startsWith("/") ? path.substring(1) : path);
+    }
+
+    @BindingAdapter("moreItems")
+    public static void toMoreItems(TextView view, Integer more) {
+        int q = more == null ? 0 : more;
+        view.setText(view.getResources().getQuantityString(R.plurals.more_items, q, q));
     }
 
     @BindingAdapter({"changeStatus", "currentRevision"})

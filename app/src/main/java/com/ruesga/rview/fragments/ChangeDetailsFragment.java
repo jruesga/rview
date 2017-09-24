@@ -66,6 +66,7 @@ import com.ruesga.rview.attachments.services.AttachmentsContentUploadService;
 import com.ruesga.rview.databinding.ChangeDetailsFragmentBinding;
 import com.ruesga.rview.databinding.FileInfoItemBinding;
 import com.ruesga.rview.databinding.MessageItemBinding;
+import com.ruesga.rview.databinding.MoreFilesBinding;
 import com.ruesga.rview.databinding.TotalAddedDeletedBinding;
 import com.ruesga.rview.exceptions.OperationFailedException;
 import com.ruesga.rview.gerrit.GerritApi;
@@ -367,6 +368,10 @@ public class ChangeDetailsFragment extends Fragment implements
             mFragment.performOpenFileDiff((String) v.getTag());
         }
 
+        public void onMoreFilesPressed(View v) {
+            mFragment.performOpenFileDiff(Constants.COMMIT_MESSAGE);
+        }
+
         public void onApplyFilterPressed(View v) {
             mFragment.performApplyFilter(v);
         }
@@ -434,6 +439,15 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
+    private static class MoreFilesViewHolder extends RecyclerView.ViewHolder {
+        private final MoreFilesBinding mBinding;
+        MoreFilesViewHolder(MoreFilesBinding binding) {
+            super(binding.getRoot());
+            mBinding = binding;
+            binding.executePendingBindings();
+        }
+    }
+
     private static class MessageViewHolder extends RecyclerView.ViewHolder {
         private final MessageItemBinding mBinding;
         MessageViewHolder(MessageItemBinding binding, boolean isMessagesFolded) {
@@ -446,9 +460,19 @@ public class ChangeDetailsFragment extends Fragment implements
 
     private static class FileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final List<FileItemModel> mFiles = new ArrayList<>();
+        private final List<FileItemModel> mAllFiles = new ArrayList<>();
         private FileItemModel mTotals;
         private final EventHandlers mEventHandlers;
         private Boolean mIsShortFilenames;
+        private boolean mHasSplitFiles;
+
+        // This limit will split items into another screen to avoid freeze the screen, caused
+        // by the nested recycler view.
+        private static final int MAX_ITEMS = 50;
+
+        private static final int FILE_ITEM_VIEW_TYPE = 0;
+        private static final int TOTAL_ITEM_VIEW_TYPE = 1;
+        private static final int MORE_ITEMS_VIEW_TYPE = 2;
 
         FileAdapter(EventHandlers handlers, boolean isShortFilenames) {
             mEventHandlers = handlers;
@@ -458,6 +482,7 @@ public class ChangeDetailsFragment extends Fragment implements
         void update(ListModel listModel, Map<String, FileInfo> files, Map<String,
                 Integer> inlineComments, Map<String, Integer> draftComments) {
             mFiles.clear();
+            mAllFiles.clear();
             mTotals = null;
             if (files == null) {
                 notifyDataSetChanged();
@@ -484,6 +509,7 @@ public class ChangeDetailsFragment extends Fragment implements
             }
 
             // Create a model from each file
+            int count = 0;
             for (String key : files.keySet()) {
                 FileItemModel model = new FileItemModel();
                 model.file = key;
@@ -500,10 +526,17 @@ public class ChangeDetailsFragment extends Fragment implements
                                 model.inlineComments > 0 || model.draftComments > 0);
                 if (key.equals(Constants.COMMIT_MESSAGE)) {
                     mFiles.add(0, model);
+                    mAllFiles.add(0, model);
                 } else {
-                    mFiles.add(model);
+                    if (count < MAX_ITEMS) {
+                        mFiles.add(model);
+                    }
+                    mAllFiles.add(model);
                 }
+                count++;
             }
+
+            mHasSplitFiles = mFiles.size() != mAllFiles.size();
 
             // And add the total
             mTotals = new FileItemModel();
@@ -523,20 +556,29 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public int getItemCount() {
-            return mFiles.size() + (mTotals != null ? 1 : 0);
+            return mFiles.size() + (mHasSplitFiles ? 1 : 0) + (mTotals != null ? 1 : 0);
         }
 
         @Override
         public int getItemViewType(int position) {
-            return position == getItemCount() - 1 ? 1 : 0;
+            if (position == getItemCount() - 1) {
+                return TOTAL_ITEM_VIEW_TYPE;
+            }
+            if (mHasSplitFiles && position == getItemCount() - 2) {
+                return MORE_ITEMS_VIEW_TYPE;
+            }
+            return FILE_ITEM_VIEW_TYPE;
         }
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            if (viewType == 1) {
+            if (viewType == TOTAL_ITEM_VIEW_TYPE) {
                 return new TotalAddedDeletedViewHolder(DataBindingUtil.inflate(
                         inflater, R.layout.total_added_deleted, parent, false));
+            } else if (viewType == MORE_ITEMS_VIEW_TYPE) {
+                return new MoreFilesViewHolder(DataBindingUtil.inflate(
+                        inflater, R.layout.more_files, parent, false));
             } else {
                 return new FileInfoViewHolder(DataBindingUtil.inflate(
                         inflater, R.layout.file_info_item, parent, false));
@@ -549,6 +591,10 @@ public class ChangeDetailsFragment extends Fragment implements
                 TotalAddedDeletedBinding binding = ((TotalAddedDeletedViewHolder) holder).mBinding;
                 binding.addedVsDeleted.with(mTotals);
                 binding.setModel(mTotals);
+            } else if (holder instanceof MoreFilesViewHolder) {
+                MoreFilesBinding binding = ((MoreFilesViewHolder) holder).mBinding;
+                binding.setMore(mAllFiles.size() - mFiles.size());
+                binding.setHandlers(mEventHandlers);
             } else {
                 FileItemModel model = mFiles.get(position);
                 FileInfoItemBinding binding = ((FileInfoViewHolder) holder).mBinding;

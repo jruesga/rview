@@ -25,9 +25,13 @@
         <item quantity="one">1 deleted</item>
         <item quantity="other">%d deleted</item>
     </plurals>
+    <plurals name="more_items">
+        <item quantity="one">\u2026 and 1 more</item>
+        <item quantity="other">\u2026 and %d more</item>
+    </plurals>
     <plurals name="skipped_lines">
         <!-- Zero never exists. At least one line skipped -->
-        <item quantity="one">\u2026 skipped 1 common line \u2026 </item>
-        <item quantity="other">\u2026 skipped %d common lines \u2026 </item>
+        <item quantity="one">\u2026 skipped 1 common line \u2026</item>
+        <item quantity="other">\u2026 skipped %d common lines \u2026</item>
     </plurals>
 </resources>
