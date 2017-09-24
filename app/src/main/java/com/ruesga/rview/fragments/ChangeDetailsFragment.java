@@ -409,6 +409,10 @@ public class ChangeDetailsFragment extends Fragment implements
             String action = (String) v.getTag();
             mFragment.performOpenAttachmentChooser(v, action);
         }
+
+        public void onSearchPressed(View v) {
+            mFragment.performShowMoreFiles(v);
+        }
     }
 
     @Keep

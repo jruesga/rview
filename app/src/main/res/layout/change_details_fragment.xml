@@ -67,6 +67,7 @@
                         app:model="@{model.filesListModel}"
                         app:handlers="@{handlers}"
                         app:id='@{"files"}'
+                        app:supportSearch="@{java.lang.Boolean.TRUE}"
                         layout="@layout/list_with_header" />
                     <include
                         android:id="@+id/message_info"

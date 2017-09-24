@@ -127,6 +127,11 @@ public class BindingAdapters {
         v.setVisibility(o == null ? View.VISIBLE : View.GONE);
     }
 
+    @BindingAdapter("bindEmpty")
+    public static void bindEmpty(View v, String s) {
+        v.setVisibility(TextUtils.isEmpty(s) ? View.GONE : View.VISIBLE);
+    }
+
     @BindingAdapter("bindEmptyList")
     public static void bindEmptyList(View v, List<?> o) {
         v.setVisibility(o == null || o.isEmpty() ? View.GONE : View.VISIBLE);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,22 +29,23 @@ import android.view.ViewGroup;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.FileInfoItemBinding;
-import com.ruesga.rview.databinding.ListDialogBinding;
 import com.ruesga.rview.fragments.ChangeDetailsFragment.FileItemModel;
+import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class FilesDialogFragment extends RevealDialogFragment {
+public class FilesDialogFragment extends ListDialogFragment {
 
     public static final String TAG = "FilesDialogFragment";
 
     private static final String EXTRA_SHORT_FILE_NAMES = "is_short_file_names";
 
     @Keep
-    @SuppressWarnings({"UnusedParameters", "unused"})
     public static class EventHandlers extends ChangeDetailsFragment.EventHandlers {
         private FilesDialogFragment mFragment;
 
@@ -77,16 +75,19 @@ public class FilesDialogFragment extends RevealDialogFragment {
     }
 
     private static class FilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        private final List<FileItemModel> mFiles;
+        private final List<FileItemModel> mFiles = new ArrayList<>();
         private final boolean mIsShortFilenames;
         private final FilesDialogFragment.EventHandlers mEventHandlers;
 
-        private FilesAdapter(FilesDialogFragment fragment,
-                List<FileItemModel> files, boolean shortFileNames) {
+        private FilesAdapter(FilesDialogFragment fragment, boolean shortFileNames) {
             setHasStableIds(true);
-            mFiles = files;
             mIsShortFilenames = shortFileNames;
             mEventHandlers = new EventHandlers(fragment);
+        }
+
+        public void addAll(List<FileItemModel> files) {
+            mFiles.clear();
+            mFiles.addAll(files);
         }
 
         @Override
@@ -109,7 +110,7 @@ public class FilesDialogFragment extends RevealDialogFragment {
 
         @Override
         public long getItemId(int position) {
-            return position;
+            return FowlerNollVo.fnv1_64(mFiles.get(position).file.getBytes()).longValue();
         }
 
         @Override
@@ -130,39 +131,38 @@ public class FilesDialogFragment extends RevealDialogFragment {
         return fragment;
     }
 
-    private ListDialogBinding mBinding;
+    private FilesAdapter mAdapter;
+    private List<FileItemModel> mFiles;
 
     public FilesDialogFragment() {
     }
 
     @Override
-    public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
-        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.list_dialog, null, true);
-
-        Type type = new TypeToken<List<FileItemModel>>(){}.getType();
-        FilesAdapter adapter = new FilesAdapter(this,
-                SerializationManager.getInstance().fromJson(
-                        getArguments().getString(Constants.EXTRA_FILES), type),
-                getArguments().getBoolean(EXTRA_SHORT_FILE_NAMES));
-        mBinding.list.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        mBinding.list.setAdapter(adapter);
-
-        builder.setTitle(R.string.change_details_header_files)
-                .setView(mBinding.getRoot())
-                .setNegativeButton(R.string.action_cancel, null);
+    public RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter() {
+        if (mAdapter == null) {
+            Type type = new TypeToken<List<FileItemModel>>() {}.getType();
+            mFiles = SerializationManager.getInstance().fromJson(
+                    getArguments().getString(Constants.EXTRA_FILES), type);
+            mAdapter = new FilesAdapter(this, getArguments().getBoolean(EXTRA_SHORT_FILE_NAMES));
+            mAdapter.addAll(mFiles);
+        }
+        return mAdapter;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public int getTitle() {
+        return R.string.change_details_header_files;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mBinding.unbind();
+    public boolean onFilterChanged(String newFilter) {
+        List<FileItemModel> filteredFiles = new ArrayList<>();
+        mFiles.stream()
+              .filter(fileItemModel -> fileItemModel.file.toLowerCase(Locale.US).contains(newFilter))
+              .forEach(filteredFiles::add);
+        mAdapter.addAll(filteredFiles);
+        mAdapter.notifyDataSetChanged();
+        return filteredFiles.isEmpty();
     }
 
     private void performFilePressed(String file) {

@@ -18,7 +18,7 @@
     <!-- App name -->
     <string name="app_name" translatable="false">Rview</string>
 
-    <!-- Notificatios -->
+    <!-- Notifications -->
     <string name="notifications_default_channel_name" translatable="false">Rview - <xliff:g id="repository" example="CyanogenMod">%1$s</xliff:g> - <xliff:g id="account" example="test">%2$s</xliff:g></string>
     <string name="notifications_default_channel_description">Rview notifications</string>
 
@@ -176,6 +176,8 @@
 
     <!-- Filters -->
     <string name="filter_unnamed">Unnamed</string>
+    <string name="filter_no_matches_found">No matches found</string>
+    <string name="filter_hint">Type to filter list</string>
 
     <!-- Change Details -->
     <string name="change_details_title">Change #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>

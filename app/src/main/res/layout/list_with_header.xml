@@ -22,6 +22,7 @@
     <data>
         <import type="android.view.View" />
         <variable name="id" type="java.lang.String" />
+        <variable name="supportSearch" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.fragments.ChangeDetailsFragment.ListModel" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
@@ -76,6 +77,20 @@
                         app:srcCompat="@drawable/ic_arrow_drop_down"
                         tools:ignore="ContentDescription" />
                 </LinearLayout>
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_gravity="center"
+                    android:tag="@{id}"
+                    app:srcCompat="@drawable/ic_search"
+                    android:tint="?android:attr/textColorSecondary"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:visibility="@{safeUnbox(supportSearch) ? View.VISIBLE : View.GONE}"
+                    android:onClick="@{handlers::onSearchPressed}"
+                    tools:ignore="ContentDescription"/>
             </LinearLayout>
 
             <FrameLayout
