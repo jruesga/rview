@@ -681,7 +681,7 @@ public class ModelHelper {
         if (TextUtils.isEmpty(revId)) {
             // This is probably an error (and can still made the app crash), but is the
             // best thing we can do in this situation
-            return "1";
+            return GerritApi.CURRENT_REVISION;
         }
         return revId;
     }

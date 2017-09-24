@@ -792,7 +792,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mBinding.setEmpty(mEmptyState);
             if (result != null) {
                 change = result.mChange;
-                if (mCurrentRevision == null
+                if (TextUtils.isEmpty(mCurrentRevision)
                         || !change.revisions.containsKey(mCurrentRevision)) {
                     mCurrentRevision = ModelHelper.extractBestRevisionId(change);
                 }
@@ -892,7 +892,7 @@ public class ChangeDetailsFragment extends Fragment implements
         @Override
         public void onNext(Boolean value) {
             // Switch to the new revision
-            mCurrentRevision = null;
+            mCurrentRevision = mDiffAgainstRevision = null;
             forceRefresh();
 
             mChangeEditMessageLoader.clear();
@@ -1515,6 +1515,9 @@ public class ChangeDetailsFragment extends Fragment implements
                 if (revisionId != null && !revisionId.equals(mCurrentRevision)) {
                     // Change to the current revision
                     mCurrentRevision = revisionId;
+
+                    // Restore diff against to base
+                    mDiffAgainstRevision = null;
                     forceRefresh();
                     return;
                 }
@@ -1549,8 +1552,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
             // If the user publish the edit, then reload the whole change
             if (resultCode == Activity.RESULT_OK) {
-                mCurrentRevision = null;
-                mDiffAgainstRevision = null;
+                mCurrentRevision = mDiffAgainstRevision = null;
                 forceRefresh();
             }
         } else if (requestCode == REQUEST_ATTACHMENT_CAMERA && resultCode == Activity.RESULT_OK) {
@@ -1902,6 +1904,9 @@ public class ChangeDetailsFragment extends Fragment implements
                     dataResponse.mProjectConfig = api.getProjectConfig(
                             dataResponse.mChange.project).blockingFirst();
 
+                    final String revId = !TextUtils.isEmpty(mCurrentRevision) ? mCurrentRevision
+                            : ModelHelper.extractBestRevisionId(dataResponse.mChange);
+
                     // Only request actions when we don't know which actions
                     // the change could have for the user. In other case, we
                     // have some logic to deal with basic actions.
@@ -1912,8 +1917,7 @@ public class ChangeDetailsFragment extends Fragment implements
                             && !ChangeStatus.MERGED.equals(status)
                             && !ChangeStatus.ABANDONED.equals(status)) {
                         dataResponse.mActions = api.getChangeRevisionActions(
-                                changeId, ModelHelper.extractBestRevisionId(dataResponse.mChange))
-                                        .blockingFirst();
+                                changeId, revId).blockingFirst();
                     } else {
                         // At least a cherry-pick action should be present if user
                         // is authenticated
@@ -1928,7 +1932,8 @@ public class ChangeDetailsFragment extends Fragment implements
                 return dataResponse;
             })
             .flatMap(dataResponse -> {
-                    final String revId = ModelHelper.extractBestRevisionId(dataResponse.mChange);
+                    final String revId = !TextUtils.isEmpty(mCurrentRevision) ? mCurrentRevision
+                            : ModelHelper.extractBestRevisionId(dataResponse.mChange);
                     return Observable.zip(
                         SafeObservable.fromNullCallable(() -> dataResponse),
                         api.getChangeRevisionFiles(
@@ -1969,10 +1974,10 @@ public class ChangeDetailsFragment extends Fragment implements
                                 return new ArrayList<>();
                             }
 
-                            final String revisionId = TextUtils.isEmpty(mCurrentRevision)
-                                    ? ModelHelper.extractBestRevisionId(dataResponse.mChange)
-                                    : mCurrentRevision;
-                            int revNumber = dataResponse.mChange.revisions.get(revisionId).number;
+                            if (!dataResponse.mChange.revisions.containsKey(revId)) {
+                                return new ArrayList<>();
+                            }
+                            int revNumber = dataResponse.mChange.revisions.get(revId).number;
                             return ContinuousIntegrationHelper.getContinuousIntegrationStatus(
                                     repository, changeId, revNumber);
                         }),
@@ -2341,11 +2346,13 @@ public class ChangeDetailsFragment extends Fragment implements
         } else {
             response.mCI = ci;
             if (getActivity() != null && ci.isEmpty()) {
-                final String revisionId = TextUtils.isEmpty(mCurrentRevision)
-                        ? ModelHelper.extractBestRevisionId(response.mChange) : mCurrentRevision;
-                response.mCI = ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
-                        response.mChange.revisions.get(revisionId).number,
-                        response.mChange.messages, repository);
+                final String revisionId = !TextUtils.isEmpty(mCurrentRevision) ? mCurrentRevision
+                        : ModelHelper.extractBestRevisionId(response.mChange);
+                if (response.mChange.revisions.containsKey(revisionId)) {
+                    response.mCI = ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
+                            response.mChange.revisions.get(revisionId).number,
+                            response.mChange.messages, repository);
+                }
             }
         }
 
