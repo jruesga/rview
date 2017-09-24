@@ -73,7 +73,21 @@ public class StringHelper {
 
     private static final Pattern NUMERIC_REGEXP = Pattern.compile("\\d+");
 
+    private static final Pattern PARAGRAPHS_REGEXP = Pattern.compile("\\r?\\n\\r?\\n\\r?\\n");
+
     private static final Pattern ATTACHMENT_REGEXP = Pattern.compile("!\\[ATTACHMENT:\\{.*\\}\\]\\(" + WEB_REGEXP + "\\)");
+
+    public static String cleanUpParagraphs(String message) {
+        String msg = message;
+        do {
+            Matcher m = PARAGRAPHS_REGEXP.matcher(msg);
+            if (!m.find()) {
+                break;
+            }
+            msg = m.replaceAll("\n\n");
+        } while (true);
+        return msg;
+    }
 
     public static String[] obtainParagraphs(String message) {
         return message.split("\\r?\\n\\r?\\n");

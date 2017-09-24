@@ -241,7 +241,8 @@ public class Formatter {
             return;
         }
 
-        String message = EmojiHelper.createEmoji(msg);
+        // Clean up paragraphs (to mimic "<p></p>" browsers behaviour) and create Emojis
+        String message = EmojiHelper.createEmoji(StringHelper.cleanUpParagraphs(msg));
 
         // This process mimics the Gerrit formatting process done in class
         // ./gerrit-gwtexpui/src/main/java/com/google/gwtexpui/safehtml/client/SafeHtml.java
