@@ -157,9 +157,11 @@ public class FilesDialogFragment extends ListDialogFragment {
     @Override
     public boolean onFilterChanged(String newFilter) {
         List<FileItemModel> filteredFiles = new ArrayList<>();
-        mFiles.stream()
-              .filter(fileItemModel -> fileItemModel.file.toLowerCase(Locale.US).contains(newFilter))
-              .forEach(filteredFiles::add);
+        for (FileItemModel item : mFiles) {
+            if (item.file.toLowerCase(Locale.US).contains(newFilter)) {
+                filteredFiles.add(item);
+            }
+        }
         mAdapter.addAll(filteredFiles);
         mAdapter.notifyDataSetChanged();
         return filteredFiles.isEmpty();
