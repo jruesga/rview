@@ -568,6 +568,7 @@ public class EditorFragment extends Fragment
             RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
             mContentLoader = loaderManager.create("content", fetchContent(), mContentObserver);
             mPublishLoader = loaderManager.create("publish", publishEdit(), mPublishObserver);
+            mCancelLoader = loaderManager.create("cancel", cancelEdit(), mCancelObserver);
 
             if (!mReadOnly) {
                 // Load current edit operations
@@ -593,8 +594,7 @@ public class EditorFragment extends Fragment
                 requestFileContent();
             } else {
                 // Cancel any previous edit and request files
-                mCancelLoader = loaderManager.create(
-                        "cancel", cancelEdit(), mCancelObserver).start();
+                mCancelLoader.start();
                 loaderManager.create("files", fetchFiles(), mFilesObserver).start();
             }
         } else {
