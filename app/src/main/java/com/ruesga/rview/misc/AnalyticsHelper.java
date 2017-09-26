@@ -51,7 +51,8 @@ public class AnalyticsHelper {
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME,
                         account.getRepositoryDisplayName());
                 bundle.putString(FirebaseAnalytics.Param.GROUP_ID,
-                    UriHelper.sanitizeEndpoint(account.mRepository.mUrl));
+                        UriHelper.anonymize(
+                                UriHelper.sanitizeEndpoint(account.mRepository.mUrl)));
                 bundle.putBoolean("authenticated", account.hasAuthenticatedAccessMode());
                 bundle.putBoolean("created", created);
                 analytics.logEvent(FirebaseAnalytics.Event.JOIN_GROUP, bundle);
@@ -73,7 +74,8 @@ public class AnalyticsHelper {
                 bundle.putString(FirebaseAnalytics.Param.ITEM_NAME,
                         account.getRepositoryDisplayName());
                 bundle.putString(FirebaseAnalytics.Param.ITEM_ID,
-                        UriHelper.sanitizeEndpoint(account.mRepository.mUrl));
+                        UriHelper.anonymize(
+                                UriHelper.sanitizeEndpoint(account.mRepository.mUrl)));
                 bundle.putBoolean("authenticated", account.hasAuthenticatedAccessMode());
                 analytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }

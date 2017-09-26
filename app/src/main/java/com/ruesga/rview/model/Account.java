@@ -63,7 +63,7 @@ public class Account implements Parcelable, Comparable<Account> {
         if (!TextUtils.isEmpty(mRepository.mName)) {
             return mRepository.mName;
         }
-        return UriHelper.sanitizeEndpoint(mRepository.mUrl);
+        return UriHelper.anonymize(UriHelper.sanitizeEndpoint(mRepository.mUrl));
     }
 
     public boolean hasAuthenticatedAccessMode() {

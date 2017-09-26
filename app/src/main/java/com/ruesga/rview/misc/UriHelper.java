@@ -91,7 +91,10 @@ public class UriHelper {
     }
 
     public static String sanitizeEndpoint(String endpoint) {
-        // Sanitize endpoint
+        if (endpoint == null) {
+            return endpoint;
+        }
+
         String endpointLower = endpoint.toLowerCase(Locale.US);
         if (!endpointLower.startsWith("http://") && !endpointLower.startsWith("https://")) {
             endpoint = "http://" + endpoint;
@@ -102,5 +105,21 @@ public class UriHelper {
         }
 
         return endpoint;
+    }
+
+    public static String anonymize(String url) {
+        if (url == null) {
+            return url;
+        }
+        int start = url.indexOf("://");
+        int end = url.indexOf("/", start == -1 ? -1 : start + 3);
+        String s1 = start == -1 ? "" : url.substring(0, start + 3);
+        String s2 = url.substring((start == -1 ? 0 : start + 3), (end == -1 ? url.length() : end));
+        String s3 = end == -1 ? "" : url.substring(end);
+        int at = s2.indexOf("@");
+        if (at != -1) {
+            s2 = s2.substring(at + 1);
+        }
+        return s1 + s2 + s3;
     }
 }
