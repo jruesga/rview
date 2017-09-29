@@ -59,11 +59,50 @@ public class StringHelperTest {
     }
 
     @Test
-    public void testRemoveExtraLines() throws IOException {
+    public void testRemoveExtraLines01() throws IOException {
         String testMessage = TestUtils.loadString(
-                "/com/ruesga/rview/misc/removeExtraLines.msg.txt");
+                "/com/ruesga/rview/misc/removeExtraLines01.msg.txt");
         String expectedMessage = TestUtils.loadString(
-                "/com/ruesga/rview/misc/removeExtraLines.expected.txt");
+                "/com/ruesga/rview/misc/removeExtraLines01.expected.txt");
         assertEquals(expectedMessage, StringHelper.removeLineBreaks(testMessage));
+    }
+
+    @Test
+    public void testRemoveExtraLines02() throws IOException {
+        String testMessage = TestUtils.loadString(
+                "/com/ruesga/rview/misc/removeExtraLines02.msg.txt");
+        String expectedMessage = TestUtils.loadString(
+                "/com/ruesga/rview/misc/removeExtraLines02.expected.txt");
+
+        testPrepareForQuotes(testMessage, expectedMessage);
+    }
+
+    @Test
+    public void testRemoveExtraLines03() throws IOException {
+        String testMessage = TestUtils.loadString(
+                "/com/ruesga/rview/misc/removeExtraLines03.msg.txt");
+        String expectedMessage = TestUtils.loadString(
+                "/com/ruesga/rview/misc/removeExtraLines03.expected.txt");
+
+        testPrepareForQuotes(testMessage, expectedMessage);
+    }
+
+    private void testPrepareForQuotes(String testMessage, String expectedMessage) {
+        String[] paragraphs = StringHelper.obtainParagraphs(testMessage);
+        StringBuilder sb = new StringBuilder();
+        for (String p : paragraphs) {
+            if (StringHelper.isQuote(p)) {
+                sb.append(StringHelper.obtainQuote(StringHelper.prepareForQuote(p)));
+            } else if (StringHelper.isList(p)) {
+                sb.append(p);
+            } else if (StringHelper.isPreFormat(p)) {
+                sb.append(StringHelper.obtainPreFormatMessage(p));
+            } else {
+                sb.append(p);
+            }
+            sb.append("\n\n");
+        }
+
+        assertEquals(expectedMessage, sb.toString().trim());
     }
 }

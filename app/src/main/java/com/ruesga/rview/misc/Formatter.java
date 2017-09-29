@@ -253,9 +253,7 @@ public class Formatter {
         boolean formattedMessage = false;
         for (String p : paragraphs) {
             if (StringHelper.isQuote(p)) {
-                sb.append(StringHelper.obtainQuote(
-                        StringHelper.removeLineBreaks(
-                            StringHelper.prepareForQuote(p))));
+                sb.append(StringHelper.obtainQuote(StringHelper.prepareForQuote(p).trim()));
                 formattedMessage = true;
             } else if (StringHelper.isList(p)) {
                 sb.append(p);
@@ -265,6 +263,9 @@ public class Formatter {
                 formattedMessage = true;
             } else {
                 sb.append(p);
+            }
+            while (sb.charAt(sb.length() - 1) == '\n') {
+                sb = sb.deleteCharAt(sb.length() - 1);
             }
             sb.append("\n\n");
         }

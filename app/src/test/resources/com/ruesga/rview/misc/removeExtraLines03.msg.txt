@@ -1,0 +1,37 @@
+Patch Set 6:
+
+> > > > I've completely removed DISALLOW_COPY_AND_ASSIGN/DISALLOW_ASSIGN
+ > > > > macros from the Hinstructions as AFAIK it's not possible to
+ > > have
+ > > > > deleted operator= and implicitly-declared default
+ > > > copy-constructor;
+ > > > > let's call this approach A. Approach B would be instead of
+ > > having
+ > > > > implicit copy-constructor - to declare them manually every
+ > time
+ > > > for
+ > > > > every instruction (default or custom) (something like
+ > > > > 'HTemplateInstruction<N>(const HTemplateInstruction<N>&
+ > other)
+ > > =
+ > > > > default;')
+ > > >
+ > > > How would a custom copy-constructor look like? And what
+ > > insturction
+ > > > would require them?
+ > >
+ > > So currently there is no HInstruction which requires a custom
+ > > implemented copy constructor (am doublechecking it); more than
+ > that
+ > > most of them are clonable. My original concern was robustness for
+ > > newly introduced instructions.
+ > >
+ > > In theory a custom copy constructor will be required for an
+ > > instruction which needs a deep copy for some of its fields. For
+ > > example  let's imagine we allow cloning of SuspendCheck during
+ > > code_gen phase (we don't). In this case for a SlowPathCode*
+ > > slow_path_ it should be a deep copy - so custom copy-constructor.
+ > 
+ > Can we statically detect if we need one?
+
+No - for the same reason  - C++ doesn't have a reflection of classes (we could have checked for pointer fields otherwise). Within the option B the only way to avoid this situation is to force a developer to declare a copy constructor (most likely \"= default\") when adding new instructions.

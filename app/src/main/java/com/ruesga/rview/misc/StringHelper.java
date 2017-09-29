@@ -36,12 +36,10 @@ public class StringHelper {
     public static final String NON_PRINTABLE_CHAR = "\u0001";
     public static final String NON_PRINTABLE_CHAR2 = "\u0002";
 
-    private static final Pattern A_NON_WORD_CHARACTER_AT_END = Pattern.compile("[^[0-9a-zA-Z],;]");
-    private static final Pattern A_NON_WORD_CHARACTER_AT_START = Pattern.compile("[^[a-zA-Z]]");
+    private static final Pattern A_NON_WORD_CHARACTER_AT_END = Pattern.compile(".*[^0-9a-zA-Z,;]");
+    private static final Pattern A_NON_WORD_CHARACTER_AT_START = Pattern.compile("[^a-zA-Z].*");
     private static final Pattern A_REF_LINK_LINE = Pattern.compile("([0-9a-zA-Z-])+: .*");
     private static final Pattern NON_WHITESPACE = Pattern.compile("\\w");
-    private static final String NON_WORD_CHARACTER = "[^[0-9a-zA-Z],;]";
-    private static final String INTERN_QUOTE = "\n > ";
 
     private static final String QUOTE_START_TAG = "[QUOTE]";
     private static final String QUOTE_END_TAG = "[/QUOTE]";
@@ -54,15 +52,6 @@ public class StringHelper {
             "{1,}?([\\w\\-.~]+\\/?)*[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)";
     public static final String CHANGE_ID_REGEXP = "(^|\\s)(I[0-9a-f]{8,40})";
     public static final String COMMIT_REGEXP = "(^|\\s|[:.,!?\\(\\[\\{])([0-9a-f]{7,40})\\b";
-
-    private static final Pattern QUOTE1 = Pattern.compile("^> ", Pattern.MULTILINE);
-    private static final Pattern QUOTE2 = Pattern.compile("^>", Pattern.MULTILINE);
-    private static final Pattern QUOTE3 = Pattern.compile("^ > ", Pattern.MULTILINE);
-    private static final Pattern QUOTE4 = Pattern.compile("^ >", Pattern.MULTILINE);
-    private static final Pattern REPLACED_QUOTE1 = Pattern.compile(NON_PRINTABLE_CHAR + ">");
-    private static final Pattern REPLACED_QUOTE2 = Pattern.compile(NON_PRINTABLE_CHAR + " > ");
-    private static final Pattern REPLACED_QUOTE3 = Pattern.compile(NON_PRINTABLE_CHAR + " ");
-    private static final Pattern REPLACED_QUOTE4 = Pattern.compile(NON_PRINTABLE_CHAR + "\n");
 
     public static final Pattern GERRIT_CHANGE = Pattern.compile("I[0-9a-f]{8,40}");
     public static final Pattern GERRIT_COMMIT = Pattern.compile("[0-9a-f]{7,40}");
@@ -138,28 +127,106 @@ public class StringHelper {
     }
 
     public static String prepareForQuote(String message) {
-        int i = message.indexOf(INTERN_QUOTE);
-        while (i != -1) {
-            if (i > 0 && !message.substring(i - 1, i).matches(NON_WORD_CHARACTER)) {
-                message = message.replaceFirst(INTERN_QUOTE, "\n");
-            } else {
-                message = message.replaceFirst(INTERN_QUOTE, "\n >");
+        String[] lines = message.split("\\r?\\n");
+        StringBuilder sb = new StringBuilder();
+        int count = lines.length;
+        int currentIndent = -1;
+        boolean startQuote = true;
+        for (int i = 0; i < count; i++) {
+            String line = lines[i];
+            int lineIndent = computeQuoteIndentation(line);
+            if (currentIndent == -1) {
+                currentIndent = lineIndent;
             }
-            i = message.indexOf(INTERN_QUOTE);
+            String next = (i < (count - 1)) ? lines[i + 1] : "";
+            int nextIndent = computeQuoteIndentation(next);
+            int diffIndent = currentIndent - nextIndent;
+            String stripped = stripQuoteIndentation(next.trim());
+            boolean nextLineIsSingleWord = !stripped.contains(" ") && !stripped.isEmpty();
+            boolean saltIndent = !((diffIndent == 1 && !nextLineIsSingleWord) || diffIndent < 0);
+            if (lineIndent == 0 || (currentIndent != nextIndent && !saltIndent)) {
+                if (sb.length() == 0) {
+                    sb.append(line);
+                } else if (sb.substring(sb.length() - 1).equals("\n")) {
+                    sb.append(line.trim());
+                } else {
+                    sb.append(" ");
+                    sb.append(stripQuoteIndentation(line.trim()));
+                }
+                sb.append("\n");
+                startQuote = true;
+                currentIndent = lineIndent;
+            } else {
+                if (startQuote || !saltIndent) {
+                    sb.append(line.trim());
+                    startQuote = false;
+                } else {
+                    sb.append(" ");
+                    sb.append(stripQuoteIndentation(line.trim()));
+                }
+            }
+
         }
-        return message;
+        return sb.toString();
     }
 
     public static String obtainQuote(String message) {
-        String msg = QUOTE1.matcher(message).replaceAll(NON_PRINTABLE_CHAR);
-        msg = QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
-        msg = QUOTE3.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
-        msg = QUOTE4.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
-        msg = REPLACED_QUOTE1.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + NON_PRINTABLE_CHAR);
-        msg = REPLACED_QUOTE2.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + NON_PRINTABLE_CHAR);
-        msg = REPLACED_QUOTE3.matcher(msg).replaceAll(NON_PRINTABLE_CHAR);
-        msg = REPLACED_QUOTE4.matcher(msg).replaceAll(NON_PRINTABLE_CHAR + " \n");
-        return msg;
+        String[] lines = message.split("\\r?\\n");
+        StringBuilder sb = new StringBuilder();
+        for (String line : lines) {
+            int lineIndent = computeQuoteIndentation(line);
+            if (lineIndent > 0) {
+                for (int j = 0; j < lineIndent; j++) {
+                    sb.append(NON_PRINTABLE_CHAR);
+                }
+                int start = firstNonQuoteChar(line);
+                if (start != -1) {
+                    sb.append(line.substring(start));
+                } else {
+                    sb.append(" ");
+                }
+            } else {
+                sb.append(line);
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    private static int computeQuoteIndentation(String line) {
+        String l = line.replaceAll(" ", "");
+        int c = l.length();
+        int indent = 0;
+        for (int i = 0; i < c; i++) {
+            if (l.charAt(i) != '>') {
+                break;
+            }
+            indent++;
+        }
+        return indent;
+    }
+
+    private static String stripQuoteIndentation(String line) {
+        int c = line.length();
+        int i = 0;
+        for (; i < c; i++) {
+            char cc = line.charAt(i);
+            if (cc != ' ' && cc != '>') {
+                break;
+            }
+        }
+        return i < line.length() ? line.substring(i) : "";
+    }
+
+    private static int firstNonQuoteChar(String line) {
+        int c = line.length();
+        for (int i = 0; i < c; i++) {
+            char cc = line.charAt(i);
+            if (cc != ' ' && cc != '>') {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public static String obtainQuoteFromMessage(String msg) {

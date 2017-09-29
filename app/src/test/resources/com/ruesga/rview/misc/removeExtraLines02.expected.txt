@@ -1,0 +1,10 @@
+Patch Set 1:
+
+My latest suggestion is to use memcmp at the end of the cloning, not memcpy :)  The robustness is about someone adding a field to a HInstruction class and not updating its associated Clone method.
+ 
+So the cost of keeping this as it is - just an extra function definition in each instruction for getting more secure, C++ friendly and less error-prone code?  Anyway if you have a strong opinion on this I can rewrite it.
+ 
+Eso esta bien
+
+
+aaaaaa
