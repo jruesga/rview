@@ -168,8 +168,10 @@ public class ContinuousIntegrationHelper {
                             Matcher webMatcher = WEB_LINK_REGEX.mPattern.matcher(line);
                             ContinuousIntegrationInfo cii = containsBuild(line, ci);
                             if (checkFromPrevious && cii != null) {
-                                if (cii.mStatus == null || cii.mStatus.equals(BuildStatus.SUCCESS)) {
-                                    cii.mStatus = getBuildStatus(line);
+                                BuildStatus status = getBuildStatus(line);
+                                if (cii.mStatus == null ||
+                                        (status != null && !cii.mStatus.equals(status))) {
+                                    cii.mStatus = status;
                                 }
                                 if (cii.mUrl == null && webMatcher.find()) {
                                     cii.mUrl = extractUrl(webMatcher);
@@ -202,8 +204,10 @@ public class ContinuousIntegrationHelper {
                                 String l = line.substring(line.indexOf("target(s): ") + 10);
                                 String[] jobs = l.trim().replaceAll("\\.", "").split(" ");
                                 for (String job : jobs) {
-                                    ci.add(new ContinuousIntegrationInfo(
-                                            job, null, BuildStatus.SUCCESS));
+                                    if (!job.isEmpty()) {
+                                        ci.add(new ContinuousIntegrationInfo(
+                                                job, null, BuildStatus.SUCCESS));
+                                    }
                                 }
                                 checkFromPrevious = true;
                             }
