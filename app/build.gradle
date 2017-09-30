@@ -104,7 +104,13 @@ android {
     buildTypes {
         debug {
             debuggable true
+
             ext.enableCrashlytics = false
+
+            minifyEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), file('proguard-project.txt'), file('proguard-project-debug.txt')
+
             resValue "string", "fcm_api_key", "<empty>"
             resValue "bool", "fcm_disable_analytics", "true"
 
@@ -117,7 +123,7 @@ android {
             shrinkResources false
             minifyEnabled true
             useProguard true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), file('proguard-project.txt')
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), file('proguard-project.txt'), file('proguard-project-release.txt')
 
             //noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.release
