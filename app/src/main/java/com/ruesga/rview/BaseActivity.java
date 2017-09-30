@@ -56,6 +56,7 @@ import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.EmptyState;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.PagerControllerLayout;
 import com.ruesga.rview.widget.PagerControllerLayout.OnPageSelectionListener;
@@ -516,7 +517,8 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case android.R.id.home:
-                return ActivityHelper.performFinishActivity(this, false);
+                boolean hasForceUp = getIntent().getBooleanExtra(Constants.EXTRA_HAS_FORCE_UP, false);
+                return ActivityHelper.performFinishActivity(this, hasForceUp);
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -156,15 +156,14 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                     if (changeId.equals("-1") || !(isChange(changeId) || isChangeId(changeId)
                             || isEncodedChangeId(changeId))) {
                         Toast.makeText(this, getString(
-                                R.string.exception_cannot_handle_link, getIntent().getData().toString()),
-                                Toast.LENGTH_SHORT).show();
+                                R.string.exception_cannot_handle_link,
+                                getIntent().getData().toString()), Toast.LENGTH_SHORT).show();
                         Preferences.setAccount(this, prevAccount);
                         return;
                     }
 
-                    boolean hasParent = acct.getAccountHash().equals(prevAccount.getAccountHash());
                     ActivityHelper.openChangeDetailsByUri(this, UriHelper.createCustomUri(
-                            this, Constants.CUSTOM_URI_CHANGE_ID, changeId), hasParent);
+                            this, Constants.CUSTOM_URI_CHANGE_ID, changeId), true, true);
                     break;
                 }
 

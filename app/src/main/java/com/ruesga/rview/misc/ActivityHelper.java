@@ -262,22 +262,30 @@ public class ActivityHelper {
                     TaskStackBuilder.create(activity)
                             .addNextIntentWithParentStack(upIntent)
                             .startActivities();
-                    activity.finish();
                 } else {
-                    NavUtils.navigateUpTo(activity, upIntent);
+                    activity.startActivity(upIntent);
                 }
-                return true;
             }
         }
         activity.finish();
         return true;
     }
 
-    public static void openChangeDetailsByUri(Context context, Uri uri, boolean hasParent) {
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @SuppressWarnings("deprecation")
+    public static void openChangeDetailsByUri(
+            Context context, Uri uri, boolean hasParent, boolean hasForceUp) {
         Intent intent = new Intent(context, ChangeDetailsActivity.class);
+
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        } else {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        }
         intent.putExtra(Constants.EXTRA_FORCE_SINGLE_PANEL, true);
         intent.putExtra(Constants.EXTRA_HAS_PARENT, hasParent);
+        intent.putExtra(Constants.EXTRA_HAS_FORCE_UP, hasForceUp);
         intent.setData(uri);
         context.startActivity(intent);
     }

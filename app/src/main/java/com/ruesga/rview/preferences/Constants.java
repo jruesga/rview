@@ -55,6 +55,7 @@ public class Constants {
     public static final String EXTRA_READ_ONLY = "read_only";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
+    public static final String EXTRA_HAS_FORCE_UP = "has_force_up";
     public static final String EXTRA_FORCE_SINGLE_PANEL = "force_single_panel";
 
     public static final String DEFAULT_AUTHENTICATED_HOME = "menu_dashboard";
