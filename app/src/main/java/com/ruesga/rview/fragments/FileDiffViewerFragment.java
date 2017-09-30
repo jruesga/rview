@@ -485,7 +485,6 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                                             Option.INSTANCE,
                                             null,
                                             WhitespaceType.IGNORE_NONE,
-                                            IgnoreWhitespaceType.NONE,
                                             ContextType.ALL)
                                             .blockingFirst();
                                 if (rectify) {

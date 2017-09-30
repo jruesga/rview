@@ -57,7 +57,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 class GerritApiClient implements GerritApi {
 
     private final String mEndPoint;
-    private final GerritApi mService;
+    private final GerritRestApi mService;
     private final PlatformAbstractionLayer mAbstractionLayer;
     private long mLastServerVersionCheck = 0;
     ServerVersion mServerVersion;
@@ -65,41 +65,6 @@ class GerritApiClient implements GerritApi {
 
     private static final String AUTHENTICATED_PATH = "/a/";
 
-    private final ApiVersionMediator mMediator = new ApiVersionMediator() {
-        @Override
-        public WhitespaceType resolveWhiteSpaceType(WhitespaceType type) {
-            if (type == null) {
-                return null;
-            }
-            if (mServerVersion.getVersion() < 2.13) {
-                return null;
-            }
-            return type;
-        }
-
-        @Override
-        public IgnoreWhitespaceType resolveIgnoreWhiteSpaceType(IgnoreWhitespaceType type) {
-            if (type == null) {
-                return null;
-            }
-            if (mServerVersion.getVersion() >= 2.13) {
-                return null;
-            }
-            return type;
-        }
-
-        @Override
-        public DraftActionType resolveDraftActionType(DraftActionType type) {
-            if (type == null) {
-                return null;
-            }
-            if (mServerVersion.getVersion() <= 2.11
-                    && type.equals(DraftActionType.PUBLISH_ALL_REVISIONS)) {
-                return DraftActionType.PUBLISH;
-            }
-            return type;
-        }
-    };
 
     GerritApiClient(String endpoint, Authorization authorization,
             PlatformAbstractionLayer abstractionLayer) {
@@ -156,7 +121,7 @@ class GerritApiClient implements GerritApi {
                 .build();
 
         // Build the api
-        mService = retrofit.create(GerritApi.class);
+        mService = retrofit.create(GerritRestApi.class);
     }
 
     private HttpLoggingInterceptor createLoggingInterceptor() {
@@ -253,6 +218,40 @@ class GerritApiClient implements GerritApi {
         return filter;
     }
 
+
+    // ===============================
+    // Mediator methods
+    // ===============================
+
+    private WhitespaceType resolveWhiteSpaceType(WhitespaceType type) {
+        if (mServerVersion.getVersion() < 2.13) {
+            return null;
+        }
+        return type;
+    }
+
+    private IgnoreWhitespaceType resolveIgnoreWhiteSpaceType(WhitespaceType type) {
+        if (type == null) {
+            return null;
+        }
+        if (mServerVersion.getVersion() >= 2.13) {
+            return null;
+        }
+        return IgnoreWhitespaceType.values()[type.ordinal()];
+    }
+
+    private DraftActionType resolveDraftActionType(DraftActionType type) {
+        if (type == null) {
+            return null;
+        }
+        if (mServerVersion.getVersion() <= 2.11
+                && type.equals(DraftActionType.PUBLISH_ALL_REVISIONS)) {
+            return DraftActionType.PUBLISH;
+        }
+        return type;
+    }
+
+
     // ===============================
     // Non-Api operations
     // ===============================
@@ -301,11 +300,6 @@ class GerritApiClient implements GerritApi {
     public Uri getDocumentationUri(@NonNull String docPath) {
         return Uri.parse(String.format(Locale.US, "%s%s",
                 toUnauthenticatedEndpoint(mEndPoint), docPath));
-    }
-
-    @Override
-    public ApiVersionMediator getApiVersionMediator() {
-        return mMediator;
     }
 
     @Override
@@ -1052,7 +1046,7 @@ class GerritApiClient implements GerritApi {
     public Observable<ReviewInfo> setChangeRevisionReview(@NonNull String changeId,
             @NonNull String revisionId, @NonNull ReviewInput input) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
-            input.drafts = getApiVersionMediator().resolveDraftActionType(input.drafts);
+            input.drafts = resolveDraftActionType(input.drafts);
             return mService.setChangeRevisionReview(
                     changeId, revisionId, input).blockingFirst();
         }));
@@ -1228,12 +1222,11 @@ class GerritApiClient implements GerritApi {
     public Observable<DiffInfo> getChangeRevisionFileDiff(@NonNull String changeId,
             @NonNull String revisionId, @NonNull String fileId, @Nullable Integer base,
             @Nullable Option intraline, @Nullable Option weblinksOnly,
-            @Nullable WhitespaceType whitespace, @Nullable IgnoreWhitespaceType ignoreWhitespace,
-            @Nullable ContextType context) {
+            @Nullable WhitespaceType whitespace, @Nullable ContextType context) {
         return withVersionRequestCheck(mService.getChangeRevisionFileDiff(changeId, revisionId,
                         fileId, base, intraline, weblinksOnly,
-                        getApiVersionMediator().resolveWhiteSpaceType(whitespace),
-                        getApiVersionMediator().resolveIgnoreWhiteSpaceType(ignoreWhitespace),
+                        resolveWhiteSpaceType(whitespace),
+                        resolveIgnoreWhiteSpaceType(whitespace),
                         context));
     }
 
@@ -1718,8 +1711,30 @@ class GerritApiClient implements GerritApi {
     public Observable<List<BranchInfo>> getProjectBranches(@NonNull String projectName,
             @Nullable Integer count, @Nullable Integer start, @Nullable String substring,
             @Nullable String regexp) {
-        return withVersionRequestCheck(
-                mService.getProjectBranches(projectName, count, start, substring, regexp));
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
+            // From 2.14.3+ api changed the start parameter from s to S to mimic the rest of
+            // the api methods.
+            Integer s1 = null;
+            Integer s2 = null;
+            if (start != null) {
+                if (mServerVersion.getVersion() < 2.14d) {
+                    s2 = start;
+                } else if (mServerVersion.getVersion() > 2.14d) {
+                    s1 = start;
+                } else {
+                    // 2.14: Decided based on build (only 2.14, 2.14.1, 2.14.2). All other
+                    // combinations are 2.14.3+
+                    if (mServerVersion.build != null && (mServerVersion.build.isEmpty() ||
+                            mServerVersion.build.equals("1") || mServerVersion.build.equals("2"))) {
+                        s2 = start;
+                    } else {
+                        s1 = start;
+                    }
+                }
+            }
+            return mService.getProjectBranches(
+                    projectName, count, s1, s2, substring, regexp).blockingFirst();
+        }));
     }
 
     @Override
