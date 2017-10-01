@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.content.res.TypedArray;
 import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Keep;
@@ -167,6 +168,21 @@ public class BindingAdapters {
         if (dw != null) {
             DrawableCompat.setTintList(dw,
                     ContextCompat.getColorStateList(v.getContext(), colorList));
+        }
+        v.setImageDrawable(dw);
+    }
+
+    @BindingAdapter("bindImageTintAttr")
+    public static void bindImageTintAttr(ImageView v, int colorAttr) {
+        Drawable dw = v.getDrawable();
+        if (dw != null) {
+            int[] attrs = {colorAttr};
+            TypedArray ta = v.getContext().getTheme().obtainStyledAttributes(attrs);
+            int color = ta.getResourceId(0, 0);
+            ta.recycle();
+            if (color != 0) {
+                DrawableCompat.setTint(dw, ContextCompat.getColor(v.getContext(), color));
+            }
         }
         v.setImageDrawable(dw);
     }

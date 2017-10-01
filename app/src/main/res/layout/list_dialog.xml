@@ -42,7 +42,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 app:srcCompat="@drawable/ic_search"
-                android:tint="?android:attr/textColorSecondary"
+                app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 tools:ignore="ContentDescription"/>
 
@@ -71,7 +71,7 @@
                 android:layout_height="20dp"
                 android:layout_gravity="center"
                 app:srcCompat="@drawable/ic_close"
-                android:tint="?android:attr/textColorSecondary"
+                app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:bindEmpty="@{filter}"
                 android:onClick="@{handlers::onClearFilter}"

@@ -86,7 +86,7 @@
                     android:layout_gravity="center"
                     android:tag="@{id}"
                     app:srcCompat="@drawable/ic_search"
-                    android:tint="?android:attr/textColorSecondary"
+                    app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:visibility="@{safeUnbox(supportSearch) ? View.VISIBLE : View.GONE}"
                     android:onClick="@{handlers::onSearchPressed}"

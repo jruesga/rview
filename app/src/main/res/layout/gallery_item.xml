@@ -64,7 +64,7 @@
             android:layout_gravity="center"
             app:srcCompat="@drawable/ic_done"
             android:visibility="@{safeUnbox(isSelected) ? View.VISIBLE : View.GONE}"
-            android:tint="?android:attr/textColorPrimaryInverse"
+            app:bindImageTintAttr="@{android.R.attr.textColorPrimaryInverse}"
             tools:ignore="ContentDescription"/>
     </FrameLayout>
 </layout>
