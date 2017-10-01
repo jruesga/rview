@@ -132,6 +132,12 @@ public class ContinuousIntegrationHelperTest {
                 cis.get(0).mUrl);
         assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
 
+        // oVirt
+        cis = extractContinuousIntegrationInfo("oVirt", null);
+        assertEquals(8, cis.size());
+        assertEquals("Check Backport", cis.get(0).mName);
+        assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
+
         // Zephyr
         cis = extractContinuousIntegrationInfo("Zephyr", null);
         assertEquals(1, cis.size());

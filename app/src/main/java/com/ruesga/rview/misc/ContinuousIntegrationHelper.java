@@ -46,6 +46,8 @@ public class ContinuousIntegrationHelper {
 
     private static final String TAG = "ContinuousIntegration";
 
+    private static final String CI_REGEXP_1 = "\\* .*::((#)?\\d+::)?[(OK, )(WARN, )(IGNORE, )(ERROR, )].*";
+
     public static List<ContinuousIntegrationInfo> getContinuousIntegrationStatus(
             Repository repository, String changeId, int revisionNumber) {
         List<ContinuousIntegrationInfo> ci = new ArrayList<>();
@@ -177,7 +179,7 @@ public class ContinuousIntegrationHelper {
                                     cii.mUrl = extractUrl(webMatcher);
                                 }
 
-                            }else if (webMatcher.find()) {
+                            } else if (webMatcher.find()) {
                                 String url = extractUrl(webMatcher);
                                 if (url == null) {
                                     continue;
@@ -210,6 +212,11 @@ public class ContinuousIntegrationHelper {
                                     }
                                 }
                                 checkFromPrevious = true;
+                            } else if (line.matches(CI_REGEXP_1)) {
+                                cii = fromRegExp1(line);
+                                if (cii != null) {
+                                    ci.add(cii);
+                                }
                             }
 
                             prevLine = line;
@@ -340,5 +347,29 @@ public class ContinuousIntegrationHelper {
     private static List<ContinuousIntegrationInfo> sort(List<ContinuousIntegrationInfo> ci) {
         Collections.sort(ci, (c1, c2) -> c1.mName.compareTo(c2.mName));
         return ci;
+    }
+
+    private static ContinuousIntegrationInfo fromRegExp1(String line) {
+        try {
+            String[] split = line.split("::");
+            String s = split[split.length -1].substring(0, split[split.length -1].indexOf(","));
+            BuildStatus status = null;
+            switch (s) {
+                case "OK":
+                    status = BuildStatus.SUCCESS;
+                    break;
+                case "IGNORE":
+                    status = BuildStatus.SKIPPED;
+                    break;
+                case "WARN":
+                case "ERROR":
+                    status = BuildStatus.FAILURE;
+                    break;
+            }
+            return new ContinuousIntegrationInfo(split[0].substring(2), null, status);
+        } catch (Exception ex) {
+            // Ignore
+        }
+        return null;
     }
 }

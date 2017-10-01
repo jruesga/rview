@@ -1,0 +1,40 @@
+[
+    {
+        "id": "40b8fb28_9febb18d",
+        "author": {
+            "_account_id": 1000458,
+            "name": "gerrit-hooks",
+            "email": "automation@ovirt.org",
+            "username": "gerrit-hooks",
+            "avatars": [
+                {
+                    "url": "https://www.gravatar.com/avatar/15bce46d912ab80e722232ff726bd17a.jpg?d=identicon&r=pg&s=26",
+                    "height": 26
+                },
+                {
+                    "url": "https://www.gravatar.com/avatar/15bce46d912ab80e722232ff726bd17a.jpg?d=identicon&r=pg&s=32",
+                    "height": 32
+                },
+                {
+                    "url": "https://www.gravatar.com/avatar/15bce46d912ab80e722232ff726bd17a.jpg?d=identicon&r=pg&s=100",
+                    "height": 100
+                }
+            ]
+        },
+        "date": "2017-10-01 07:24:59.256000000",
+        "message": "Patch Set 1: Verified-1\n\n* Check Bug-Url::1496720::OK, classification: 'oVirt', product: 'ovirt-engine'\n* Check Product::#1496720::OK, product: ovirt-engine\n* Check TM::#1496720::WARN, wrong target milestone: ovirt-4.2.0 (-1)\n* Check Backport::OK, The patch backported to all the relevant stable branches.\n* Set POST::#1496720::IGNORE, not relevant for bug status: 'VERIFIED' \n* Update Tracker::#1496720::OK, tracker status: POST",
+        "_revision_number": 1
+    },
+    {
+        "id": "45ea5603_9dbf5f5d",
+        "author": {
+            "_account_id": 1000132,
+            "name": "Jenkins CI",
+            "username": "jenkins",
+            "avatars": []
+        },
+        "date": "2017-10-01 08:01:34.204000000",
+        "message": "Patch Set 1: Continuous-Integration+1\n\nBuild Successful \n\nhttp://jenkins.ovirt.org/job/ovirt-engine_4.1_check-patch-fc24-x86_64/1603/ : SUCCESS\n\nhttp://jenkins.ovirt.org/job/ovirt-engine_4.1_check-patch-el7-x86_64/1602/ : SUCCESS",
+        "_revision_number": 1
+    }
+]
