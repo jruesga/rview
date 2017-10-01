@@ -28,6 +28,7 @@
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeMessageInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
         <variable name="foldHandlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
+        <!--suppress AndroidDomInspection -->
         <variable name="attachments" type="java.util.List&lt;com.ruesga.rview.attachments.Attachment&gt;" />
     </data>
 

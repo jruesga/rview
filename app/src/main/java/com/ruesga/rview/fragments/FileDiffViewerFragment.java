@@ -49,7 +49,6 @@ import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileStatus;
-import com.ruesga.rview.gerrit.model.IgnoreWhitespaceType;
 import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.WhitespaceType;
 import com.ruesga.rview.misc.CacheHelper;

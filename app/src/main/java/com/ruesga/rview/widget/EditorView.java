@@ -29,7 +29,6 @@ import android.util.Pair;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
-import android.webkit.MimeTypeMap;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
