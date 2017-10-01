@@ -160,7 +160,11 @@ public class EditDialogFragment extends RevealDialogFragment {
         }
 
         mModel.subtitle = getArguments().getString(EXTRA_SUBTITLE);
-        mModel.value = getArguments().getString(EXTRA_VALUE);
+        if (savedInstanceState != null) {
+            mModel.value = savedInstanceState.getString(EXTRA_VALUE, null);
+        } else {
+            mModel.value = getArguments().getString(EXTRA_VALUE);
+        }
         mModel.hint = getArguments().getString(EXTRA_HINT);
         mModel.allowEmpty = getArguments().getBoolean(EXTRA_ALLOW_EMPTY, false);
         mModel.isMultiLine = getArguments().getBoolean(EXTRA_USE_MULTI_LINE, false);
@@ -179,6 +183,15 @@ public class EditDialogFragment extends RevealDialogFragment {
     public void onDestroyView() {
         super.onDestroyView();
         mBinding.unbind();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String v = mBinding.edit.getText().toString();
+        if (!TextUtils.isEmpty(v)) {
+            outState.putString(EXTRA_VALUE, v);
+        }
     }
 
     private void performEditChanged() {
