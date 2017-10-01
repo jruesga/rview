@@ -66,6 +66,7 @@ allprojects {
         dependencies {
             // https://developer.android.com/studio/releases/gradle-plugin.html#revisions
             classpath 'com.android.tools.build:gradle:2.3.3'
+            // TODO remove this once we upgrade to gradle-tools 3.x
             classpath 'me.tatarka:gradle-retrolambda:3.7.0'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.1'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
