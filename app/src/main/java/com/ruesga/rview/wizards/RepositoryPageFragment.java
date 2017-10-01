@@ -34,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.WizardRepositoryPageFragmentBinding;
@@ -70,6 +71,18 @@ public class RepositoryPageFragment extends WizardPageFragment {
     public static final String STATE_REPO_TRUST_ALL_CERTIFICATES = "repo.trustAllCertificates";
     private static final String STATE_REPO_CONFIRMED_URL = "repo.confirmed.url";
     public static final String STATE_GERRIT_VERSION = "gerrit.version";
+
+    private class RepositoryUrlValidator extends WebUrlValidator {
+        private RepositoryUrlValidator(Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean validate(EditText v) {
+            final String url = v.getText().toString();
+            return super.validate(v) && !(url.contains("/#/") || url.contains("?polygerrit="));
+        }
+    }
 
     @Keep
     @SuppressWarnings("unused")
@@ -117,7 +130,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
         setValidatorsForView(mBinding.repositoryNameEdit, new TextInputValidatorObserver(this),
                 new NonEmptyTextValidator(context));
         setValidatorsForView(mBinding.repositoryUrlEdit, new TextInputValidatorObserver(this),
-                new NonEmptyTextValidator(context), new WebUrlValidator(context));
+                new NonEmptyTextValidator(context), new RepositoryUrlValidator(context));
         bindPredefinedRepositoriesLink();
         mBinding.setModel(mModel);
         mBinding.repositoryUrlEdit.addTextChangedListener(new TextChangedWatcher() {
