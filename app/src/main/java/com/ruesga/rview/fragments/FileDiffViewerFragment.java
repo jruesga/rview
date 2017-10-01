@@ -848,7 +848,11 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         EditDialogFragment fragment = EditDialogFragment.newInstance(
                 getString(R.string.draft_title), subtitle, comment, getString(R.string.action_save),
                 getString(R.string.draft_hint), false, true, true, null, v, requestCode, requestData);
-        fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
+        if (getParentFragment() != null) {
+            fragment.show(getParentFragment().getChildFragmentManager(), EditDialogFragment.TAG);
+        } else {
+            Log.w(TAG, "Unsupported operation: getParentFragment() returns null");
+        }
     }
 
     private CommentInfo performCreateDraft(GerritApi api, String revision,

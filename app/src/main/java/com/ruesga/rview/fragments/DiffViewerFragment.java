@@ -86,7 +86,8 @@ import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
-public class DiffViewerFragment extends Fragment implements OnDiffCompleteListener {
+public class DiffViewerFragment extends Fragment
+        implements OnDiffCompleteListener,  EditDialogFragment.OnEditChanged {
 
     private static final String TAG = "DiffViewerFragment";
 
@@ -1002,5 +1003,15 @@ public class DiffViewerFragment extends Fragment implements OnDiffCompleteListen
             Log.e(TAG, "Failed to parse diff cached data: " + name, ex);
         }
         return call;
+    }
+
+    @Override
+    public void onEditChanged(int requestCode, @Nullable Bundle requestData, String newValue) {
+        if (mFragment != null) {
+            FileDiffViewerFragment fragment = mFragment.get();
+            if (fragment != null) {
+                fragment.onEditChanged(requestCode, requestData, newValue);
+            }
+        }
     }
 }
