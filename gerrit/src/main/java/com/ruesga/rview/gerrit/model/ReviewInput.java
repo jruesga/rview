@@ -35,5 +35,8 @@ public class ReviewInput {
     @Nullable @SerializedName("notify") public NotifyType notify;
     @Nullable @SerializedName("omit_duplicate_comments") public Boolean omitDuplicateComments;
     @Nullable @SerializedName("on_behalf_of") public Boolean onBehalfOf;
+    @Nullable @SerializedName("reviewers") public List<ReviewerInput> reviewers;
+    @Nullable @SerializedName("ready") public Boolean ready;
+    @Nullable @SerializedName("work_in_progress") public Boolean workInProgress;
 }
 

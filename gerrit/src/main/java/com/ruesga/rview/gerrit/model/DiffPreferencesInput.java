@@ -43,5 +43,7 @@ public class DiffPreferencesInput {
     @Nullable @SerializedName("tab_size") public Integer tabSize;
     @Nullable @SerializedName("hide_empty_pane") public Boolean hideEmptyPane;
     @Nullable @SerializedName("match_brackets") public Boolean matchBrackets;
+    @Nullable @SerializedName("line_wrapping") public Boolean lineWrapping;
+    @Nullable @SerializedName("indent_with_tabs") public Boolean indentWithTabs;
 }
 

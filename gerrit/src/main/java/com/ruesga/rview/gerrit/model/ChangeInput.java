@@ -29,8 +29,12 @@ public class ChangeInput {
     @NonNull @SerializedName("subject") public String subject = "";
     @Nullable @SerializedName("topic") public String topic;
     @Nullable @SerializedName("status") public InitialChangeStatus status;
+    @Nullable @SerializedName("is_private") public Boolean isPrivate;
+    @Nullable @SerializedName("work_in_progress") public Boolean workInProgress;
     @Nullable @SerializedName("base_change") public String baseChange;
     @Nullable @SerializedName("new_branch") public Boolean newBranch;
     @Nullable @SerializedName("merge") public MergeInput merge;
+    @Nullable @SerializedName("notify") public NotifyType notify;
+    @Nullable @SerializedName("notify_details") public NotifyInfo notifyDetails;
 }
 

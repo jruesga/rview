@@ -21,6 +21,7 @@ import com.google.gson.annotations.SerializedName;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#related-change-and-commit-info"
  */
 public class RelatedChangeAndCommitInfo {
+    @SerializedName("project") public String project;
     @SerializedName("change_id") public String changeId;
     @SerializedName("commit") public CommitInfo commit;
     @SerializedName("_change_number") public Integer changeNumber;

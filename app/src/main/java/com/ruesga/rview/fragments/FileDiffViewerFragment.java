@@ -1005,15 +1005,9 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                 final Context ctx = getActivity();
                 final GerritApi api = ModelHelper.getGerritApi(ctx);
                 ResponseBody content = api.getChangeRevisionFileContent(
-                        changeId,
-                        revision,
-                        mFile)
-                        .blockingFirst();
+                        changeId, revision, mFile, null).blockingFirst();
                 CacheHelper.writeAccountDiffCacheFile(
-                        getContext(),
-                        mAccount,
-                        name,
-                        Base64.decode(content.bytes(), Base64.NO_WRAP));
+                        ctx, mAccount, name, Base64.decode(content.bytes(), Base64.NO_WRAP));
             } catch (Exception ex) {
                 Log.e(TAG, "Can't download file content " + mFile + "; Revision: " + revision, ex);
                 fetchedFile = null;

@@ -694,7 +694,7 @@ public class EditorFragment extends Fragment
                             try {
                                 ResponseBody body = api.getChangeRevisionFileContent(
                                         String.valueOf(mLegacyChangeId),
-                                        GerritApi.CURRENT_REVISION, file).blockingFirst();
+                                        GerritApi.CURRENT_REVISION, file, null).blockingFirst();
                                 return body.bytes();
                             } catch (Exception ex) {
                                 // If is a new content edit, just initialize the edit

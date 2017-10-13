@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.gerrit.filter;
+package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.Since;
-import com.ruesga.rview.gerrit.annotations.Until;
+/**
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#suggest-reviewers"
+ */
+public final class ExcludeGroupsFromSuggestedReviewers {
+    public static final ExcludeGroupsFromSuggestedReviewers INSTANCE
+            = new ExcludeGroupsFromSuggestedReviewers();
 
-public enum IsType {
-    STARRED, WATCHED, REVIEWED, OWNER, REVIEWER, OPEN, PENDING, @Until(2.15) DRAFT,
-    CLOSED, MERGED, ABANDONED, MERGEABLE, VISIBLE, @Since(2.14) ASSIGNED, @Since(2.14) UNASSIGNED,
-    @Since(2.14) SUBMITTABLE, @Since(2.15) IGNORED, @Since(2.15) PRIVATE, @Since(2.15) WIP
+    private ExcludeGroupsFromSuggestedReviewers() {
+    }
+
+    @Override
+    public final String toString() {
+        return "f";
+    }
 }

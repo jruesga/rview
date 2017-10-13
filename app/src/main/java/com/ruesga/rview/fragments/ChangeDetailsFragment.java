@@ -3010,7 +3010,7 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     private void performDeleteChange(GerritApi api) {
-        api.deleteDraftChange(String.valueOf(mLegacyChangeId)).blockingFirst();
+        api.deleteChange(String.valueOf(mLegacyChangeId)).blockingFirst();
     }
 
     private ChangeInfo performFollowUp(GerritApi api, String subject) {

@@ -27,13 +27,16 @@ public class ChangeInfo {
     @SerializedName("id") public String id;
     @SerializedName("project") public String project;
     @SerializedName("branch") public String branch;
-    @SerializedName("hashtags") public String[] hashtags;
     @SerializedName("topic") public String topic;
+    @SerializedName("assignee") public AccountInfo assignee;
+    @SerializedName("hashtags") public String[] hashtags;
     @SerializedName("change_id") public String changeId;
     @SerializedName("subject") public String subject;
     @SerializedName("status") public ChangeStatus status;
     @SerializedName("created") public Date created;
     @SerializedName("updated") public Date updated;
+    @SerializedName("submitted") public boolean submitted;
+    @SerializedName("submitter") public AccountInfo submitter;
     @SerializedName("starred") public boolean starred;
     @SerializedName("stars") public String[] stars;
     @SerializedName("reviewed") public boolean reviewed;
@@ -44,16 +47,21 @@ public class ChangeInfo {
     @SerializedName("deletions") public int deletions;
     @SerializedName("_number") public int legacyChangeId;
     @SerializedName("owner") public AccountInfo owner;
-    @SerializedName("assignee") public AccountInfo assignee;
     @SerializedName("actions") public Map<String, ActionInfo> actions;
     @SerializedName("labels") public Map<String, LabelInfo> labels;
     @SerializedName("permitted_labels") public Map<String, Integer[]> permittedLabels;
     @SerializedName("removable_reviewers") public AccountInfo[] removableReviewers;
     @SerializedName("reviewers") public Map<ReviewerStatus, AccountInfo[]> reviewers;
+    @SerializedName("pending_reviewers") public Map<ReviewerStatus, AccountInfo[]> pendingReviewers;
     @SerializedName("reviewer_updates") public ReviewerUpdateInfo[] reviewerUpdates;
     @SerializedName("messages") public ChangeMessageInfo[] messages;
     @SerializedName("current_revision") public String currentRevision;
     @SerializedName("revisions") public Map<String, RevisionInfo> revisions;
+    @SerializedName("tracking_ids") public TrackingIdInfo[] trackingIds;
     @SerializedName("problems") public ProblemInfo[] problems;
+    @SerializedName("is_private") public boolean isPrivate;
+    @SerializedName("work_in_progress") public boolean isWorkInProgress;
+    @SerializedName("has_review_started") public boolean hasReviewStarted;
+    @SerializedName("revert_of") public String revertOf;
 }
 

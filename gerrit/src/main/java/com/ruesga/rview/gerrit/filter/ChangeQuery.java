@@ -46,7 +46,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             "bug", "label", "message", "comment", "path", "file", "star", "has",
             "is", "status", "added", "deleted", "delta", "size", "commentby", "from",
             "reviewedby", "author", "committer", "visibleto", "starredby", "watchedby",
-            "draftby", "assignee", "cc", "unresolved", "submittable"
+            "draftby", "assignee", "cc", "unresolved", "submittable", "revertof"
     };
 
     public static final Class[] FIELDS_TYPES = {
@@ -56,7 +56,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             String.class, Label.class, String.class, String.class, String.class, String.class, String.class, HasType.class,
             IsType.class, StatusType.class, Relation.class, Relation.class, Relation.class, Relation.class, String.class, String.class,
             String.class, String.class, String.class, String.class, String.class, String.class,
-            String.class, String.class, String.class, Relation.class, SubmitRecordStatusType.class
+            String.class, String.class, String.class, Relation.class, SubmitRecordStatusType.class, Integer.class
     };
 
     public static final Class[] SUGGEST_TYPES = {
@@ -66,17 +66,27 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, HasType.class,
             IsType.class, StatusType.class, null, null, null, null, AccountInfo.class, AccountInfo.class,
             AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class,
-            AccountInfo.class, AccountInfo.class, AccountInfo.class, Relation.class, SubmitRecordStatusType.class
+            AccountInfo.class, AccountInfo.class, AccountInfo.class, Relation.class, SubmitRecordStatusType.class, null
     };
 
-    public static final Double[] SUPPORTED_VERSION = {
+    public static final Double[] SUPPORTED_FROM_VERSION = {
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null,
             null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
-            null, 2.14d, 2.14d, 2.14d, 2.14d
+            null, 2.14d, 2.14d, 2.14d, 2.14d, 2.15d
+    };
+
+    public static final Double[] UNSUPPORTED_FROM_VERSION = {
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null,
+            2.15d, null, null, null, null, null
     };
 
     public ChangeQuery age(TimeUnit unit, int value) {
@@ -356,6 +366,11 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
 
     public ChangeQuery submittable(SubmitRecordStatusType type) {
         add("submittable:" + type.toString().toLowerCase(Locale.US));
+        return this;
+    }
+
+    public ChangeQuery revertOf(int changeId) {
+        add("revertof:" + changeId);
         return this;
     }
 

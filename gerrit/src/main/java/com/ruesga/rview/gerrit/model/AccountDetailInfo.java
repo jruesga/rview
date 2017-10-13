@@ -24,5 +24,6 @@ import java.util.Date;
  */
 public class AccountDetailInfo extends AccountInfo {
     @SerializedName("registered_on") public Date registeredOn;
+    @SerializedName("inactive") public boolean inactive;
 }
 

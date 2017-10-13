@@ -24,5 +24,6 @@ public class PluginInfo {
     @SerializedName("id") public String id;
     @SerializedName("version") public String version;
     @SerializedName("index_url") public String indexUrl;
+    @SerializedName("filename") public String filename;
     @SerializedName("disabled") public boolean disabled;
 }

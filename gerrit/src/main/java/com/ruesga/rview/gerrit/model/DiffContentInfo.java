@@ -26,6 +26,7 @@ public class DiffContentInfo {
     @SerializedName("ab") public String[] ab;
     @SerializedName("edit_a") public DiffIntralineInfo editA;
     @SerializedName("edit_b") public DiffIntralineInfo editB;
+    @SerializedName("due_to_rebase") public boolean dueToRebase;
     @SerializedName("skip") public int skip;
     @SerializedName("common") public boolean common;
 }

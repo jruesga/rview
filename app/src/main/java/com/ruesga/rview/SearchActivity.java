@@ -50,6 +50,7 @@ import com.google.gson.annotations.Since;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.databinding.SearchActivityBinding;
 import com.ruesga.rview.gerrit.GerritApi;
+import com.ruesga.rview.gerrit.annotations.Until;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
@@ -725,11 +726,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
             final int index = Arrays.asList(ChangeQuery.FIELDS_NAMES).indexOf(token);
             if (index != -1) {
-                Double version = ChangeQuery.SUPPORTED_VERSION[index];
+                Double minVersion = ChangeQuery.SUPPORTED_FROM_VERSION[index];
+                Double maxVersion = ChangeQuery.UNSUPPORTED_FROM_VERSION[index];
                 ServerVersion serverVersion =
                         mAccount == null ? MIN_VERSION : mAccount.getServerVersion();
-                if (version == null || (serverVersion != null
-                        && version <= serverVersion.getVersion())) {
+                if ((minVersion == null || (serverVersion != null
+                        && minVersion <= serverVersion.getVersion())) &&
+                    (maxVersion == null || (serverVersion != null
+                            && maxVersion >= serverVersion.getVersion()))) {
                     Class clazz = ChangeQuery.SUGGEST_TYPES[index];
                     if (clazz != null) {
                         if (clazz.equals(AccountInfo.class)) {
@@ -789,11 +793,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
         mSuggestions = new ArrayList<>();
         int count = ChangeQuery.FIELDS_NAMES.length;
         for (int i = 0; i < count; i++) {
-            Double version = ChangeQuery.SUPPORTED_VERSION[i];
+            Double minVersion = ChangeQuery.SUPPORTED_FROM_VERSION[i];
+            Double maxVersion = ChangeQuery.UNSUPPORTED_FROM_VERSION[i];
             ServerVersion serverVersion =
                     mAccount == null ? MIN_VERSION : mAccount.getServerVersion();
-            if (version == null || (serverVersion != null
-                    && version <= serverVersion.getVersion())) {
+            if ((minVersion == null || (serverVersion != null
+                    && minVersion <= serverVersion.getVersion())) &&
+                (maxVersion == null || (serverVersion != null
+                        && maxVersion >= serverVersion.getVersion()))) {
                 mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":");
                 if (ChangeQuery.SUGGEST_TYPES[i] != null && ChangeQuery.SUGGEST_TYPES[i].isEnum()) {
                     for (Object o : ChangeQuery.SUGGEST_TYPES[i].getEnumConstants()) {
@@ -801,6 +808,16 @@ public class SearchActivity extends AppCompatDelegateActivity {
                             Since since = o.getClass().getDeclaredField(o.toString())
                                     .getAnnotation(Since.class);
                             if (since != null && since.value() > serverVersion.getVersion()) {
+                                continue;
+                            }
+                        } catch (NoSuchFieldException ex) {
+                            // Ignore
+                        }
+
+                        try {
+                            Until until = o.getClass().getDeclaredField(o.toString())
+                                    .getAnnotation(Until.class);
+                            if (until != null && until.value() <= serverVersion.getVersion()) {
                                 continue;
                             }
                         } catch (NoSuchFieldException ex) {

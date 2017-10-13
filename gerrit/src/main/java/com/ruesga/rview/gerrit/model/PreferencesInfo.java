@@ -28,7 +28,7 @@ public class PreferencesInfo {
     @SerializedName("use_flash_clipboard") public boolean useFlashClipboard;
     @SerializedName("download_scheme") public String downloadScheme;
     @SerializedName("download_command") public String downloadCommand;
-    @SerializedName("copy_self_on_email") public boolean copySelfOnEmail;
+    @SerializedName("copy_self_on_email") public Boolean copySelfOnEmail;
     @SerializedName("date_format") public DateFormat dateFormat;
     @SerializedName("time_format") public TimeFormat timeFormat;
     @SerializedName("relative_date_in_change_table") public boolean relativeDateInChangeTable;
@@ -41,4 +41,6 @@ public class PreferencesInfo {
     @SerializedName("diff_view") public DiffViewType diffView;
     @SerializedName("url_aliases") public Map<String, String> urlAliases;
     @SerializedName("email_strategy") public EmailStrategy emailStrategy;
+    @SerializedName("default_base_for_merges") public DefaultBaseForMergesStrategy defaultBaseForMerges;
+    @SerializedName("publish_comments_on_push") public Boolean publishCommentsOnPush;
 }

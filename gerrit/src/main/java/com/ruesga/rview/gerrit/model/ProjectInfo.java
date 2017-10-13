@@ -29,6 +29,7 @@ public class ProjectInfo {
     @SerializedName("description") public String description;
     @SerializedName("state") public ProjectStatus state;
     @SerializedName("branches") public Map<String, String> branches;
+    @SerializedName("labels") public Map<String, LabelTypeInfo> labels;
     @SerializedName("web_links") public WebLinkInfo[] webLinks;
 }
 
