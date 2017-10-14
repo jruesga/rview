@@ -29,7 +29,10 @@ public class DashboardInfo {
     @SerializedName("description") public String description;
     @SerializedName("foreach") public String foreach;
     @SerializedName("url") public String url;
+    // Used by 2.14-
     @SerializedName("default") public boolean defaultDashboard;
+    // Used by 2.15+
+    @SerializedName("is_default") public boolean isDefaultDashboard;
     @SerializedName("title") public String title;
     @SerializedName("sections") public DashboardSectionInfo[] sections;
 }

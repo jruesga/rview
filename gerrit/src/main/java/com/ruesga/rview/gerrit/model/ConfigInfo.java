@@ -31,8 +31,12 @@ public class ConfigInfo {
     @SerializedName("require_change_id") public InheritBooleanInfo requireChangeId;
     @SerializedName("enable_signed_push") public InheritBooleanInfo enableSignedPush;
     @SerializedName("require_signed_push") public InheritBooleanInfo requireSignedPush;
+    @SerializedName("reject_implicit_merges") public InheritBooleanInfo rejectImplicitMerges;
+    @SerializedName("private_by_default") public InheritBooleanInfo privateByDefault;
     @SerializedName("max_object_size_limit") public MaxObjectSizeLimitInfo maxObjectSizeLimit;
     @SerializedName("submit_type") public SubmitType submitType;
+    @SerializedName("match_author_to_committer_date") public InheritBooleanInfo matchAuthorToCommitterDate;
+    @SerializedName("state") public StateType state;
     @SerializedName("commentlinks") public Map<String, CommentLinkInfo> commentLinks;
     @SerializedName("theme") public ThemeInfo theme;
     @SerializedName("plugin_config") public Map<String, ConfigParameterInfo> pluginConfig;

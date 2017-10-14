@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,16 @@
  */
 package com.ruesga.rview.gerrit.model;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#tag-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#access-check-input"
  */
-public class TagInfo {
-    @SerializedName("ref") public String ref;
-    @SerializedName("revision") public String revision;
-    @SerializedName("object") public String object;
-    @SerializedName("message") public String message;
-    @SerializedName("tagger") public GitPersonalInfo tagger;
-    @SerializedName("web_links") public WebLinkInfo[] webLinks;
+public class AccessCheckInput {
+    @NonNull @SerializedName("account") public String account = "";
+    @Nullable @SerializedName("ref") public String ref;
 }
 

@@ -254,6 +254,32 @@ class GerritApiClient implements GerritApi {
         return type;
     }
 
+    // From 2.14.3+ api changed the start parameter from s to S to mimic the rest of
+    // the api methods.
+    private Integer[] resolveStartFor21413(Integer start) {
+        Integer s1 = null;
+        Integer s2 = null;
+        if (start != null) {
+            if (mServerVersion.getVersion() < 2.14d) {
+                s2 = start;
+            } else if (mServerVersion.getVersion() > 2.14d) {
+                s1 = start;
+            } else {
+                // 2.14: Decided based on build (only 2.14, 2.14-rc*,, 2.14.1, 2.14.2). All other
+                // combinations are 2.14.3+
+                if (mServerVersion.build != null && (mServerVersion.build.isEmpty() ||
+                        mServerVersion.build.equals("-rc") ||
+                        mServerVersion.build.equals("1") ||
+                        mServerVersion.build.equals("2"))) {
+                    s2 = start;
+                } else {
+                    s1 = start;
+                }
+            }
+        }
+        return new Integer[]{s1, s2};
+    }
+
     private <T> T resolve(T o, double version) {
         if (mServerVersion.getVersion() < version) {
             return null;
@@ -1514,13 +1540,24 @@ class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<List<GroupInfo>> getGroups(
-            @Nullable GroupQuery query, @Nullable Integer count, @Nullable Integer start,
+            @Nullable Integer count, @Nullable Integer start,
             @Nullable String project, @Nullable String user, @Nullable Option owned,
             @Nullable Option visibleToAll, @Nullable Option verbose,
+            @Nullable List<GroupOptions> options, @Nullable String suggest,
+            @Nullable String regexp, @Nullable String match) {
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(
+                () -> mService.getGroups(count, start, project, user, owned,
+                        visibleToAll, verbose, filterByVersion(options),suggest,
+                        resolve(regexp, 2.15d), resolve(match, 2.15d))
+                        .blockingFirst()));
+    }
+
+    @Override
+    public Observable<List<GroupInfo>> getGroups(
+            @NonNull GroupQuery query, @Nullable Integer count, @Nullable Integer start,
             @Nullable List<GroupOptions> options) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(
-                () -> mService.getGroups(query, count, start, project, user, owned,
-                        visibleToAll, verbose, filterByVersion(options))
+                () -> mService.getGroups(query, count, start, filterByVersion(options))
                         .blockingFirst()));
     }
 
@@ -1639,42 +1676,42 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<List<GroupInfo>> getGroupIncludedGroups(@NonNull String groupId) {
-        return withVersionRequestCheck(mService.getGroupIncludedGroups(groupId));
+    public Observable<List<GroupInfo>> getGroupSubgroups(@NonNull String groupId) {
+        return withVersionRequestCheck(mService.getGroupSubgroups(groupId));
     }
 
     @Override
-    public Observable<GroupInfo> getGroupIncludedGroup(
-            @NonNull String groupId, @NonNull String includedGroupId) {
-        return withVersionRequestCheck(mService.getGroupIncludedGroup(groupId, includedGroupId));
+    public Observable<GroupInfo> getGroupSubgroup(
+            @NonNull String groupId, @NonNull String subgroupId) {
+        return withVersionRequestCheck(mService.getGroupSubgroup(groupId, subgroupId));
     }
 
     @Override
-    public Observable<GroupInfo> addGroupIncludeGroup(
-            @NonNull String groupId, @NonNull String includedGroupId) {
-        return withVersionRequestCheck(mService.addGroupIncludeGroup(groupId, includedGroupId));
+    public Observable<GroupInfo> addGroupSubgroup(
+            @NonNull String groupId, @NonNull String subgroupId) {
+        return withVersionRequestCheck(mService.addGroupSubgroup(groupId, subgroupId));
     }
 
     @Override
-    public Observable<GroupInfo> addGroupIncludeGroups(
-            @NonNull String groupId, @NonNull IncludeGroupInput input) {
-        return withVersionRequestCheck(mService.addGroupIncludeGroups(groupId, input));
+    public Observable<GroupInfo> addGroupSubgroups(
+            @NonNull String groupId, @NonNull SubgroupInput input) {
+        return withVersionRequestCheck(mService.addGroupSubgroups(groupId, input));
     }
 
     @Override
-    public Observable<Void> deleteGroupIncludeGroup(
-            @NonNull String groupId, @NonNull String includedGroupId) {
+    public Observable<Void> deleteGroupSubgroup(
+            @NonNull String groupId, @NonNull String subgroupId) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.deleteGroupIncludeGroup(groupId, includedGroupId)));
+                        mService.deleteGroupSubgroup(groupId, subgroupId)));
     }
 
     @Override
-    public Observable<Void> deleteGroupIncludeGroup(
-            @NonNull String groupId, @NonNull IncludeGroupInput input) {
+    public Observable<Void> deleteGroupSubgroups(
+            @NonNull String groupId, @NonNull SubgroupInput input) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.deleteGroupIncludeGroup(groupId, input)));
+                        mService.deleteGroupSubgroups(groupId, input)));
     }
 
 
@@ -1733,10 +1770,10 @@ class GerritApiClient implements GerritApi {
     @Override
     public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Integer count,
         @Nullable Integer start, @Nullable String prefix, @Nullable String regexp,
-        @Nullable String substring, @Nullable Option showDescription, @Nullable Option showTree,
+        @Nullable String match, @Nullable Option showDescription, @Nullable Option showTree,
         @Nullable String branch, @Nullable ProjectType type, @Nullable String group) {
         return withVersionRequestCheck(
-                mService.getProjects(count, start, prefix, regexp, substring,
+                mService.getProjects(count, start, prefix, regexp, match,
                         showDescription, showTree, branch, type, group));
     }
 
@@ -1830,34 +1867,25 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<ChangeInfo> createProjectAccessRightsChange(
+            @NonNull String projectName, @NonNull ProjectAccessInput input) {
+        return withVersionRequestCheck(mService.createProjectAccessRightsChange(projectName, input));
+    }
+
+    @Override
+    public Observable<AccessCheckInfo> checkProjectAccessRights(
+            @NonNull String projectName, @NonNull AccessCheckInput input) {
+        return withVersionRequestCheck(mService.checkProjectAccessRights(projectName, input));
+    }
+
+    @Override
     public Observable<List<BranchInfo>> getProjectBranches(@NonNull String projectName,
-            @Nullable Integer count, @Nullable Integer start, @Nullable String substring,
+            @Nullable Integer count, @Nullable Integer start, @Nullable String match,
             @Nullable String regexp) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
-            // From 2.14.3+ api changed the start parameter from s to S to mimic the rest of
-            // the api methods.
-            Integer s1 = null;
-            Integer s2 = null;
-            if (start != null) {
-                if (mServerVersion.getVersion() < 2.14d) {
-                    s2 = start;
-                } else if (mServerVersion.getVersion() > 2.14d) {
-                    s1 = start;
-                } else {
-                    // 2.14: Decided based on build (only 2.14, 2.14-rc*,, 2.14.1, 2.14.2). All other
-                    // combinations are 2.14.3+
-                    if (mServerVersion.build != null && (mServerVersion.build.isEmpty() ||
-                            mServerVersion.build.equals("-rc") ||
-                            mServerVersion.build.equals("1") ||
-                            mServerVersion.build.equals("2"))) {
-                        s2 = start;
-                    } else {
-                        s1 = start;
-                    }
-                }
-            }
+            Integer[] s = resolveStartFor21413(start);
             return mService.getProjectBranches(
-                    projectName, count, s1, s2, substring, regexp).blockingFirst();
+                    projectName, count, s[0], s[1], match, regexp).blockingFirst();
         }));
     }
 
@@ -1923,8 +1951,14 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<List<TagInfo>> getProjectTags(@NonNull String projectName) {
-        return withVersionRequestCheck(mService.getProjectTags(projectName));
+    public Observable<List<TagInfo>> getProjectTags(@NonNull String projectName,
+            @Nullable Integer count, @Nullable Integer start, @Nullable String match,
+            @Nullable String regexp) {
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
+            Integer[] s = resolveStartFor21413(start);
+            return mService.getProjectTags(
+                    projectName, count, s[0], s[1], match, regexp).blockingFirst();
+        }));
     }
 
     @Override
@@ -1962,6 +1996,13 @@ class GerritApiClient implements GerritApi {
             @NonNull String projectName, @NonNull String commitId, @NonNull String fileId) {
         return withVersionRequestCheck(
                 mService.getProjectCommitFileContent(projectName, commitId, fileId));
+    }
+
+    @Override
+    public Observable<ChangeInfo> cherryPickProjectCommit(
+            @NonNull String projectName, @NonNull String commitId, @NonNull CherryPickInput input) {
+        return withVersionRequestCheck(
+                mService.cherryPickProjectCommit(projectName, commitId, input));
     }
 
     @Override

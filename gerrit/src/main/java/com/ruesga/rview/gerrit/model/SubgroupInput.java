@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#groups-input"
  */
-public class IncludeGroupInput {
+public class SubgroupInput {
     @NonNull @SerializedName("groups") public String[] groups = {};
 }
 
