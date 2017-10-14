@@ -169,12 +169,12 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         boolean authenticated = mAccount.hasAuthenticatedAccessMode();
         List<String> names = new ArrayList<>();
         List<String> titles = new ArrayList<>();
-        int i = 0;
-        for (String auth : authArray) {
-            if (authenticated || !Boolean.valueOf(auth)) {
+        int count = authArray.length;
+        for (int i = 0; i < count ; i++) {
+            if ((authenticated || !Boolean.valueOf(authArray[i]))
+                    && isEntrySupported(namesArray[i])) {
                 names.add(namesArray[i]);
                 titles.add(titlesArray[i]);
-                i++;
             }
         }
 
@@ -198,6 +198,14 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
         mHomePage.setValue(value);
         updateHomePageSummary(mHomePage.getValue());
         mHomePage.setOnPreferenceChangeListener(this);
+    }
+
+    private boolean isEntrySupported(String name) {
+        switch (name) {
+            case "menu_drafts":
+                return !ModelHelper.isEqualsOrGreaterVersionThan(mAccount, 2.15d);
+        }
+        return true;
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -57,6 +57,12 @@
         <item>@string/dashboard_incoming</item>
         <item>@string/dashboard_recently_closed</item>
     </string-array>
+    <string-array name="dashboard_titles_2_15" translatable="false">
+        <item>@string/dashboard_wip</item>
+        <item>@string/dashboard_outgoing</item>
+        <item>@string/dashboard_incoming</item>
+        <item>@string/dashboard_recently_closed</item>
+    </string-array>
     <string-array name="dashboard_filters" translatable="false">
         <item>is:open AND owner:self</item>
         <item>is:open AND (reviewer:self AND (-(owner:self)))</item>
@@ -67,12 +73,30 @@
         <item>is:open AND (reviewer:self AND (-(owner:self)) AND (-(star:ignore)))</item>
         <item>is:closed AND (owner:self OR (reviewer:self) OR (assignee:self)) AND (-(age:4w)))</item>
     </string-array>
+    <string-array name="dashboard_filters_2_15" translatable="false">
+        <item>is:open AND owner:self AND is:wip</item>
+        <item>is:open AND owner:self AND -(is:wip) AND -(is:ignored)</item>
+        <item>is:open AND -(owner:self) AND -(is:wip) AND -(is:ignored) AND (reviewer:self OR assignee:self)</item>
+        <item>is:closed AND -(is:ignored) AND (-(is:wip) OR owner:self) AND (owner:self OR reviewer:self OR assignee:self) AND -(age:4w)</item>
+    </string-array>
     <string-array name="dashboard_sort" translatable="false">
         <item>true</item>
         <item>false</item>
         <item>false</item>
     </string-array>
+    <string-array name="dashboard_sort_2_15" translatable="false">
+        <item>true</item>
+        <item>true</item>
+        <item>false</item>
+        <item>false</item>
+    </string-array>
     <string-array name="dashboard_sort_inverse" translatable="false">
+        <item>false</item>
+        <item>false</item>
+        <item>false</item>
+    </string-array>
+    <string-array name="dashboard_sort_inverse_2_15" translatable="false">
+        <item>false</item>
         <item>false</item>
         <item>false</item>
         <item>false</item>

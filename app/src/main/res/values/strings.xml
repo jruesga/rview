@@ -267,6 +267,7 @@
     <string name="revert_msg_template">Revert \"<xliff:g id="commit_msg">%1$s</xliff:g>\"\n\nThis reverts commit <xliff:g id="commit_id">%2$s</xliff:g>.</string>
 
     <!-- Dashboard -->
+    <string name="dashboard_wip">Work in progress</string>
     <string name="dashboard_outgoing">Outgoing</string>
     <string name="dashboard_incoming">Incoming</string>
     <string name="dashboard_recently_closed">Recently closed</string>

@@ -694,4 +694,9 @@ public class ModelHelper {
         }
         dst.add(src);
     }
+
+    public static boolean isEqualsOrGreaterVersionThan(Account account, double version) {
+        return account != null && account.getServerVersion() != null
+                && account.getServerVersion().getVersion() >= version;
+    }
 }
