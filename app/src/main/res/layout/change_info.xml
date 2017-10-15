@@ -119,6 +119,7 @@
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="12sp" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -144,6 +145,11 @@
                     app:allCaps="true"
                     android:textSize="12sp" />
             </LinearLayout>
+            <include
+                layout="@layout/change_flags"
+                app:model="@{model}"
+                app:actions="@{actions}"
+                app:handlers="@{handlers}" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -170,6 +176,7 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
                 app:bindToBoolean="@{Boolean.TRUE}"
                 app:bindToFeature="@{Features.ASSIGNEE}">
                 <com.ruesga.rview.widget.StyleableTextView
@@ -342,6 +349,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
+                android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="@dimen/label_min_width"
@@ -380,6 +388,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
+                android:layout_gravity="center_vertical"
                 android:orientation="horizontal">
                 <com.ruesga.rview.widget.StyleableTextView
                     android:layout_width="@dimen/label_min_width"
@@ -432,7 +441,8 @@
                     android:textSize="12sp" />
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical">
                     <com.ruesga.rview.widget.TagEditTextView
                         android:id="@+id/tags_labels"
                         android:layout_width="wrap_content"

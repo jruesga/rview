@@ -82,6 +82,15 @@ public class ModelHelper {
     public static final String ACTION_HASHTAGS = "hashtags";
     public static final String ACTION_ASSIGNEE = "assignee";
     public static final String ACTION_TOPIC = "topic";
+    public static final String ACTION_MOVE = "move";
+    public static final String ACTION_MARK_PRIVATE = "private";
+    public static final String ACTION_MARK_PUBLIC = "private.delete";
+    public static final String ACTION_MARK_REVIEWED = "reviewed";
+    public static final String ACTION_MARK_UNREVIEWED = "unreviewed";
+    public static final String ACTION_MARK_WIP = "wip";
+    public static final String ACTION_MARK_READY = "ready";
+    public static final String ACTION_IGNORE = "ignore";
+    public static final String ACTION_UNIGNORE = "unignore";
 
     public static final String ACTION_CREATE_DRAFT = "create_draft";
     public static final String ACTION_UPDATE_DRAFT = "update_draft";

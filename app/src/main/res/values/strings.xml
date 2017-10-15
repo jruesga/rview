@@ -256,12 +256,19 @@
     <string name="change_action_publish_draft">Publish</string>
     <string name="change_action_delete_change">Delete</string>
     <string name="change_action_follow_up">Follow up</string>
+    <string name="change_action_move">Move</string>
     <string name="change_action_submit">Submit</string>
     <string name="change_action_comment">Comment</string>
     <string name="change_action_blame">Blame</string>
     <string name="change_action_download">Download</string>
     <string name="change_action_view">View</string>
     <string name="change_action_details">Details</string>
+
+    <!-- Flags -->
+    <string name="change_flag_private">Private</string>
+    <string name="change_flag_reviewed">Reviewed</string>
+    <string name="change_flag_wip">WIP</string>
+    <string name="change_flag_muted">Muted</string>
 
     <!-- Revert -->
     <string name="revert_msg_template">Revert \"<xliff:g id="commit_msg">%1$s</xliff:g>\"\n\nThis reverts commit <xliff:g id="commit_id">%2$s</xliff:g>.</string>

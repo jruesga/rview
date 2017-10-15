@@ -16,6 +16,7 @@
 package com.ruesga.rview.misc;
 
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 
 public class ViewHelper {
@@ -24,10 +25,28 @@ public class ViewHelper {
     public static <T extends View> T findFirstParentViewOfType(View v, Class<T> clazz) {
         ViewParent parent = v.getParent();
         while (parent != null) {
-            if (parent.getClass().equals(clazz)) {
+            if (parent.getClass().equals(clazz) || clazz.isAssignableFrom(parent.getClass())) {
                 return (T) parent;
             }
             parent = parent.getParent();
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends View> T findFirstChildViewOfType(ViewGroup v, Class<T> clazz) {
+        int count = v.getChildCount();
+        for (int i = 0; i < count; i++) {
+            View child = v.getChildAt(i);
+            if (child.getClass().equals(clazz) || clazz.isAssignableFrom(child.getClass())) {
+                return (T) child;
+            }
+            if (child instanceof ViewGroup) {
+                View vv = findFirstChildViewOfType((ViewGroup) child, clazz);
+                if (vv != null) {
+                    return (T) vv;
+                }
+            }
         }
         return null;
     }

@@ -176,6 +176,25 @@
             tools:ignore="RtlSymmetry"/>
 
         <com.ruesga.rview.widget.StyleableTextView
+            android:id="@+id/move"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:gravity="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:onClick="@{handlers::onActionPressed}"
+            android:text="@string/change_action_move"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?attr/colorAccent"
+            app:fontFamilyType="condensed"
+            android:visibility="@{actions[ModelHelper.ACTION_MOVE] != null ? View.VISIBLE : View.GONE}"
+            app:allCaps="true"
+            android:textSize="12sp"
+            tools:ignore="RtlSymmetry"/>
+
+        <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/submit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
