@@ -25,7 +25,7 @@
   {"name":"GerritHub", "url":"https://review.gerrithub.io/"},
   {"name":"Golang", "url":"https://go-review.googlesource.com/", "ci_accounts": "^(Gobot Gobot)$"},
   {"name":"GROMACS", "url":"https://gerrit.gromacs.org/", "ci_accounts": "^(Jenkins)$"},
-  {"name":"Ground Zero Open Source Project", "url":"https://review.gzospgzr.com/"},
+  {"name":"GZOSP", "url":"https://review.gzospgzr.com/"},
   {"name":"GWT", "url":"https://gwt-review.googlesource.com/", "ci_accounts": "^(.* Jenkins)$"},
   {"name":"halogenOS", "url":"https://review.halogenos.org/"},
   {"name":"Intel HPDD", "url":"https://review.whamcloud.com/", "ci_accounts": "^(Jenkins|HPDD Checkpatch|Misc Code Checks Robot.*|.* Buildbot|Autotest|Maloo)$"},
