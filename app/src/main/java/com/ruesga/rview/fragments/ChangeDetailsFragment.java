@@ -54,6 +54,7 @@ import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.adapters.PatchSetsAdapter;
+import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.attachments.Attachment;
 import com.ruesga.rview.attachments.AttachmentDropView.OnAttachmentsDroppedListener;
 import com.ruesga.rview.attachments.AttachmentsProvider;
@@ -97,6 +98,7 @@ import com.ruesga.rview.gerrit.model.HashtagsInput;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
 import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.NotifyType;
+import com.ruesga.rview.gerrit.model.PrivateInput;
 import com.ruesga.rview.gerrit.model.RebaseInput;
 import com.ruesga.rview.gerrit.model.RestoreInput;
 import com.ruesga.rview.gerrit.model.RevertInput;
@@ -109,6 +111,7 @@ import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.gerrit.model.TopicInput;
+import com.ruesga.rview.gerrit.model.WorkInProgressInput;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.BitmapUtils;
@@ -213,6 +216,8 @@ public class ChangeDetailsFragment extends Fragment implements
     private static final int REQUEST_CODE_FOLLOW_UP_CHANGE = 8;
     private static final int REQUEST_CODE_SUBMIT_CHANGE = 9;
     private static final int REQUEST_CODE_EDIT_REVISION_DESCRIPTION = 10;
+    private static final int REQUEST_CODE_MARK_PRIVATE = 11;
+    private static final int REQUEST_CODE_MARK_WIP = 12;
     private static final int REQUEST_CODE_TAGS = 97;
     private static final int REQUEST_CODE_URL_CHOOSER = 98;
 
@@ -355,7 +360,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         public void onActionPressed(View v) {
-            mFragment.performAction(v);
+            mFragment.performAction(v.getId(), v);
         }
 
         public void onWebLinkPressed(View v) {
@@ -2227,6 +2232,14 @@ public class ChangeDetailsFragment extends Fragment implements
                             break;
                         case ModelHelper.ACTION_FOLLOW_UP:
                             return performFollowUp(api, params[0]);
+                        case ModelHelper.ACTION_MARK_PRIVATE:
+                            return performMarkPrivate(api, params[0]);
+                        case ModelHelper.ACTION_MARK_WIP:
+                            return performMarkWIP(api, params[0]);
+                        case ModelHelper.ACTION_MARK_REVIEWED:
+                            return performMarkReviewed(api);
+                        case ModelHelper.ACTION_IGNORE:
+                            return performMarkIgnore(api);
                         case ModelHelper.ACTION_SUBMIT:
                             performSubmitChange(api);
                             break;
@@ -2862,6 +2875,88 @@ public class ChangeDetailsFragment extends Fragment implements
         fragment.show(getChildFragmentManager(), ConfirmDialogFragment.TAG);
     }
 
+    private void performShowMoreAction(View anchor) {
+        SimpleDropDownAdapter<Integer> adapter = createMoreActionsAdapter();
+        if (adapter == null) {
+            return;
+        }
+        final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
+        popupWindow.setAnchorView(anchor);
+        popupWindow.setAdapter(adapter);
+        popupWindow.setContentWidth(adapter.measureContentWidth());
+        popupWindow.setOnItemClickListener((parent, view, position, id) -> {
+            popupWindow.dismiss();
+            performAction(adapter.getId(position), anchor);
+        });
+        popupWindow.setModal(true);
+        popupWindow.show();
+    }
+
+    private SimpleDropDownAdapter<Integer> createMoreActionsAdapter() {
+        if (mResponse == null || mResponse.mChange == null || mResponse.mActions == null) {
+            return null;
+        }
+
+        final boolean isOwner = mResponse.mChange.owner.accountId == mAccount.mAccount.accountId;
+        final boolean isNew = mResponse.mChange.status.equals(ChangeStatus.NEW);
+        final boolean isDraft = mResponse.mChange.status.equals(ChangeStatus.DRAFT);
+
+        final List<String> options = new ArrayList<>();
+        final List<Integer> ids = new ArrayList<>();
+
+        // Cherry-Pick
+        if (mResponse.mActions.containsKey(ModelHelper.ACTION_CHERRY_PICK)) {
+            options.add(getString(R.string.change_action_cherrypick));
+            ids.add(R.id.cherrypick);
+        }
+        // FollowUp
+        if (mResponse.mActions.containsKey(ModelHelper.ACTION_FOLLOW_UP)) {
+            options.add(getString(R.string.change_action_follow_up));
+            ids.add(R.id.follow_up);
+        }
+        // Move
+        if (mResponse.mActions.containsKey(ModelHelper.ACTION_MOVE)) {
+            options.add(getString(R.string.change_action_move));
+            ids.add(R.id.move);
+        }
+        // Delete
+        if (mResponse.mActions.containsKey(ModelHelper.ACTION_DELETE_CHANGE) && isOwner && isDraft) {
+            options.add(getString(R.string.change_action_delete_change));
+            ids.add(R.id.delete_change);
+        }
+
+        if (ModelHelper.isEqualsOrGreaterVersionThan(mAccount, 2.15d)) {
+            // Private
+            if (isOwner && isNew) {
+                options.add(getString(mResponse.mChange.isPrivate
+                        ? R.string.change_action_mark_public : R.string.change_action_mark_private));
+                ids.add(R.id.mark_private);
+            }
+            // Work In Progress
+            if (isOwner && isNew) {
+                options.add(getString(mResponse.mChange.isWorkInProgress
+                        ? R.string.change_action_mark_ready : R.string.change_action_mark_wip));
+                ids.add(R.id.mark_wip);
+            }
+            // Mute
+            if (ModelHelper.isEqualsOrGreaterVersionThan(mAccount, 2.15d) && !isOwner) {
+                options.add(getString(mResponse.mChange.stars != null
+                        && Arrays.asList(mResponse.mChange.stars).contains(ModelHelper.ACTION_IGNORE)
+                        ? R.string.change_action_unmute : R.string.change_action_mute));
+                ids.add(R.id.mute);
+            }
+            // Reviewed
+            options.add(getString(mResponse.mChange.reviewed
+                    ? R.string.change_action_mark_unreviewed : R.string.change_action_mark_reviewed));
+            ids.add(R.id.mark_reviewed);
+        }
+
+        return new SimpleDropDownAdapter<>(getContext(), options, null,
+                ids.toArray(new Integer[ids.size()]), null);
+    }
+
+
+
     private void performReplyComment(int position) {
         String currentMessage = mBinding.reviewInfo.reviewComment.getText().toString();
         String replyMessage = mMessageAdapter.getMessage(position);
@@ -2894,31 +2989,32 @@ public class ChangeDetailsFragment extends Fragment implements
         ActivityHelper.openChangeListByFilterActivity(getActivity(), title, filter, false, false);
     }
 
-    private void performAction(View v) {
+    private void performAction(int id, View anchor) {
         if (!isLocked()) {
+            String title;
             String action;
             String hint;
-            switch (v.getId()) {
+            switch (id) {
                 case R.id.cherrypick:
-                    performShowCherryPickDialog(v);
+                    performShowCherryPickDialog(anchor);
                     break;
 
                 case R.id.rebase:
-                    performShowRebaseDialog(v);
+                    performShowRebaseDialog(anchor);
                     break;
 
                 case R.id.abandon:
                     action = getString(R.string.change_action_abandon);
                     hint = getString(R.string.actions_comment_hint);
                     performShowRequestMessageDialog(
-                            v, action, action, hint, null, true, REQUEST_CODE_ABANDON_CHANGE);
+                            anchor, action, action, hint, null, true, REQUEST_CODE_ABANDON_CHANGE);
                     break;
 
                 case R.id.restore:
                     action = getString(R.string.change_action_restore);
                     hint = getString(R.string.actions_comment_hint);
                     performShowRequestMessageDialog(
-                            v, action, action, hint, null, true, REQUEST_CODE_RESTORE_CHANGE);
+                            anchor, action, action, hint, null, true, REQUEST_CODE_RESTORE_CHANGE);
                     break;
 
                 case R.id.revert: {
@@ -2928,7 +3024,7 @@ public class ChangeDetailsFragment extends Fragment implements
                             mResponse.mChange.revisions.get(mCurrentRevision).commit.subject,
                             mCurrentRevision);
                     performShowRequestMessageDialog(
-                            v, action, action, hint, message, true, REQUEST_CODE_REVERT_CHANGE);
+                            anchor, action, action, hint, message, true, REQUEST_CODE_REVERT_CHANGE);
                     break;
                 }
 
@@ -2954,12 +3050,50 @@ public class ChangeDetailsFragment extends Fragment implements
                     action = getString(R.string.change_action_follow_up);
                     hint = getString(R.string.actions_message_hint);
                     performShowRequestMessageDialog(
-                            v, action, action, hint, null, false, REQUEST_CODE_FOLLOW_UP_CHANGE);
+                            anchor, action, action, hint, null, false, REQUEST_CODE_FOLLOW_UP_CHANGE);
+                    break;
+
+                case R.id.move:
+                    // TODO
+                    break;
+
+                case R.id.mark_private:
+                    title = getString(mResponse.mChange.isPrivate
+                            ? R.string.change_action_mark_public
+                            : R.string.change_action_mark_private);
+                    action = getString(R.string.action_set);
+                    hint = getString(R.string.actions_comment_hint);
+                    performShowRequestMessageDialog(
+                            anchor, title, action, hint, null, true, REQUEST_CODE_MARK_PRIVATE);
+                    break;
+
+                case R.id.mark_wip:
+                    title = getString(mResponse.mChange.isWorkInProgress
+                            ? R.string.change_action_mark_ready
+                            : R.string.change_action_mark_wip);
+                    action = getString(R.string.action_set);
+                    hint = getString(R.string.actions_comment_hint);
+                    performShowRequestMessageDialog(
+                            anchor, title, action, hint, null, true, REQUEST_CODE_MARK_WIP);
+                    break;
+
+                case R.id.mark_reviewed:
+                    mActionLoader.clear();
+                    mActionLoader.restart(ModelHelper.ACTION_MARK_REVIEWED, null);
+                    break;
+
+                case R.id.mute:
+                    mActionLoader.clear();
+                    mActionLoader.restart(ModelHelper.ACTION_IGNORE, null);
                     break;
 
                 case R.id.submit:
                     String message = getString(R.string.actions_confirm_submit);
-                    performConfirmDialog(v, message, REQUEST_CODE_SUBMIT_CHANGE);
+                    performConfirmDialog(anchor, message, REQUEST_CODE_SUBMIT_CHANGE);
+                    break;
+
+                case R.id.more:
+                    performShowMoreAction(anchor);
                     break;
             }
         }
@@ -3003,6 +3137,7 @@ public class ChangeDetailsFragment extends Fragment implements
         return api.revertChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
+    @SuppressWarnings("deprecation")
     private boolean performPublishDraft(GerritApi api) {
         api.publishChangeDraftRevision(String.valueOf(mLegacyChangeId), mCurrentRevision)
                 .blockingFirst();
@@ -3032,6 +3167,58 @@ public class ChangeDetailsFragment extends Fragment implements
         input.destination = branch;
         input.message = msg;
         return api.cherryPickChangeRevision(changeId, mCurrentRevision, input).blockingFirst();
+    }
+
+    private boolean performMarkPrivate(GerritApi api, String message) {
+        String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
+        final PrivateInput input = new PrivateInput();
+        if (!TextUtils.isEmpty(message)) {
+            input.message = message;
+        }
+
+        if (mResponse.mChange.isPrivate) {
+            api.unmarkChangeAsPrivate(changeId, input).blockingFirst();
+        } else {
+            api.markChangeAsPrivate(changeId, input).blockingFirst();
+        }
+        return true;
+    }
+
+    private boolean performMarkWIP(GerritApi api, String message) {
+        String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
+        final WorkInProgressInput input = new WorkInProgressInput();
+        if (!TextUtils.isEmpty(message)) {
+            input.message = message;
+        }
+
+        if (mResponse.mChange.isWorkInProgress) {
+            api.setChangeReadyForReview(changeId, input).blockingFirst();
+        } else {
+            api.setChangeWorkInProgress(changeId, input).blockingFirst();
+        }
+        return true;
+    }
+
+    private boolean performMarkReviewed(GerritApi api) {
+        String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
+        if (mResponse.mChange.reviewed) {
+            api.markChangeAsUnreviewed(changeId).blockingFirst();
+        } else {
+            api.markChangeAsReviewed(changeId).blockingFirst();
+        }
+        return true;
+    }
+
+    private boolean performMarkIgnore(GerritApi api) {
+        String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
+        boolean ignored = mResponse.mChange.stars != null
+                && Arrays.asList(mResponse.mChange.stars).contains(ModelHelper.ACTION_IGNORE);
+        if (ignored) {
+            api.unignoreChange(changeId).blockingFirst();
+        } else {
+            api.ignoreChange(changeId).blockingFirst();
+        }
+        return true;
     }
 
     private void performMessageClick(int position) {
@@ -3236,6 +3423,18 @@ public class ChangeDetailsFragment extends Fragment implements
                     mActionLoader.clear();
                     mActionLoader.restart(
                             ModelHelper.ACTION_FOLLOW_UP, new String[]{newValue});
+                    break;
+
+                case REQUEST_CODE_MARK_PRIVATE:
+                    mActionLoader.clear();
+                    mActionLoader.restart(
+                            ModelHelper.ACTION_MARK_PRIVATE, new String[]{newValue});
+                    break;
+
+                case REQUEST_CODE_MARK_WIP:
+                    mActionLoader.clear();
+                    mActionLoader.restart(
+                            ModelHelper.ACTION_MARK_WIP, new String[]{newValue});
                     break;
 
                 case REQUEST_CODE_EDIT_REVISION_DESCRIPTION:

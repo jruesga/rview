@@ -658,6 +658,7 @@
 
                 <include
                     layout="@layout/change_actions"
+                    app:isAuthenticated="@{isAuthenticated}"
                     app:isOwner="@{isOwner}"
                     app:model="@{model}"
                     app:actions="@{actions}"

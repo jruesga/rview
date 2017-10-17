@@ -263,6 +263,15 @@
     <string name="change_action_download">Download</string>
     <string name="change_action_view">View</string>
     <string name="change_action_details">Details</string>
+    <string name="change_action_more">More</string>
+    <string name="change_action_mark_private">Mark as private</string>
+    <string name="change_action_mark_public">Mark as public</string>
+    <string name="change_action_mark_wip">Mark as work in progress</string>
+    <string name="change_action_mark_ready">Mark as ready</string>
+    <string name="change_action_mark_reviewed">Mark as reviewed</string>
+    <string name="change_action_mark_unreviewed">Mark as unreviewed</string>
+    <string name="change_action_mute">Mute</string>
+    <string name="change_action_unmute">Unmute</string>
 
     <!-- Flags -->
     <string name="change_flag_private">Private</string>

@@ -756,7 +756,7 @@ interface GerritRestApi {
     @POST("changes/{change-id}/ready")
     Observable<Void> setChangeReadyForReview(
             @NonNull @Path("change-id") String changeId,
-            @Nullable @Body WorkInProgressInput input);
+            @NonNull @Body WorkInProgressInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#mark-private"
@@ -771,7 +771,7 @@ interface GerritRestApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#unmark-private"
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
-    @DELETE("changes/{change-id}/private")
+    @POST("changes/{change-id}/private.delete")
     Observable<Void> unmarkChangeAsPrivate(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Body PrivateInput input);

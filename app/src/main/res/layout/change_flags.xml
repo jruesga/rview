@@ -107,7 +107,7 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
-                app:srcCompat="@drawable/ic_reviewed"
+                app:srcCompat="@drawable/ic_draft"
                 app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
                 android:layout_marginEnd="4dp"
                 android:layout_marginRight="4dp"

@@ -715,7 +715,7 @@ public interface GerritApi {
      */
     Observable<Void> setChangeReadyForReview(
             @NonNull String changeId,
-            @Nullable WorkInProgressInput input);
+            @NonNull WorkInProgressInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#mark-private"

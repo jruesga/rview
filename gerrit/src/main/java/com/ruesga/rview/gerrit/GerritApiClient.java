@@ -915,7 +915,7 @@ class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<Void> setChangeReadyForReview(
-            @NonNull String changeId, @Nullable WorkInProgressInput input) {
+            @NonNull String changeId, @NonNull WorkInProgressInput input) {
         return withVersionRequestCheck(
                 withEmptyObservable(
                         mService.setChangeReadyForReview(changeId, input)));
