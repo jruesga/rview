@@ -10,6 +10,7 @@
   {"name":"AOSPExtended", "url":"http://gerrit.aospextended.com/"},
   {"name":"Asterisk", "url":"https://gerrit.asterisk.org/", "ci_accounts": "^(Zuul The Gatekeeper|Jenkins2)$"},
   {"name":"Automotive Linux", "url":"https://gerrit.automotivelinux.org/gerrit/", "ci_accounts": "^(Jenkins Job .*)$"},
+  {"name":"BlissRoms", "url":"https://review.blissroms.com/"},
   {"name":"CandyRoms", "url":"https://gerrit.bbqdroid.org/"},
   {"name":"CarbonROM", "url":"https://review.carbonrom.org/"},
   {"name":"Chromium", "url":"https://chromium-review.googlesource.com/", "ci_accounts": "^(.* Bot)$", "ci_status_mode": "cq", "ci_status_url": "https://cr-buildbucket.appspot.com/_ah/api/buildbucket/v1/search?max_builds=500&fields=builds(status,result,tags,url)&tag=buildset:patch/gerrit/chromium-review.googlesource.com/{change}/{revision}"},
