@@ -621,6 +621,8 @@
 
     <!-- Create new change dialog -->
     <string name="create_new_change_title">Create new change</string>
+    <string name="create_new_change_is_private">Private</string>
+    <string name="create_new_change_is_wip">Work in progress</string>
 
     <!-- Gallery chooser -->
     <string name="gallery_chooser_title">Gallery</string>

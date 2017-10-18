@@ -24,9 +24,10 @@
         <variable name="model" type="com.ruesga.rview.fragments.NewChangeDialogFragment.Model" />
     </data>
 
-    <FrameLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -124,6 +125,22 @@
                     android:inputType="textMultiLine"
                     tools:ignore="Deprecated"/>
             </android.support.design.widget.TextInputLayout>
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:checked="@={model.isPrivate}"
+                app:bindToVersion="@{2.15d}"
+                android:text="@string/create_new_change_is_private" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:checked="@={model.isWorkInProgress}"
+                app:bindToVersion="@{2.15d}"
+                android:text="@string/create_new_change_is_wip" />
         </LinearLayout>
-    </FrameLayout>
+    </ScrollView>
 </layout>

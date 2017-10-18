@@ -34,15 +34,18 @@ import com.ruesga.rview.adapters.BranchAdapter;
 import com.ruesga.rview.adapters.FilterableAdapter;
 import com.ruesga.rview.adapters.ProjectAdapter;
 import com.ruesga.rview.databinding.NewChangeDialogBinding;
+import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.widget.DelayedAutocompleteTextView;
 
 public class NewChangeDialogFragment extends FilterableDialogFragment {
 
     public static final String TAG = "NewChangeDialogFragment";
 
+    private static final String EXTRA_MODEL = "model";
+
     public interface OnNewChangeRequestedListener {
-        void onNewChangeRequested(int requestCode, String project,
-                String branch, String topic, String subject);
+        void onNewChangeRequested(int requestCode, String project, String branch, String topic,
+                String subject, boolean isPrivate, boolean isWorkInProgress);
     }
 
     @Keep
@@ -51,6 +54,8 @@ public class NewChangeDialogFragment extends FilterableDialogFragment {
         public String branch;
         public String topic;
         public String subject;
+        public boolean isPrivate;
+        public boolean isWorkInProgress;
     }
 
     public static NewChangeDialogFragment newInstance(int requestCode, View anchor) {
@@ -65,7 +70,7 @@ public class NewChangeDialogFragment extends FilterableDialogFragment {
     private NewChangeDialogBinding mBinding;
     private ProjectAdapter mProjectAdapter;
     private BranchAdapter mBranchAdapter;
-    private final Model mModel = new Model();
+    private Model mModel = new Model();
 
     public NewChangeDialogFragment() {
     }
@@ -118,6 +123,23 @@ public class NewChangeDialogFragment extends FilterableDialogFragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            String model = savedInstanceState.getString(EXTRA_MODEL, null);
+            if (!TextUtils.isEmpty(model)) {
+                mModel = SerializationManager.getInstance().fromJson(model, Model.class);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(EXTRA_MODEL, SerializationManager.getInstance().toJson(mModel));
+    }
+
+    @Override
     public ViewDataBinding inflateView(LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.new_change_dialog, container, true);
@@ -158,10 +180,12 @@ public class NewChangeDialogFragment extends FilterableDialogFragment {
         Fragment f = getParentFragment();
         if (f != null && f instanceof OnNewChangeRequestedListener) {
             ((OnNewChangeRequestedListener) f).onNewChangeRequested(
-                    getRequestCode(), mModel.project, mModel.branch, mModel.topic, mModel.subject);
+                    getRequestCode(), mModel.project, mModel.branch, mModel.topic,
+                            mModel.subject, mModel.isPrivate, mModel.isWorkInProgress);
         } else if (a != null && a instanceof OnNewChangeRequestedListener) {
             ((OnNewChangeRequestedListener) a).onNewChangeRequested(
-                    getRequestCode(), mModel.project, mModel.branch, mModel.topic, mModel.subject);
+                    getRequestCode(), mModel.project, mModel.branch, mModel.topic,
+                            mModel.subject, mModel.isPrivate, mModel.isWorkInProgress);
         }
         return true;
     }
