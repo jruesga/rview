@@ -18,6 +18,7 @@ package com.ruesga.rview;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -192,7 +193,10 @@ public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
                         }
                     }
 
-                    ActivityHelper.openChangeListByFilterActivity(this, null, filter, true, true);
+                    final Uri referrer = ActivityCompat.getReferrer(this);
+                    boolean external = referrer == null ||
+                            !referrer.getAuthority().equals(getPackageName());
+                    ActivityHelper.openChangeListByFilterActivity(this, null, filter, true, external);
                     break;
                 }
                 // fallback to default
