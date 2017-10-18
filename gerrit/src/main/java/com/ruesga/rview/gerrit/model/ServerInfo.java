@@ -21,6 +21,7 @@ import com.google.gson.annotations.SerializedName;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#server-info"
  */
 public class ServerInfo {
+    @SerializedName("accounts") public AccountsConfigInfo accounts;
     @SerializedName("auth") public AuthInfo auth;
     @SerializedName("change") public ChangeConfigInfo change;
     @SerializedName("download") public DownloadInfo download;
@@ -32,4 +33,5 @@ public class ServerInfo {
     @SerializedName("suggest") public SuggestInfo suggest;
     @SerializedName("url_aliases") public String[] urlAliases;
     @SerializedName("user") public UserConfigInfo user;
+    @SerializedName("default_theme") public String defaultTheme;
 }

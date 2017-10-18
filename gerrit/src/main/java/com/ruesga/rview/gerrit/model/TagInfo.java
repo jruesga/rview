@@ -26,5 +26,6 @@ public class TagInfo {
     @SerializedName("object") public String object;
     @SerializedName("message") public String message;
     @SerializedName("tagger") public GitPersonalInfo tagger;
+    @SerializedName("web_links") public WebLinkInfo[] webLinks;
 }
 

@@ -24,6 +24,7 @@ import com.google.gson.annotations.SerializedName;
 public class ChangeConfigInfo {
     @SerializedName("allow_blame") public boolean allowBlame;
     @SerializedName("allow_drafts") public boolean allowDrafts;
+    @SerializedName("private_by_default") public boolean privateByDefault;
     @SerializedName("large_change") public int largeChange;
     @SerializedName("reply_label") public String replyLabel;
     @SerializedName("reply_tooltip") public String replyTooltip;

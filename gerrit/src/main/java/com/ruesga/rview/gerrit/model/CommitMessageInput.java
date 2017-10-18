@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,15 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#groups-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#commit-message-input"
  */
-public class IncludeGroupInput {
-    @NonNull @SerializedName("groups") public String[] groups = {};
+public class CommitMessageInput extends MessageInput {
+    @Nullable @SerializedName("notify") public NotifyType notify;
+    @Nullable @SerializedName("notify_details") public NotifyInfo notifyDetails;
 }
 

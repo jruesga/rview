@@ -59,7 +59,7 @@
                 android:ellipsize="end"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
-                android:textSize="14sp" />
+                android:textSize="12sp" />
         </LinearLayout>
     </FrameLayout>
 </layout>

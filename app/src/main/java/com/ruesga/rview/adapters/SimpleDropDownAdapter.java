@@ -28,25 +28,29 @@ import com.ruesga.rview.databinding.DropdownItemBinding;
 
 import java.util.List;
 
-public class SimpleDropDownAdapter extends BaseAdapter {
+public class SimpleDropDownAdapter<T> extends BaseAdapter {
 
     private Context mContext;
     private List<String> mValues;
     private int[] mIcons;
+    private T[] mIds;
     private String mValue;
 
     public SimpleDropDownAdapter(Context context, List<String> values, String value) {
-        mContext = context;
-        mValues = values;
-        mIcons = null;
-        mValue = value;
+        this(context, values, null, value);
     }
 
     public SimpleDropDownAdapter(Context context, List<String> values, int[] icons, String value) {
+        this(context, values, icons, null, value);
+    }
+
+    public SimpleDropDownAdapter(Context context, List<String> values,
+            int[] icons, T[] ids, String value) {
         mContext = context;
         mValues = values;
         mIcons = icons;
         mValue = value;
+        mIds = ids;
     }
 
     @Override
@@ -62,6 +66,10 @@ public class SimpleDropDownAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    public T getId(int position) {
+        return mIds[position];
     }
 
     @Override

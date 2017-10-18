@@ -474,6 +474,9 @@ public class MainActivity extends ChangeListBaseActivity {
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
         menu.setGroupVisible(R.id.category_my_menu, !show && auth);
+        // Drafts are removed from Api on 2.15+
+        menu.findItem(R.id.menu_drafts).setVisible(!show && auth
+                && !ModelHelper.isEqualsOrGreaterVersionThan(mAccount, 2.15d));
         menu.setGroupVisible(R.id.category_my_filters,
                 !show && mCustomFilters != null && !mCustomFilters.isEmpty());
         menu.setGroupVisible(R.id.category_my_account, show);

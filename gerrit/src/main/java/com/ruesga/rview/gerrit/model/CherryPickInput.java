@@ -26,5 +26,10 @@ import com.google.gson.annotations.SerializedName;
 public class CherryPickInput {
     @Nullable @SerializedName("message") public String message;
     @NonNull @SerializedName("destination") public String destination = "";
+    @Nullable @SerializedName("base") public String base;
+    @Nullable @SerializedName("parent") public String parent;
+    @Nullable @SerializedName("notify") public NotifyType notify;
+    @Nullable @SerializedName("notify_details") public NotifyInfo notifyDetails;
+    @Nullable @SerializedName("keep_reviewers") public Boolean keepReviewers;
 }
 

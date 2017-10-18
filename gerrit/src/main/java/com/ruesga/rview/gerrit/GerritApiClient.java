@@ -28,6 +28,7 @@ import com.burgstaller.okhttp.digest.CachingAuthenticator;
 import com.burgstaller.okhttp.digest.Credentials;
 import com.burgstaller.okhttp.digest.DigestAuthenticator;
 import com.google.gson.annotations.Since;
+import com.ruesga.rview.gerrit.annotations.Until;
 import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.GroupQuery;
@@ -211,6 +212,15 @@ class GerritApiClient implements GerritApi {
             } catch (Exception e) {
                 // Ignore
             }
+            try {
+                Until a = t.getClass().getDeclaredField(t.toString()).getAnnotation(Until.class);
+                if (a != null && a.value() <= serverVersion.getVersion()) {
+                    isSupported = false;
+                }
+            } catch (Exception e) {
+                // Ignore
+            }
+
             if (isSupported) {
                 filter.add(t);
             }
@@ -222,13 +232,6 @@ class GerritApiClient implements GerritApi {
     // ===============================
     // Mediator methods
     // ===============================
-
-    private WhitespaceType resolveWhiteSpaceType(WhitespaceType type) {
-        if (mServerVersion.getVersion() < 2.13) {
-            return null;
-        }
-        return type;
-    }
 
     private IgnoreWhitespaceType resolveIgnoreWhiteSpaceType(WhitespaceType type) {
         if (type == null) {
@@ -249,6 +252,39 @@ class GerritApiClient implements GerritApi {
             return DraftActionType.PUBLISH;
         }
         return type;
+    }
+
+    // From 2.14.3+ api changed the start parameter from s to S to mimic the rest of
+    // the api methods.
+    private Integer[] resolveStartFor21413(Integer start) {
+        Integer s1 = null;
+        Integer s2 = null;
+        if (start != null) {
+            if (mServerVersion.getVersion() < 2.14d) {
+                s2 = start;
+            } else if (mServerVersion.getVersion() > 2.14d) {
+                s1 = start;
+            } else {
+                // 2.14: Decided based on build (only 2.14, 2.14-rc*,, 2.14.1, 2.14.2). All other
+                // combinations are 2.14.3+
+                if (mServerVersion.build != null && (mServerVersion.build.isEmpty() ||
+                        mServerVersion.build.equals("-rc") ||
+                        mServerVersion.build.equals("1") ||
+                        mServerVersion.build.equals("2"))) {
+                    s2 = start;
+                } else {
+                    s1 = start;
+                }
+            }
+        }
+        return new Integer[]{s1, s2};
+    }
+
+    private <T> T resolve(T o, double version) {
+        if (mServerVersion.getVersion() < version) {
+            return null;
+        }
+        return o;
     }
 
 
@@ -715,6 +751,12 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<ChangeInfo> setChangeCommitMessage(
+            @NonNull String changeId, @NonNull CommitMessageInput input) {
+        return withVersionRequestCheck(mService.setChangeCommitMessage(changeId, input));
+    }
+
+    @Override
     public Observable<ChangeInfo> getChangeDetail(
             @NonNull String changeId, @Nullable List<ChangeOptions> options) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(
@@ -761,6 +803,12 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<PureRevertInfo> getChangePureRevert(
+            @NonNull String changeId, @Nullable String commit, @Nullable String revertOf) {
+        return withVersionRequestCheck(mService.getChangePureRevert(changeId, commit, revertOf));
+    }
+
+    @Override
     public Observable<ChangeInfo> abandonChange(
             @NonNull String changeId, @NonNull AbandonInput input) {
         return withVersionRequestCheck(mService.abandonChange(changeId, input));
@@ -803,6 +851,8 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    @Deprecated
+    @SuppressWarnings("deprecation")
     public Observable<Void> publishDraftChange(@NonNull String changeId) {
         return withVersionRequestCheck(
                 withEmptyObservable(
@@ -810,10 +860,10 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<Void> deleteDraftChange(@NonNull String changeId) {
+    public Observable<Void> deleteChange(@NonNull String changeId) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.deleteDraftChange(changeId)));
+                        mService.deleteChange(changeId)));
     }
 
     @Override
@@ -853,6 +903,66 @@ class GerritApiClient implements GerritApi {
     @Override
     public Observable<ChangeInfo> fixChange(@NonNull String changeId, @NonNull FixInput input) {
         return withVersionRequestCheck(mService.fixChange(changeId, input));
+    }
+
+    @Override
+    public Observable<Void> setChangeWorkInProgress(
+            @NonNull String changeId, @NonNull WorkInProgressInput input) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.setChangeWorkInProgress(changeId, input)));
+    }
+
+    @Override
+    public Observable<Void> setChangeReadyForReview(
+            @NonNull String changeId, @NonNull WorkInProgressInput input) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.setChangeReadyForReview(changeId, input)));
+    }
+
+    @Override
+    public Observable<Void> markChangeAsPrivate(
+            @NonNull String changeId, @NonNull PrivateInput input) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.markChangeAsPrivate(changeId, input)));
+    }
+
+    @Override
+    public Observable<Void> unmarkChangeAsPrivate(
+            @NonNull String changeId, @NonNull PrivateInput input) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.unmarkChangeAsPrivate(changeId, input)));
+    }
+
+    @Override
+    public Observable<Void> ignoreChange(@NonNull String changeId) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.ignoreChange(changeId)));
+    }
+
+    @Override
+    public Observable<Void> unignoreChange(@NonNull String changeId) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.unignoreChange(changeId)));
+    }
+
+    @Override
+    public Observable<Void> markChangeAsReviewed(@NonNull String changeId) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.markChangeAsReviewed(changeId)));
+    }
+
+    @Override
+    public Observable<Void> markChangeAsUnreviewed(@NonNull String changeId) {
+        return withVersionRequestCheck(
+                withEmptyObservable(
+                        mService.markChangeAsUnreviewed(changeId)));
     }
 
     @Override
@@ -965,9 +1075,12 @@ class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<List<SuggestedReviewerInfo>> getChangeSuggestedReviewers(
-            @NonNull String changeId, @NonNull String query, @Nullable Integer count) {
-        return withVersionRequestCheck(
-                mService.getChangeSuggestedReviewers(changeId, query, count));
+            @NonNull String changeId, @NonNull String query, @Nullable Integer count,
+            @Nullable ExcludeGroupsFromSuggestedReviewers excludeGroups) {
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
+            ExcludeGroupsFromSuggestedReviewers e = resolve(excludeGroups, 2.15d);
+            return mService.getChangeSuggestedReviewers(changeId, query, count, e).blockingFirst();
+        }));
     }
 
     @Override
@@ -1043,7 +1156,7 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<ReviewInfo> setChangeRevisionReview(@NonNull String changeId,
+    public Observable<ReviewResultInfo> setChangeRevisionReview(@NonNull String changeId,
             @NonNull String revisionId, @NonNull ReviewInput input) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
             input.drafts = resolveDraftActionType(input.drafts);
@@ -1072,6 +1185,8 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    @Deprecated
+    @SuppressWarnings("deprecation")
     public Observable<Void> publishChangeDraftRevision(
             @NonNull String changeId, @NonNull String revisionId) {
         return withVersionRequestCheck(
@@ -1080,6 +1195,8 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    @Deprecated
+    @SuppressWarnings("deprecation")
     public Observable<SubmitInfo> deleteChangeDraftRevision(
             @NonNull String changeId, @NonNull String revisionId) {
         return withVersionRequestCheck(mService.deleteChangeDraftRevision(changeId, revisionId));
@@ -1181,10 +1298,25 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<EditInfo> applyChangeRevisionFix(
+            @NonNull String changeId, @NonNull String revisionId, @NonNull String fixId) {
+        return withVersionRequestCheck(
+                mService.applyChangeRevisionFix(changeId, revisionId, fixId));
+    }
+
+    @Override
     public Observable<CommentInfo> getChangeRevisionComment(@NonNull String changeId,
             @NonNull String revisionId, @NonNull String commentId) {
         return withVersionRequestCheck(
                 mService.getChangeRevisionComment(changeId, revisionId, commentId));
+    }
+
+    @Override
+    public Observable<CommentInfo> deleteChangeRevisionComment(
+            @NonNull String changeId, @NonNull String revisionId,
+            @NonNull String commentId, @NonNull DeleteCommentInput input) {
+        return withVersionRequestCheck(
+                mService.deleteChangeRevisionComment(changeId, revisionId, commentId, input));
     }
 
     @Override
@@ -1205,9 +1337,12 @@ class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<ResponseBody> getChangeRevisionFileContent(@NonNull String changeId,
-            @NonNull String revisionId, @NonNull String fileId) {
-        return withVersionRequestCheck(
-                mService.getChangeRevisionFileContent(changeId, revisionId, fileId));
+            @NonNull String revisionId, @NonNull String fileId, Integer parent) {
+        return withVersionRequestCheck(SafeObservable.fromCallable(() -> {
+            Integer p = resolve(parent, 2.15d);
+            return mService.getChangeRevisionFileContent(
+                    changeId, revisionId, fileId, p).blockingFirst();
+        }));
     }
 
     @Override
@@ -1225,7 +1360,7 @@ class GerritApiClient implements GerritApi {
             @Nullable WhitespaceType whitespace, @Nullable ContextType context) {
         return withVersionRequestCheck(mService.getChangeRevisionFileDiff(changeId, revisionId,
                         fileId, base, intraline, weblinksOnly,
-                        resolveWhiteSpaceType(whitespace),
+                        resolve(whitespace, 2.13d),
                         resolveIgnoreWhiteSpaceType(whitespace),
                         context));
     }
@@ -1298,6 +1433,11 @@ class GerritApiClient implements GerritApi {
     @Override
     public Observable<ServerInfo> getServerInfo() {
         return withVersionRequestCheck(mService.getServerInfo());
+    }
+
+    @Override
+    public Observable<ConsistencyCheckInfo> checkConsistency(@NonNull ConsistencyCheckInput input) {
+        return withVersionRequestCheck(mService.checkConsistency(input));
     }
 
     @Override
@@ -1400,13 +1540,24 @@ class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<List<GroupInfo>> getGroups(
-            @Nullable GroupQuery query, @Nullable Integer count, @Nullable Integer start,
+            @Nullable Integer count, @Nullable Integer start,
             @Nullable String project, @Nullable String user, @Nullable Option owned,
             @Nullable Option visibleToAll, @Nullable Option verbose,
+            @Nullable List<GroupOptions> options, @Nullable String suggest,
+            @Nullable String regexp, @Nullable String match) {
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(
+                () -> mService.getGroups(count, start, project, user, owned,
+                        visibleToAll, verbose, filterByVersion(options),suggest,
+                        resolve(regexp, 2.15d), resolve(match, 2.15d))
+                        .blockingFirst()));
+    }
+
+    @Override
+    public Observable<List<GroupInfo>> getGroups(
+            @NonNull GroupQuery query, @Nullable Integer count, @Nullable Integer start,
             @Nullable List<GroupOptions> options) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(
-                () -> mService.getGroups(query, count, start, project, user, owned,
-                        visibleToAll, verbose, filterByVersion(options))
+                () -> mService.getGroups(query, count, start, filterByVersion(options))
                         .blockingFirst()));
     }
 
@@ -1525,42 +1676,42 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<List<GroupInfo>> getGroupIncludedGroups(@NonNull String groupId) {
-        return withVersionRequestCheck(mService.getGroupIncludedGroups(groupId));
+    public Observable<List<GroupInfo>> getGroupSubgroups(@NonNull String groupId) {
+        return withVersionRequestCheck(mService.getGroupSubgroups(groupId));
     }
 
     @Override
-    public Observable<GroupInfo> getGroupIncludedGroup(
-            @NonNull String groupId, @NonNull String includedGroupId) {
-        return withVersionRequestCheck(mService.getGroupIncludedGroup(groupId, includedGroupId));
+    public Observable<GroupInfo> getGroupSubgroup(
+            @NonNull String groupId, @NonNull String subgroupId) {
+        return withVersionRequestCheck(mService.getGroupSubgroup(groupId, subgroupId));
     }
 
     @Override
-    public Observable<GroupInfo> addGroupIncludeGroup(
-            @NonNull String groupId, @NonNull String includedGroupId) {
-        return withVersionRequestCheck(mService.addGroupIncludeGroup(groupId, includedGroupId));
+    public Observable<GroupInfo> addGroupSubgroup(
+            @NonNull String groupId, @NonNull String subgroupId) {
+        return withVersionRequestCheck(mService.addGroupSubgroup(groupId, subgroupId));
     }
 
     @Override
-    public Observable<GroupInfo> addGroupIncludeGroups(
-            @NonNull String groupId, @NonNull IncludeGroupInput input) {
-        return withVersionRequestCheck(mService.addGroupIncludeGroups(groupId, input));
+    public Observable<GroupInfo> addGroupSubgroups(
+            @NonNull String groupId, @NonNull SubgroupInput input) {
+        return withVersionRequestCheck(mService.addGroupSubgroups(groupId, input));
     }
 
     @Override
-    public Observable<Void> deleteGroupIncludeGroup(
-            @NonNull String groupId, @NonNull String includedGroupId) {
+    public Observable<Void> deleteGroupSubgroup(
+            @NonNull String groupId, @NonNull String subgroupId) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.deleteGroupIncludeGroup(groupId, includedGroupId)));
+                        mService.deleteGroupSubgroup(groupId, subgroupId)));
     }
 
     @Override
-    public Observable<Void> deleteGroupIncludeGroup(
-            @NonNull String groupId, @NonNull IncludeGroupInput input) {
+    public Observable<Void> deleteGroupSubgroups(
+            @NonNull String groupId, @NonNull SubgroupInput input) {
         return withVersionRequestCheck(
                 withEmptyObservable(
-                        mService.deleteGroupIncludeGroup(groupId, input)));
+                        mService.deleteGroupSubgroups(groupId, input)));
     }
 
 
@@ -1571,8 +1722,16 @@ class GerritApiClient implements GerritApi {
     // ===============================
 
     @Override
-    public Observable<Map<String, PluginInfo>> getPlugins() {
-        return withVersionRequestCheck(mService.getPlugins());
+    public Observable<Map<String, PluginInfo>> getPlugins(
+            @Nullable Option all, @Nullable Integer count, @Nullable Integer skip,
+            @Nullable String prefix, @Nullable String regexp, @Nullable String match) {
+        return withVersionRequestCheck(mService.getPlugins(
+                all,
+                resolve(count, 2.15d),
+                resolve(skip, 2.15d),
+                resolve(prefix, 2.15d),
+                resolve(regexp, 2.15d),
+                resolve(match, 2.15d)));
     }
 
     @Override
@@ -1611,10 +1770,10 @@ class GerritApiClient implements GerritApi {
     @Override
     public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Integer count,
         @Nullable Integer start, @Nullable String prefix, @Nullable String regexp,
-        @Nullable String substring, @Nullable Option showDescription, @Nullable Option showTree,
+        @Nullable String match, @Nullable Option showDescription, @Nullable Option showTree,
         @Nullable String branch, @Nullable ProjectType type, @Nullable String group) {
         return withVersionRequestCheck(
-                mService.getProjects(count, start, prefix, regexp, substring,
+                mService.getProjects(count, start, prefix, regexp, match,
                         showDescription, showTree, branch, type, group));
     }
 
@@ -1708,32 +1867,25 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<ChangeInfo> createProjectAccessRightsChange(
+            @NonNull String projectName, @NonNull ProjectAccessInput input) {
+        return withVersionRequestCheck(mService.createProjectAccessRightsChange(projectName, input));
+    }
+
+    @Override
+    public Observable<AccessCheckInfo> checkProjectAccessRights(
+            @NonNull String projectName, @NonNull AccessCheckInput input) {
+        return withVersionRequestCheck(mService.checkProjectAccessRights(projectName, input));
+    }
+
+    @Override
     public Observable<List<BranchInfo>> getProjectBranches(@NonNull String projectName,
-            @Nullable Integer count, @Nullable Integer start, @Nullable String substring,
+            @Nullable Integer count, @Nullable Integer start, @Nullable String match,
             @Nullable String regexp) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
-            // From 2.14.3+ api changed the start parameter from s to S to mimic the rest of
-            // the api methods.
-            Integer s1 = null;
-            Integer s2 = null;
-            if (start != null) {
-                if (mServerVersion.getVersion() < 2.14d) {
-                    s2 = start;
-                } else if (mServerVersion.getVersion() > 2.14d) {
-                    s1 = start;
-                } else {
-                    // 2.14: Decided based on build (only 2.14, 2.14.1, 2.14.2). All other
-                    // combinations are 2.14.3+
-                    if (mServerVersion.build != null && (mServerVersion.build.isEmpty() ||
-                            mServerVersion.build.equals("1") || mServerVersion.build.equals("2"))) {
-                        s2 = start;
-                    } else {
-                        s1 = start;
-                    }
-                }
-            }
+            Integer[] s = resolveStartFor21413(start);
             return mService.getProjectBranches(
-                    projectName, count, s1, s2, substring, regexp).blockingFirst();
+                    projectName, count, s[0], s[1], match, regexp).blockingFirst();
         }));
     }
 
@@ -1799,8 +1951,14 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<List<TagInfo>> getProjectTags(@NonNull String projectName) {
-        return withVersionRequestCheck(mService.getProjectTags(projectName));
+    public Observable<List<TagInfo>> getProjectTags(@NonNull String projectName,
+            @Nullable Integer count, @Nullable Integer start, @Nullable String match,
+            @Nullable String regexp) {
+        return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
+            Integer[] s = resolveStartFor21413(start);
+            return mService.getProjectTags(
+                    projectName, count, s[0], s[1], match, regexp).blockingFirst();
+        }));
     }
 
     @Override
@@ -1838,6 +1996,13 @@ class GerritApiClient implements GerritApi {
             @NonNull String projectName, @NonNull String commitId, @NonNull String fileId) {
         return withVersionRequestCheck(
                 mService.getProjectCommitFileContent(projectName, commitId, fileId));
+    }
+
+    @Override
+    public Observable<ChangeInfo> cherryPickProjectCommit(
+            @NonNull String projectName, @NonNull String commitId, @NonNull CherryPickInput input) {
+        return withVersionRequestCheck(
+                mService.cherryPickProjectCommit(projectName, commitId, input));
     }
 
     @Override

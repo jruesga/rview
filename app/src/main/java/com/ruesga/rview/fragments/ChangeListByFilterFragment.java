@@ -201,14 +201,20 @@ public class ChangeListByFilterFragment extends ChangeListFragment
     }
 
     @Override
-    public void onNewChangeRequested(
-            int requestCode, String project, String branch, String topic, String subject) {
+    public void onNewChangeRequested(int requestCode, String project, String branch, String topic,
+            String subject, boolean isPrivate, boolean isWorkInProgress) {
         ChangeInput input = new ChangeInput();
         input.project = project;
         input.branch = branch;
         input.topic = topic;
         input.subject = subject;
-        input.status = InitialChangeStatus.DRAFT;
+        if (ModelHelper.isEqualsOrGreaterVersionThan(getContext(), 2.15d)) {
+            input.status = InitialChangeStatus.NEW;
+            input.isPrivate = isPrivate;
+            input.workInProgress = isWorkInProgress;
+        } else {
+            input.status = InitialChangeStatus.DRAFT;
+        }
 
         mNewChangeLoader.clear();
         mNewChangeLoader.restart(input);

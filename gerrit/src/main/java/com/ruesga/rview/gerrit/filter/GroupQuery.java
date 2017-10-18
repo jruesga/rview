@@ -16,12 +16,65 @@
 package com.ruesga.rview.gerrit.filter;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/cmd-ls-groups.html"
+ * @link "https://gerrit-review.googlesource.com/Documentation/user-search-groups.html#_search_operators"
  */
 public class GroupQuery extends SimpleQuery {
 
     public GroupQuery any(String q) {
         add(sanitizeValue(q));
+        return this;
+    }
+
+    public GroupQuery description(String description) {
+        add("description:" + sanitizeValue(description));
+        return this;
+    }
+
+    public GroupQuery name(String name) {
+        add("name:" + sanitizeValue(name));
+        return this;
+    }
+
+    public GroupQuery inname(String inname) {
+        add("inname:" + sanitizeValue(inname));
+        return this;
+    }
+
+    public GroupQuery owner(String owner) {
+        add("owner:" + sanitizeValue(owner));
+        return this;
+    }
+
+    public GroupQuery uuid(String uuid) {
+        add("uuid:" + sanitizeValue(uuid));
+        return this;
+    }
+
+    public GroupQuery member(String member) {
+        add("member:" + sanitizeValue(member));
+        return this;
+    }
+
+    public GroupQuery subgroup(String subgroup) {
+        add("subgroup:" + sanitizeValue(subgroup));
+        return this;
+    }
+
+    public GroupQuery visibletoall(boolean status) {
+        if (status) {
+            add("is:visibletoall");
+        } else {
+            remove("is:visibletoall");
+        }
+        return this;
+    }
+
+    public GroupQuery visible(boolean status) {
+        if (status) {
+            add("is:visible");
+        } else {
+            remove("is:visible");
+        }
         return this;
     }
 }

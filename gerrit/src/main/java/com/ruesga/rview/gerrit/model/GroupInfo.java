@@ -17,6 +17,8 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#group-info"
  */
@@ -27,6 +29,7 @@ public class GroupInfo extends GroupBaseInfo {
     @SerializedName("group_id") public int groupId;
     @SerializedName("owner") public String owner;
     @SerializedName("owner_id") public int ownerId;
+    @SerializedName("created_on") public Date createdOn;
     @SerializedName("members") public AccountInfo[] members;
     @SerializedName("includes") public GroupInfo[] includes;
 }

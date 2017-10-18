@@ -542,6 +542,13 @@ public interface GerritApi {
             @NonNull MergePatchSetInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-message"
+     */
+    Observable<ChangeInfo> setChangeCommitMessage(
+            @NonNull String changeId,
+            @NonNull CommitMessageInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-detail"
      */
     Observable<ChangeInfo> getChangeDetail(
@@ -586,6 +593,14 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-assignee"
      */
     Observable<AccountInfo> deleteChangeAssignee(@NonNull String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-pure-revert"
+     */
+    Observable<PureRevertInfo> getChangePureRevert(
+            @NonNull String changeId,
+            @Nullable String commit,
+            @Nullable String revertOf);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#abandon-change"
@@ -638,13 +653,15 @@ public interface GerritApi {
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#publish-draft-change"
+     * @deprecated since 2.15
      */
+    @Deprecated
     Observable<Void> publishDraftChange(@NonNull String changeId);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-draft-change"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-change"
      */
-    Observable<Void> deleteDraftChange(@NonNull String changeId);
+    Observable<Void> deleteChange(@NonNull String changeId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-included-in"
@@ -685,6 +702,54 @@ public interface GerritApi {
     Observable<ChangeInfo> fixChange(
             @NonNull String changeId,
             @NonNull FixInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#fix-change"
+     */
+    Observable<Void> setChangeWorkInProgress(
+            @NonNull String changeId,
+            @NonNull WorkInProgressInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-ready-for-review"
+     */
+    Observable<Void> setChangeReadyForReview(
+            @NonNull String changeId,
+            @NonNull WorkInProgressInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#mark-private"
+     */
+    Observable<Void> markChangeAsPrivate(
+            @NonNull String changeId,
+            @NonNull PrivateInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#unmark-private"
+     */
+    Observable<Void> unmarkChangeAsPrivate(
+            @NonNull String changeId,
+            @NonNull PrivateInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#ignore"
+     */
+    Observable<Void> ignoreChange(@NonNull String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#unignore"
+     */
+    Observable<Void> unignoreChange(@NonNull String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#reviewed"
+     */
+    Observable<Void> markChangeAsReviewed(@NonNull String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#unreviewed"
+     */
+    Observable<Void> markChangeAsUnreviewed(@NonNull String changeId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-hashtags"
@@ -796,7 +861,8 @@ public interface GerritApi {
     Observable<List<SuggestedReviewerInfo>> getChangeSuggestedReviewers(
             @NonNull String changeId,
             @NonNull String query,
-            @Nullable Integer count);
+            @Nullable Integer count,
+            @Nullable ExcludeGroupsFromSuggestedReviewers excludeGroups);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-reviewer"
@@ -882,7 +948,7 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#set-review"
      */
-    Observable<ReviewInfo> setChangeRevisionReview(
+    Observable<ReviewResultInfo> setChangeRevisionReview(
             @NonNull String changeId,
             @NonNull String revisionId,
             @NonNull ReviewInput input);
@@ -911,14 +977,18 @@ public interface GerritApi {
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#publish-draft-revision"
+     * @deprecated since 2.15
      */
+    @Deprecated
     Observable<Void> publishChangeDraftRevision(
             @NonNull String changeId,
             @NonNull String revisionId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-draft-revision"
+     * @deprecated since 2.15
      */
+    @Deprecated
     Observable<SubmitInfo> deleteChangeDraftRevision(
             @NonNull String changeId,
             @NonNull String revisionId);
@@ -1026,6 +1096,15 @@ public interface GerritApi {
             @NonNull String commentId);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-comment"
+     */
+    Observable<CommentInfo> deleteChangeRevisionComment(
+            @NonNull String changeId,
+            @NonNull String revisionId,
+            @NonNull String commentId,
+            @NonNull DeleteCommentInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-robot-comments"
      */
     Observable<List<RobotCommentInfo>> getChangeRevisionRobotComments(
@@ -1039,6 +1118,14 @@ public interface GerritApi {
             @NonNull String changeId,
             @NonNull String revisionId,
             @NonNull String commentId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#apply-fix"
+     */
+    Observable<EditInfo> applyChangeRevisionFix(
+            @NonNull String changeId,
+            @NonNull String revisionId,
+            @NonNull String fixId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-files"
@@ -1065,7 +1152,8 @@ public interface GerritApi {
     Observable<ResponseBody> getChangeRevisionFileContent(
             @NonNull String changeId,
             @NonNull String revisionId,
-            @NonNull String fileId);
+            @NonNull String fileId,
+            @Nullable Integer parent);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-safe-content"
@@ -1166,6 +1254,11 @@ public interface GerritApi {
     Observable<ServerInfo> getServerInfo();
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#check-consistency"
+     */
+    Observable<ConsistencyCheckInfo> checkConsistency(@NonNull ConsistencyCheckInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#email-confirmation-input"
      */
     Observable<Void> confirmEmail(@NonNull EmailConfirmationInput input);
@@ -1261,7 +1354,6 @@ public interface GerritApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#list-groups"
      */
     Observable<List<GroupInfo>> getGroups(
-            @Nullable GroupQuery query,
             @Nullable Integer count,
             @Nullable Integer start,
             @Nullable String project,
@@ -1269,11 +1361,19 @@ public interface GerritApi {
             @Nullable Option owned,
             @Nullable Option visibleToAll,
             @Nullable Option verbose,
-            @Nullable List<GroupOptions> options);
+            @Nullable List<GroupOptions> options,
+            @Nullable String suggest,
+            @Nullable String regexp,
+            @Nullable String match);
 
-    //
-    // TODO Implement QueryGroups => https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#query-groups
-    //
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#query-groups"
+     */
+    Observable<List<GroupInfo>> getGroups(
+            @NonNull GroupQuery query,
+            @Nullable Integer count,
+            @Nullable Integer start,
+            @Nullable List<GroupOptions> options);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-group"
@@ -1384,58 +1484,58 @@ public interface GerritApi {
             @NonNull MemberInput input);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-group-member"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#remove-group-member"
      */
     Observable<Void> deleteGroupMember(
             @NonNull String groupId,
             @NonNull String accountId);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-group-members"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#remove-group-members"
      */
     Observable<Void> deleteGroupMembers(
             @NonNull String groupId,
             @NonNull MemberInput input);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#included-groups"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#list-subgroups"
      */
-    Observable<List<GroupInfo>> getGroupIncludedGroups(@NonNull String groupId);
+    Observable<List<GroupInfo>> getGroupSubgroups(@NonNull String groupId);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-included-group"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#get-subgroup"
      */
-    Observable<GroupInfo> getGroupIncludedGroup(
+    Observable<GroupInfo> getGroupSubgroup(
             @NonNull String groupId,
-            @NonNull String includedGroupId);
+            @NonNull String subgroupId);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#include-group"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#add-subgroup"
      */
-    Observable<GroupInfo> addGroupIncludeGroup(
+    Observable<GroupInfo> addGroupSubgroup(
             @NonNull String groupId,
-            @NonNull String includedGroupId);
+            @NonNull String subgroupId);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#include-groups"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#add-subgroups"
      */
-    Observable<GroupInfo> addGroupIncludeGroups(
+    Observable<GroupInfo> addGroupSubgroups(
             @NonNull String groupId,
-            @NonNull IncludeGroupInput input);
+            @NonNull SubgroupInput input);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-included-group"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#remove-subgroup"
      */
-    Observable<Void> deleteGroupIncludeGroup(
+    Observable<Void> deleteGroupSubgroup(
             @NonNull String groupId,
-            @NonNull String includedGroupId);
+            @NonNull String subgroupId);
 
     /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#delete-included-groups"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#remove-subgroups"
      */
-    Observable<Void> deleteGroupIncludeGroup(
+    Observable<Void> deleteGroupSubgroups(
             @NonNull String groupId,
-            @NonNull IncludeGroupInput input);
+            @NonNull SubgroupInput input);
 
 
 
@@ -1447,7 +1547,13 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html#list-plugins"
      */
-    Observable<Map<String, PluginInfo>> getPlugins();
+    Observable<Map<String, PluginInfo>> getPlugins(
+            @Nullable Option all,
+            @Nullable Integer count,
+            @Nullable Integer skip,
+            @Nullable String prefix,
+            @Nullable String regexp,
+            @Nullable String match);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html#install-plugin"
@@ -1491,7 +1597,7 @@ public interface GerritApi {
             @Nullable Integer start,
             @Nullable String prefix,
             @Nullable String regexp,
-            @Nullable String substring,
+            @Nullable String match,
             @Nullable Option showDescription,
             @Nullable Option showTree,
             @Nullable String branch,
@@ -1597,13 +1703,27 @@ public interface GerritApi {
             @NonNull ProjectAccessInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#create-access-change"
+     */
+    Observable<ChangeInfo> createProjectAccessRightsChange(
+            @NonNull String projectName,
+            @NonNull ProjectAccessInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#check-access"
+     */
+    Observable<AccessCheckInfo> checkProjectAccessRights(
+            @NonNull String projectName,
+            @NonNull AccessCheckInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-branches"
      */
     Observable<List<BranchInfo>> getProjectBranches(
             @NonNull String projectName,
             @Nullable Integer count,
             @Nullable Integer start,
-            @Nullable String substring,
+            @Nullable String match,
             @Nullable String regexp);
 
     /**
@@ -1675,7 +1795,12 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-tags"
      */
-    Observable<List<TagInfo>> getProjectTags(@NonNull String projectName);
+    Observable<List<TagInfo>> getProjectTags(
+            @NonNull String projectName,
+            @Nullable Integer count,
+            @Nullable Integer start,
+            @Nullable String match,
+            @Nullable String regexp);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-tag"
@@ -1720,6 +1845,14 @@ public interface GerritApi {
             @NonNull String projectName,
             @NonNull String commitId,
             @NonNull String fileId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#cherry-pick-commit"
+     */
+    Observable<ChangeInfo> cherryPickProjectCommit(
+            @NonNull String projectName,
+            @NonNull String commitId,
+            @NonNull CherryPickInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-dashboards"

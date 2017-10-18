@@ -24,6 +24,7 @@
         <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
         <import type="com.ruesga.rview.misc.ModelHelper" />
 
+        <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="isOwner" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <!--suppress AndroidDomInspection -->
@@ -38,28 +39,11 @@
         android:paddingBottom="16dp"
         android:orientation="horizontal"
         app:bindEmptyMap="@{actions}"
-        android:background="@android:color/transparent"
         android:gravity="end"
         app:flexWrap="wrap"
         app:justifyContent="flex_end"
         app:alignItems="flex_start"
         app:alignContent="flex_start">
-
-        <com.ruesga.rview.widget.StyleableTextView
-            android:id="@+id/cherrypick"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:onClick="@{handlers::onActionPressed}"
-            android:text="@string/change_action_cherrypick"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorAccent"
-            android:visibility='@{actions[ModelHelper.ACTION_CHERRY_PICK] != null ? View.VISIBLE : View.GONE}'
-            app:fontFamilyType="condensed"
-            app:allCaps="true"
-            android:textSize="12sp"/>
 
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/rebase"
@@ -99,6 +83,37 @@
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
 
+        <!-- FIXME This padding is not the proper solution -->
+        <LinearLayout
+            android:id="@+id/more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp"
+            android:padding="5dp"
+            android:onClick="@{handlers::onActionPressed}"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            tools:ignore="RtlSymmetry">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/change_action_more"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?attr/colorAccent"
+                app:fontFamilyType="condensed"
+                app:allCaps="true"
+                android:textSize="12sp"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/ic_arrow_drop_down"
+                android:tint="@color/accent"
+                tools:ignore="ContentDescription" />
+        </LinearLayout>
+
         <com.ruesga.rview.widget.StyleableTextView
             android:id="@+id/restore"
             android:layout_width="wrap_content"
@@ -111,7 +126,7 @@
             android:onClick="@{handlers::onActionPressed}"
             android:text="@string/change_action_restore"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorAccent"
+            android:textColor="@color/primaryDarkForeground"
             app:fontFamilyType="condensed"
             android:visibility="@{actions[ModelHelper.ACTION_RESTORE] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.ABANDONED)) ? View.VISIBLE : View.GONE}"
             app:allCaps="true"
@@ -130,47 +145,9 @@
             android:onClick="@{handlers::onActionPressed}"
             android:text="@string/change_action_revert"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorAccent"
+            android:textColor="@color/primaryDarkForeground"
             app:fontFamilyType="condensed"
             android:visibility="@{actions[ModelHelper.ACTION_REVERT] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.MERGED)) ? View.VISIBLE : View.GONE}"
-            app:allCaps="true"
-            android:textSize="12sp"
-            tools:ignore="RtlSymmetry"/>
-
-        <com.ruesga.rview.widget.StyleableTextView
-            android:id="@+id/delete_change"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingStart="8dp"
-            android:padding="5dp"
-            android:gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:onClick="@{handlers::onActionPressed}"
-            android:text="@string/change_action_delete_change"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorAccent"
-            app:fontFamilyType="condensed"
-            android:visibility="@{actions[ModelHelper.ACTION_DELETE_CHANGE] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
-            app:allCaps="true"
-            android:textSize="12sp"
-            tools:ignore="RtlSymmetry"/>
-
-        <com.ruesga.rview.widget.StyleableTextView
-            android:id="@+id/follow_up"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingStart="8dp"
-            android:padding="5dp"
-            android:gravity="center"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:onClick="@{handlers::onActionPressed}"
-            android:text="@string/change_action_follow_up"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?attr/colorAccent"
-            app:fontFamilyType="condensed"
-            android:visibility="@{actions[ModelHelper.ACTION_FOLLOW_UP] != null ? View.VISIBLE : View.GONE}"
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>

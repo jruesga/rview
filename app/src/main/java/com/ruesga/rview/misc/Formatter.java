@@ -817,4 +817,9 @@ public class Formatter {
                 ContextCompat.getColor(v.getContext(), color)));
     }
 
+    @BindingAdapter("bindToVersion")
+    public static void bindToVersion(View v, double version) {
+        v.setVisibility(ModelHelper.isEqualsOrGreaterVersionThan(mAccount, version)
+                ? View.VISIBLE : View.GONE);
+    }
 }

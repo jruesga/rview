@@ -41,4 +41,5 @@ public class DiffPreferencesInfo {
     @SerializedName("tab_size") public int tabSize;
     @SerializedName("hide_empty_pane") public boolean hideEmptyPane;
     @SerializedName("match_brackets") public boolean matchBrackets;
+    @SerializedName("line_wrapping") public boolean lineWrapping;
 }

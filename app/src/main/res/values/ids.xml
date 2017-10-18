@@ -23,4 +23,14 @@
     <item name="menu_watched" type="id"/>
 
     <item name="tag_key" type="id"/>
+
+    <!-- more actions -->
+    <item name="cherrypick" type="id"/>
+    <item name="delete_change" type="id"/>
+    <item name="follow_up" type="id"/>
+    <item name="move" type="id"/>
+    <item name="mark_private" type="id"/>
+    <item name="mark_reviewed" type="id"/>
+    <item name="mark_wip" type="id"/>
+    <item name="mute" type="id"/>
 </resources>

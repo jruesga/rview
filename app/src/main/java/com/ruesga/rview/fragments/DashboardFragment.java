@@ -20,6 +20,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -37,18 +38,30 @@ public class DashboardFragment extends PageableFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         final Account account = Preferences.getAccount(getActivity());
 
-        mDashboardTabs = getResources().getStringArray(R.array.dashboard_titles);
-        // Dashboard filters changed between versions just sure to use the proper ones
-        if (account != null && account.getServerVersion() != null
-                && account.getServerVersion().getVersion() >= 2.14d) {
+        // Dashboard changed between versions just sure to use the proper ones
+        if (ModelHelper.isEqualsOrGreaterVersionThan(account, 2.15d)) {
+            mDashboardTabs = getResources().getStringArray(R.array.dashboard_titles_2_15);
+            mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters_2_15);
+            mDashboardReverse = getResources().getStringArray(
+                    Preferences.isAccountDashboardOngoingSort(getActivity(), account)
+                            ? R.array.dashboard_sort_inverse_2_15
+                            : R.array.dashboard_sort_2_15);
+        } else if (ModelHelper.isEqualsOrGreaterVersionThan(account, 2.14d)) {
             mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters_2_14);
-        } else {
+        }
+
+        if (mDashboardTabs == null) {
+            mDashboardTabs = getResources().getStringArray(R.array.dashboard_titles);
+        }
+        if (mDashboardFilters == null) {
             mDashboardFilters = getResources().getStringArray(R.array.dashboard_filters);
         }
-        mDashboardReverse = getResources().getStringArray(
-                Preferences.isAccountDashboardOngoingSort(getActivity(), account)
-                    ? R.array.dashboard_sort_inverse
-                    : R.array.dashboard_sort);
+        if (mDashboardReverse == null) {
+            mDashboardReverse = getResources().getStringArray(
+                    Preferences.isAccountDashboardOngoingSort(getActivity(), account)
+                            ? R.array.dashboard_sort_inverse
+                            : R.array.dashboard_sort);
+        }
 
         super.onActivityCreated(savedInstanceState);
     }
