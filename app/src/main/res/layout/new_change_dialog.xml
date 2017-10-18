@@ -21,6 +21,8 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.Features" />
+
         <variable name="model" type="com.ruesga.rview.fragments.NewChangeDialogFragment.Model" />
     </data>
 
@@ -131,7 +133,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:checked="@={model.isPrivate}"
-                app:bindToVersion="@{2.15d}"
+                app:bindToFeature="@{Features.CHANGE_FLAGS}"
+                app:bindToBoolean="@{Boolean.TRUE}"
                 android:text="@string/create_new_change_is_private" />
 
             <android.support.v7.widget.SwitchCompat
@@ -139,7 +142,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:checked="@={model.isWorkInProgress}"
-                app:bindToVersion="@{2.15d}"
+                app:bindToFeature="@{Features.CHANGE_FLAGS}"
+                app:bindToBoolean="@{Boolean.TRUE}"
                 android:text="@string/create_new_change_is_wip" />
         </LinearLayout>
     </ScrollView>

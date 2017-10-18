@@ -22,6 +22,7 @@
     <data>
         <import type="android.view.View" />
         <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
+        <import type="com.ruesga.rview.gerrit.model.Features" />
         <import type="com.ruesga.rview.misc.ModelHelper" />
 
         <!--suppress AndroidDomInspection -->
@@ -36,7 +37,8 @@
         android:layout_marginLeft="@dimen/label_min_width"
         android:layout_marginStart="@dimen/label_min_width"
         android:orientation="horizontal"
-        app:bindToVersion="@{2.15d}"
+        app:bindToFeature="@{Features.CHANGE_FLAGS}"
+        app:bindToBoolean="@{Boolean.TRUE}"
         android:layout_gravity="center_vertical"
         android:gravity="start"
         app:flexWrap="wrap">

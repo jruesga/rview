@@ -30,6 +30,8 @@ public enum Features {
     BLAME,
     @Since(2.14)
     CC,
+    @Since(2.15)
+    CHANGE_FLAGS,
     @Since(2.14)
     CHANGE_TAGS,
     @Since(2.13)

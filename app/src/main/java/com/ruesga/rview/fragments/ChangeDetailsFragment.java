@@ -246,10 +246,10 @@ public class ChangeDetailsFragment extends Fragment implements
     public static class Model {
         boolean isLocked = false;
         boolean isAuthenticated = false;
-        public ListModel filesListModel = new ListModel(
-                R.string.change_details_header_files, R.string.change_details_header_files_empty);
-        public ListModel msgListModel = new ListModel(
-                R.string.change_details_header_messages, R.string.change_details_header_messages_empty);
+        public ListModel filesListModel = new ListModel(R.string.change_details_header_files,
+                R.string.change_details_header_files_empty);
+        public ListModel msgListModel = new ListModel(R.string.change_details_header_messages,
+                R.string.change_details_header_messages_empty);
     }
 
     @Keep
@@ -3054,7 +3054,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     break;
 
                 case R.id.move:
-                    // TODO
+                    performShowMoveBranchDialog(anchor);
                     break;
 
                 case R.id.mark_private:
