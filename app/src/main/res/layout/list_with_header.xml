@@ -79,13 +79,13 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_gravity="center"
                     android:tag="@{id}"
-                    app:srcCompat="@drawable/ic_search"
+                    app:srcCompat="@drawable/ic_filter"
                     app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:visibility="@{safeUnbox(supportSearch) ? View.VISIBLE : View.GONE}"

@@ -38,10 +38,10 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_search"
+                app:srcCompat="@drawable/ic_filter"
                 app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 tools:ignore="ContentDescription"/>
