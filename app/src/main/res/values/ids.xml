@@ -16,7 +16,7 @@
  -->
 <resources>
     <item name="menu_open" type="id"/>
-    <item name="menu_merged" type="id"/>git
+    <item name="menu_merged" type="id"/>
     <item name="menu_abandoned" type="id"/>
     <item name="menu_drafts" type="id"/>
     <item name="menu_starred" type="id"/>
