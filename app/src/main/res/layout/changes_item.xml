@@ -22,6 +22,8 @@
     <data>
         <import type="android.view.View" />
         <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
+        <import type="com.ruesga.rview.fragments.TrendingChangeListFragment" />
+
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ChangeListFragment.ItemEventHandlers" />
     </data>
@@ -63,11 +65,14 @@
                     android:layout_width="1dp"
                     android:layout_height="0dp"
                     android:layout_weight="1"/>
+
+                <!-- Change status -->
                 <com.ruesga.rview.widget.FixedSizeImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center_horizontal"
                     app:bindDrawable="@{model.status.equals(ChangeStatus.MERGED) ? @drawable/ic_merged : model.status.equals(ChangeStatus.ABANDONED) ? @drawable/ic_abandoned : model.status.equals(ChangeStatus.DRAFT) ? @drawable/ic_draft : null}"
+                    android:visibility="@{model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED) || model.status.equals(ChangeStatus.DRAFT) ? View.VISIBLE : View.GONE}"
                     android:tint="@color/primaryDarkForeground"
                     android:contentDescription="@null"/>
                 <com.ruesga.rview.widget.StyleableTextView
@@ -78,11 +83,44 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="?android:attr/textColorPrimary"
                     android:text="@{model.status.equals(ChangeStatus.MERGED) ? @string/menu_merged : model.status.equals(ChangeStatus.ABANDONED) ? @string/menu_abandoned : model.status.equals(ChangeStatus.DRAFT) ? @string/menu_draft : null}"
+                    android:visibility="@{model.status.equals(ChangeStatus.MERGED) || model.status.equals(ChangeStatus.ABANDONED) || model.status.equals(ChangeStatus.DRAFT) ? View.VISIBLE : View.GONE}"
                     app:allCaps="true"
                     app:fontFamilyType="condensed"
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:textSize="8sp"
+                    tools:ignore="SmallSp"/>
+
+                <!-- Trending Score -->
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:text="@string/trending_score"
+                    android:visibility="@{model.trendingScore &gt; 0 ? View.VISIBLE : View.GONE}"
+                    app:allCaps="true"
+                    app:fontFamilyType="condensed"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="8sp"
+                    tools:ignore="SmallSp"/>
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:text='@{String.valueOf(model.trendingScore) + " / " + TrendingChangeListFragment.TRENDING_MAX_SCORE}'
+                    android:visibility="@{model.trendingScore &gt; 0 ? View.VISIBLE : View.GONE}"
+                    app:allCaps="true"
+                    app:fontFamilyType="condensed"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textSize="12sp"
                     tools:ignore="SmallSp"/>
             </LinearLayout>
             <RelativeLayout

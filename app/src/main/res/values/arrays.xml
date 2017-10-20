@@ -19,6 +19,7 @@
         <item>menu_open</item>
         <item>menu_merged</item>
         <item>menu_abandoned</item>
+        <item>menu_trending</item>
         <item>menu_dashboard</item>
         <item>menu_drafts</item>
         <item>menu_starred</item>
@@ -28,12 +29,14 @@
         <item>@string/menu_open</item>
         <item>@string/menu_merged</item>
         <item>@string/menu_abandoned</item>
+        <item>@string/menu_trending</item>
         <item>@string/menu_dashboard</item>
         <item>@string/menu_drafts</item>
         <item>@string/menu_starred</item>
         <item>@string/menu_watched</item>
     </string-array>
     <string-array name="query_filters_auth" translatable="false">
+        <item>false</item>
         <item>false</item>
         <item>false</item>
         <item>false</item>
@@ -46,6 +49,7 @@
         <item>status:open</item>
         <item>status:merged</item>
         <item>status:abandoned</item>
+        <item />
         <item />
         <item>is:draft</item>
         <item>is:starred</item>

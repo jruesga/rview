@@ -80,8 +80,8 @@ public class ChangeListByFilterFragment extends ChangeListFragment
 
     private static final String EXTRA_FILTER = "filter";
     private static final String EXTRA_REVERSE = "reverse";
-    private static final String EXTRA_HAS_SEARCH = "hasSearch";
-    private static final String EXTRA_HAS_FAB = "hasFab";
+    public static final String EXTRA_HAS_SEARCH = "hasSearch";
+    public static final String EXTRA_HAS_FAB = "hasFab";
 
     private RxLoader1<ChangeInput, ChangeInfo> mNewChangeLoader;
 
@@ -138,46 +138,49 @@ public class ChangeListByFilterFragment extends ChangeListFragment
         };
     }
 
-    @SuppressWarnings("ConstantConditions")
     public Observable<List<ChangeInfo>> fetchChanges(Integer count, Integer start) {
-        final ChangeQuery query = ChangeQuery.parse(getArguments().getString(EXTRA_FILTER));
-        final boolean reverse = getArguments().getBoolean(EXTRA_REVERSE, false);
-        final Context ctx = getActivity();
-        final GerritApi api = ModelHelper.getGerritApi(ctx);
         return Observable.zip(
                 Observable.just(getCurrentData(start <= 0)),
-                SafeObservable.fromCallable(() -> {
-                    if (reverse) {
-                        // We don't want endless scroll (since we are going to fetch all available
-                        // changes)
-                        notifyNoMoreItems();
-
-                        // Fetch all the available changes and reverse its order
-                        List<ChangeInfo> changes = new ArrayList<>();
-                        int s = 0;
-                        while (true) {
-                            List<ChangeInfo> fetched = api.getChanges(
-                                    query, count, Math.max(0, s), OPTIONS).blockingFirst();
-                            changes.addAll(fetched);
-                            if (fetched.size() < count) {
-                                break;
-                            }
-                            s += count;
-                        }
-
-                        // Sort by created date
-                        Collections.sort(changes, (c1, c2) -> c1.created.compareTo(c2.created));
-                        return changes;
-                    }
-
-                    // Normal fetch
-                    return api.getChanges(query, count, Math.max(0, start), OPTIONS).blockingFirst();
-                }),
+                SafeObservable.fromCallable(() -> doFetchChanges(count, start)),
                 Observable.just(count),
                 this::combineChanges
             )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    protected List<ChangeInfo> doFetchChanges(Integer count, Integer start) {
+        final ChangeQuery query = ChangeQuery.parse(getArguments().getString(EXTRA_FILTER));
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+
+        final boolean reverse = getArguments().getBoolean(EXTRA_REVERSE, false);
+        if (reverse) {
+            // We don't want endless scroll (since we are going to fetch all available
+            // changes)
+            notifyNoMoreItems();
+
+            // Fetch all the available changes and reverse its order
+            List<ChangeInfo> changes = new ArrayList<>();
+            int s = 0;
+            while (true) {
+                List<ChangeInfo> fetched = api.getChanges(
+                        query, count, Math.max(0, s), OPTIONS).blockingFirst();
+                changes.addAll(fetched);
+                if (fetched.size() < count) {
+                    break;
+                }
+                s += count;
+            }
+
+            // Sort by created date
+            Collections.sort(changes, (c1, c2) -> c1.created.compareTo(c2.created));
+            return changes;
+        }
+
+        // Normal fetch
+        return api.getChanges(query, count, Math.max(0, start), OPTIONS).blockingFirst();
     }
 
     @Override

@@ -57,6 +57,7 @@ import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.fragments.PageableFragment;
 import com.ruesga.rview.fragments.SetAccountStatusDialogFragment;
 import com.ruesga.rview.fragments.StatsFragment;
+import com.ruesga.rview.fragments.TrendingChangeListFragment;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -607,6 +608,10 @@ public class MainActivity extends ChangeListBaseActivity {
         }
 
         switch (item.getItemId()) {
+            case R.id.menu_trending:
+                openTrendingFragment();
+                break;
+
             case R.id.menu_dashboard:
                 openDashboardFragment();
                 break;
@@ -915,30 +920,24 @@ public class MainActivity extends ChangeListBaseActivity {
         mModel.filterName = getString(R.string.menu_dashboard);
         mModel.filterQuery = null;
 
-        // Setup the title
-        invalidateTabs();
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(R.string.menu_dashboard);
-            getSupportActionBar().setSubtitle(null);
-        }
-
-        // Open the dashboard fragment
-        mModel.selectedChangeId = INVALID_ITEM;
-        FragmentTransaction tx = getSupportFragmentManager().beginTransaction()
-                .setReorderingAllowed(false);
-        Fragment oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LIST);
-        if (oldFragment != null) {
-            tx.remove(oldFragment);
-        }
-        oldFragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_DETAILS);
-        if (oldFragment != null) {
-            tx.remove(oldFragment);
-        }
         Fragment newFragment = DashboardFragment.newInstance();
-        tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
+        openFragment(-1, getString(R.string.menu_dashboard), null, newFragment);
+    }
+
+    private void openTrendingFragment() {
+        mModel.filterName = getString(R.string.menu_trending);
+        mModel.filterQuery = null;
+
+        Fragment newFragment = TrendingChangeListFragment.newInstance();
+        openFragment(-1, getString(R.string.menu_trending), null, newFragment);
     }
 
     private void openFilterFragment(int id, CharSequence title, String filter) {
+        Fragment newFragment = ChangeListByFilterFragment.newInstance(filter, false, true, true);
+        openFragment(id, title, filter, newFragment);
+    }
+
+    private void openFragment(int id, CharSequence title, String filter, Fragment fragment) {
         // Setup the title and tabs
         invalidateTabs();
         if (getSupportActionBar() != null) {
@@ -958,12 +957,13 @@ public class MainActivity extends ChangeListBaseActivity {
         if (oldFragment != null) {
             tx.remove(oldFragment);
         }
-        Fragment newFragment = ChangeListByFilterFragment.newInstance(filter, false, true, true);
-        tx.replace(R.id.content, newFragment, FRAGMENT_TAG_LIST).commit();
+        tx.replace(R.id.content, fragment, FRAGMENT_TAG_LIST).commit();
 
         // Select the drawer item
-        mBinding.drawerNavigationView.setCheckedItem(id);
-        mModel.currentNavigationItemId = id;
+        if (id > 0) {
+            mBinding.drawerNavigationView.setCheckedItem(id);
+            mModel.currentNavigationItemId = id;
+        }
     }
 
     private void onNavigationMenuItemClick(int menuId) {

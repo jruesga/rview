@@ -65,6 +65,8 @@ public class CacheHelper {
     public static final String CACHE_BLAME = "blame";
     public static final String CACHE_PARENT = "parent";
 
+    public static final String CACHE_TRENDING_JSON = "trending.json";
+
     public static Response.Builder addCacheControl(Response.Builder builder) {
         return builder.header("Cache-Control", "max-age=" + MAX_AGE_CACHE);
     }
@@ -211,6 +213,30 @@ public class CacheHelper {
         }
     }
 
+    public static long getTrendingChangesCacheAge(Context context, Account account) {
+        File trending = new File(getAccountCacheDir(context, account), CACHE_TRENDING_JSON);
+        if (trending.exists()) {
+            return trending.lastModified();
+        }
+        return 0;
+    }
+
+    public static byte[] readTrendingChangesCache(Context context, Account account)
+            throws IOException {
+        File trending = new File(getAccountCacheDir(context, account), CACHE_TRENDING_JSON);
+        if (trending.exists()) {
+            return FileUtils.readFileToByteArray(trending);
+        }
+        return null;
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void writeTrendingChangesCache(Context context, Account account, byte[] data)
+            throws IOException {
+        File trending = new File(getAccountCacheDir(context, account), CACHE_TRENDING_JSON);
+        trending.getParentFile().mkdirs();
+        FileUtils.writeByteArrayToFile(trending, data);
+    }
 
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

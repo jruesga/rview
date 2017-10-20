@@ -155,7 +155,7 @@ public class BindingAdapters {
 
     @BindingAdapter("bindImageTint")
     public static void bindImageTint(ImageView v, int color) {
-        final Drawable dw = v.getDrawable();
+        final Drawable dw = DrawableCompat.wrap(v.getDrawable());
         if (dw != null) {
             DrawableCompat.setTint(dw, color);
         }
@@ -164,7 +164,7 @@ public class BindingAdapters {
 
     @BindingAdapter("bindImageTintList")
     public static void bindImageTintList(ImageView v, int colorList) {
-        Drawable dw = v.getDrawable();
+        final Drawable dw = DrawableCompat.wrap(v.getDrawable());
         if (dw != null) {
             DrawableCompat.setTintList(dw,
                     ContextCompat.getColorStateList(v.getContext(), colorList));
@@ -174,7 +174,7 @@ public class BindingAdapters {
 
     @BindingAdapter("bindImageTintAttr")
     public static void bindImageTintAttr(ImageView v, int colorAttr) {
-        Drawable dw = v.getDrawable();
+        final Drawable dw = DrawableCompat.wrap(v.getDrawable());
         if (dw != null) {
             int[] attrs = {colorAttr};
             TypedArray ta = v.getContext().getTheme().obtainStyledAttributes(attrs);

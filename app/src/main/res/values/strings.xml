@@ -59,6 +59,7 @@
     <string name="menu_open">Open</string>
     <string name="menu_merged">Merged</string>
     <string name="menu_abandoned">Abandoned</string>
+    <string name="menu_trending">Trending</string>
     <string name="menu_my_menu_category">My menu</string>
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_drafts">Drafts</string>
@@ -646,5 +647,8 @@
 
     <!-- Attachment Providers -->
     <string name="attachment_provider_not_supported">Attachment provider is not supported. Attachment were removed.</string>
+
+    <!-- Trending Score -->
+    <string name="trending_score">Score:</string>
 
 </resources>

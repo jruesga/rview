@@ -63,5 +63,9 @@ public class ChangeInfo {
     @SerializedName("work_in_progress") public boolean isWorkInProgress;
     @SerializedName("has_review_started") public boolean hasReviewStarted;
     @SerializedName("revert_of") public String revertOf;
+
+
+    // internal usage
+    @SerializedName("trending_score") public int trendingScore;
 }
 

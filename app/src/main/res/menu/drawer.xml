@@ -38,6 +38,12 @@
                     android:title="@string/menu_abandoned"
                     android:orderInCategory="2"
                     android:checkable="true"/>
+                <item
+                    android:id="@+id/menu_trending"
+                    android:icon="@drawable/ic_trending_up"
+                    android:title="@string/menu_trending"
+                    android:orderInCategory="3"
+                    android:checkable="true"/>
             </menu>
         </item>
     </group>
@@ -55,19 +61,19 @@
                     android:id="@id/menu_drafts"
                     android:icon="@drawable/ic_draft"
                     android:title="@string/menu_drafts"
-                    android:orderInCategory="3"
+                    android:orderInCategory="4"
                     android:checkable="true"/>
                 <item
                     android:id="@id/menu_starred"
                     android:icon="@drawable/ic_starred"
                     android:title="@string/menu_starred"
-                    android:orderInCategory="4"
+                    android:orderInCategory="5"
                     android:checkable="true"/>
                 <item
                     android:id="@id/menu_watched"
                     android:icon="@drawable/ic_watch"
                     android:title="@string/menu_watched"
-                    android:orderInCategory="5"
+                    android:orderInCategory="6"
                     android:checkable="true"/>
             </menu>
         </item>

@@ -92,7 +92,7 @@ public class UriHelper {
 
     public static String sanitizeEndpoint(String endpoint) {
         if (endpoint == null) {
-            return endpoint;
+            return null;
         }
 
         String endpointLower = endpoint.toLowerCase(Locale.US);
@@ -109,7 +109,7 @@ public class UriHelper {
 
     public static String anonymize(String url) {
         if (url == null) {
-            return url;
+            return null;
         }
         int start = url.indexOf("://");
         int end = url.indexOf("/", start == -1 ? -1 : start + 3);
