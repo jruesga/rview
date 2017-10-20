@@ -34,6 +34,7 @@ import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
+import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.preferences.Preferences;
 
 import java.lang.reflect.Type;
@@ -54,6 +55,7 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
 
     public static final int TRENDING_MAX_SCORE = 20;
     private static final int TRENDING_MIN_SCORE = 8;
+    private static final int TRENDING_MAX_HOURS = 36;
 
     private boolean mForceRefresh;
 
@@ -75,6 +77,11 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
     }
 
     @Override
+    int getNotResultEmptyState() {
+        return EmptyState.NO_TRENDING_STATE;
+    }
+
+    @Override
     public void fetchNewItems() {
         mForceRefresh = true;
         super.fetchNewItems();
@@ -82,7 +89,8 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
 
     @SuppressWarnings("ConstantConditions")
     protected List<ChangeInfo> doFetchChanges(Integer count, Integer start) {
-        final ChangeQuery query = ChangeQuery.parse(getString(R.string.trending_query));
+        final ChangeQuery query = ChangeQuery.parse(
+                getString(R.string.trending_query, TRENDING_MAX_HOURS));
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
 
@@ -105,7 +113,7 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
         }
 
         // Fetch if needed
-        if (changes == null) {
+        if (changes == null || changes.isEmpty()) {
             changes = new ArrayList<>();
 
             // Fetch all the available changes
@@ -145,22 +153,22 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
         //      - Number of messages: 3 [1-20]
         //      - Number of unique accounts commenting: 4 [3-7]
         //      - Number of reviewers: 3 [5-15]
-        //      - Updated in the last 2 hours: 3
+        //      - Updated: 3 [0 - TRENDING_MAX_HOURS]
 
         int maxItems = Preferences.getAccountFetchedItems(
                 getContext(), Preferences.getAccount(getContext()));
 
         List<ChangeInfo> trending = new ArrayList<>();
         for (ChangeInfo change : changes) {
-            long aged = System.currentTimeMillis() - change.updated.getTime();
-            boolean aged2hours = aged < DateUtils.HOUR_IN_MILLIS * 2;
+            int maxAged = (int) (DateUtils.HOUR_IN_MILLIS * TRENDING_MAX_HOURS);
+            int aged = maxAged - (int)(System.currentTimeMillis() - change.updated.getTime());
             change.trendingScore =
                     applyWeight(countNumberOfPatchsets(change), 4f, 3, 20) +
                     applyWeight(countNumberOfVotesOfNotRobotAccounts(change), 3f, 1, 10) +
                     applyWeight(countNumberOfMessagesFromNotRobotAccounts(change), 3f, 1, 20) +
                     applyWeight(countNumberOfNotRobotAccountsWithAComment(change), 4f, 3, 7) +
                     applyWeight(countNumberOfReviewers(change), 3f, 5, 15) +
-                    (aged2hours ? 3 : 0);
+                    applyWeight(aged, 3f, 0, maxAged);
             if (change.trendingScore >= TRENDING_MIN_SCORE) {
                 trending.add(change);
             }

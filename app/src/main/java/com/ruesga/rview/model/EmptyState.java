@@ -32,6 +32,7 @@ public class EmptyState {
     public static final int NOT_CONNECTIVITY_STATE = 3;
     public static final int SERVER_CANNOT_BE_REACHED = 4;
     public static final int ERROR_STATE = 5;
+    public static final int NO_TRENDING_STATE = 6;
 
     public int state = NORMAL_STATE;
 }

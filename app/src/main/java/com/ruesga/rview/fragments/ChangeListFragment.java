@@ -195,7 +195,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mAdapter.addAll(result);
             mAdapter.notifyDataSetChanged();
             mEmptyState.state = result != null && !result.isEmpty()
-                    ? EmptyState.NORMAL_STATE : EmptyState.NO_RESULTS_STATE;
+                    ? EmptyState.NORMAL_STATE : getNotResultEmptyState();
             mBinding.setEmpty(mEmptyState);
 
             showProgress(false);
@@ -263,6 +263,10 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
     int getItemsToFetch() {
         return mItemsToFetch;
+    }
+
+    int getNotResultEmptyState() {
+        return EmptyState.NO_RESULTS_STATE;
     }
 
     boolean hasMoreItems(int size, int expected) {

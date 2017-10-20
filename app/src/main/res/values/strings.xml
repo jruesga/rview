@@ -552,6 +552,7 @@
     <string name="empty_states_not_connectivity">No network connectivity detected</string>
     <string name="empty_states_server_not_reached">Server is down or not reached</string>
     <string name="empty_states_error">Something went wrong</string>
+    <string name="empty_states_no_trending">We confirmed it,\nyour project is dead!</string>
 
     <!-- Untrusted connection dialog -->
     <string name="untrusted_connection_title">Untrusted connection</string>
