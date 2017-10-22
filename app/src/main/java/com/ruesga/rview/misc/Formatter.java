@@ -264,8 +264,10 @@ public class Formatter {
             } else {
                 sb.append(p);
             }
-            while (sb.charAt(sb.length() - 1) == '\n') {
-                sb = sb.deleteCharAt(sb.length() - 1);
+            if (sb.length() > 0) {
+                while (sb.charAt(sb.length() - 1) == '\n') {
+                    sb = sb.deleteCharAt(sb.length() - 1);
+                }
             }
             sb.append("\n\n");
         }
