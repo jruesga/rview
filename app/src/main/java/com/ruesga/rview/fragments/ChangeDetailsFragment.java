@@ -728,7 +728,7 @@ public class ChangeDetailsFragment extends Fragment implements
             holder.mBinding.comments
                     .listenOn(mLineClickListener)
                     .from(comments);
-            holder.mBinding.attachments
+            holder.mBinding.attachmentsView
                     .listenOn(mAttachmentPressedListener)
                     .from(attachments);
             holder.mBinding.setFolded(mFolded[position]);

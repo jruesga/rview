@@ -161,7 +161,7 @@
             android:visibility="@{!safeUnbox(folded) ? View.VISIBLE : View.GONE}" />
 
         <com.ruesga.rview.widget.AttachmentsView
-            android:id="@+id/attachments"
+            android:id="@+id/attachmentsView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
