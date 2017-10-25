@@ -15,7 +15,6 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
 
 def libraries = rootProject.ext.libraries;
 def testLibraries = rootProject.ext.testLibraries;
@@ -37,7 +36,7 @@ dependencies {
     compile "com.github.jruesga:rxloader:${libraries.rxloader2}"
     compile "org.antlr:antlr-runtime:${libraries.antlrv3}"
 
-    testCompile "net.iharder:base64:${testLibraries.base64}"
+    testImplementation "net.iharder:base64:${testLibraries.base64}"
 }
 
 android {

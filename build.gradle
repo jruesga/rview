@@ -17,7 +17,7 @@
 ext {
     libraries = [
         // https://developer.android.com/topic/libraries/support-library/revisions.html
-        support                     : '26.0.2',
+        support                     : '27.0.0',
         // https://firebase.google.com/support/release-notes/android
         firebase                    : '11.4.2',
         gson                        : '2.8.2',
@@ -65,9 +65,7 @@ allprojects {
         }
         dependencies {
             // https://developer.android.com/studio/releases/gradle-plugin.html#revisions
-            classpath 'com.android.tools.build:gradle:2.3.3'
-            // TODO remove this once we upgrade to gradle-tools 3.x
-            classpath 'me.tatarka:gradle-retrolambda:3.7.0'
+            classpath 'com.android.tools.build:gradle:3.0.0'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.1'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
             classpath 'io.fabric.tools:gradle:1.24.3'
@@ -91,23 +89,23 @@ allprojects {
 subprojects {
     afterEvaluate {project ->
         dependencies {
-            testCompile "junit:junit:${testLibraries.junit}"
-            testCompile "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
-            testCompile "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
-            testCompile "org.mockito:mockito-core:${testLibraries.mockito}"
-            testCompile "org.powermock:powermock-module-junit4:${testLibraries.powermock}"
-            testCompile "org.powermock:powermock-module-junit4-rule:${testLibraries.powermock}"
-            testCompile "org.powermock:powermock-api-mockito2:${testLibraries.powermock}"
+            testImplementation "junit:junit:${testLibraries.junit}"
+            testImplementation "org.hamcrest:hamcrest-core:${testLibraries.hamcrest}"
+            testImplementation "org.hamcrest:hamcrest-library:${testLibraries.hamcrest}"
+            testImplementation "org.mockito:mockito-core:${testLibraries.mockito}"
+            testImplementation "org.powermock:powermock-module-junit4:${testLibraries.powermock}"
+            testImplementation "org.powermock:powermock-module-junit4-rule:${testLibraries.powermock}"
+            testImplementation "org.powermock:powermock-api-mockito2:${testLibraries.powermock}"
         }
 
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
             android {
-                compileSdkVersion 26
-                buildToolsVersion '26.0.2'
+                compileSdkVersion 27
+                buildToolsVersion '27.0.0'
 
                 defaultConfig {
                     minSdkVersion 16
-                    targetSdkVersion 26
+                    targetSdkVersion 27
 
                     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
                 }

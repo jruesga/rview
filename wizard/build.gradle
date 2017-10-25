@@ -15,19 +15,18 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
 
 def libraries = rootProject.ext.libraries;
 
 dependencies {
-    compile "com.android.support:support-v4:${libraries.support}"
-    compile "com.android.support:appcompat-v7:${libraries.support}"
-    compile "com.android.support:cardview-v7:${libraries.support}"
-    compile "com.android.support:design:${libraries.support}"
-    compile "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
-    compile "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
-    compile "com.github.jruesga:rxloader:${libraries.rxloader2}"
-    compile "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
+    implementation "com.android.support:support-v4:${libraries.support}"
+    implementation "com.android.support:appcompat-v7:${libraries.support}"
+    implementation "com.android.support:cardview-v7:${libraries.support}"
+    implementation "com.android.support:design:${libraries.support}"
+    implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    implementation "com.github.jruesga:rxloader:${libraries.rxloader2}"
+    implementation "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
 }
 
 

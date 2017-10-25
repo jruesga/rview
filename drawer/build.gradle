@@ -15,14 +15,13 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
 
 def libraries = rootProject.ext.libraries;
 
 dependencies {
-    compile "com.android.support:support-v4:${libraries.support}"
-    compile "com.android.support:appcompat-v7:${libraries.support}"
-    compile "com.android.support:design:${libraries.support}"
+    implementation "com.android.support:support-v4:${libraries.support}"
+    implementation "com.android.support:appcompat-v7:${libraries.support}"
+    implementation "com.android.support:design:${libraries.support}"
 }
 
 
