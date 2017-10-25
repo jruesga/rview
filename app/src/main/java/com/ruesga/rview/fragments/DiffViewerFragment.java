@@ -445,7 +445,7 @@ public class DiffViewerFragment extends Fragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.diff_viewer_fragment, container, false);
@@ -575,7 +575,7 @@ public class DiffViewerFragment extends Fragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString(Constants.EXTRA_REVISION_ID, mRevisionId);
@@ -704,7 +704,7 @@ public class DiffViewerFragment extends Fragment
         }
 
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
-        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
+        SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
                 getContext(), files, icons, new File(mFile).getName());
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);
@@ -750,7 +750,7 @@ public class DiffViewerFragment extends Fragment
         }
 
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
-        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
+        SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
                 getContext(), revisions, value);
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);

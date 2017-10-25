@@ -350,12 +350,11 @@ public class ActivityHelper {
         final String title = ctx.getString(R.string.change_details_title, change.legacyChangeId);
         ArrayList<String> args = new ArrayList<>(
                 Arrays.asList(
-                        new String[]{
-                                String.valueOf(change.legacyChangeId),
-                                change.changeId,
-                                change.project,
-                                revisionId,
-                                change.topic}));
+                        String.valueOf(change.legacyChangeId),
+                        change.changeId,
+                        change.project,
+                        revisionId,
+                        change.topic));
         intent.putExtra(Constants.EXTRA_TITLE, title);
         intent.putExtra(Constants.EXTRA_SUBTITLE, change.changeId);
         intent.putExtra(Constants.EXTRA_FRAGMENT, RelatedChangesFragment.class.getName());
@@ -370,11 +369,10 @@ public class ActivityHelper {
 
         ArrayList<String> args = new ArrayList<>(
                 Arrays.asList(
-                        new String[]{
-                                String.valueOf(type),
-                                id,
-                                filter.toString(),
-                                extra}));
+                        String.valueOf(type),
+                        id,
+                        filter.toString(),
+                        extra));
         intent.putExtra(Constants.EXTRA_TITLE, title);
         intent.putExtra(Constants.EXTRA_SUBTITLE, subtitle);
         intent.putExtra(Constants.EXTRA_FRAGMENT, StatsFragment.class.getName());

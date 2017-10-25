@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -182,8 +183,8 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
     }
 
     @Override
+    @SuppressLint("RestrictedApi")
     public void setupDialog(Dialog dialog, int style) {
-        //noinspection RestrictedApi
         super.setupDialog(dialog, style);
 
         dialog.setOnShowListener(dialog1 -> {

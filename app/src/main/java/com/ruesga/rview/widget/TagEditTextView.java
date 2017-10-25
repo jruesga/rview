@@ -16,6 +16,7 @@
 
 package com.ruesga.rview.widget;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -93,6 +94,7 @@ public class TagEditTextView extends LinearLayout {
         }
 
         @Override
+        @SuppressLint("ClickableViewAccessibility")
         public boolean onTouchEvent(@NonNull MotionEvent event) {
             if (!isEnabled()) {
                 return false;

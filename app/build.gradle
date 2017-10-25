@@ -18,30 +18,22 @@ apply plugin: 'com.android.application'
 
 import groovy.json.JsonSlurper
 
-def libraries = rootProject.ext.libraries;
+def libraries = rootProject.ext.libraries
 
 dependencies {
     implementation project(':gerrit')
     implementation project(':attachments')
     implementation project(':wizard')
     implementation project(':drawer')
-    implementation("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") { transitive = true; }
-    implementation("com.crashlytics.sdk.android:crashlytics-core:${libraries.crashlytics_core}@aar") { transitive = true; }
-    implementation("com.crashlytics.sdk.android:answers:${libraries.crashlytics_answers}@aar") { transitive = true; }
+    implementation("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") { transitive = true }
+    implementation("com.crashlytics.sdk.android:crashlytics-core:${libraries.crashlytics_core}@aar") { transitive = true }
+    implementation("com.crashlytics.sdk.android:answers:${libraries.crashlytics_answers}@aar") { transitive = true }
     implementation "com.google.firebase:firebase-core:${libraries.firebase}"
     implementation "com.google.firebase:firebase-messaging:${libraries.firebase}"
-    implementation "com.android.support:support-v4:${libraries.support}"
-    implementation "com.android.support:appcompat-v7:${libraries.support}"
-    implementation "com.android.support:cardview-v7:${libraries.support}"
     implementation "com.android.support:preference-v14:${libraries.support}"
-    implementation "com.android.support:design:${libraries.support}"
     implementation "com.android.support:customtabs:${libraries.support}"
-    implementation "com.google.code.gson:gson:${libraries.gson}"
-    implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
-    implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
-    implementation "com.github.jruesga:rxloader:${libraries.rxloader2}"
+    implementation "com.android.support:exifinterface:${libraries.support}"
     implementation "commons-io:commons-io:${libraries.commons_io}"
-    implementation "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
     implementation "com.squareup.picasso:picasso:${libraries.picasso2}"
     implementation "com.jakewharton.picasso:picasso2-okhttp3-downloader:${libraries.picasso2_okhttp3_downloader}"
     implementation "org.ocpsoft.prettytime:prettytime:${libraries.prettytime}"
@@ -65,7 +57,7 @@ android {
         resValue "string", "fcm_app_id", "1:577867348267:android:01dee9b4cab97d4a"
         resValue "string", "fcm_sender_id", "577867348267"
 
-        return void;
+        return void
     }
 
     dataBinding {
@@ -75,10 +67,10 @@ android {
     signingConfigs {
         release {
             if (rootProject.file('release.properties').exists()) {
-                def Properties releaseProps = new Properties()
+                Properties releaseProps = new Properties()
                 releaseProps.load(new FileInputStream(rootProject.file('release.properties')))
 
-                def Properties ksProps = new Properties()
+                Properties ksProps = new Properties()
                 ksProps.load(new FileInputStream(new File((String) releaseProps['signing.config'])))
                 storeFile file(ksProps['keystore'])
                 keyAlias ksProps['alias']
@@ -87,7 +79,7 @@ android {
                 storeType ksProps['storeType']
             }
 
-            return void;
+            return void
         }
     }
 
@@ -108,7 +100,7 @@ android {
             resValue "string", "fcm_api_key", "<empty>"
             resValue "bool", "fcm_disable_analytics", "true"
 
-            return void;
+            return void
         }
         release {
             debuggable false
@@ -129,7 +121,7 @@ android {
             // IMP! Enable your Firebase api key in a file called fabric.properties in the
             // project directory and add the value apiKey=<your key> to that file
             if (project.file('firebase.properties').exists()) {
-                def Properties firebaseProps = new Properties()
+                Properties firebaseProps = new Properties()
                 firebaseProps.load(new FileInputStream(project.file('firebase.properties')))
 
                 resValue "string", "google_app_id", firebaseProps["fcmAppId"]
@@ -140,16 +132,16 @@ android {
                 resValue "bool", "fcm_disable_analytics", "true"
             }
 
-            return void;
+            return void
         }
     }
 
-    return void;
+    return void
 }
 
 def addActivityAliases(manifest) {
     if (!manifest.exists()) {
-        return;
+        return
     }
 
     def repositories = new File(
@@ -160,9 +152,9 @@ def addActivityAliases(manifest) {
     def activityAlias = "\n\n<!-- Repositories url handling activity-aliases -->\n"
     json.each {
         def url = new URL(it.url.toString())
-        def host = url.authority;
-        def path = url.path;
-        def name = it.name.toString().replaceAll(" ", "");
+        def host = url.authority
+        def path = url.path
+        def name = it.name.toString().replaceAll(" ", "")
 
         activityAlias +=
             "<activity-alias android:name=\".${name}ExternalUrlHandlerActivity\"\n" +

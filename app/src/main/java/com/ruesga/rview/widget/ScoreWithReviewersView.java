@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v4.content.ContextCompat;
@@ -75,6 +76,7 @@ public class ScoreWithReviewersView extends LinearLayout {
         return this;
     }
 
+    @SuppressLint("RestrictedApi")
     public ScoreWithReviewersView from(LabelInfo info) {
         setOrientation(VERTICAL);
 
@@ -97,7 +99,6 @@ public class ScoreWithReviewersView extends LinearLayout {
             ScoreWithReviewItemBinding binding = mBindings.get(n);
             int value = entry.getKey();
             binding.setScore(value);
-            //noinspection RestrictedApi
             binding.scoreItem.setSupportBackgroundTintList(
                     ContextCompat.getColorStateList(getContext(),
                         value < 0 ? R.color.rejected : R.color.approved));

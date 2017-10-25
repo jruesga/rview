@@ -30,6 +30,7 @@ import com.ruesga.rview.databinding.Top5ItemBinding;
 import com.ruesga.rview.misc.ValueComparator;
 import com.ruesga.rview.model.Stats;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +84,12 @@ public class Top5StatsView extends LinearLayout {
         }
     }
 
-    private class AggregateStatsTask extends AsyncTask<Void, Void, Map<String, Value>> {
+    private static class AggregateStatsTask extends AsyncTask<Void, Void, Map<String, Value>> {
         private final List<Stats> mStats;
+        private final WeakReference<Top5StatsView> mView;
 
-        AggregateStatsTask(List<Stats> stats) {
+        AggregateStatsTask(Top5StatsView view, List<Stats> stats) {
+            mView = new WeakReference<>(view);
             mStats = stats;
         }
 
@@ -97,7 +100,10 @@ public class Top5StatsView extends LinearLayout {
 
         @Override
         protected void onPostExecute(Map<String, Value> aggregateStats) {
-            updateView(aggregateStats);
+            final Top5StatsView view = mView.get();
+            if (view != null) {
+                view.updateView(aggregateStats);
+            }
         }
 
         private Map<String, Value> aggregateStats(List<Stats> stats) {
@@ -166,7 +172,7 @@ public class Top5StatsView extends LinearLayout {
             mTask.cancel(true);
         }
 
-        mTask = new AggregateStatsTask(stats);
+        mTask = new AggregateStatsTask(this, stats);
         mTask.execute();
     }
 

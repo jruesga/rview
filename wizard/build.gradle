@@ -16,17 +16,17 @@
 
 apply plugin: 'com.android.library'
 
-def libraries = rootProject.ext.libraries;
+def libraries = rootProject.ext.libraries
 
 dependencies {
-    implementation "com.android.support:support-v4:${libraries.support}"
-    implementation "com.android.support:appcompat-v7:${libraries.support}"
-    implementation "com.android.support:cardview-v7:${libraries.support}"
-    implementation "com.android.support:design:${libraries.support}"
-    implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
-    implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
-    implementation "com.github.jruesga:rxloader:${libraries.rxloader2}"
-    implementation "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
+    api "com.android.support:support-v4:${libraries.support}"
+    api "com.android.support:appcompat-v7:${libraries.support}"
+    api "com.android.support:cardview-v7:${libraries.support}"
+    api "com.android.support:design:${libraries.support}"
+    api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    api "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    api "com.github.jruesga:rxloader:${libraries.rxloader2}"
+    api "com.github.castorflex.smoothprogressbar:library:${libraries.smoothprogressbar}"
 }
 
 
@@ -35,7 +35,7 @@ android {
         vectorDrawables.useSupportLibrary = true
         consumerProguardFiles file('proguard-consumer.txt')
 
-        return void;
+        return void
     }
 
     dataBinding {

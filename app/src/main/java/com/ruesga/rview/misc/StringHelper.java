@@ -246,7 +246,7 @@ public class StringHelper {
                         .replaceAll(NON_PRINTABLE_CHAR, " > ");
                 while (true) {
                     String m = quote;
-                    quote = quote.replaceAll(">  >", "> >");
+                    quote = quote.replaceAll("> {2}>", "> >");
                     if (quote.equals(m)) {
                         break;
                     }

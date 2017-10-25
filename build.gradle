@@ -40,11 +40,11 @@ ext {
         keyboardvisibilityevent     : '2.1.0',
         aboutlibraries              : '5.9.7',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
-        crashlytics                 : '2.7.0',
+        crashlytics                 : '2.7.1',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
-        crashlytics_core            : '2.4.0',
+        crashlytics_core            : '2.4.1',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/answers/maven-metadata.xml
-        crashlytics_answers         : '1.4.0'
+        crashlytics_answers         : '1.4.1'
     ]
 
     testLibraries = [
@@ -68,7 +68,7 @@ allprojects {
             classpath 'com.android.tools.build:gradle:3.0.0'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.1'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.24.3'
+            classpath 'io.fabric.tools:gradle:1.24.4'
         }
     }
 

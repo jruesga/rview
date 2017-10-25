@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -102,7 +103,7 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.stats_page_fragment, container, false);
         mBinding.detailsStub.addView(inflateDetails(inflater, mBinding.detailsStub));

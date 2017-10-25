@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -100,6 +101,7 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
     }
 
     @Override
+    @SuppressLint("RestrictedApi")
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
 

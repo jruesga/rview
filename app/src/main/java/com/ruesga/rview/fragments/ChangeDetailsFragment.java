@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -1467,7 +1468,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.change_details_fragment, container, false);
@@ -1499,7 +1500,7 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         Map<String, Integer> review = mBinding.reviewInfo.reviewLabels.getReview(false);
@@ -1694,10 +1695,8 @@ public class ChangeDetailsFragment extends Fragment implements
             });
 
             mBinding.nestedScroll.setOnScrollChangeListener(
-                    new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(NestedScrollView v,
-                        int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                (NestedScrollView.OnScrollChangeListener)
+                        (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
                     float h = mBinding.nestedScroll.getHeight();
                     float h14 = h / 4;
                     float mt = mBinding.messageInfo.getRoot().getTop();
@@ -1712,8 +1711,7 @@ public class ChangeDetailsFragment extends Fragment implements
                             mBinding.fastScroller.show(R.string.change_details_fast_scroll_msg);
                         }
                     }
-                }
-            });
+                });
 
             // Restore user temporary review state
             if (savedInstanceState != null) {
@@ -1876,12 +1874,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
         mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
         mBinding.reviewInfo.reviewAttachments
-                .listenOn(new OnAttachmentDroppedListener() {
-                    @Override
-                    public void onAttachmentDropped(Attachment attachment) {
-                        performDropAttachment(attachment);
-                    }
-                })
+                .listenOn((OnAttachmentDroppedListener) this::performDropAttachment)
                 .from(mAttachments);
         savedReview = null;
     }

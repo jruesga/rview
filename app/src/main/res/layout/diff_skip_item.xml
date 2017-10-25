@@ -56,7 +56,7 @@
                 android:ellipsize="none"
                 android:textStyle="bold"
                 android:padding="5dp"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:gravity="end"
                 android:text="@string/diff_viewer_skip_up"/>
 
@@ -71,7 +71,7 @@
                 android:ellipsize="none"
                 android:textStyle="bold"
                 android:padding="5dp"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:text="@{model.msg}"/>
 
             <com.ruesga.rview.widget.StyleableTextView
@@ -87,7 +87,7 @@
                 android:ellipsize="none"
                 android:textStyle="bold"
                 android:padding="5dp"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:gravity="start"
                 android:text="@string/diff_viewer_skip_down"/>
         </LinearLayout>

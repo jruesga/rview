@@ -15,6 +15,7 @@
      limitations under the License.
  -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
@@ -37,7 +38,8 @@ c 0.8320666974,0 1.4843749984,0.6523083 1.4843749994,1.484375
 0.03125,14.84375 c 0.8320666974,0 1.4843749981,0.6523083 1.4843749991,1.484375
 -0.00000001,0.8320667 -0.6523083017,1.484375 -1.4843749991,1.484375
 -0.8320666974,0 -1.484374999,-0.6523083 -1.484375,-1.484375
-0.00000001,-0.8320667 0.6523083026,-1.484375 1.484375,-1.484375 z" />
+0.00000001,-0.8320667 0.6523083026,-1.484375 1.484375,-1.484375 z"
+        tools:ignore="VectorPath"/>
     <path
         android:strokeColor="#000000"
         android:strokeWidth="2"

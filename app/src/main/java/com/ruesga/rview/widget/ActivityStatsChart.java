@@ -38,6 +38,7 @@ import android.view.animation.AccelerateInterpolator;
 import com.ruesga.rview.R;
 import com.ruesga.rview.model.Stats;
 
+import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
@@ -49,10 +50,12 @@ import java.util.TreeMap;
 
 public class ActivityStatsChart extends View {
 
-    private class AggregateStatsTask extends AsyncTask<Void, Void, Void> {
+    private static class AggregateStatsTask extends AsyncTask<Void, Void, Void> {
         private final List<Stats> mStats;
+        private final WeakReference<ActivityStatsChart> mView;
 
-        AggregateStatsTask(List<Stats> stats) {
+        AggregateStatsTask(ActivityStatsChart view, List<Stats> stats) {
+            mView = new WeakReference<>(view);
             mStats = stats;
         }
 
@@ -65,7 +68,10 @@ public class ActivityStatsChart extends View {
         @Override
         protected void onPostExecute(Void v) {
             // Refresh the view
-            animateChart();
+            final ActivityStatsChart view = mView.get();
+            if (view != null) {
+                view.animateChart();
+            }
         }
 
         @SuppressLint("UseSparseArrays")
@@ -122,11 +128,14 @@ public class ActivityStatsChart extends View {
             }
 
             // Swap the data
-            synchronized (mLock) {
-                mData = data;
-                mMinVal = Math.abs(min);
-                mMaxVal = max;
-                computeDrawObjects();
+            final ActivityStatsChart view = mView.get();
+            if (view != null) {
+                synchronized (view.mLock) {
+                    view.mData = data;
+                    view.mMinVal = Math.abs(min);
+                    view.mMaxVal = max;
+                    view.computeDrawObjects();
+                }
             }
         }
     }
@@ -246,7 +255,7 @@ public class ActivityStatsChart extends View {
             mTask.cancel(true);
         }
 
-        mTask = new AggregateStatsTask(stats);
+        mTask = new AggregateStatsTask(this, stats);
         mTask.execute();
     }
 

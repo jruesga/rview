@@ -636,13 +636,13 @@ public class Formatter {
             return;
         }
 
-        String emails = account.email;
+        StringBuilder emails = new StringBuilder(account.email);
         if (account.secondaryEmails != null) {
             for (String email : account.secondaryEmails) {
-                emails += "\n" + email;
+                emails.append("\n").append(email);
             }
         }
-        v.setText(emails);
+        v.setText(emails.toString());
     }
 
     @BindingAdapter("projectStatus")

@@ -162,7 +162,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
 
     @Nullable
     @Override
-    public final View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public final View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.list_chooser, container, false);
         mBinding.setModel(mModel);

@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
@@ -63,6 +64,7 @@ public class AceWebView extends WebView implements NestedScrollingChild {
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent ev) {
         boolean returnValue = false;
 

@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.os.Message;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -433,17 +435,17 @@ public class MainActivity extends ChangeListBaseActivity {
         if (getMiniDrawerLayout() != null) {
             mBinding.drawerNavigationView.addMiniDrawerListener(new PanelSlideListener() {
                 @Override
-                public void onPanelSlide(View panel, float slideOffset) {
+                public void onPanelSlide(@NonNull View panel, float slideOffset) {
                     // Ignore
                 }
 
                 @Override
-                public void onPanelOpened(View panel) {
+                public void onPanelOpened(@NonNull View panel) {
                     // Ignore
                 }
 
                 @Override
-                public void onPanelClosed(View panel) {
+                public void onPanelClosed(@NonNull View panel) {
                     internalPerformShowAccount(false);
                 }
             });
@@ -628,18 +630,16 @@ public class MainActivity extends ChangeListBaseActivity {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     private void updateAccountCustomFilters() {
         // Remove all custom filters and re-add them
         final DrawerNavigationMenu menu =
                 (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
-        //noinspection RestrictedApi
         int myFiltersGroupIndex = menu.findGroupIndex(R.id.category_my_filters);
-        //noinspection RestrictedApi
         MenuItem group = menu.getItem(myFiltersGroupIndex);
         SubMenu myFiltersSubMenu = group.getSubMenu();
         int count = myFiltersSubMenu.size() - 1;
         for (int i = count; i >= 0; i--) {
-            //noinspection RestrictedApi
             ((DrawerNavigationSubMenu)myFiltersSubMenu).removeItemAt(i);
         }
 
@@ -660,24 +660,21 @@ public class MainActivity extends ChangeListBaseActivity {
             }
         }
 
-        //noinspection RestrictedApi
         menu.setGroupVisible(R.id.category_my_filters,
                 !mModel.isAccountExpanded && mCustomFilters != null && !mCustomFilters.isEmpty());
         mBinding.drawerNavigationView.setCheckedItem(mModel.currentNavigationItemId);
     }
 
+    @SuppressLint("RestrictedApi")
     private void updateAccountsDrawerInfo() {
         // Remove all accounts and re-add them
         final DrawerNavigationMenu menu =
                 (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
-        //noinspection RestrictedApi
         int otherAccountGroupIndex = menu.findGroupIndex(R.id.category_other_accounts);
-        //noinspection RestrictedApi
         MenuItem group = menu.getItem(otherAccountGroupIndex);
         SubMenu otherAccountsSubMenu = group.getSubMenu();
         int count = otherAccountsSubMenu.size() - 1;
         for (int i = count; i > 0; i--) {
-            //noinspection RestrictedApi
             ((DrawerNavigationSubMenu) otherAccountsSubMenu).removeItemAt(i);
         }
         int i = 0;
@@ -720,6 +717,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 PicassoHelper.getDefaultAvatar(this, android.R.color.white));
     }
 
+    @SuppressLint("RestrictedApi")
     private void updateAccountStatus() {
         final DrawerNavigationMenu menu =
                 (DrawerNavigationMenu) mBinding.drawerNavigationView.getMenu();
@@ -728,7 +726,6 @@ public class MainActivity extends ChangeListBaseActivity {
             title += DrawerNavigationView.SEPARATOR +
                     EmojiHelper.resolveEmojiStatus(this, mAccount.mAccount.status);
         }
-        //noinspection RestrictedApi
         MenuItem item = menu.findItem(R.id.menu_account_status);
         item.setTitle(title);
     }

@@ -303,17 +303,17 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
         // Listen for options close
         getContentBinding().drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
 
             }
 
             @Override
-            public void onDrawerOpened(View drawerView) {
+            public void onDrawerOpened(@NonNull View drawerView) {
 
             }
 
             @Override
-            public void onDrawerClosed(View drawerView) {
+            public void onDrawerClosed(@NonNull View drawerView) {
                 if (getContentBinding().drawerOptionsView == drawerView) {
                     getContentBinding().drawerLayout.setDrawerLockMode(
                             DrawerLayout.LOCK_MODE_LOCKED_CLOSED,

@@ -45,6 +45,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffModel> {
@@ -55,7 +56,7 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
         void onImageDiffProcessEnded(ImageDiffModel model);
     }
 
-    private final Context mContext;
+    private final WeakReference<Context> mContext;
     private final OnImageDiffProcessEndedListener mCallback;
     private final File mLeft;
     private final File mRight;
@@ -63,7 +64,7 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
 
     public AsyncImageDiffProcessor(Context context, File left, File right,
             OnImageDiffProcessEndedListener cb) {
-        mContext = context;
+        mContext = new WeakReference<>(context.getApplicationContext());
         mCallback = cb;
         mLeft = left;
         mRight = right;
@@ -78,13 +79,18 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
     @Override
     protected ImageDiffModel doInBackground(Void... params) {
         ImageDiffModel model = new ImageDiffModel();
+        final Context context = mContext.get();
+        if (context == null) {
+            return model;
+        }
+
         if (mLeft != null) {
             Pair<Drawable, int[]> l = loadAsDrawable(mLeft);
             if (l != null && l.first != null) {
                 model.left = l.first;
                 int size = ((int) Math.floor(mLeft.length() / 1024)) + 1;
-                model.sizeLeft = mContext.getString(R.string.diff_viewer_image_size, size);
-                model.dimensionsLeft = mContext.getString(
+                model.sizeLeft = context.getString(R.string.diff_viewer_image_size, size);
+                model.dimensionsLeft = context.getString(
                         R.string.diff_viewer_image_dimensions, l.second[0], l.second[1]);
             }
         }
@@ -93,8 +99,8 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
             if (r != null && r.first != null) {
                 model.right = r.first;
                 int size = ((int) Math.floor(mRight.length() / 1024)) + 1;
-                model.sizeRight = mContext.getString(R.string.diff_viewer_image_size, size);
-                model.dimensionsRight = mContext.getString(
+                model.sizeRight = context.getString(R.string.diff_viewer_image_size, size);
+                model.dimensionsRight = context.getString(
                         R.string.diff_viewer_image_dimensions, r.second[0], r.second[1]);
             }
         }
@@ -156,9 +162,13 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
     }
 
     private Pair<Drawable, int[]> loadFromBitmap(File file, int[] size) {
+        final Context context = mContext.get();
+        if (context == null) {
+            return null;
+        }
         Bitmap bitmap = BitmapUtils.decodeBitmap(file, mSize, mSize);
         if (bitmap != null) {
-            return new Pair<>(new BitmapDrawable(mContext.getResources(), bitmap), size);
+            return new Pair<>(new BitmapDrawable(context.getResources(), bitmap), size);
         }
 
         Log.e(TAG, "Can't load " + file.getAbsolutePath() + " as image.");
@@ -182,11 +192,16 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
 
     @SuppressWarnings("TryWithIdenticalCatches")
     private Pair<Drawable, int[]> loadFromVectorDrawable(File file) {
+        final Context context = mContext.get();
+        if (context == null) {
+            return null;
+        }
+
         Reader reader = null;
         try {
             // Convert the vector drawable to a svg document
             reader = new BufferedReader(new FileReader(file));
-            CharSequence svgDocument = VectorDrawableConverter.toSvg(mContext, reader);
+            CharSequence svgDocument = VectorDrawableConverter.toSvg(context, reader);
             return loadSvg(new ByteArrayInputStream(svgDocument.toString().getBytes()));
 
         } catch (Exception ex) {

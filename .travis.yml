@@ -16,7 +16,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew clean check
+  - ./gradlew clean lintDebug testDebug
 
 notifications:
   email:

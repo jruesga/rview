@@ -16,6 +16,7 @@
 package com.ruesga.rview;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -273,6 +274,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             String.valueOf(GerritApi.MIN_API_VERSION));
 
     @Override
+    @SuppressLint("RestrictedApi")
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler(mMessenger);
@@ -289,7 +291,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.menu_search);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            //noinspection RestrictedApi
             getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(false);
         }
 
@@ -465,7 +466,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
         ArrayList<String> values = new ArrayList<>(
                 Arrays.asList(getResources().getStringArray(R.array.search_options_labels)));
         String value = values.get(mCurrentOption);
-        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(this, values, mIcons, value);
+        SimpleDropDownAdapter<Integer> adapter =
+                new SimpleDropDownAdapter<>(this, values, mIcons, value);
         popupWindow.setAnchorView(mBinding.anchor);
         popupWindow.setDropDownGravity(Gravity.END);
         popupWindow.setAdapter(adapter);

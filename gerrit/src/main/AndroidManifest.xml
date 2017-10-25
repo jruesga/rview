@@ -14,6 +14,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<manifest package="com.ruesga.rview.gerrit">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ruesga.rview.gerrit">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application />
 </manifest>

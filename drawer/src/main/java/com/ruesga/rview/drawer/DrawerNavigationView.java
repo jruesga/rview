@@ -249,7 +249,7 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
     public void configureWithMiniDrawer(SlidingPaneLayout panel) {
         panel.setPanelSlideListener(new PanelSlideListener() {
             @Override
-            public void onPanelSlide(View panel, float slideOffset) {
+            public void onPanelSlide(@NonNull View panel, float slideOffset) {
                 notifyMiniDrawerNavigationOpenStatusChanged(slideOffset);
                 for (PanelSlideListener cb : mMiniDrawerListeners) {
                     cb.onPanelSlide(panel, slideOffset);
@@ -257,7 +257,7 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
             }
 
             @Override
-            public void onPanelOpened(View panel) {
+            public void onPanelOpened(@NonNull View panel) {
                 notifyMiniDrawerNavigationOpenStatusChanged(1f);
                 for (PanelSlideListener cb : mMiniDrawerListeners) {
                     cb.onPanelOpened(panel);
@@ -265,7 +265,7 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
             }
 
             @Override
-            public void onPanelClosed(View panel) {
+            public void onPanelClosed(@NonNull View panel) {
                 notifyMiniDrawerNavigationOpenStatusChanged(0f);
                 for (PanelSlideListener cb : mMiniDrawerListeners) {
                     cb.onPanelClosed(panel);

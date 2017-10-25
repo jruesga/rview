@@ -16,24 +16,24 @@
 
 apply plugin: 'com.android.library'
 
-def libraries = rootProject.ext.libraries;
+def libraries = rootProject.ext.libraries
 
 dependencies {
-    implementation "com.android.support:design:${libraries.support}"
-    implementation "com.android.support:support-annotations:${libraries.support}"
-    implementation "com.google.code.gson:gson:${libraries.gson}"
-    implementation("com.squareup.retrofit2:retrofit:${libraries.retrofit2}") {
+    api "com.android.support:design:${libraries.support}"
+    api "com.android.support:support-annotations:${libraries.support}"
+    api "com.google.code.gson:gson:${libraries.gson}"
+    api("com.squareup.retrofit2:retrofit:${libraries.retrofit2}") {
         exclude group: 'io.reactivex', module: 'rxjava'
     }
-    implementation "com.squareup.retrofit2:converter-gson:${libraries.retrofit2}"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:${libraries.retrofit2}"
-    implementation "com.squareup.okhttp3:okhttp:${libraries.okhttp3}"
-    implementation "com.squareup.okhttp3:logging-interceptor:${libraries.okhttp3}"
-    implementation "com.squareup.okio:okio:${libraries.okio}"
-    implementation "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
-    implementation "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
-    implementation "com.github.jruesga:rxloader:${libraries.rxloader2}"
-    implementation "com.google.android.gms:play-services-auth:${libraries.firebase}"
+    api "com.squareup.retrofit2:converter-gson:${libraries.retrofit2}"
+    api "com.squareup.retrofit2:adapter-rxjava2:${libraries.retrofit2}"
+    api "com.squareup.okhttp3:okhttp:${libraries.okhttp3}"
+    api "com.squareup.okhttp3:logging-interceptor:${libraries.okhttp3}"
+    api "com.squareup.okio:okio:${libraries.okio}"
+    api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
+    api "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
+    api "com.github.jruesga:rxloader:${libraries.rxloader2}"
+    api "com.google.android.gms:play-services-auth:${libraries.firebase}"
 }
 
 android {
@@ -42,7 +42,7 @@ android {
         vectorDrawables.useSupportLibrary = true
 
         if (project.file('auth.properties').exists()) {
-            def Properties authProps = new Properties()
+            Properties authProps = new Properties()
             authProps.load(new FileInputStream(project.file('auth.properties')))
 
             resValue "string", "gdrive.client_id", authProps["gdrive.client_id"]
@@ -52,7 +52,7 @@ android {
             resValue "string", "gdrive.client_secret", ""
         }
 
-        return void;
+        return void
     }
 
     dataBinding {

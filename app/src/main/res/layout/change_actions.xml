@@ -59,7 +59,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorAccent"
             app:fontFamilyType="condensed"
-            android:visibility='@{actions[ModelHelper.ACTION_REBASE] != null ? View.VISIBLE : View.GONE}'
+            android:visibility='@{actions[ModelHelper::ACTION_REBASE] != null ? View.VISIBLE : View.GONE}'
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
@@ -78,7 +78,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorAccent"
             app:fontFamilyType="condensed"
-            android:visibility="@{actions[ModelHelper.ACTION_ABANDON] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.NEW)) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{actions[ModelHelper::ACTION_ABANDON] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.NEW)) ? View.VISIBLE : View.GONE}"
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
@@ -128,7 +128,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/primaryDarkForeground"
             app:fontFamilyType="condensed"
-            android:visibility="@{actions[ModelHelper.ACTION_RESTORE] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.ABANDONED)) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{actions[ModelHelper::ACTION_RESTORE] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.ABANDONED)) ? View.VISIBLE : View.GONE}"
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
@@ -147,7 +147,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/primaryDarkForeground"
             app:fontFamilyType="condensed"
-            android:visibility="@{actions[ModelHelper.ACTION_REVERT] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.MERGED)) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{actions[ModelHelper::ACTION_REVERT] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.MERGED)) ? View.VISIBLE : View.GONE}"
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
@@ -166,7 +166,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/primaryDarkForeground"
             app:fontFamilyType="boldCondensed"
-            android:visibility='@{actions[ModelHelper.ACTION_SUBMIT] != null ? View.VISIBLE : View.GONE}'
+            android:visibility='@{actions[ModelHelper::ACTION_SUBMIT] != null ? View.VISIBLE : View.GONE}'
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>
@@ -185,7 +185,7 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="@color/primaryDarkForeground"
             app:fontFamilyType="boldCondensed"
-            android:visibility="@{actions[ModelHelper.ACTION_PUBLISH_DRAFT] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{actions[ModelHelper::ACTION_PUBLISH_DRAFT] != null || (safeUnbox(isOwner) &amp;&amp; model.status.equals(ChangeStatus.DRAFT)) ? View.VISIBLE : View.GONE}"
             app:allCaps="true"
             android:textSize="12sp"
             tools:ignore="RtlSymmetry"/>

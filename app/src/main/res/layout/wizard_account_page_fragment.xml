@@ -65,7 +65,6 @@
                         android:orientation="horizontal"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-                        android:clickable="true"
                         android:background="?attr/selectableItemBackground"
                         android:onClick="@{handlers::onClickPressed}">
                         <TextView

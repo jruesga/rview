@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
@@ -88,6 +89,7 @@ public class ScoresView extends LinearLayout {
         return mValue;
     }
 
+    @SuppressLint("RestrictedApi")
     public ScoresView update() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         int count = mAllValues.size();
@@ -107,7 +109,6 @@ public class ScoresView extends LinearLayout {
             boolean permitted = mPermittedValues.contains(score);
             binding.setPermitted(permitted);
             binding.scoreItem.setOnClickListener(permitted ? mClickListener : null);
-            //noinspection RestrictedApi
             binding.scoreItem.setSupportBackgroundTintList(
                     ContextCompat.getColorStateList(getContext(), toBackgroundColor(score)));
             binding.getRoot().setVisibility(View.VISIBLE);
@@ -120,13 +121,14 @@ public class ScoresView extends LinearLayout {
         return this;
     }
 
+
+    @SuppressLint("RestrictedApi")
     private void changeScore(int score) {
         mValue = score;
         int children = getChildCount();
         for (int i = 0; i < children; i++) {
             ReviewScoreItemBinding binding = mBindings.get(i);
             int s = getSafeScore(binding.scoreItem.getText().toString());
-            //noinspection RestrictedApi
             binding.scoreItem.setSupportBackgroundTintList(
                     ContextCompat.getColorStateList(getContext(), toBackgroundColor(s)));
         }

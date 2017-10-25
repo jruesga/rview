@@ -40,6 +40,7 @@ import com.ruesga.rview.widget.DiffView;
 import com.ruesga.rview.widget.DiffView.DiffInfoModel;
 import com.ruesga.rview.widget.DiffView.SkipLineModel;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +59,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     private final Pattern HIGHLIGHT_TRAIL_SPACES_PATTERN
             = Pattern.compile("( )+$", Pattern.MULTILINE);
 
-    private final Context mContext;
+    private final WeakReference<Context> mContext;
     private final int mMode;
     private final boolean mIsBinary;
     private final DiffContentInfo[] mDiffs;
@@ -76,7 +77,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
             Pair<List<BlameInfo>, List<BlameInfo>> blames,
             boolean highlightTabs, boolean highlightTrailingWhitespaces,
             boolean highlightIntralineDiffs, OnTextDiffProcessEndedListener cb) {
-        mContext = context;
+        mContext = new WeakReference<>(context.getApplicationContext());
         mMode = mode;
         mIsBinary = diff.binary;
         mDiffs = diff.content;
@@ -121,6 +122,11 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
 
     private List<DiffView.AbstractModel> processSideBySideDiffs() {
         final List<DiffView.AbstractModel> model = new ArrayList<>();
+        final Context context = mContext.get();
+        if (context == null) {
+            return model;
+        }
+
         addBinaryAdviseIfNeeded(model);
 
         if (mDiffs == null) {
@@ -131,16 +137,15 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         int lineNumberB = 0;
 
         final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
-        final int noColor = ContextCompat.getColor(mContext, android.R.color.transparent);
+        final int noColor = ContextCompat.getColor(context, android.R.color.transparent);
         final int addedBgColor = ContextCompat.getColor(
-                mContext, R.color.diffAddedBackgroundColor);
+                context, R.color.diffAddedBackgroundColor);
         final int addedFgColor = ContextCompat.getColor(
-                mContext, R.color.diffAddedForegroundColor);
+                context, R.color.diffAddedForegroundColor);
         final int deletedBgColor = ContextCompat.getColor(
-                mContext, R.color.diffDeletedBackgroundColor);
+                context, R.color.diffDeletedBackgroundColor);
         final int deletedFgColor = ContextCompat.getColor(
-                mContext, R.color.diffDeletedForegroundColor);
-
+                context, R.color.diffDeletedForegroundColor);
 
         boolean noDiffs = mDiffs.length == 1 && mDiffs[0].a == null  && mDiffs[0].b == null;
         int j = 0;
@@ -230,6 +235,11 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
 
     private List<DiffView.AbstractModel> processUnifiedDiffs() {
         final List<DiffView.AbstractModel> model = new ArrayList<>();
+        final Context context = mContext.get();
+        if (context == null) {
+            return model;
+        }
+
         addBinaryAdviseIfNeeded(model);
 
         if (mDiffs == null) {
@@ -240,15 +250,15 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         int lineNumberB = 0;
 
         final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
-        final int noColor = ContextCompat.getColor(mContext, android.R.color.transparent);
+        final int noColor = ContextCompat.getColor(context, android.R.color.transparent);
         final int addedBgColor = ContextCompat.getColor(
-                mContext, R.color.diffAddedBackgroundColor);
+                context, R.color.diffAddedBackgroundColor);
         final int addedFgColor = ContextCompat.getColor(
-                mContext, R.color.diffAddedForegroundColor);
+                context, R.color.diffAddedForegroundColor);
         final int deletedBgColor = ContextCompat.getColor(
-                mContext, R.color.diffDeletedBackgroundColor);
+                context, R.color.diffDeletedBackgroundColor);
         final int deletedFgColor = ContextCompat.getColor(
-                mContext, R.color.diffDeletedForegroundColor);
+                context, R.color.diffDeletedForegroundColor);
 
         boolean noDiffs = mDiffs.length == 1 && mDiffs[0].a == null  && mDiffs[0].b == null;
         int j = 0;
@@ -335,18 +345,28 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     }
 
     private void addBinaryAdviseIfNeeded(List<DiffView.AbstractModel> model) {
+        final Context context = mContext.get();
+        if (context == null) {
+            return;
+        }
+
         if (mIsBinary) {
             DiffView.AdviseModel advise = new DiffView.AdviseModel();
-            advise.msg = mContext.getString(R.string.diff_viewer_binary_file);
+            advise.msg = context.getString(R.string.diff_viewer_binary_file);
             model.add(advise);
         }
     }
 
     private int[] processUnchangedLines(DiffContentInfo diff, List<DiffView.AbstractModel> model,
             int j, int lineNumberA, int lineNumberB, int noColor, boolean noDiffs) {
+        final Context context = mContext.get();
+        if (context == null) {
+            return new int[]{lineNumberA, lineNumberB};
+        }
+
         if (noDiffs) {
             DiffView.AdviseModel advise = new DiffView.AdviseModel();
-            advise.msg = mContext.getString(R.string.diff_viewer_no_diffs);
+            advise.msg = context.getString(R.string.diff_viewer_no_diffs);
             model.add(advise);
         }
 
@@ -376,7 +396,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     lineNumberB += skippedLines;
                     i += skippedLines;
                     SkipLineModel skip = new SkipLineModel();
-                    skip.msg = mContext.getResources().getQuantityString(
+                    skip.msg = context.getResources().getQuantityString(
                             R.plurals.skipped_lines, skippedLines, skippedLines);
                     skip.skippedLines = new DiffInfoModel[skippedLines];
                     for (int k = i - skippedLines, l = 0; k < i; k++, l++) {
@@ -479,11 +499,16 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     }
 
     private CharSequence processHighlightTabs(CharSequence text) {
+        final Context context = mContext.get();
+        if (context == null) {
+            return text;
+        }
+
         if (!mHighlightTabs || !text.toString().contains(StringHelper.NON_PRINTABLE_CHAR)) {
             return text;
         }
 
-        int color = ContextCompat.getColor(mContext, R.color.diffHighlightColor);
+        int color = ContextCompat.getColor(context, R.color.diffHighlightColor);
         SpannableStringBuilder ssb = new SpannableStringBuilder(text);
         String line = text.toString();
         int index = line.length();
@@ -499,11 +524,16 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     }
 
     private CharSequence processHighlightTrailingSpaces(CharSequence text) {
+        final Context context = mContext.get();
+        if (context == null) {
+            return text;
+        }
+
         if (!mHighlightTrailingWhitespaces) {
             return text;
         }
 
-        int color = ContextCompat.getColor(mContext, R.color.diffHighlightColor);
+        int color = ContextCompat.getColor(context, R.color.diffHighlightColor);
         final Spannable.Factory spannableFactory = Spannable.Factory.getInstance();
         String line = text.toString();
         final Matcher matcher = HIGHLIGHT_TRAIL_SPACES_PATTERN.matcher(line);
@@ -708,6 +738,11 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     }
 
     private void processHiddenLines(List<DiffView.AbstractModel> model) {
+        final Context context = mContext.get();
+        if (context == null) {
+            return;
+        }
+
         int count = model.size();
         for (int i = 0; i < count; i++) {
             DiffView.AbstractModel line = model.get(i);
@@ -736,7 +771,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                             SkipLineModel newSkip = new SkipLineModel();
                             System.arraycopy(skip.skippedLines, next, copy, 0, length);
                             newSkip.skippedLines = copy;
-                            newSkip.msg = mContext.getResources().getQuantityString(
+                            newSkip.msg = context.getResources().getQuantityString(
                                     R.plurals.skipped_lines,
                                     newSkip.skippedLines.length, newSkip.skippedLines.length);
                             model.add(i + n + 1, newSkip);
@@ -750,7 +785,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                             DiffInfoModel[] copy = new DiffInfoModel[from];
                             System.arraycopy(skip.skippedLines, 0, copy, 0, from);
                             skip.skippedLines = copy;
-                            skip.msg = mContext.getResources().getQuantityString(
+                            skip.msg = context.getResources().getQuantityString(
                                     R.plurals.skipped_lines,
                                         skip.skippedLines.length, skip.skippedLines.length);
                         }
@@ -795,12 +830,17 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
     }
 
     private void processBlames(List<DiffView.AbstractModel> model) {
+        final Context context = mContext.get();
+        if (context == null) {
+            return;
+        }
+
         if (mBlames == null) {
             return;
         }
 
         final DateFormat df = DateFormat.getDateInstance(
-                DateFormat.SHORT, AndroidHelper.getCurrentLocale(mContext));
+                DateFormat.SHORT, AndroidHelper.getCurrentLocale(context));
 
         if (mBlames.first != null) {
             for (BlameInfo blame : mBlames.first) {
@@ -812,7 +852,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         start = p.first;
                         String commit = Formatter.toShortenCommit(blame.id);
                         String date = df.format(new Date(blame.time * 1000L)); //Unix time
-                        p.second.blameA = mContext.getString(
+                        p.second.blameA = context.getString(
                                 R.string.blame_format, commit, date, blame.author);
                     }
                 }
@@ -829,7 +869,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                         start = p.first;
                         String commit = Formatter.toShortenCommit(blame.id);
                         String date = df.format(new Date(blame.time * 1000L)); //Unix time
-                        p.second.blameB = mContext.getString(
+                        p.second.blameB = context.getString(
                                 R.string.blame_format, commit, date, blame.author);
                     }
                 }

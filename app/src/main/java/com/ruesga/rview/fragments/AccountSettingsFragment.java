@@ -342,15 +342,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
     @SuppressWarnings("ConstantConditions")
     private Observable<CloudNotificationsConfigInfo> checkNotificationsSupport() {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
-        return SafeObservable.fromNullCallable(() -> {
-                String device = FirebaseInstanceId.getInstance().getToken();
-                if (TextUtils.isEmpty(device)) {
-                    // Just use a default one. We don't need a real device to test
-                    // notifications support.
-                    device = "test";
-                }
-                return api.getCloudNotificationsConfig().blockingFirst();
-            })
+        return SafeObservable.fromNullCallable(() ->
+                    api.getCloudNotificationsConfig().blockingFirst())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
     }

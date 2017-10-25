@@ -177,7 +177,7 @@ public class RviewProvider extends ContentProvider {
     @Override
     public ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> ops)
             throws OperationApplicationException {
-        ContentProviderResult[] results = null;
+        ContentProviderResult[] results;
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         db.beginTransaction();
         try {

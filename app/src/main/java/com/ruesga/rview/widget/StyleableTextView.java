@@ -1,6 +1,7 @@
 // https://github.com/slapperwan/gh4a/blob/master/src/com/gh4a/widget/StyleableTextView.java
 package com.ruesga.rview.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -36,6 +37,7 @@ public class StyleableTextView extends SelectableCompatTextView {
         return mTypefaceValue;
     }
 
+    @SuppressLint("RestrictedApi")
     private void initAttributes(Context context, AttributeSet attrs, int defStyle) {
         Resources.Theme theme = context.getTheme();
         TypedArray appearance = null;
@@ -88,7 +90,6 @@ public class StyleableTextView extends SelectableCompatTextView {
             setTypeface(TypefaceCache.getTypeface(getContext(), mTypefaceValue));
         }
         if (allCaps) {
-            //noinspection RestrictedApi
             setTransformationMethod(new AllCapsTransformationMethod(getContext()));
         }
     }

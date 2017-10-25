@@ -20,6 +20,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
@@ -490,7 +491,7 @@ public class EditorFragment extends Fragment
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.editor_fragment, container, false);
@@ -524,7 +525,7 @@ public class EditorFragment extends Fragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, mLegacyChangeId);
@@ -758,7 +759,7 @@ public class EditorFragment extends Fragment
         }
 
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
-        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
+        SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
                 getContext(), files, icons, new File(mFile).getName());
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);

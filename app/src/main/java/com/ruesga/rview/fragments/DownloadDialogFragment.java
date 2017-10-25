@@ -428,7 +428,7 @@ public class DownloadDialogFragment extends RevealDialogFragment {
 
     private void showDownloadTypeChooser(View anchor) {
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
-        SimpleDropDownAdapter adapter = new SimpleDropDownAdapter(
+        SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
                 getContext(), mDownloadTypes, mModel.downloadType);
         popupWindow.setAnchorView(anchor);
         popupWindow.setAdapter(adapter);

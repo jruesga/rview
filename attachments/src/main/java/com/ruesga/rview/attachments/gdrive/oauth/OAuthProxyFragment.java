@@ -126,7 +126,8 @@ public class OAuthProxyFragment extends Fragment implements OnConnectionFailedLi
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View v = new View(getContext());
         v.setBackgroundColor(Color.RED);
         if (container != null) {

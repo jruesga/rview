@@ -42,7 +42,7 @@
                 android:ellipsize="none"
                 android:textStyle="bold"
                 android:padding="5dp"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:gravity="center_horizontal"
                 android:text="@{advise}"/>
         </FrameLayout>

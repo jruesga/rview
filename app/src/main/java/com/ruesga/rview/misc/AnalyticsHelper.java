@@ -20,7 +20,6 @@ import android.os.Bundle;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ruesga.rview.R;
-import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
 
 public class AnalyticsHelper {

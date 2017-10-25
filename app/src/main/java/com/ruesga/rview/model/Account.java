@@ -135,7 +135,7 @@ public class Account implements Parcelable, Comparable<Account> {
 
     @Override
     public int compareTo(@NonNull Account account) {
-        int compare = mRepository.compareTo(mRepository);
+        int compare = mRepository.compareTo(account.mRepository);
         if (compare == 0) {
             if (mAccount == null && account.mAccount == null) {
                 return 0;
