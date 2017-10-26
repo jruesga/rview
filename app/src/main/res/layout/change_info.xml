@@ -201,7 +201,7 @@
                     android:tint="@color/accent"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onEditAssigneePressed}"
-                    android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; actions[ModelHelper::ACTION_ASSIGNEE] != null ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; actions[ModelHelper.ACTION_ASSIGNEE] != null ? View.VISIBLE : View.GONE}"
                     tools:ignore="ContentDescription"/>
             </LinearLayout>
             <LinearLayout
@@ -421,7 +421,7 @@
                     android:tint="@color/accent"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onTopicEditPressed}"
-                    android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; actions[ModelHelper::ACTION_TOPIC] != null ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; actions[ModelHelper.ACTION_TOPIC] != null ? View.VISIBLE : View.GONE}"
                     tools:ignore="ContentDescription"/>
             </LinearLayout>
             <LinearLayout
@@ -472,7 +472,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:onClick="@{handlers::onTagsEditPressed}"
                         android:layout_gravity="center_vertical"
-                        android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; actions[ModelHelper::ACTION_HASHTAGS] != null ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{safeUnbox(isAuthenticated) &amp;&amp; actions[ModelHelper.ACTION_HASHTAGS] != null ? View.VISIBLE : View.GONE}"
                         tools:ignore="ContentDescription"/>
                 </RelativeLayout>
             </LinearLayout>
