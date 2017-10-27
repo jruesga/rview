@@ -51,7 +51,7 @@
                 android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:srcCompat="@drawable/ic_done"
-                app:bindBackgroundTint="@{foregroundColor}"
+                app:bindImageTint="@{foregroundColor}"
                 android:onClick="@{handlers::onDonePressed}"
                 tools:ignore="ContentDescription"/>
 
@@ -66,7 +66,7 @@
                 android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 app:bindResourceDrawable="@{safeUnbox(actionDrawable)}"
-                app:bindBackgroundTint="@{foregroundColor}"
+                app:bindImageTint="@{foregroundColor}"
                 android:onClick="@{handlers::onActionPressed}"
                 android:visibility="@{safeUnbox(actionDrawable) == 0 ? View.INVISIBLE : View.VISIBLE}"
                 tools:ignore="ContentDescription"/>
