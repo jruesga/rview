@@ -46,8 +46,8 @@ dependencies {
 
 android {
     defaultConfig {
-        versionCode 29
-        versionName '2.1.0'
+        versionCode 30
+        versionName '2.1.1'
         vectorDrawables.useSupportLibrary = true
 
         applicationId 'com.ruesga.rview'
@@ -145,10 +145,9 @@ def addActivityAliases(manifest) {
     }
 
     def repositories = new File(
-            (project.path + "/src/main/res/raw/repositories.json")
-                    .replace(":", ""))
+            (project.path + "/src/main/res/raw/repositories.json").replace(":", ""))
 
-   def json = new JsonSlurper().parseText(repositories.text)
+    def json = new JsonSlurper().parseText(repositories.text)
     def activityAlias = "\n\n<!-- Repositories url handling activity-aliases -->\n"
     json.each {
         def url = new URL(it.url.toString())
