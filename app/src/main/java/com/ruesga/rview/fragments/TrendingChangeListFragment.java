@@ -22,6 +22,7 @@ import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
+import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
@@ -74,6 +75,10 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
         arguments.putBoolean(EXTRA_HAS_FAB, true);
         fragment.setArguments(arguments);
         return fragment;
+    }
+
+    BaseActivity.OnFabPressedListener getFabPressedListener() {
+        return null;
     }
 
     @Override
