@@ -46,7 +46,7 @@ public class ContinuousIntegrationHelper {
 
     private static final String TAG = "ContinuousIntegration";
 
-    private static final String CI_REGEXP_1 = "\\* .*::((#)?\\d+::)?[(OK, )(WARN, )(IGNORE, )(ERROR, )].*";
+    private static final String CI_REGEXP_1 = "\\* .*::((#)?\\d+::)?((OK, )|(WARN, )|(IGNORE, )|(ERROR, )).*";
 
     public static List<ContinuousIntegrationInfo> getContinuousIntegrationStatus(
             Repository repository, String changeId, int revisionNumber) {
@@ -69,8 +69,8 @@ public class ContinuousIntegrationHelper {
         List<ContinuousIntegrationInfo> statuses = new ArrayList<>();
 
         String url = repository.mCiStatusUrl
-                .replaceFirst("\\{change\\}", changeId)
-                .replaceFirst("\\{revision\\}", String.valueOf(revisionNumber));
+                .replaceFirst("\\{change}", changeId)
+                .replaceFirst("\\{revision}", String.valueOf(revisionNumber));
 
         try {
             OkHttpClient okhttp = NetworkingHelper.createNetworkClient();
