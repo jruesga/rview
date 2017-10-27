@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Author: Google
+ -->
+<svg fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+        <path d="M0 0h24v24H0z"/>
+        <g transform="translate(1.2 4.8)">
+            <path stroke="#000" stroke-width="1.2" stroke-linejoin="round" d="M0 6h3.6L6 0l2.4 15.6L10.8 6h8.4"/>
+            <circle fill="#000" cx="18.6" cy="6" r="2.4"/>
+        </g>
+    </g>
+</svg>

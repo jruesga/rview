@@ -704,7 +704,7 @@ public class Formatter {
                     v.getContext(), R.drawable.ic_error_outline));
         } else if (state.state == EmptyState.NO_TRENDING_STATE) {
             v.setImageDrawable(ContextCompat.getDrawable(
-                    v.getContext(), R.drawable.ic_heart_rate));
+                    v.getContext(), R.drawable.ic_vitals));
         }
     }
 

@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="70dp"
             android:padding="5dp"
             android:gravity="center"
             android:text="@{model != null &amp;&amp; model.state != EmptyState.NORMAL_STATE ? @string/action_retry : null}"
