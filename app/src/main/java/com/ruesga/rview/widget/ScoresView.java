@@ -21,6 +21,7 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +90,6 @@ public class ScoresView extends LinearLayout {
         return mValue;
     }
 
-    @SuppressLint("RestrictedApi")
     public ScoresView update() {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         int count = mAllValues.size();
@@ -109,7 +109,7 @@ public class ScoresView extends LinearLayout {
             boolean permitted = mPermittedValues.contains(score);
             binding.setPermitted(permitted);
             binding.scoreItem.setOnClickListener(permitted ? mClickListener : null);
-            binding.scoreItem.setSupportBackgroundTintList(
+            ViewCompat.setBackgroundTintList(binding.scoreItem,
                     ContextCompat.getColorStateList(getContext(), toBackgroundColor(score)));
             binding.getRoot().setVisibility(View.VISIBLE);
         }
@@ -121,15 +121,13 @@ public class ScoresView extends LinearLayout {
         return this;
     }
 
-
-    @SuppressLint("RestrictedApi")
     private void changeScore(int score) {
         mValue = score;
         int children = getChildCount();
         for (int i = 0; i < children; i++) {
             ReviewScoreItemBinding binding = mBindings.get(i);
             int s = getSafeScore(binding.scoreItem.getText().toString());
-            binding.scoreItem.setSupportBackgroundTintList(
+            ViewCompat.setBackgroundTintList(binding.scoreItem,
                     ContextCompat.getColorStateList(getContext(), toBackgroundColor(s)));
         }
 

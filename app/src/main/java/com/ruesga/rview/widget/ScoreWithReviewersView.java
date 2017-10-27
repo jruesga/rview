@@ -19,6 +19,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +77,6 @@ public class ScoreWithReviewersView extends LinearLayout {
         return this;
     }
 
-    @SuppressLint("RestrictedApi")
     public ScoreWithReviewersView from(LabelInfo info) {
         setOrientation(VERTICAL);
 
@@ -99,9 +99,9 @@ public class ScoreWithReviewersView extends LinearLayout {
             ScoreWithReviewItemBinding binding = mBindings.get(n);
             int value = entry.getKey();
             binding.setScore(value);
-            binding.scoreItem.setSupportBackgroundTintList(
+            ViewCompat.setBackgroundTintList(binding.scoreItem,
                     ContextCompat.getColorStateList(getContext(),
-                        value < 0 ? R.color.rejected : R.color.approved));
+                            value < 0 ? R.color.rejected : R.color.approved));
             binding.reviewers
                     .with(mPicasso)
                     .withRemovableReviewers(mIsRemovableReviewers)

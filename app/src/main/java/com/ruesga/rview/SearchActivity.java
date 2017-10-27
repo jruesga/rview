@@ -274,7 +274,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
             String.valueOf(GerritApi.MIN_API_VERSION));
 
     @Override
-    @SuppressLint("RestrictedApi")
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHandler = new Handler(mMessenger);
@@ -291,7 +290,6 @@ public class SearchActivity extends AppCompatDelegateActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(R.string.menu_search);
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(false);
         }
 
         // Configure the suggestions loaders
