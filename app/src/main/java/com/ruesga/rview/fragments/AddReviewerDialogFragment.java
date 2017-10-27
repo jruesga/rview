@@ -119,6 +119,7 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection ConstantConditions
         mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         mReviewerState = AddReviewerState.valueOf(getArguments().getString(EXTRA_REVIEWER_STATE));
     }

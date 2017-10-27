@@ -19,6 +19,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.Html;
@@ -45,7 +46,7 @@ public class ConfirmationPageFragment extends WizardPageFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle state) {
         mBinding = DataBindingUtil.inflate(inflater, getPageLayout(), container, false);
         mBinding.setModel(mModel);
         return mBinding.getRoot();

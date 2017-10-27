@@ -203,6 +203,7 @@ public class EditorFragment extends Fragment
             }
 
             // Close the drawer
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).closeOptionsDrawer();
             return true;
         }
@@ -238,6 +239,7 @@ public class EditorFragment extends Fragment
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, null);
             showProgress(false);
             mLocked = false;
@@ -254,6 +256,7 @@ public class EditorFragment extends Fragment
         @Override
         @SuppressWarnings("Convert2streamapi")
         public void onNext(Boolean result) {
+            //noinspection ConstantConditions
             getActivity().setResult(Activity.RESULT_OK);
             getActivity().finish();
             showProgress(false);
@@ -264,6 +267,7 @@ public class EditorFragment extends Fragment
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, null);
             showProgress(false);
 
@@ -331,6 +335,7 @@ public class EditorFragment extends Fragment
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, null);
             showProgress(false);
 
@@ -372,6 +377,7 @@ public class EditorFragment extends Fragment
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, null);
             showProgress(false);
 
@@ -399,12 +405,14 @@ public class EditorFragment extends Fragment
         @Override
         public void onErrorMessage(@StringRes int msg) {
             Log.e(TAG, getString(msg));
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).showError(msg);
         }
 
         @Override
         public void onWarnMessage(@StringRes int msg) {
             Log.w(TAG, getString(msg));
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).showWarning(msg);
         }
     };
@@ -479,6 +487,7 @@ public class EditorFragment extends Fragment
         mUiHandler = new Handler(mOnChangeCallback);
 
         Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
+        //noinspection ConstantConditions
         mLegacyChangeId = state.getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         mChangeId = state.getString(Constants.EXTRA_CHANGE_ID);
         mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
@@ -545,6 +554,7 @@ public class EditorFragment extends Fragment
     private void startLoadersWithValidContext(@Nullable Bundle savedInstanceState) {
         // Configure the diff_options menu
         BaseActivity activity = ((BaseActivity) getActivity());
+        //noinspection ConstantConditions
         activity.configureOptionsTitle(getString(
                 !mReadOnly ? R.string.menu_edit_options : R.string.menu_view_options));
         activity.configureOptionsMenu(R.menu.edit_options_menu, mOptionsItemListener);
@@ -619,6 +629,7 @@ public class EditorFragment extends Fragment
         switch (item.getItemId()) {
             case R.id.menu_edit_options:
                 openOptionsMenu();
+                //noinspection ConstantConditions
                 AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
                 break;
         }
@@ -629,6 +640,7 @@ public class EditorFragment extends Fragment
         if (!mLocked) {
             // Update diff_options
             BaseActivity activity = ((BaseActivity) getActivity());
+            //noinspection ConstantConditions
             Menu menu = activity.getOptionsMenu().getMenu();
             menu.findItem(R.id.wrap_mode_on).setChecked(mWrap);
             menu.findItem(R.id.wrap_mode_off).setChecked(!mWrap);
@@ -660,8 +672,10 @@ public class EditorFragment extends Fragment
     private void showProgress(boolean show) {
         BaseActivity activity = (BaseActivity) getActivity();
         if (show) {
+            //noinspection ConstantConditions
             activity.onRefreshStart(this);
         } else {
+            //noinspection ConstantConditions
             activity.onRefreshEnd(this, null);
         }
     }
@@ -758,6 +772,7 @@ public class EditorFragment extends Fragment
             icons[i] = ModelHelper.toFileStatusDrawable(fileInfo.status);
         }
 
+        //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
                 getContext(), files, icons, new File(mFile).getName());
@@ -769,6 +784,7 @@ public class EditorFragment extends Fragment
 
             // Close the drawer
             BaseActivity activity = (BaseActivity) getActivity();
+            //noinspection ConstantConditions
             activity.closeOptionsDrawer();
 
             // Change to the new file
@@ -894,6 +910,7 @@ public class EditorFragment extends Fragment
     }
 
     private void performRestore() {
+        //noinspection ConstantConditions
         AlertDialog dialog = new AlertDialog.Builder(getContext())
             .setTitle(R.string.change_edit_restore_file_title)
             .setMessage(R.string.change_edit_restore_file_message)
@@ -904,10 +921,12 @@ public class EditorFragment extends Fragment
     }
 
     private void performCancelEdit() {
+        //noinspection ConstantConditions
         AlertDialog dialog = new AlertDialog.Builder(getContext())
             .setTitle(R.string.change_edit_discard_title)
             .setMessage(R.string.change_edit_discard_message)
             .setPositiveButton(R.string.action_discard, (dialogInterface, i) -> {
+                //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_CANCELED);
                 getActivity().finish();
             })
@@ -918,6 +937,7 @@ public class EditorFragment extends Fragment
 
     private void performPublishEdit() {
         readFileContent(() -> {
+            //noinspection ConstantConditions
             AlertDialog dialog = new AlertDialog.Builder(getContext())
                     .setTitle(R.string.change_edit_publish_title)
                     .setMessage(R.string.change_edit_publish_message)
@@ -968,6 +988,7 @@ public class EditorFragment extends Fragment
     }
 
     private void closeDrawer() {
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).closeOptionsDrawer();
     }
 
@@ -1045,6 +1066,7 @@ public class EditorFragment extends Fragment
         } catch (FileNotFoundException ex) {
             // Ignore
         } catch (IOException ex) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, ex, null);
         }
     }
@@ -1054,6 +1076,7 @@ public class EditorFragment extends Fragment
             byte[] data = SerializationManager.getInstance().toJson(mEditOps).getBytes();
             CacheHelper.writeAccountDiffCacheFile(getContext(), "edit.ops", data);
         } catch (IOException ex) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, ex, null);
         }
     }

@@ -211,6 +211,7 @@ public class NotificationsFragment extends Fragment {
 
             mAdapter.clear();
             mNotificationsLoader.clear();
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, null);
 
             if (getActivity() != null) {
@@ -297,6 +298,7 @@ public class NotificationsFragment extends Fragment {
                     getContext(), LinearLayoutManager.VERTICAL));
             mBinding.list.setAdapter(mAdapter);
 
+            //noinspection ConstantConditions
             mAccount = ModelHelper.getAccountFromHash(
                     getContext(), getArguments().getString(EXTRA_ACCOUNT_HASH));
 
@@ -326,6 +328,7 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void setupSwipeToRefresh() {
+        //noinspection ConstantConditions
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
         mBinding.refresh.setOnRefreshListener(() -> {
@@ -362,6 +365,7 @@ public class NotificationsFragment extends Fragment {
     }
 
     private Observable<List<NotificationEntity>> fetchNotifications() {
+        //noinspection ConstantConditions
         final Context ctx = getContext().getApplicationContext();
         return SafeObservable.fromNullCallable(() -> {
                     List<NotificationEntity> notifications =
@@ -400,6 +404,7 @@ public class NotificationsFragment extends Fragment {
                 performMarkAsReadAccountNotifications();
                 return true;
             case R.id.menu_delete_all:
+                //noinspection ConstantConditions
                 mDialog = new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.account_notifications_delete_title)
                         .setMessage(R.string.account_notifications_delete_message)
@@ -418,12 +423,14 @@ public class NotificationsFragment extends Fragment {
     private void performMarkAsReadAccountNotifications() {
         NotificationEntity.markAccountNotificationsAsRead(getContext(), mAccount.getAccountHash());
         NotificationEntity.dismissAccountNotifications(getContext(), mAccount.getAccountHash());
+        //noinspection ConstantConditions
         getActivity().invalidateOptionsMenu();
     }
 
     private void performDeleteAccountNotifications() {
         NotificationEntity.deleteAccountNotifications(getContext(), mAccount.getAccountHash());
         NotificationEntity.dismissAccountNotifications(getContext(), mAccount.getAccountHash());
+        //noinspection ConstantConditions
         getActivity().invalidateOptionsMenu();
     }
 }

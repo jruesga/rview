@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.ruesga.rview.R;
 import com.ruesga.rview.attachments.AttachmentsProviderFactory;
 import com.ruesga.rview.gerrit.GerritApi;
@@ -69,8 +68,8 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_CATEG
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_ADVISE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_CATEGORY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_CLEAR;
-import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_TAGGED_MESSAGES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_CI_MESSAGES;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_TOGGLE_TAGGED_MESSAGES;
 
 public class AccountSettingsFragment extends PreferenceFragmentCompat
         implements OnPreferenceChangeListener, OnPreferenceClickListener {

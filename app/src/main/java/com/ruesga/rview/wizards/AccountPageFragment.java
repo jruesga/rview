@@ -19,6 +19,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -141,7 +142,7 @@ public class AccountPageFragment extends WizardPageFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle state) {
         final Context context = inflater.getContext();
         if (mEventHandlers == null) {
             mEventHandlers = new EventHandlers(this);
@@ -386,6 +387,7 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     private boolean logIn() {
+        //noinspection ConstantConditions
         Context ctx = getActivity().getApplicationContext();
         final String username = mModel.authenticatedAccess ? mModel.username : null;
         final String password = mModel.authenticatedAccess ? mModel.password : null;
@@ -397,6 +399,7 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     private boolean checkServerVersion() throws UnsupportedServerVersionException {
+        //noinspection ConstantConditions
         Context ctx = getActivity().getApplicationContext();
         final String username = mModel.authenticatedAccess ? mModel.username : null;
         final String password = mModel.authenticatedAccess ? mModel.password : null;
@@ -413,6 +416,7 @@ public class AccountPageFragment extends WizardPageFragment {
 
     private String getAnonymousCowardName() {
         try {
+            //noinspection ConstantConditions
             Context ctx = getActivity().getApplicationContext();
             final String username = mModel.authenticatedAccess ? mModel.username : null;
             final String password = mModel.authenticatedAccess ? mModel.password : null;
@@ -439,20 +443,24 @@ public class AccountPageFragment extends WizardPageFragment {
                 if (!(cause instanceof NoActivityAttachedException)) {
                     final Context context = mBinding.accountUsername.getContext();
                     if (isException(cause, UnsupportedServerVersionException.class)) {
+                        //noinspection ConstantConditions
                         ((WizardActivity) getActivity()).showMessage(context.getString(
                                 R.string.exception_unsupported_server_version));
                     } else if (isException(cause, NoConnectivityException.class)) {
+                        //noinspection ConstantConditions
                         ((WizardActivity) getActivity()).showMessage(context.getString(
                                 R.string.exception_no_network_available));
                     } else {
                         if (!mModel.authenticatedAccess &&
                                 ExceptionHelper.isAuthenticationException(cause)) {
                             Log.e(TAG, "Server request authentication access", cause);
+                            //noinspection ConstantConditions
                             ((WizardActivity) getActivity()).showMessage(context.getString(
                                     R.string.exception_unsupported_guess_mode));
                         } else if (!mModel.authenticatedAccess &&
                                 ExceptionHelper.isResourceNotFoundException(cause)) {
                             Log.e(TAG, "Server request not found", cause);
+                            //noinspection ConstantConditions
                             ((WizardActivity) getActivity()).showMessage(context.getString(
                                     R.string.exception_invalid_endpoint));
                         } else {
@@ -549,6 +557,7 @@ public class AccountPageFragment extends WizardPageFragment {
             return;
         }
 
+        //noinspection ConstantConditions
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle(R.string.menu_help)
                 .setMessage(R.string.account_wizard_account_page_help)

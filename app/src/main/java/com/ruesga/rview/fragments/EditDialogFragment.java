@@ -124,6 +124,7 @@ public class EditDialogFragment extends RevealDialogFragment {
 
     @Override
     public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         String title = getArguments().getString(EXTRA_TITLE);
         String action = getArguments().getString(EXTRA_ACTION);
         if (TextUtils.isEmpty(action)) {
@@ -150,6 +151,7 @@ public class EditDialogFragment extends RevealDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection ConstantConditions
         mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE);
         if (getArguments().containsKey(EXTRA_REQUEST_DATA)) {
             mRequestData = getArguments().getBundle(EXTRA_REQUEST_DATA);

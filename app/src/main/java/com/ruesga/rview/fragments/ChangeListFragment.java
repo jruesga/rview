@@ -200,6 +200,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mBinding.setEmpty(mEmptyState);
 
             showProgress(false);
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).setupFab(getFabPressedListener());
         }
 
@@ -210,6 +211,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mBinding.setEmpty(mEmptyState);
 
             showProgress(false);
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).setupFab(getFabPressedListener());
             mChangesLoader.clear();
             handleException(error);
@@ -415,6 +417,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     }
 
     private void setupSwipeToRefresh() {
+        //noinspection ConstantConditions
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
         mBinding.refresh.setOnRefreshListener(() -> {
@@ -433,8 +436,10 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         if (mEndlessScroller == null || !mEndlessScroller.isLoading()) {
             BaseActivity activity = (BaseActivity) getActivity();
             if (show) {
+                //noinspection ConstantConditions
                 activity.onRefreshStart(this);
             } else {
+                //noinspection ConstantConditions
                 activity.onRefreshEnd(this, Collections.unmodifiableList(mAdapter.mData));
             }
         } else if (!show) {
@@ -443,6 +448,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     }
 
     void handleException(Throwable error) {
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandler);
     }
 
@@ -451,6 +457,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mAdapter.mChangeId = item.legacyChangeId;
             mAdapter.notifyDataSetChanged();
         }
+        //noinspection ConstantConditions
         ((OnChangeItemListener) getActivity()).onChangeItemPressed(item);
     }
 
@@ -464,11 +471,13 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     }
 
     private void notifyItemRestored() {
+        //noinspection ConstantConditions
         ((OnChangeItemListener) getActivity()).onChangeItemRestored(mAdapter.mChangeId);
     }
 
     @Override
     public void onFragmentSelected() {
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).setUseTwoPanel(true);
         if (mAdapter == null || mAdapter.mData.isEmpty()) {
             ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);

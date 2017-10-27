@@ -849,9 +849,11 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     Pair<Integer, DiffInfoModel> p =
                             findDiffModelByLine(model, range.start, start, true);
                     if (p != null) {
+                        //noinspection ConstantConditions
                         start = p.first;
                         String commit = Formatter.toShortenCommit(blame.id);
                         String date = df.format(new Date(blame.time * 1000L)); //Unix time
+                        //noinspection ConstantConditions
                         p.second.blameA = context.getString(
                                 R.string.blame_format, commit, date, blame.author);
                     }
@@ -866,9 +868,11 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     Pair<Integer, DiffInfoModel> p =
                             findDiffModelByLine(model, range.start, start, false);
                     if (p != null) {
+                        //noinspection ConstantConditions
                         start = p.first;
                         String commit = Formatter.toShortenCommit(blame.id);
                         String date = df.format(new Date(blame.time * 1000L)); //Unix time
+                        //noinspection ConstantConditions
                         p.second.blameB = context.getString(
                                 R.string.blame_format, commit, date, blame.author);
                     }

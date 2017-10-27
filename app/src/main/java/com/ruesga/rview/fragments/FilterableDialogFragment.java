@@ -86,6 +86,7 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection ConstantConditions
         mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE, 0);
         int count = getFilterableItems();
         mIsUserSelection = new boolean[count];

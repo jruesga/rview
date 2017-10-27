@@ -141,6 +141,7 @@ public class FilesDialogFragment extends ListDialogFragment {
     public RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter() {
         if (mAdapter == null) {
             Type type = new TypeToken<List<FileItemModel>>() {}.getType();
+            //noinspection ConstantConditions
             mFiles = SerializationManager.getInstance().fromJson(
                     getArguments().getString(Constants.EXTRA_FILES), type);
             mAdapter = new FilesAdapter(this, getArguments().getBoolean(EXTRA_SHORT_FILE_NAMES));

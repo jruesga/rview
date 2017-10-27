@@ -70,6 +70,7 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
 
         @Override
         public void onError(Throwable e) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(getStatsFragmentTag(), e);
             showProgress(false, null);
         }
@@ -92,6 +93,7 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
 
         @Override
         public void onError(Throwable e) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(getStatsFragmentTag(), e);
             mBinding.setLoading(false);
         }
@@ -158,8 +160,10 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
     private void showProgress(boolean show, T result) {
         BaseActivity activity = (BaseActivity) getActivity();
         if (show) {
+            //noinspection ConstantConditions
             activity.onRefreshStart(this);
         } else {
+            //noinspection ConstantConditions
             activity.onRefreshEnd(this, result);
         }
     }
@@ -223,6 +227,7 @@ public abstract class StatsPageFragment<T> extends Fragment implements Selectabl
 
     @Override
     public void onFragmentSelected() {
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).setUseTwoPanel(false);
     }
 }

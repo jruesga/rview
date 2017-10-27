@@ -121,6 +121,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error);
             showProgress(false);
         }
@@ -147,6 +148,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error);
             showProgress(false);
 
@@ -183,6 +185,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error);
 
             mActionLoader.clear();
@@ -921,8 +924,10 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
     private void showProgress(boolean show) {
         BaseActivity activity = (BaseActivity) getActivity();
         if (show) {
+            //noinspection ConstantConditions
             activity.onRefreshStart(this);
         } else {
+            //noinspection ConstantConditions
             activity.onRefreshEnd(this, null);
         }
     }
@@ -1186,6 +1191,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
 
     private void performRequestBlames() {
         if (mResponse != null && mResponse.blames != null) {
+            //noinspection ConstantConditions
             if (mResponse.blames.first.isEmpty() || mResponse.blames.first.isEmpty()) {
                 mBlamesLoader.clear();
                 mBlamesLoader.restart();

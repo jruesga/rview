@@ -55,6 +55,7 @@ public class ProjectStatsPageFragment extends StatsPageFragment<ProjectInfo> {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection ConstantConditions
         mProjectName = getArguments().getString(Constants.EXTRA_ID);
     }
 

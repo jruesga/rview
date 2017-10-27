@@ -199,6 +199,7 @@ public class DownloadDialogFragment extends RevealDialogFragment {
         super.onCreate(savedInstanceState);
         mHandlers = new EventHandlers(this);
         Gson gson = SerializationManager.getInstance();
+        //noinspection ConstantConditions
         mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         mRevisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
         Type type = new TypeToken<Map<String, FetchInfo>>() {}.getType();
@@ -305,6 +306,7 @@ public class DownloadDialogFragment extends RevealDialogFragment {
     }
 
     private void askDownload(Request request) {
+        //noinspection ConstantConditions
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setTitle(R.string.download_metered_network_title);
         if (request.mStatus == 1) {
@@ -326,6 +328,7 @@ public class DownloadDialogFragment extends RevealDialogFragment {
     }
 
     private void requestPermissionsOrDownload(int requestCode) {
+        //noinspection ConstantConditions
         int readPermissionCheck = ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.READ_EXTERNAL_STORAGE);
         int writePermissionCheck = ContextCompat.checkSelfPermission(getActivity(),
@@ -427,6 +430,7 @@ public class DownloadDialogFragment extends RevealDialogFragment {
     }
 
     private void showDownloadTypeChooser(View anchor) {
+        //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
                 getContext(), mDownloadTypes, mModel.downloadType);

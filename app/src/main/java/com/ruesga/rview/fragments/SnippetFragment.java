@@ -117,6 +117,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection ConstantConditions
         mUri = getArguments().getParcelable(EXTRA_SNIPPET_URI);
         mMimeType = getArguments().getString(EXTRA_SNIPPET_MIMETYPE, "text/plain");
         mReadOnly = mUri != null;
@@ -175,12 +176,14 @@ public class SnippetFragment extends BottomSheetBaseFragment {
 
     @Override
     public void onContentReady() {
+        //noinspection ConstantConditions
         Uri snippetUri = getArguments().getParcelable(EXTRA_SNIPPET_URI);
         if (snippetUri == null) {
             snippetUri = getArguments().getParcelable(EXTRA_TEMP_SNIPPET_URI);
         }
         if (snippetUri != null) {
             try {
+                //noinspection ConstantConditions
                 ContentResolver cr = getContext().getContentResolver();
                 InputStream is = null;
                 try {
@@ -244,6 +247,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
         readFileContent();
         Thread.yield();
         if (!mReadOnly && mContentSize > 0) {
+            //noinspection ConstantConditions
             Uri snippetUri = getArguments().getParcelable(EXTRA_TEMP_SNIPPET_URI);
             if (snippetUri != null) {
                 Activity a = getActivity();
@@ -263,6 +267,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
         }
         if (!mReadOnly) {
             // Paste
+            //noinspection ConstantConditions
             ClipboardManager clipboard =
                     (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             if (clipboard.getPrimaryClip() != null &&
@@ -279,6 +284,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
         } else {
             // Open in external
             String action = getString(R.string.action_share);
+            //noinspection ConstantConditions
             Uri uri = FileProvider.getUriForFile(getContext(), "com.ruesga.rview.content",
                     new File(mUri.getPath()));
             ActivityHelper.open(getContext(), action, uri, "text/plain");
@@ -316,6 +322,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     }
 
     private synchronized void saveContent(byte[] content) {
+        //noinspection ConstantConditions
         Uri snippetUri = getArguments().getParcelable(EXTRA_TEMP_SNIPPET_URI);
         if (snippetUri != null && getActivity() != null) {
             try {

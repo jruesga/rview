@@ -96,6 +96,7 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
         }
 
         if (getResources().getBoolean(R.bool.config_is_table)) {
+            //noinspection ConstantConditions
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
     }
@@ -104,6 +105,12 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
     @SuppressLint("RestrictedApi")
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
+
+        final int BG_START = Color.TRANSPARENT;
+        //noinspection ConstantConditions
+        final int BG_END = ContextCompat.getColor(getContext(), R.color.primaryDark);
+        final int FG_START = obtainColorStyle(android.R.attr.textColorPrimary);
+        final int FG_END = obtainColorStyle(android.R.attr.textColorPrimaryInverse);
 
         Window window = dialog.getWindow();
         if (window != null) {
@@ -114,9 +121,11 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
         if (getResources().getBoolean(R.bool.config_is_table)) {
             int currentOrientation = getResources().getConfiguration().orientation;
             if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                //noinspection ConstantConditions
                 getActivity().setRequestedOrientation(
                         ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
             } else {
+                //noinspection ConstantConditions
                 getActivity().setRequestedOrientation(
                         ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
             }
@@ -145,10 +154,6 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
             final BottomSheetBehavior bottomSheetBehavior = ((BottomSheetBehavior) behavior);
             bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
                 final ArgbEvaluator INTERPOLATOR = ArgbEvaluator.newInstance();
-                final int BG_START = Color.TRANSPARENT;
-                final int BG_END = ContextCompat.getColor(getContext(), R.color.primaryDark);
-                final int FG_START = obtainColorStyle(android.R.attr.textColorPrimary);
-                final int FG_END = obtainColorStyle(android.R.attr.textColorPrimaryInverse);
 
                 @Override
                 public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -199,6 +204,7 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
 
     private int obtainColorStyle(int attribute) {
         TypedValue typedValue = new TypedValue();
+        //noinspection ConstantConditions
         TypedArray a = getContext().obtainStyledAttributes(
                 typedValue.data, new int[] { attribute });
         int color = a.getColor(0, 0);
@@ -214,6 +220,7 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
         String[] permissions = requiredPermissions();
         if (permissions != null && permissions.length > 0) {
             for (String permission : permissions) {
+                //noinspection ConstantConditions
                 if (ContextCompat.checkSelfPermission(getActivity(), permission)
                         != PackageManager.PERMISSION_GRANTED) {
                     onLoading();

@@ -269,6 +269,7 @@ public class DiffViewerFragment extends Fragment
 
             // Close the drawer and force a refresh of the UI (give some time to
             // ensure the drawer is closed)
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).closeOptionsDrawer();
             mHandler.postDelayed(() -> forceRefresh(), 250L);
             return true;
@@ -319,6 +320,7 @@ public class DiffViewerFragment extends Fragment
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error);
         }
     };
@@ -337,6 +339,7 @@ public class DiffViewerFragment extends Fragment
             mResult = new Intent();
         }
         mResult.putExtra(Constants.EXTRA_DATA_CHANGED, true);
+        //noinspection ConstantConditions
         getActivity().setResult(Activity.RESULT_OK, mResult);
     }
 
@@ -346,6 +349,7 @@ public class DiffViewerFragment extends Fragment
             mResult = new Intent();
         }
         mResult.putExtra(Constants.EXTRA_DATA_CHANGED, true);
+        //noinspection ConstantConditions
         getActivity().setResult(Activity.RESULT_OK, mResult);
     }
 
@@ -418,6 +422,7 @@ public class DiffViewerFragment extends Fragment
         mHandler = new Handler();
 
         Bundle state = (savedInstanceState != null) ? savedInstanceState : getArguments();
+        //noinspection ConstantConditions
         mRevisionId = state.getString(Constants.EXTRA_REVISION_ID);
         mFile = state.getString(Constants.EXTRA_FILE);
         mBase = state.getString(Constants.EXTRA_BASE);
@@ -463,6 +468,7 @@ public class DiffViewerFragment extends Fragment
                             getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
             if (!mChange.revisions.containsKey(mRevisionId)) {
                 Log.e(TAG, "Don't have a valid revision " + mRevisionId + " for change " + mChange.legacyChangeId);
+                //noinspection ConstantConditions
                 getActivity().finish();
                 return;
             }
@@ -513,6 +519,7 @@ public class DiffViewerFragment extends Fragment
             configurePageController(activity, false);
 
             // Configure the diff_options menu
+            //noinspection ConstantConditions
             activity.configureOptionsTitle(getString(R.string.menu_diff_options));
             activity.configureOptionsMenu(R.menu.diff_options_menu, mOptionsItemListener);
 
@@ -534,6 +541,7 @@ public class DiffViewerFragment extends Fragment
             updateModel();
 
             if (mResult != null) {
+                //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_OK, mResult);
             }
 
@@ -546,6 +554,7 @@ public class DiffViewerFragment extends Fragment
 
         } catch (IOException ex) {
             Log.e(TAG, "Failed to load change cached data", ex);
+            //noinspection ConstantConditions
             getActivity().finish();
         }
     }
@@ -568,6 +577,7 @@ public class DiffViewerFragment extends Fragment
         switch (item.getItemId()) {
             case R.id.menu_diff_options:
                 openOptionsMenu();
+                //noinspection ConstantConditions
                 AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
                 break;
         }
@@ -620,12 +630,14 @@ public class DiffViewerFragment extends Fragment
     }
 
     private void openOptionsMenu() {
+        //noinspection ConstantConditions
         Drawable checkMark = ContextCompat.getDrawable(getContext(), R.drawable.ic_check_box);
         Drawable uncheckMark = ContextCompat.getDrawable(
                 getContext(), R.drawable.ic_check_box_outline);
 
         // Update diff_options
         BaseActivity activity =  ((BaseActivity) getActivity());
+        //noinspection ConstantConditions
         Menu menu = activity.getOptionsMenu().getMenu();
         menu.findItem(R.id.diff_mode_side_by_side).setChecked(mMode == DiffView.SIDE_BY_SIDE_MODE);
         menu.findItem(R.id.diff_mode_unified).setChecked(mMode == DiffView.UNIFIED_MODE);
@@ -703,6 +715,7 @@ public class DiffViewerFragment extends Fragment
             icons[i] = ModelHelper.toFileStatusDrawable(fileInfo.status);
         }
 
+        //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
                 getContext(), files, icons, new File(mFile).getName());
@@ -714,6 +727,7 @@ public class DiffViewerFragment extends Fragment
 
             // Close the drawer
             BaseActivity activity = (BaseActivity) getActivity();
+            //noinspection ConstantConditions
             activity.closeOptionsDrawer();
 
             // Change to the new file
@@ -749,6 +763,7 @@ public class DiffViewerFragment extends Fragment
             value = String.valueOf(mChange.revisions.get(mRevisionId).number);
         }
 
+        //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
                 getContext(), revisions, value);
@@ -773,6 +788,7 @@ public class DiffViewerFragment extends Fragment
                         mResult = new Intent();
                     }
                     mResult.putExtra(Constants.EXTRA_BASE, mBase);
+                    //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mResult);
                 }
             } else {
@@ -791,6 +807,7 @@ public class DiffViewerFragment extends Fragment
                         mResult = new Intent();
                     }
                     mResult.putExtra(Constants.EXTRA_REVISION_ID, mRevisionId);
+                    //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mResult);
                 }
             }
@@ -827,6 +844,7 @@ public class DiffViewerFragment extends Fragment
     }
 
     private void performFileComment(View v, boolean isLeft) {
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).closeOptionsDrawer();
 
         FileDiffViewerFragment fragment = mFragment.get();
@@ -836,6 +854,7 @@ public class DiffViewerFragment extends Fragment
     }
 
     private void performShowBlameInfo(boolean isLeft) {
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).closeOptionsDrawer();
 
         boolean blame;
@@ -855,6 +874,7 @@ public class DiffViewerFragment extends Fragment
     }
 
     private void performViewFile(boolean isLeft) {
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).closeOptionsDrawer();
 
         String revision = String.valueOf(mChange.revisions.get(mRevisionId).number);
@@ -867,6 +887,7 @@ public class DiffViewerFragment extends Fragment
     }
 
     private void requestPermissionsOrDownloadFile(boolean isLeft) {
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).closeOptionsDrawer();
 
         int readPermissionCheck = ContextCompat.checkSelfPermission(getActivity(),

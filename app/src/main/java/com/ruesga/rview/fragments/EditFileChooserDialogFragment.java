@@ -184,6 +184,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         mModel.mode = MODE.valueOf(getArguments().getString(EXTRA_MODE));
         mModel.value1 = getArguments().getString(EXTRA_VALUE);
         mModel.hint1 = getArguments().getString(EXTRA_HINT_1);
@@ -210,6 +211,7 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
     @Override
     public ViewDataBinding inflateView(LayoutInflater inflater,
             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         int legacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         String revisionId = getArguments().getString(Constants.EXTRA_REVISION_ID);
         mBinding = DataBindingUtil.inflate(inflater, R.layout.edit_file_chooser_dialog, container, true);

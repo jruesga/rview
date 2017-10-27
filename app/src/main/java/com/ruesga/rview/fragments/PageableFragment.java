@@ -115,6 +115,7 @@ public abstract class PageableFragment extends Fragment {
         mBinding.viewPager.setAdapter(mAdapter);
         boolean fixedMode = getResources().getConfiguration().orientation
                 != Configuration.ORIENTATION_PORTRAIT || getPages().length <= 3;
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).configureTabs(mBinding.viewPager, fixedMode);
     }
 

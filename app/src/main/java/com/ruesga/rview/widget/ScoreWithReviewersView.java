@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v4.content.ContextCompat;
@@ -38,7 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static com.ruesga.rview.widget.AccountChipView.*;
+import static com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
+import static com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 
 public class ScoreWithReviewersView extends LinearLayout {
     private List<ScoreWithReviewItemBinding> mBindings = new ArrayList<>();

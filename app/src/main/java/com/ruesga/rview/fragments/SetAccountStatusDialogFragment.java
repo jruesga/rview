@@ -98,12 +98,14 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
 
             Intent i = new Intent(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
             i.putExtra(AccountStatusFetcherService.EXTRA_ACCOUNT, mAccount.getAccountHash());
+            //noinspection ConstantConditions
             LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(i);
             dismiss();
         }
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).showToast(
                     ExceptionHelper.exceptionToMessage(getActivity(), TAG, error));
             dismiss();
@@ -298,6 +300,7 @@ public class SetAccountStatusDialogFragment extends RevealDialogFragment {
             Intent intent = new Intent(getActivity(), AccountStatusFetcherService.class);
             intent.setAction(AccountStatusFetcherService.ACCOUNT_STATUS_FETCHER_ACTION);
             intent.putExtra(AccountStatusFetcherService.EXTRA_ACCOUNT, account.getAccountHash());
+            //noinspection ConstantConditions
             getActivity().startService(intent);
         } catch (IllegalStateException ex) {
             Log.w(TAG, "Can't start account fetcher service.", ex);

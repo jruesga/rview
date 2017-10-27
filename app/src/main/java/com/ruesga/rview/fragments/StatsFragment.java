@@ -52,6 +52,7 @@ public class StatsFragment extends PageableFragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         mType = getArguments().getInt(Constants.EXTRA_TYPE);
         mId = getArguments().getString(Constants.EXTRA_ID);
         mExtra = getArguments().getString(Constants.EXTRA_FRAGMENT_EXTRA);
@@ -62,6 +63,7 @@ public class StatsFragment extends PageableFragment {
                 getString(R.string.stats_info_title),
                 getString(R.string.stats_changes_title)};
 
+        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).setUseTwoPanel(false);
         super.onActivityCreated(savedInstanceState);
     }

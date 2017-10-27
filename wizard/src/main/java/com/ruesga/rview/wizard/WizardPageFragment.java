@@ -67,6 +67,7 @@ public abstract class WizardPageFragment extends Fragment {
         super.onDestroyView();
         for (View v : mValidators.keySet()) {
             Pair<ValidatorObserver, Validator[]> p = mValidators.get(v);
+            //noinspection ConstantConditions
             p.first.unObserveOn(v);
         }
         mValidators.clear();
@@ -163,6 +164,7 @@ public abstract class WizardPageFragment extends Fragment {
     public void setValidatorsForView(View v, ValidatorObserver observer, Validator... validators) {
         if (mValidators.containsKey(v)) {
             Pair<ValidatorObserver, Validator[]> p = mValidators.get(v);
+            //noinspection ConstantConditions
             p.first.unObserveOn(v);
         }
         observer.observeOn(v);
@@ -177,6 +179,7 @@ public abstract class WizardPageFragment extends Fragment {
         Pair<ValidatorObserver, Validator[]> p = mValidators.get(source);
         if (p != null) {
             Validator failed = null;
+            //noinspection ConstantConditions
             for (Validator validator : p.second) {
                 if (!validator.validate(source)) {
                     // Validation error
@@ -195,6 +198,7 @@ public abstract class WizardPageFragment extends Fragment {
                     continue;
                 }
                 p = mValidators.get(v);
+                //noinspection ConstantConditions
                 for (Validator validator : p.second) {
                     if (!validator.validate(v)) {
                         // Validation error

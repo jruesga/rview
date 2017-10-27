@@ -114,6 +114,7 @@ public class PicassoHelper {
 
     public static Drawable getDefaultAvatar(Context context, @ColorRes int color) {
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_account_circle);
+        //noinspection ConstantConditions
         DrawableCompat.setTint(drawable, ContextCompat.getColor(context, color));
         return drawable;
     }

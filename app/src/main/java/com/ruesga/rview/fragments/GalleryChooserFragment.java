@@ -458,15 +458,18 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
     }
 
     private void registerObserver() {
+        //noinspection ConstantConditions
         getContext().getContentResolver().registerContentObserver(
                 MediaStore.Files.getContentUri("external"), true, mContentObserver);
     }
 
     private void unregisterObserver() {
+        //noinspection ConstantConditions
         getContext().getContentResolver().unregisterContentObserver(mContentObserver);
     }
 
     private Observable<List<MediaItem>> fetchMedia() {
+        //noinspection ConstantConditions
         final Context ctx = getContext().getApplicationContext();
         return SafeObservable.fromNullCallable(() -> obtainImages(ctx))
                 .subscribeOn(Schedulers.io())

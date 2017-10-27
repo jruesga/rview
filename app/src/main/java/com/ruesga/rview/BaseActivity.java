@@ -360,6 +360,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 PageFragmentAdapter adapter = (PageFragmentAdapter) mViewPager.getAdapter();
+                //noinspection ConstantConditions
                 Fragment fragment = adapter.getCachedFragment(tab.getPosition());
                 if (fragment != null && fragment instanceof SelectableFragment) {
                     mUiHandler.post(((SelectableFragment) fragment)::onFragmentSelected);
@@ -377,6 +378,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+        //noinspection ConstantConditions
         viewPager.getAdapter().notifyDataSetChanged();
         getContentBinding().setModel(mModel);
     }

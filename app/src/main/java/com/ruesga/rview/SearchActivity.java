@@ -16,7 +16,6 @@
 package com.ruesga.rview;
 
 import android.animation.Animator;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -341,6 +340,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
             textView.setText(performFilterHighlight(s));
             if (s.mSuggestionIcon != 0) {
                 Drawable dw = ContextCompat.getDrawable(this, s.mSuggestionIcon);
+                //noinspection ConstantConditions
                 DrawableCompat.setTint(dw, ContextCompat.getColor(
                         this, R.color.gray_active_icon));
                 imageView.setImageDrawable(dw);

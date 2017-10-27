@@ -67,6 +67,7 @@ public abstract class RevealDialogFragment extends DialogFragment {
     @Override
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public final Dialog onCreateDialog(Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         buildDialog(builder, savedInstanceState);
         Dialog dialog = builder.create();

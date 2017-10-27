@@ -104,6 +104,7 @@ public class ChangeListByFilterFragment extends ChangeListFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection ConstantConditions
         setHasOptionsMenu(getArguments().getBoolean(EXTRA_HAS_SEARCH, false));
     }
 
@@ -128,6 +129,7 @@ public class ChangeListByFilterFragment extends ChangeListFragment
 
     @Override
     BaseActivity.OnFabPressedListener getFabPressedListener() {
+        //noinspection ConstantConditions
         if (!getArguments().getBoolean(EXTRA_HAS_FAB, false)) {
             return null;
         }

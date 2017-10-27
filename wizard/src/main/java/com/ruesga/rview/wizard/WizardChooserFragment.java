@@ -55,11 +55,13 @@ public abstract class WizardChooserFragment extends Fragment {
 
     public final void close() {
         final WizardActivity activity = ((WizardActivity) getActivity());
+        //noinspection ConstantConditions
         activity.performChooserClose(this, Activity.RESULT_OK, getResult());
     }
 
     public final void cancel() {
         final WizardActivity activity = ((WizardActivity) getActivity());
+        //noinspection ConstantConditions
         activity.performChooserClose(this, Activity.RESULT_CANCELED, null);
     }
 }

@@ -55,6 +55,7 @@ public class RelatedChangesFragment extends PageableFragment {
         mDashboardTabs = getResources().getStringArray(R.array.related_changes_labels);
         mDashboardFilters = getResources().getStringArray(R.array.related_changes_filters);
 
+        //noinspection ConstantConditions
         mLegacyChangeId = getArguments().getInt(Constants.EXTRA_LEGACY_CHANGE_ID);
         String changeId = getArguments().getString(Constants.EXTRA_CHANGE_ID);
         String projectId = getArguments().getString(Constants.EXTRA_PROJECT_ID);

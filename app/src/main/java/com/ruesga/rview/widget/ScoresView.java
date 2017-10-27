@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview.widget;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;

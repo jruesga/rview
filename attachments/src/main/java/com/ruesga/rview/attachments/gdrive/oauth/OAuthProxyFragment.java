@@ -79,6 +79,7 @@ public class OAuthProxyFragment extends Fragment implements OnConnectionFailedLi
 
             Preferences.setAuthenticationInfo(getContext(), Provider.GDRIVE, auth);
             Intent filter = new Intent(Constants.ATTACHMENT_PROVIDER_CHANGED_ACTION);
+            //noinspection ConstantConditions
             LocalBroadcastManager.getInstance(getContext()).sendBroadcast(filter);
         }
 
@@ -150,6 +151,7 @@ public class OAuthProxyFragment extends Fragment implements OnConnectionFailedLi
         super.onActivityCreated(savedInstanceState);
         createLoadersWithValidContext();
 
+        //noinspection ConstantConditions
         final String clientId = getContext().getString(R.string.gdrive_client_id);
         GoogleSignInOptions gso = new Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -242,25 +244,26 @@ public class OAuthProxyFragment extends Fragment implements OnConnectionFailedLi
     private Observable<AuthenticationInfo> performOAuthFlow() {
         final GDriveRestApiClient client = GDriveRestApiClient.newClientInstance(getContext());
         return SafeObservable.fromNullCallable(() -> {
-                    final AuthenticationInfo auth = Preferences.getAuthenticationInfo(
-                            getContext(), Provider.GDRIVE);
-                    if (auth == null) {
-                        throw new AuthenticationException();
-                    }
-                    final String clientId = getContext().getString(R.string.gdrive_client_id);
-                    final String secret = getContext().getString(R.string.gdrive_client_secret);
-                    AccessToken token = client.requestAccessToken(
-                            auth.serverAuthCode, clientId, secret, GDriveRestApi.OAUTH_REDIRECT_URL,
-                                    GDriveRestApi.OAUTH_GRANT_TYPE_AUTH_TOKEN)
-                                            .blockingFirst();
-                    auth.accessToken = token.accessToken;
-                    auth.refreshToken = token.refreshToken;
-                    auth.expiresIn = System.currentTimeMillis() + (token.expiresIn * 1000L);
-                    auth.tokenType = token.tokenType;
-                    Log.i(TAG, "Got GDrive access token. Will expired in " + auth.expiresIn);
-                    return auth;
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                final AuthenticationInfo auth = Preferences.getAuthenticationInfo(
+                        getContext(), Provider.GDRIVE);
+                if (auth == null) {
+                    throw new AuthenticationException();
+                }
+                //noinspection ConstantConditions
+                final String clientId = getContext().getString(R.string.gdrive_client_id);
+                final String secret = getContext().getString(R.string.gdrive_client_secret);
+                AccessToken token = client.requestAccessToken(
+                        auth.serverAuthCode, clientId, secret, GDriveRestApi.OAUTH_REDIRECT_URL,
+                                GDriveRestApi.OAUTH_GRANT_TYPE_AUTH_TOKEN)
+                                        .blockingFirst();
+                auth.accessToken = token.accessToken;
+                auth.refreshToken = token.refreshToken;
+                auth.expiresIn = System.currentTimeMillis() + (token.expiresIn * 1000L);
+                auth.tokenType = token.tokenType;
+                Log.i(TAG, "Got GDrive access token. Will expired in " + auth.expiresIn);
+                return auth;
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
     }
 }

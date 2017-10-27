@@ -54,11 +54,13 @@ public class ConfirmDialogFragment extends RevealDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection ConstantConditions
         mRequestCode = getArguments().getInt(EXTRA_REQUEST_CODE);
     }
 
     @Override
     public void buildDialog(AlertDialog.Builder builder, Bundle savedInstanceState) {
+        //noinspection ConstantConditions
         String message = getArguments().getString(EXTRA_MESSAGE);
         builder.setMessage(message)
                 .setNegativeButton(R.string.action_no, null)

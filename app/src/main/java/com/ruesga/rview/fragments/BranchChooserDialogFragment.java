@@ -114,6 +114,7 @@ public class BranchChooserDialogFragment extends FilterableDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //noinspection ConstantConditions
         mTitleRes = getArguments().getInt(Constants.EXTRA_TITLE);
         mActionRes = getArguments().getInt(Constants.EXTRA_ACTION);
         mProjectId = getArguments().getString(Constants.EXTRA_PROJECT_ID);

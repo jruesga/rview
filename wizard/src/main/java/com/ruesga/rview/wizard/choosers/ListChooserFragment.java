@@ -137,6 +137,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
                     mAdapter.notifyDataSetChanged();
                     mModel.hasData = false;
                     mBinding.setModel(mModel);
+                    //noinspection ConstantConditions
                     ((WizardActivity)getActivity()).showMessage(
                             getString(R.string.chooser_failed_to_fetch_data));
                 }
@@ -206,6 +207,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         close();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private Observable<List<ItemModel>> refreshItems() {
         return SafeObservable.fromNullCallable(getDataProducer())
                 .subscribeOn(Schedulers.io())

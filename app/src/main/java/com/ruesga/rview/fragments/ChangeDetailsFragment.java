@@ -859,6 +859,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
             mBinding.setEmpty(mEmptyState);
             mChangeLoader.clear();
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
             showProgress(false, null);
         }
@@ -887,6 +888,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mStarredLoader.clear();
@@ -906,6 +908,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mChangeEditMessageLoader.clear();
@@ -923,6 +926,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mChangeEditRevisionDescriptionLoader.clear();
@@ -946,6 +950,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
             // Clean the message box
             mBinding.reviewInfo.reviewComment.setText(null);
+            //noinspection ConstantConditions
             AndroidHelper.hideSoftKeyboard(getContext(), getActivity().getWindow());
 
             // Update the messages (since it was update at server side, we can temporary
@@ -967,6 +972,7 @@ public class ChangeDetailsFragment extends Fragment implements
         @Override
         public void onError(Throwable error) {
             setProcessing(false);
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             // Try to update attachment bar in case provider was invalidated
@@ -1014,6 +1020,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mChangeTopicLoader.clear();
@@ -1037,6 +1044,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mChangeTagsLoader.clear();
@@ -1064,6 +1072,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mMessagesRefreshLoader.clear();
@@ -1090,6 +1099,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mDraftsRefreshLoader.clear();
@@ -1131,6 +1141,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mRemoveReviewerLoader.clear();
@@ -1161,6 +1172,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mRemoveReviewerVoteLoader.clear();
@@ -1224,6 +1236,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mAddReviewerLoader.clear();
@@ -1259,6 +1272,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mEditAssigneeLoader.clear();
@@ -1288,6 +1302,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mActionLoader.clear();
@@ -1306,6 +1321,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error, mEmptyHandlers);
 
             mMoveBranchLoader.clear();
@@ -1327,6 +1343,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         @Override
         public void onError(Throwable error) {
+            //noinspection ConstantConditions
             ((BaseActivity) getActivity()).handleException(TAG, error);
 
             mAttachmentDownloadLoader.clear();
@@ -1452,6 +1469,7 @@ public class ChangeDetailsFragment extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUiHandler = new Handler();
+        //noinspection ConstantConditions
         mLegacyChangeId = getArguments().getInt(
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mCurrentRevision = getArguments().getString(Constants.EXTRA_REVISION);
@@ -1562,6 +1580,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 forceRefresh();
             }
         } else if (requestCode == REQUEST_ATTACHMENT_CAMERA && resultCode == Activity.RESULT_OK) {
+            //noinspection ConstantConditions
             File image = FileHelper.getMostRecentFile(getContext().getFilesDir());
             if (image != null) {
                 Attachment attachment = new Attachment();
@@ -1575,6 +1594,7 @@ public class ChangeDetailsFragment extends Fragment implements
             if (data.getData() != null) {
                 Cursor c = null;
                 try {
+                    //noinspection ConstantConditions
                     ContentResolver cr = getContext().getContentResolver();
                     c = cr.query(data.getData(), null, null, null, null);
                     if (c != null) {
@@ -1612,6 +1632,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
             IntentFilter filter = new IntentFilter();
             filter.addAction(ATTACHMENT_PROVIDER_CHANGED_ACTION);
+            //noinspection ConstantConditions
             LocalBroadcastManager.getInstance(getContext()).registerReceiver(
                     mAttachmentProviderChanged, filter);
 
@@ -1770,6 +1791,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mDialog.dismiss();
         }
         mDialog = null;
+        //noinspection ConstantConditions
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(
                 mAttachmentProviderChanged);
     }
@@ -1782,6 +1804,7 @@ public class ChangeDetailsFragment extends Fragment implements
         mBinding.patchSetInfo.setConfig(response.mProjectConfig);
         mBinding.patchSetInfo.setModel(revision);
         final int maxRevision = computeMaxRevisionNumber(response.mChange.revisions.values());
+        //noinspection ConstantConditions
         final String patchSetText = getContext().getString(R.string.change_details_header_patchsets,
                 revision.number, maxRevision);
         mBinding.patchSetInfo.setPatchset(patchSetText);
@@ -2266,6 +2289,7 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     private void setupSwipeToRefresh() {
+        //noinspection ConstantConditions
         mBinding.refresh.setColorSchemeColors(
                 ContextCompat.getColor(getContext(), R.color.accent));
         mBinding.refresh.setOnRefreshListener(this::forceRefresh);
@@ -2284,8 +2308,10 @@ public class ChangeDetailsFragment extends Fragment implements
     private void showProgress(boolean show, ChangeInfo change) {
         BaseActivity activity = (BaseActivity) getActivity();
         if (show) {
+            //noinspection ConstantConditions
             activity.onRefreshStart(this);
         } else {
+            //noinspection ConstantConditions
             activity.onRefreshEnd(this, change);
         }
         mBinding.refresh.setRefreshing(false);
@@ -2437,6 +2463,7 @@ public class ChangeDetailsFragment extends Fragment implements
             return;
         }
 
+        //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         PatchSetsAdapter adapter = new PatchSetsAdapter(
                 getContext(), mAllRevisions, mCurrentRevision);
@@ -2459,6 +2486,7 @@ public class ChangeDetailsFragment extends Fragment implements
             return;
         }
 
+        //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         PatchSetsAdapter adapter = new PatchSetsAdapter(
                 getContext(), mAllRevisionsWithBase, mDiffAgainstRevision);
@@ -2540,6 +2568,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
+    @SuppressWarnings("unused")
     private void performAccountClicked(AccountInfo account, Object tag) {
         if (account.accountId == 0) {
             // Nothing relevant to display
@@ -2554,6 +2583,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 StatsFragment.ACCOUNT_STATS, ModelHelper.toAccountId(account), filter, extra);
     }
 
+    @SuppressWarnings("unused")
     private void performRemoveReviewer(AccountInfo account, Object tag) {
         if (!isLocked()) {
             mRemoveReviewerLoader.clear();
@@ -2589,6 +2619,7 @@ public class ChangeDetailsFragment extends Fragment implements
             if (!mAttachments.isEmpty() && !provider.isSupported()) {
                 mAttachments.clear();
                 mBinding.reviewInfo.setAttachmentsSupport(mAttachmentsSupport);
+                //noinspection ConstantConditions
                 ((BaseActivity) getActivity()).showWarning(R.string.attachment_provider_not_supported);
                 return;
             }
@@ -2737,6 +2768,7 @@ public class ChangeDetailsFragment extends Fragment implements
             case "camera":
                 Intent i = AndroidHelper.createCaptureImageIntent(getContext());
                 if (i == null) {
+                    //noinspection ConstantConditions
                     ((BaseActivity) getActivity()).showWarning(
                             R.string.change_attachments_camera_capture_failure);
                     return;
@@ -2797,6 +2829,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         String action = getString(R.string.action_share);
+        //noinspection ConstantConditions
         Uri uri = FileProvider.getUriForFile(getContext(), "com.ruesga.rview.content",
                 CacheHelper.getAttachmentFile(getContext(), attachment));
         ActivityHelper.open(getContext(), action, uri, attachment.mMimeType);
@@ -2873,6 +2906,7 @@ public class ChangeDetailsFragment extends Fragment implements
         if (adapter == null) {
             return;
         }
+        //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         popupWindow.setAnchorView(anchor);
         popupWindow.setAdapter(adapter);
@@ -3027,6 +3061,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     break;
 
                 case R.id.delete_change:
+                    //noinspection ConstantConditions
                     AlertDialog dialog = new AlertDialog.Builder(getContext())
                             .setTitle(R.string.delete_draft_change_title)
                             .setMessage(R.string.delete_draft_change_confirm)
@@ -3561,6 +3596,7 @@ public class ChangeDetailsFragment extends Fragment implements
             for (Attachment attachment : mAttachments) {
                 if (attachment.mMimeType.startsWith("image/")
                         && !attachment.mMimeType.equals(mimeType)) {
+                    //noinspection ConstantConditions
                     ContentResolver cr = getContext().getContentResolver();
                     try {
                         File out = BitmapUtils.optimizeImage(getContext(),

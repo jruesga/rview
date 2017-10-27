@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
@@ -124,7 +125,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle state) {
         final Context context = inflater.getContext();
         mBinding = DataBindingUtil.inflate(inflater, getPageLayout(), container, false);
         setValidatorsForView(mBinding.repositoryNameEdit, new TextInputValidatorObserver(this),
@@ -262,6 +263,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
     }
 
     private boolean checkServerVersion() throws Exception {
+        //noinspection ConstantConditions
         Context ctx = getActivity().getApplicationContext();
         ServerVersion version;
         String endpoint;
@@ -314,6 +316,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
                     mBinding.repositoryUrl.setError(context.getString(
                             R.string.exception_unsupported_server_version));
                 } else if (isException(cause, NoConnectivityException.class)) {
+                    //noinspection ConstantConditions
                     ((WizardActivity) getActivity()).showMessage(context.getString(
                             R.string.exception_no_network_available));
                 } else {
