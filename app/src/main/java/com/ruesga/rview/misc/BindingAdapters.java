@@ -155,8 +155,9 @@ public class BindingAdapters {
 
     @BindingAdapter("bindImageTint")
     public static void bindImageTint(ImageView v, int color) {
-        final Drawable dw = DrawableCompat.wrap(v.getDrawable());
+        Drawable dw = v.getDrawable();
         if (dw != null) {
+            dw = DrawableCompat.wrap(dw.mutate());
             DrawableCompat.setTint(dw, color);
         }
         v.setImageDrawable(dw);
@@ -164,8 +165,9 @@ public class BindingAdapters {
 
     @BindingAdapter("bindImageTintList")
     public static void bindImageTintList(ImageView v, int colorList) {
-        final Drawable dw = DrawableCompat.wrap(v.getDrawable());
+        Drawable dw = v.getDrawable();
         if (dw != null) {
+            dw = DrawableCompat.wrap(dw.mutate());
             DrawableCompat.setTintList(dw,
                     ContextCompat.getColorStateList(v.getContext(), colorList));
         }
@@ -174,8 +176,9 @@ public class BindingAdapters {
 
     @BindingAdapter("bindImageTintAttr")
     public static void bindImageTintAttr(ImageView v, int colorAttr) {
-        final Drawable dw = DrawableCompat.wrap(v.getDrawable());
+        Drawable dw = v.getDrawable();
         if (dw != null) {
+            dw = DrawableCompat.wrap(dw.mutate());
             int[] attrs = {colorAttr};
             TypedArray ta = v.getContext().getTheme().obtainStyledAttributes(attrs);
             int color = ta.getResourceId(0, 0);
@@ -189,8 +192,9 @@ public class BindingAdapters {
 
     @BindingAdapter("bindBackgroundTint")
     public static void bindBackgroundTint(View v, int color) {
-        final Drawable dw = v.getBackground();
+        Drawable dw = v.getBackground();
         if (dw != null) {
+            dw = dw.mutate();
             DrawableCompat.setTint(dw, color);
         }
         v.setBackground(dw);
