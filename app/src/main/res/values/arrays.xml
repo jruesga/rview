@@ -255,5 +255,7 @@
         <item>okio</item>
         <item>okhttp_digest</item>
         <item>antlr_runtime</item>
+        <item>firebase</item>
+        <item>keyboardvisibilityevent</item>
     </string-array>
 </resources>

@@ -25,7 +25,7 @@ ext {
         okhttp3                     : '3.9.0',
         okio                        : '1.13.0',
         okhttp_digest               : '5028761430',
-        rxjava                      : '2.1.5',
+        rxjava                      : '2.1.6',
         rxandroid                   : '2.0.1',
         rxloader2                   : '244a5fddb6',
         commons_io                  : '2.5',
@@ -38,7 +38,7 @@ ext {
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '418cf67684',
         keyboardvisibilityevent     : '2.1.0',
-        aboutlibraries              : '5.9.7',
+        aboutlibraries              : '6.0.0',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.7.1',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
