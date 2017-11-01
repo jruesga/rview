@@ -220,8 +220,6 @@ public class MainActivity extends ChangeListBaseActivity {
         mUiHandler = new Handler(mMessenger);
         mIsTwoPane = getResources().getBoolean(R.bool.config_is_two_pane);
 
-        onRestoreInstanceState(savedInstanceState);
-
         super.onCreate(savedInstanceState);
 
         if (getIntent() != null) {
@@ -235,6 +233,10 @@ public class MainActivity extends ChangeListBaseActivity {
         }
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.content);
+
+        if (savedInstanceState != null) {
+            mModel = savedInstanceState.getParcelable(getClass().getSimpleName() + "_model");
+        }
         if (mModel == null) {
             mModel = new Model();
         }
@@ -317,14 +319,6 @@ public class MainActivity extends ChangeListBaseActivity {
     public void onPause() {
         super.onPause();
         mUiHandler.removeCallbacksAndMessages(null);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedState) {
-        if (savedState != null) {
-            super.onRestoreInstanceState(savedState);
-            mModel = savedState.getParcelable(getClass().getSimpleName() + "_model");
-        }
     }
 
     @Override
