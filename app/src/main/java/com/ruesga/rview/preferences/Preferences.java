@@ -292,7 +292,7 @@ public class Preferences {
     }
 
     public static String getAccountDiffMode(Context context, Account account) {
-        String def = context.getResources().getBoolean(R.bool.config_is_table)
+        String def = context.getResources().getBoolean(R.bool.config_is_tablet)
                 ? Constants.DIFF_MODE_SIDE_BY_SIDE : Constants.DIFF_MODE_UNIFIED;
         if (account == null) {
             return def;

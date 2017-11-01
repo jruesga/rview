@@ -17,10 +17,9 @@ package com.ruesga.rview;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 
-public abstract class AppCompatDelegateActivity extends AppCompatActivity {
+public abstract class AppCompatDelegateActivity extends ContextualCrashAnalyticsActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

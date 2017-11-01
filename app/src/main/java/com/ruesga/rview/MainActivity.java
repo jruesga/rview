@@ -194,6 +194,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 String account = intent.getStringExtra(AccountStatusFetcherService.EXTRA_ACCOUNT);
                 if (mAccount.getAccountHash().equals(account)) {
                     mAccount = Preferences.getAccount(context);
+                    setAnalyticsAccount(mAccount);
                     updateAccountStatus();
                     performUpdateNavigationDrawer(mModel.isAccountExpanded);
                 }
@@ -357,6 +358,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
                 if (!accountExists) {
                     mAccount = newAccount;
+                    setAnalyticsAccount(mAccount);
                     mAccounts = Preferences.addOrUpdateAccount(this, mAccount);
                     Preferences.setAccount(this, mAccount);
                     Formatter.refreshCachedPreferences(this);
@@ -380,6 +382,7 @@ public class MainActivity extends ChangeListBaseActivity {
         } else if (requestCode == REQUEST_ACCOUNT_SETTINGS) {
             // Refresh current view
             mAccount = Preferences.getAccount(this);
+            setAnalyticsAccount(mAccount);
             if (mModel.currentNavigationItemId == INVALID_ITEM) {
                 mModel.currentNavigationItemId = Preferences.getAccountHomePageId(this, mAccount);
             }
@@ -400,6 +403,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
     private void loadAccounts() {
         mAccount = Preferences.getAccount(this);
+        setAnalyticsAccount(mAccount);
         mAccounts = Preferences.getAccounts(this);
         if (mAccount != null) {
             Formatter.refreshCachedPreferences(this);
@@ -591,6 +595,7 @@ public class MainActivity extends ChangeListBaseActivity {
                     Account account = mAccounts.get(accountIndex);
                     if (account != null) {
                         mAccount = account;
+                        setAnalyticsAccount(mAccount);
                         performAccountSwitch();
                     }
                 }
@@ -735,6 +740,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
             // Use the first one account
             mAccount = mAccounts.get(0);
+            setAnalyticsAccount(mAccount);
         }
         Preferences.setAccount(this, mAccount);
         Formatter.refreshCachedPreferences(this);
@@ -842,6 +848,7 @@ public class MainActivity extends ChangeListBaseActivity {
 
         if (isCurrent) {
             mAccount = null;
+            setAnalyticsAccount(null);
 
             performAccountSwitch();
 

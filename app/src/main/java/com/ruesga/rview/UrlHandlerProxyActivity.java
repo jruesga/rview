@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -38,7 +39,7 @@ import com.ruesga.rview.widget.RegExLinkifyTextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UrlHandlerProxyActivity extends AppCompatDelegateActivity {
+public class UrlHandlerProxyActivity extends AppCompatActivity {
 
     private static final String TAG = "UrlHandlerProxyActivity";
 

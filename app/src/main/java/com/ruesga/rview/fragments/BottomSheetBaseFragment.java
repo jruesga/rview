@@ -95,7 +95,7 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
             mBinding.unbind();
         }
 
-        if (getResources().getBoolean(R.bool.config_is_table)) {
+        if (getResources().getBoolean(R.bool.config_is_tablet)) {
             //noinspection ConstantConditions
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
@@ -118,7 +118,7 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
         }
 
         // Don't allow rotation on tablets while on BottomSheet (because dual panel)
-        if (getResources().getBoolean(R.bool.config_is_table)) {
+        if (getResources().getBoolean(R.bool.config_is_tablet)) {
             int currentOrientation = getResources().getConfiguration().orientation;
             if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
                 //noinspection ConstantConditions

@@ -801,6 +801,8 @@ public class ChangeDetailsFragment extends Fragment implements
                 if (TextUtils.isEmpty(mCurrentRevision)
                         || !change.revisions.containsKey(mCurrentRevision)) {
                     mCurrentRevision = ModelHelper.extractBestRevisionId(change);
+                    //noinspection ConstantConditions
+                    ((BaseActivity) getActivity()).setAnalyticsBase(mCurrentRevision);
                 }
 
                 // Check supported features
@@ -901,6 +903,8 @@ public class ChangeDetailsFragment extends Fragment implements
         public void onNext(Boolean value) {
             // Switch to the new revision
             mCurrentRevision = mDiffAgainstRevision = null;
+            //noinspection ConstantConditions
+            ((BaseActivity) getActivity()).setAnalyticsBase(mCurrentRevision);
             forceRefresh();
 
             mChangeEditMessageLoader.clear();
@@ -1539,6 +1543,8 @@ public class ChangeDetailsFragment extends Fragment implements
                 if (revisionId != null && !revisionId.equals(mCurrentRevision)) {
                     // Change to the current revision
                     mCurrentRevision = revisionId;
+                    //noinspection ConstantConditions
+                    ((BaseActivity) getActivity()).setAnalyticsBase(mCurrentRevision);
 
                     // Restore diff against to base
                     mDiffAgainstRevision = null;
@@ -1577,6 +1583,8 @@ public class ChangeDetailsFragment extends Fragment implements
             // If the user publish the edit, then reload the whole change
             if (resultCode == Activity.RESULT_OK) {
                 mCurrentRevision = mDiffAgainstRevision = null;
+                //noinspection ConstantConditions
+                ((BaseActivity) getActivity()).setAnalyticsBase(mCurrentRevision);
                 forceRefresh();
             }
         } else if (requestCode == REQUEST_ATTACHMENT_CAMERA && resultCode == Activity.RESULT_OK) {
@@ -2473,6 +2481,8 @@ public class ChangeDetailsFragment extends Fragment implements
         popupWindow.setOnItemClickListener((parent, view, position, id) -> {
             popupWindow.dismiss();
             mCurrentRevision = mAllRevisions.get(position).commit.commit;
+            //noinspection ConstantConditions
+            ((BaseActivity) getActivity()).setAnalyticsBase(mCurrentRevision);
             // Restore diff against to base
             mDiffAgainstRevision = null;
             forceRefresh();

@@ -15,5 +15,5 @@
      limitations under the License.
  -->
 <resources>
-    <bool name="config_is_table">true</bool>
+    <bool name="config_is_tablet">true</bool>
 </resources>

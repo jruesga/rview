@@ -216,6 +216,8 @@ public class EditorFragment extends Fragment
         public void onNext(Map<String, FileInfo> files) {
             // Update files
             mFile = null;
+            //noinspection ConstantConditions
+            ((BaseActivity) getActivity()).setAnalyticsFileId(mFile);
             mFiles.clear();
             mFileInfo.clear();
             for (String file : files.keySet()) {
@@ -228,6 +230,8 @@ public class EditorFragment extends Fragment
 
             // At least commit message should be present
             mFile = mFiles.get(0);
+            //noinspection ConstantConditions
+            ((BaseActivity) getActivity()).setAnalyticsFileId(mFile);
             mLastFile = mCurrentFile = 0;
 
             updateModel();
@@ -1150,6 +1154,8 @@ public class EditorFragment extends Fragment
         }
 
         mFile = mFiles.get(position);
+        //noinspection ConstantConditions
+        ((BaseActivity) getActivity()).setAnalyticsFileId(mFile);
         mLastFile = mCurrentFile;
         mCurrentFile = position;
         updateModel();

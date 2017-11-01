@@ -737,6 +737,7 @@ public class DiffViewerFragment extends Fragment
                 updateModel();
 
                 mFile = mFiles.get(position);
+                activity.setAnalyticsFileId(mFile);
                 mCurrentFile = position;
                 activity.getContentBinding().pagerController.currentPage(mCurrentFile, true, true);
             }
@@ -814,7 +815,10 @@ public class DiffViewerFragment extends Fragment
 
             // Close the drawer
             BaseActivity activity = (BaseActivity) getActivity();
+            //noinspection ConstantConditions
             activity.closeOptionsDrawer();
+            activity.setAnalyticsBase(mRevisionId);
+            activity.setAnalyticsBase(mBase);
 
             // Refresh files
             performLoadFiles();
@@ -953,6 +957,7 @@ public class DiffViewerFragment extends Fragment
             }
 
             mFile = mFiles.get(position);
+            activity.setAnalyticsFileId(mFile);
             mCurrentFile = position;
             if (fromUser) {
                 mScrollPosition = -1;
