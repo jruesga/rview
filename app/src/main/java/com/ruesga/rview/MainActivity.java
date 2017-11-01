@@ -243,7 +243,9 @@ public class MainActivity extends ChangeListBaseActivity {
 
         setupActivity();
         loadAccounts();
-        launchAddAccountIfNeeded();
+        if (savedInstanceState == null) {
+            launchAddAccountIfNeeded();
+        }
         setupNavigationDrawer();
         updateAccountCustomFilters();
 
