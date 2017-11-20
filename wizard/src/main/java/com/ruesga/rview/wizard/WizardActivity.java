@@ -271,7 +271,7 @@ public abstract class WizardActivity extends AppCompatActivity {
         mHasStateSaved = false;
     }
 
-    private void restoreInstance(Bundle savedInstanceState) {
+    public void restoreInstance(Bundle savedInstanceState) {
         if (mHasStateRestored) {
             return;
         }

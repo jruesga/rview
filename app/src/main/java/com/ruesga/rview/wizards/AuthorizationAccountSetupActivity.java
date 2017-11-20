@@ -53,7 +53,7 @@ public class AuthorizationAccountSetupActivity extends WizardActivity {
         savedInstance.putBoolean(AccountPageFragment.STATE_AUTHENTICATION_FAILURE,
                 getIntent().getBooleanExtra(ExceptionHelper.EXTRA_AUTHENTICATION_FAILURE, false));
         savedInstance.putBoolean(AccountPageFragment.STATE_SINGLE_PAGE, true);
-        onRestoreInstanceState(savedInstance);
+        restoreInstance(savedInstance);
     }
 
     @Override
