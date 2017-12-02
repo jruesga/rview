@@ -113,14 +113,18 @@ public class MainActivity extends ChangeListBaseActivity {
         }
 
         protected Model(Parcel in) {
-            accountName = in.readString();
-            accountRepository = in.readString();
+            if (in.readInt() == 1) {
+                accountName = in.readString();
+            }
+            if (in.readInt() == 1) {
+                accountRepository = in.readString();
+            }
             isAccountExpanded = in.readByte() != 0;
             currentNavigationItemId = in.readInt();
-            if (in.readByte() == 1) {
+            if (in.readInt() == 1) {
                 filterName = in.readString();
             }
-            if (in.readByte() == 1) {
+            if (in.readInt() == 1) {
                 filterQuery = in.readString();
             }
             selectedChangeId = in.readInt();
@@ -128,14 +132,24 @@ public class MainActivity extends ChangeListBaseActivity {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(accountName);
-            dest.writeString(accountRepository);
+            dest.writeInt(!TextUtils.isEmpty(accountName) ? 1 : 0);
+            if (!TextUtils.isEmpty(accountName)) {
+                dest.writeString(accountName);
+            }
+            dest.writeInt(!TextUtils.isEmpty(accountRepository) ? 1 : 0);
+            if (!TextUtils.isEmpty(accountRepository)) {
+                dest.writeString(accountRepository);
+            }
             dest.writeByte((byte) (isAccountExpanded ? 1 : 0));
             dest.writeInt(currentNavigationItemId);
-            dest.writeByte((byte) (filterName != null ? 1 : 0));
-            dest.writeString(filterName);
-            dest.writeByte((byte) (filterQuery != null ? 1 : 0));
-            dest.writeString(filterQuery);
+            dest.writeInt(!TextUtils.isEmpty(filterName) ? 1 : 0);
+            if (!TextUtils.isEmpty(filterName)) {
+                dest.writeString(filterName);
+            }
+            dest.writeInt(!TextUtils.isEmpty(filterQuery) ? 1 : 0);
+            if (!TextUtils.isEmpty(filterQuery)) {
+                dest.writeString(filterQuery);
+            }
             dest.writeInt(selectedChangeId);
         }
 

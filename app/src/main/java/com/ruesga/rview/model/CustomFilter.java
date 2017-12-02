@@ -18,6 +18,7 @@ package com.ruesga.rview.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
@@ -37,9 +38,16 @@ public class CustomFilter implements Parcelable, Comparable<CustomFilter> {
     }
 
     protected CustomFilter(Parcel in) {
-        mId = in.readString();
-        mName = in.readString();
-        mQuery = SerializationManager.getInstance().fromJson(in.readString(), ChangeQuery.class);
+        if (in.readInt() == 1) {
+            mId = in.readString();
+        }
+        if (in.readInt() == 1) {
+            mName = in.readString();
+        }
+        if (in.readInt() == 1) {
+            mQuery = SerializationManager.getInstance().fromJson(
+                    in.readString(), ChangeQuery.class);
+        }
     }
 
     public static final Creator<CustomFilter> CREATOR = new Creator<CustomFilter>() {
@@ -61,9 +69,18 @@ public class CustomFilter implements Parcelable, Comparable<CustomFilter> {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(mId);
-        parcel.writeString(mName);
-        parcel.writeString(SerializationManager.getInstance().toJson(mQuery));
+        parcel.writeInt(!TextUtils.isEmpty(mId) ? 1 : 0);
+        if (!TextUtils.isEmpty(mId)) {
+            parcel.writeString(mId);
+        }
+        parcel.writeInt(!TextUtils.isEmpty(mName) ? 1 : 0);
+        if (!TextUtils.isEmpty(mName)) {
+            parcel.writeString(mName);
+        }
+        parcel.writeInt(mQuery != null ? 1 : 0);
+        if (mQuery != null) {
+            parcel.writeString(SerializationManager.getInstance().toJson(mQuery));
+        }
     }
 
     @Override
