@@ -51,7 +51,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.12.0',
+        mockito                     : '2.13.0',
         powermock                   : '2.0.0-beta.5',
         base64                      : '2.3.9'
     ]
@@ -69,7 +69,7 @@ allprojects {
             classpath 'com.android.tools.build:gradle:3.0.1'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.25.0'
+            classpath 'io.fabric.tools:gradle:1.25.1'
         }
     }
 
@@ -102,7 +102,7 @@ subprojects {
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
             android {
                 compileSdkVersion 27
-                buildToolsVersion '27.0.1'
+                buildToolsVersion '27.0.2'
 
                 defaultConfig {
                     minSdkVersion 16
