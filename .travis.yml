@@ -15,6 +15,9 @@ android:
 jdk:
   - oraclejdk8
 
+before_install:
+  - echo "y" | sdkmanager "platforms;android-27"
+
 script:
   - ./gradlew clean lintDebug testDebug
 
