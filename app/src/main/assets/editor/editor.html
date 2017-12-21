@@ -96,7 +96,10 @@
 
         if (!big) {
             editor.session.setMode(edtFindByFileName(name));
+        } else {
+            editor.session.setMode('ace/mode/text');
         }
+
         editor.setValue(atobu(edt_content), -1);
         editor.session.getSelection().clearSelection();
         editor.gotoLine(1, 0);
