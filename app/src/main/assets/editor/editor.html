@@ -49,6 +49,18 @@
         }
     });
 
+    // https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
+    function btoau(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+            return String.fromCharCode(parseInt(p1, 16))
+        }))
+    }
+    function atobu(str) {
+        return decodeURIComponent(Array.prototype.map.call(window.atob(str), function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        }).join(''))
+    }
+
     function setWrapMode(wrap) {
         editor.session.setUseWrapMode(wrap);
         editor.resize(true);
@@ -84,7 +96,7 @@
         if (!big) {
             editor.session.setMode(edtFindByFileName(name));
         }
-        editor.setValue(window.atob(edt_content), 0);
+        editor.setValue(atobu(edt_content), 0);
         editor.session.getSelection().clearSelection();
         editor.gotoLine(1, 0);
         edt_content = '';
@@ -95,7 +107,7 @@
         if (resolveMimeType) {
             mimeType = detectLang(val);
         }
-        var encoded = window.btoa(val);
+        var encoded = btoau(val);
         var crc = -1;
         if (encoded.length > 0) {
             var s = 0;
