@@ -97,7 +97,7 @@
         if (!big) {
             editor.session.setMode(edtFindByFileName(name));
         }
-        editor.setValue(atobu(edt_content), 0);
+        editor.setValue(atobu(edt_content), -1);
         editor.session.getSelection().clearSelection();
         editor.gotoLine(1, 0);
         edt_content = '';
