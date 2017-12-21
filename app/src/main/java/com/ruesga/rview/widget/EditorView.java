@@ -115,12 +115,6 @@ public class EditorView extends FrameLayout {
         addView(mWebView);
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        mWebView.getLayoutParams().height = bottom - top;
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     private WebView createWebView() {
         WebView webview = new AceWebView(getContext());
