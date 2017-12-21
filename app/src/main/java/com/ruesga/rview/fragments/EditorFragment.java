@@ -1065,7 +1065,7 @@ public class EditorFragment extends Fragment
     private void readFileOps() {
         try {
             byte[] data = CacheHelper.readAccountDiffCacheFile(getContext(), "edit.ops");
-            Type type = new TypeToken<Map<String, MODE>>(){}.getType();
+            Type type = new TypeToken<Map<String, Op>>(){}.getType();
             mEditOps = SerializationManager.getInstance().fromJson(new String(data), type);
         } catch (FileNotFoundException ex) {
             // Ignore
