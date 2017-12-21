@@ -168,6 +168,9 @@ public class PagerControllerLayout extends FrameLayout {
         if (mOnPageSelectionListener != null) {
             mOnPageSelectionListener.onPageSelected(position, fromUser);
         }
+        if (mAdapter.getFragmentManager().isStateSaved()) {
+            return;
+        }
 
         FragmentTransaction tx = mAdapter.getFragmentManager().beginTransaction()
                 .setReorderingAllowed(false);
