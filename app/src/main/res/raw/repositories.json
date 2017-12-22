@@ -54,7 +54,7 @@
   {"name":"SlimRoms", "url":"https://review.slimroms.org/"},
   {"name":"Substratum", "url":"https://substratum.review/"},
   {"name":"TeamForge CollabNet", "url":"https://forge.collab.net/gerrit/"},
-  {"name":"Tuleap", "url":"https://gerrit.tuleap.net/", "ci_accounts": "^(Jenkins)$"},
+  {"name":"Tuleap", "url":"https://gerrit.tuleap.net/", "ci_accounts": "^(Jenkins.*)$"},
   {"name":"Typo3", "url":"https://review.typo3.org/", "ci_accounts": "^(TYPO3com)$"},
   {"name":"TWRP", "url":"https://gerrit.twrp.me/"},
   {"name":"Unlegacy Android", "url":"https://gerrit.unlegacy-android.org/"},
