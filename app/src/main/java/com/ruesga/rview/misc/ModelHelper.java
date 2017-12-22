@@ -688,6 +688,13 @@ public class ModelHelper {
             }
         }
         if (TextUtils.isEmpty(revId)) {
+            if (change.revisions.size() > 0) {
+                // Revisions should be usually sorted, so we can considered the first one
+                // as current revision. This could cause some problems it this is not the real
+                // current revision, but is better than the following fallback.
+                return change.revisions.keySet().iterator().next();
+            }
+
             // This is probably an error (and can still made the app crash), but is the
             // best thing we can do in this situation
             return GerritApi.CURRENT_REVISION;
