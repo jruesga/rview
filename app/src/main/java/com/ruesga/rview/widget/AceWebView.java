@@ -58,7 +58,6 @@ public class AceWebView extends WebView implements NestedScrollingChild {
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
         InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
         outAttrs.imeOptions = EditorInfo.IME_NULL;
-        outAttrs.imeOptions = outAttrs.imeOptions | EditorInfo.TYPE_TEXT_FLAG_AUTO_COMPLETE;
         outAttrs.inputType = InputType.TYPE_NULL;
         return inputConnection;
     }
