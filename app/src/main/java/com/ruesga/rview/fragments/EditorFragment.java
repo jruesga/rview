@@ -175,30 +175,30 @@ public class EditorFragment extends Fragment
                 case R.id.wrap_mode_on:
                     mWrap = true;
                     Preferences.setAccountWrapMode(getContext(), mAccount, mWrap);
-                    mBinding.editor.setWrap(mWrap);
+                    setWrap(mWrap);
                     break;
                 case R.id.wrap_mode_off:
                     mWrap = false;
                     Preferences.setAccountWrapMode(getContext(), mAccount, mWrap);
-                    mBinding.editor.setWrap(mWrap);
+                    setWrap(mWrap);
                     break;
                 case R.id.text_size_smaller:
                     mTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_SMALLER;
                     Preferences.setAccountTextSizeFactor(
                             getContext(), mAccount, mTextSizeFactor);
-                    mBinding.editor.setTextSize(12);
+                    setTextSize(mTextSizeFactor);
                     break;
                 case R.id.text_size_normal:
                     mTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_NORMAL;
                     Preferences.setAccountTextSizeFactor(
                             getContext(), mAccount, mTextSizeFactor);
-                    mBinding.editor.setTextSize(14);
+                    setTextSize(mTextSizeFactor);
                     break;
                 case R.id.text_size_bigger:
                     mTextSizeFactor = Constants.DEFAULT_TEXT_SIZE_BIGGER;
                     Preferences.setAccountTextSizeFactor(
                             getContext(), mAccount, mTextSizeFactor);
-                    mBinding.editor.setTextSize(16);
+                    setTextSize(mTextSizeFactor);
                     break;
             }
 
@@ -513,6 +513,7 @@ public class EditorFragment extends Fragment
                 .listenOn(mContentChangedListener)
                 .listenOn(mMessageListener);
         mBinding.setAdvise(null);
+        startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
     }
 
@@ -558,6 +559,10 @@ public class EditorFragment extends Fragment
     private void startLoadersWithValidContext(@Nullable Bundle savedInstanceState) {
         // Configure the diff_options menu
         BaseActivity activity = ((BaseActivity) getActivity());
+        if (activity == null || mBinding == null) {
+            return;
+        }
+
         //noinspection ConstantConditions
         activity.configureOptionsTitle(getString(
                 !mReadOnly ? R.string.menu_edit_options : R.string.menu_view_options));
@@ -566,6 +571,9 @@ public class EditorFragment extends Fragment
         mAccount = Preferences.getAccount(getContext());
         mWrap = Preferences.getAccountWrapMode(getContext(), mAccount);
         mTextSizeFactor = Preferences.getAccountTextSizeFactor(getContext(), mAccount);
+
+        setWrap(mWrap);
+        setTextSize(mTextSizeFactor);
 
         if (!mReadOnly) {
             // Edit mode
@@ -1209,5 +1217,19 @@ public class EditorFragment extends Fragment
         File dir = CacheHelper.getAccountDiffCacheDir(getContext());
         File[] edits = dir.listFiles((dir1, name) -> name.endsWith(".edit"));
         return edits.length > 0 || mEditOps.size() > 0;
+    }
+
+    private void setWrap(boolean wrap) {
+        mBinding.editor.setWrap(wrap);
+    }
+
+    private void setTextSize(float textSizeFactor) {
+        if (textSizeFactor == Constants.DEFAULT_TEXT_SIZE_SMALLER) {
+            mBinding.editor.setTextSize(12);
+        } else if (textSizeFactor == Constants.DEFAULT_TEXT_SIZE_NORMAL) {
+            mBinding.editor.setTextSize(14);
+        } else if (textSizeFactor == Constants.DEFAULT_TEXT_SIZE_BIGGER) {
+            mBinding.editor.setTextSize(16);
+        }
     }
 }
