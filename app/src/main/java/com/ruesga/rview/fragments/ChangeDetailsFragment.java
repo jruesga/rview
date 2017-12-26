@@ -367,7 +367,8 @@ public class ChangeDetailsFragment extends Fragment implements
         public void onWebLinkPressed(View v) {
             String url = (String) v.getTag();
             if (url != null) {
-                ActivityHelper.openUriInCustomTabs(mFragment.getActivity(), url);
+                ActivityHelper.openUriInCustomTabs(mFragment.getActivity(),
+                        ActivityHelper.resolveRepositoryUri(v.getContext(), url));
             }
         }
 

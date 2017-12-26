@@ -48,6 +48,7 @@ import com.ruesga.rview.fragments.StatsFragment;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
+import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 
@@ -433,5 +434,26 @@ public class ActivityHelper {
         Intent intent = new Intent(activity, SearchActivity.class);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);
+    }
+
+    public static Uri resolveRepositoryUri(Context context, String uri) {
+        Uri u = Uri.parse(uri);
+        if (u.getAuthority() == null) {
+            Account account = Preferences.getAccount(context);
+            if (account != null) {
+                String authority = account.mRepository.mUrl;
+                if (!authority.endsWith("/")) {
+                    authority += "/";
+                }
+
+                String path = uri;
+                if (path.startsWith("/")) {
+                    path = path.substring(1);
+                }
+
+                u = Uri.parse(authority + path);
+            }
+        }
+        return u;
     }
 }
