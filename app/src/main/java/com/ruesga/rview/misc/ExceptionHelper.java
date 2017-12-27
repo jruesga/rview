@@ -155,6 +155,14 @@ public class ExceptionHelper {
         return isHttpException(cause, 404);
     }
 
+    public static boolean isServerUnavailableException(Throwable cause) {
+        return isHttpException(cause, 503) ||
+                (isException(cause, ConnectException.class)
+                || isException(cause, NoRouteToHostException.class)
+                || isException(cause, PortUnreachableException.class)
+                || isException(cause, SocketTimeoutException.class));
+    }
+
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions", "deprecation"})
     private static boolean isHttpException(Throwable cause, int httpCode) {
         if (isException(cause, retrofit2.HttpException.class)) {

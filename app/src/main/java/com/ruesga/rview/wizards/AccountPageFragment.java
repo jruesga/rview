@@ -65,6 +65,7 @@ import java.util.Locale;
 import java.util.concurrent.Callable;
 
 import static com.ruesga.rview.misc.ExceptionHelper.isException;
+import static com.ruesga.rview.misc.ExceptionHelper.isServerUnavailableException;
 
 public class AccountPageFragment extends WizardPageFragment {
 
@@ -450,6 +451,11 @@ public class AccountPageFragment extends WizardPageFragment {
                         //noinspection ConstantConditions
                         ((WizardActivity) getActivity()).showMessage(context.getString(
                                 R.string.exception_no_network_available));
+                    } else if (isServerUnavailableException(cause)) {
+                        //noinspection ConstantConditions
+                        ((WizardActivity) getActivity()).showMessage(context.getString(
+                                R.string.exception_server_cannot_be_reached));
+
                     } else {
                         if (!mModel.authenticatedAccess &&
                                 ExceptionHelper.isAuthenticationException(cause)) {

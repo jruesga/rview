@@ -62,6 +62,7 @@ import java.util.Locale;
 import java.util.concurrent.Callable;
 
 import static com.ruesga.rview.misc.ExceptionHelper.isException;
+import static com.ruesga.rview.misc.ExceptionHelper.isServerUnavailableException;
 
 public class RepositoryPageFragment extends WizardPageFragment {
 
@@ -319,6 +320,10 @@ public class RepositoryPageFragment extends WizardPageFragment {
                     //noinspection ConstantConditions
                     ((WizardActivity) getActivity()).showMessage(context.getString(
                             R.string.exception_no_network_available));
+                } else if (isServerUnavailableException(cause)) {
+                    //noinspection ConstantConditions
+                    ((WizardActivity) getActivity()).showMessage(context.getString(
+                            R.string.exception_server_cannot_be_reached));
                 } else {
                     // Just ignore it if we don't have a valid context
                     if (!(cause instanceof NoActivityAttachedException)) {
