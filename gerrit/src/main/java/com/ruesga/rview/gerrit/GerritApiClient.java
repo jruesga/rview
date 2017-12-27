@@ -22,6 +22,7 @@ import android.text.format.DateUtils;
 
 import com.burgstaller.okhttp.AuthenticationCacheInterceptor;
 import com.burgstaller.okhttp.CachingAuthenticatorDecorator;
+//import com.burgstaller.okhttp.DispatchingAuthenticator;
 import com.burgstaller.okhttp.DispatchingAuthenticator;
 import com.burgstaller.okhttp.basic.BasicAuthenticator;
 import com.burgstaller.okhttp.digest.CachingAuthenticator;
@@ -35,20 +36,28 @@ import com.ruesga.rview.gerrit.filter.GroupQuery;
 import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import me.tatarka.rxloader2.safe.SafeObservable;
+import okhttp3.Cookie;
+import okhttp3.CookieJar;
+import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -59,18 +68,92 @@ class GerritApiClient implements GerritApi {
 
     private final String mEndPoint;
     private final GerritRestApi mService;
+    private final CookieManager mCookieManager;
+    private boolean mWasAuthorizedPreviously = false;
     private final PlatformAbstractionLayer mAbstractionLayer;
     private long mLastServerVersionCheck = 0;
     ServerVersion mServerVersion;
     private List<Features> mSupportedFeatures = new ArrayList<>();
 
     private static final String AUTHENTICATED_PATH = "/a/";
+    private static final String LOGIN_PATH = "login/";
+    private static final Pattern xAUTH_PATTERN = Pattern.compile(".*?xGerritAuth=\"(.+?)\"");
+
+    private static class CookieManager implements CookieJar {
+        private static final String GERRIT_ACCOUNT_COOKIE = "GerritAccount";
+        private static final String XSRF_TOKEN_COOKIE = "XSRF_TOKEN";
+
+        private static final List<String> ACCEPTED_COOKIES =
+                Arrays.asList(GERRIT_ACCOUNT_COOKIE, XSRF_TOKEN_COOKIE);
+        private final Map<String, Cookie> mCookieStore = new LinkedHashMap<>();
+        private final String mEntryPoint;
+
+        CookieManager(String entryPoint) {
+            mEntryPoint = entryPoint;
+        }
+
+        @Override
+        public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+            if (isGerritEntryPointUrl(url)) {
+                for (Cookie cookie : cookies) {
+                    if (ACCEPTED_COOKIES.contains(cookie.name())){
+                        mCookieStore.put(cookie.name(), cookie);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public List<Cookie> loadForRequest(HttpUrl url) {
+            List<Cookie> cookies = new ArrayList<>();
+            if (isGerritEntryPointUrl(url)) {
+                cookies.addAll(mCookieStore.values());
+            }
+            return cookies;
+        }
+
+        private String value(String name) {
+            if (mCookieStore.containsKey(name)) {
+                return mCookieStore.get(name).value();
+            }
+            return null;
+        }
+
+        private boolean expired(String name) {
+            if (mCookieStore.containsKey(name)) {
+                long expiresAt = mCookieStore.get(name).expiresAt();
+                if (expiresAt > 0 && expiresAt < System.currentTimeMillis()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void add(String name, String value) {
+            Cookie cookie = new Cookie.Builder()
+                    .name(name)
+                    .value(value)
+                    .path("/")
+                    .expiresAt(-1)
+                    .build();
+            mCookieStore.put(name, cookie);
+        }
+
+        private void clear() {
+            mCookieStore.clear();
+        }
+
+        private boolean isGerritEntryPointUrl(HttpUrl url) {
+            return url.toString().startsWith(mEntryPoint);
+        }
+    }
 
 
     GerritApiClient(String endpoint, Authorization authorization,
             PlatformAbstractionLayer abstractionLayer) {
         mAbstractionLayer = abstractionLayer;
         mEndPoint = endpoint;
+        mCookieManager = new CookieManager(toUnauthenticatedEndpoint(mEndPoint));
 
         Authorization auth = authorization;
         if (auth == null) {
@@ -85,6 +168,7 @@ class GerritApiClient implements GerritApi {
             authenticator = new DispatchingAuthenticator.Builder()
                     .with("digest", digestAuthenticator)
                     .with("basic", basicAuthenticator)
+                    .requireAuthScheme(false)
                     .build();
         }
 
@@ -93,11 +177,12 @@ class GerritApiClient implements GerritApi {
                 ? OkHttpHelper.getUnsafeClientBuilder() : OkHttpHelper.getSafeClientBuilder();
         clientBuilder
                 .readTimeout(20000, java.util.concurrent.TimeUnit.MILLISECONDS)
+                .cookieJar(mCookieManager)
                 .followRedirects(true)
                 .followSslRedirects(true)
                 .addInterceptor(createConnectivityCheckInterceptor())
                 .addInterceptor(createLoggingInterceptor())
-                .addInterceptor(createHeadersInterceptor());
+                .addInterceptor(createHeadersInterceptor(authorization));
         if (!auth.isAnonymousUser()) {
             final Map<String, CachingAuthenticator> authCache = new ConcurrentHashMap<>();
             clientBuilder
@@ -132,7 +217,7 @@ class GerritApiClient implements GerritApi {
         return logging;
     }
 
-    private Interceptor createHeadersInterceptor() {
+    private Interceptor createHeadersInterceptor(Authorization auth) {
         return chain -> {
             Request original = chain.request();
             Request.Builder requestBuilder = original.newBuilder();
@@ -141,18 +226,148 @@ class GerritApiClient implements GerritApi {
                         "application/octet-stream, text/plain, application/json");
             }
 
-            // Should process the request as an unauthenticated request?
+            // If the call doesn't support authentication, then we don't need to worry about
+            // anything more. Just can an assume the result of the response
+            if (auth.isAnonymousUser()) {
+                Request request = requestBuilder.build();
+                mWasAuthorizedPreviously = false;
+                return chain.proceed(request);
+            }
+
+            // If the X-Gerrit-Unauthenticated header is present, the api entry point is
+            // unauthenticated regardless of whether the client was configured with authentication
+            // (for example for the Documentation entry points)
             if (original.header("X-Gerrit-Unauthenticated") != null) {
-                HttpUrl url = original.url();
-                if (url.encodedPath().startsWith(AUTHENTICATED_PATH)) {
-                    requestBuilder.url(original.url().toString()
-                            .replaceFirst(AUTHENTICATED_PATH, "/"));
+                changeToUnauthenticatedEntryPoint(original, requestBuilder);
+                Request request = requestBuilder.build();
+                return chain.proceed(request);
+            }
+
+            // Sent cookie authorization?
+            String token = mCookieManager.value(CookieManager.XSRF_TOKEN_COOKIE);
+            if (token != null && mCookieManager.expired(CookieManager.GERRIT_ACCOUNT_COOKIE)) {
+                // Expired? Login again
+                if (login(chain, auth)) {
+                    token = mCookieManager.value(CookieManager.XSRF_TOKEN_COOKIE);
                 }
             }
+            if (token != null) {
+                requestBuilder.header("X-Gerrit-Auth", token);
+                changeToUnauthenticatedEntryPoint(original, requestBuilder);
+            }
+
+            // Proceed with the request
             Request request = requestBuilder.build();
-            return chain.proceed(request);
+            Response response = chain.proceed(request);
+            if (response.code() == 401 || (response.code() == 403 && !mWasAuthorizedPreviously)) {
+                // Unauthorized or Forbidden without previous being authorized.
+                // Try to login in order to obtain a XSRF token
+                if (login(chain, auth)) {
+                    // Make request again, now with all the necessary tokens
+                    changeToUnauthenticatedEntryPoint(original, requestBuilder);
+                    request = requestBuilder.build();
+                    response = markAsAuthorized(chain.proceed(request));
+                }
+            }
+            return markAsAuthorized(response);
         };
     }
+
+    private Response markAsAuthorized(Response response) {
+        if (!mWasAuthorizedPreviously) {
+            mWasAuthorizedPreviously = response.isSuccessful();
+        }
+        return response;
+    }
+
+    private boolean login(Interceptor.Chain chain, Authorization auth) throws IOException {
+        // Clear all cookies before try to login
+        mCookieManager.clear();
+        return basicAuthLogin(chain) || formAuthLogin(chain, auth);
+    }
+
+    private boolean basicAuthLogin(Interceptor.Chain chain) throws IOException {
+        try {
+            Request original = chain.request();
+            Request.Builder requestBuilder =
+                    original.newBuilder()
+                            .removeHeader("Accept")
+                            .url(toUnauthenticatedEndpoint(mEndPoint) + LOGIN_PATH);
+            Request request = requestBuilder.build();
+            Response response = chain.proceed(request);
+            if (!response.isSuccessful()) {
+                return false;
+            }
+
+            // Extract cookie from body response (in Gerrit <2.12 xAuth cookie is inside html
+            // response, rather than as a cookie)
+            return extractXAuthCookieFromHtmlBody(response);
+        } catch (IOException ex) {
+            // Ignore
+        }
+        return false;
+    }
+
+    private boolean formAuthLogin(Interceptor.Chain chain, Authorization auth) throws IOException {
+        try {
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("username", auth.mUsername)
+                    .add("password", auth.mPassword)
+                    .build();
+            Request original = chain.request();
+            Request.Builder requestBuilder =
+                    original.newBuilder()
+                            .removeHeader("Accept")
+                            .url(toUnauthenticatedEndpoint(mEndPoint) + LOGIN_PATH)
+                            .post(requestBody);
+            Request request = requestBuilder.build();
+            Response response = chain.proceed(request);
+            if (!response.isSuccessful()) {
+                return false;
+            }
+
+            // Extract cookie from body response (in Gerrit <2.12 xAuth cookie is inside html
+            // response, rather than as a cookie)
+            return extractXAuthCookieFromHtmlBody(response);
+        } catch (IOException ex) {
+            // Ignore
+        }
+        return false;
+    }
+
+    private boolean extractXAuthCookieFromHtmlBody(Response response) throws IOException {
+        // If we have the cookie, ignore this call
+        if (mCookieManager.value(CookieManager.XSRF_TOKEN_COOKIE) != null) {
+            return true;
+        }
+
+        if (mCookieManager.value(CookieManager.GERRIT_ACCOUNT_COOKIE) != null) {
+            ResponseBody body = response.body();
+            if (body != null) {
+                try {
+                    Matcher matcher = xAUTH_PATTERN.matcher(body.string());
+                    if (matcher.find()) {
+                        mCookieManager.add(CookieManager.XSRF_TOKEN_COOKIE, matcher.group(1));
+                        return true;
+                    }
+                } finally {
+                    body.close();
+                }
+            }
+        }
+        return false;
+    }
+
+    private void changeToUnauthenticatedEntryPoint(
+            Request original, Request.Builder requestBuilder) {
+        HttpUrl url = original.url();
+        if (url.encodedPath().startsWith(AUTHENTICATED_PATH)) {
+            requestBuilder.url(original.url().toString()
+                    .replaceFirst(AUTHENTICATED_PATH, "/"));
+        }
+    }
+
+
 
     private Interceptor createConnectivityCheckInterceptor() {
         return chain -> {
