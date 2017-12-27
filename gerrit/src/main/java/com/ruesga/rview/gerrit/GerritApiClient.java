@@ -228,7 +228,7 @@ class GerritApiClient implements GerritApi {
 
             // If the call doesn't support authentication, then we don't need to worry about
             // anything more. Just can an assume the result of the response
-            if (auth.isAnonymousUser()) {
+            if (auth == null || auth.isAnonymousUser()) {
                 Request request = requestBuilder.build();
                 mWasAuthorizedPreviously = false;
                 return chain.proceed(request);
