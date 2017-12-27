@@ -146,15 +146,17 @@
     <string name="account_wizard_account_page_authenticated_access_hint">If you don\'t know your username or password, click <xliff:g id="link" example="here">%1$s</xliff:g> to obtain or generate a new one. If you don\'t have an account yet, you can sign-in <xliff:g id="link" example="here">%2$s</xliff:g>. Use the help menu to obtain more information related to account authentication.</string>
     <string name="account_wizard_account_page_help">
         The REST API authentication in a Gerrit repository is done through a generated password.
-        You can obtain a password to authenticate in your settings profile (in the HTTP password
-        option). Depends on the authentication mode of the Gerrit service, there will 3 modes
-        of password generation:\n\n\n
-        - <u>plain password</u>\n\n
+        You can obtain a password to authenticate in your settings profile. Depends on the
+        authentication mode of the Gerrit service, there will 3 authentication modes:\n\n\n
+        - <u>User login</u>\n\n
+        If Gerrit instance was configured with HTTP, LDAP or LDAP_HTTP authentication, you can
+        use the same user/password you use to login in the Gerrit web site.\n\n\n
+        - <u>HTTP password</u>\n\n
         In the HTTP password page you can generate a new random password. The Gerrit service will
         present you a username and a password. These values are the ones you should introduce in
         this account page. Just copy and paste these values into the account authentication
         fields.\n\n\n
-        - <u>.gitcookies</u>\n\n
+        - <u>.gitcookie</u>\n\n
         In the HTTP password page you can generate a new git cookie associated to your Google
         account. The Gerrit service will present some instructions to include this new generated
         cookie in a file called .gitcookies to login though the git tool. You can localize the
