@@ -182,7 +182,7 @@ class GerritApiClient implements GerritApi {
                 .followSslRedirects(true)
                 .addInterceptor(createConnectivityCheckInterceptor())
                 .addInterceptor(createLoggingInterceptor())
-                .addInterceptor(createHeadersInterceptor(authorization));
+                .addInterceptor(createHeadersInterceptor(auth));
         if (!auth.isAnonymousUser()) {
             final Map<String, CachingAuthenticator> authCache = new ConcurrentHashMap<>();
             clientBuilder
@@ -228,7 +228,7 @@ class GerritApiClient implements GerritApi {
 
             // If the call doesn't support authentication, then we don't need to worry about
             // anything more. Just can an assume the result of the response
-            if (auth == null || auth.isAnonymousUser()) {
+            if (auth.isAnonymousUser()) {
                 Request request = requestBuilder.build();
                 mWasAuthorizedPreviously = false;
                 return chain.proceed(request);
