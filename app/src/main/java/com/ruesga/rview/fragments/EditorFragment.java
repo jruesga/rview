@@ -562,6 +562,9 @@ public class EditorFragment extends Fragment
         if (activity == null || mBinding == null) {
             return;
         }
+        if (mAccount != null) {
+            return;
+        }
 
         //noinspection ConstantConditions
         activity.configureOptionsTitle(getString(
