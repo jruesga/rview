@@ -27,14 +27,13 @@ import android.view.inputmethod.InputConnection;
 import android.webkit.WebView;
 
 /**
- * This is a {@link WebView} subclass to deal with IME issues with the Ace Code Editor library.
- * Some Keyboards, like the Google Keyboard one, send composite key events (keycode 229)
- * which breaks the Ace's keycode handling (which as version 2.8, is still currently not
- * fixed).
+ * This is a {@link WebView} subclass to deal with IME issues with the Ace Code Editor library. See
+ * bellow for a detailed of bug threads describing the problem. Currently version is mostly working
+ * on most of the keyboard devices, but there could be some of them with bad behaviours because of
+ * the described bug. This implementation disables the IME input method of the {@link WebView}.
  * <p />
- * This implementation disables the IME input method of the {@link WebView}.
- * <p />
- * The implementation also enables NestingScrolling
+ * It also provides a @{link NestedScrollingChild} implementation to deal with
+ * {@link android.support.design.widget.CoordinatorLayout}
  *
  * @see "https://bugs.chromium.org/p/chromium/issues/detail?id=118639"
  * @see "https://github.com/ajaxorg/ace/issues/2964"
