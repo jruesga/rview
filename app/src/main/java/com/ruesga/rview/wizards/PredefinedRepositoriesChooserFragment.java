@@ -26,7 +26,9 @@ import com.ruesga.rview.wizard.choosers.ListChooserFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
 
@@ -42,8 +44,13 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
     }
 
     @NonNull
-    public Callable<List<ItemModel>> getDataProducer() {
-        return this::getRepositoriesAsModel;
+    public Observable<List<ItemModel>> getDataProducer() {
+        return SafeObservable.fromNullCallable(this::getRepositoriesAsModel);
+    }
+
+    @Override
+    public boolean supportFiltering() {
+        return true;
     }
 
     @NonNull
@@ -59,6 +66,11 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
         List<Repository> repositories = ModelHelper.getPredefinedRepositories(getContext());
         ArrayList<ItemModel> itemModels = new ArrayList<>(repositories.size());
         for (Repository repo : repositories) {
+            String filter = getFilter();
+            if (!repo.mName.contains(filter) && !repo.mUrl.contains(filter)) {
+                continue;
+            }
+
             ItemModel item = new ItemModel();
             item.title = repo.mName;
             item.summary = repo.mUrl;

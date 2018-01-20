@@ -21,6 +21,8 @@
     <string name="validator_invalid_web_url">Invalid Web url</string>
     <string name="validator_invalid_text_length">Invalid text length</string>
 
-    <string name="chooser_no_data">No data</string>
+    <string name="chooser_no_data">No items found</string>
+    <string name="chooser_hint">Type to filter items</string>
     <string name="chooser_failed_to_fetch_data">Failed to fetch data</string>
+
 </resources>

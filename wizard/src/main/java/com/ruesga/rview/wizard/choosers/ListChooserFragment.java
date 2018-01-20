@@ -18,11 +18,14 @@ package com.ruesga.rview.wizard.choosers;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,17 +38,36 @@ import com.ruesga.rview.wizard.databinding.ListChooserItemBinding;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
-import me.tatarka.rxloader2.safe.SafeObservable;
 
 public abstract class ListChooserFragment extends WizardChooserFragment {
+
+    private static final int MESSAGE_FILTER_CHANGED = 1;
+
+    private TextWatcher mTextChangedListener = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            mHandler.removeMessages(MESSAGE_FILTER_CHANGED);
+            mHandler.sendEmptyMessageDelayed(MESSAGE_FILTER_CHANGED, 350L);
+            mModel.filter = s.toString();
+            mBinding.setModel(mModel);
+        }
+    };
 
     public static class ListChooserItemViewHolder extends RecyclerView.ViewHolder {
         private final ListChooserItemBinding mBinding;
@@ -66,6 +88,22 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     @Keep
     public static class Model {
         public boolean hasData = true;
+        public boolean hasFilter = false;
+        public String filter = "";
+    }
+
+    @Keep
+    @SuppressWarnings("UnusedParameters")
+    public static class EventHandlers {
+        private ListChooserFragment mFragment;
+
+        public EventHandlers(ListChooserFragment fragment) {
+            mFragment = fragment;
+        }
+
+        public void onClearFilter(View v) {
+            mFragment.performClearFilter();
+        }
     }
 
     @Keep
@@ -145,12 +183,23 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
 
 
     private ListChooserBinding mBinding;
+    private final Handler mHandler;
     private Model mModel = new Model();
 
     private ListAdapter mAdapter;
     private ItemModel mSelectedItem;
 
+    private RxLoader<List<ItemModel>> mLoader;
+
     public ListChooserFragment() {
+        mHandler = new Handler(msg -> {
+            if (msg.what == MESSAGE_FILTER_CHANGED) {
+                if (mBinding != null) {
+                    restartData();
+                }
+            }
+            return true;
+        });
     }
 
     @Override
@@ -166,6 +215,8 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     public final View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.list_chooser, container, false);
+        mBinding.search.addTextChangedListener(mTextChangedListener);
+        mModel.hasFilter = supportFiltering();
         mBinding.setModel(mModel);
         return mBinding.getRoot();
     }
@@ -173,6 +224,8 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        mBinding.setHandlers(new EventHandlers(this));
 
         // Configure the adapter
         mAdapter = new ListAdapter(this);
@@ -182,7 +235,8 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
 
         // Fetch or join current loader
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
-        loaderManager.create(refreshItems(), mDataProducerObserver).start();
+        mLoader = loaderManager.create(refreshItems(), mDataProducerObserver);
+        restartData();
     }
 
     @Override
@@ -192,7 +246,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     }
 
     @NonNull
-    public abstract Callable<List<ItemModel>> getDataProducer();
+    public abstract Observable<List<ItemModel>> getDataProducer();
 
     @NonNull
     public abstract Intent toResult(ItemModel item);
@@ -202,19 +256,40 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         return false;
     }
 
+    public boolean supportFiltering() {
+        return false;
+    }
+
+    @SuppressWarnings("ConstantConditions")
     private void onItemClick(ItemModel item) {
         mSelectedItem = item;
+        ((WizardActivity) getActivity()).closeKeyboardIfNeeded();
         close();
+    }
+
+    private void restartData() {
+        mLoader.clear();
+        mLoader.restart();
     }
 
     @SuppressWarnings("ConstantConditions")
     private Observable<List<ItemModel>> refreshItems() {
-        return SafeObservable.fromNullCallable(getDataProducer())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable ->
-                        ((WizardActivity)getActivity()).changeInProgressStatus(true))
-                .doOnTerminate(() ->
-                        ((WizardActivity)getActivity()).changeInProgressStatus(false));
+        return getDataProducer()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe(disposable ->
+                    ((WizardActivity)getActivity()).changeInProgressStatus(true))
+            .doOnTerminate(() ->
+                    ((WizardActivity)getActivity()).changeInProgressStatus(false));
+    }
+
+    private void performClearFilter() {
+        mModel.filter = "";
+        mBinding.setModel(mModel);
+        restartData();
+    }
+
+    public String getFilter() {
+        return mModel.filter;
     }
 }
