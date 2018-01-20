@@ -239,8 +239,8 @@ public class AccountPageFragment extends WizardPageFragment {
     @SuppressWarnings("deprecation")
     public void restoreState(Context context, Bundle savedState) {
         if (savedState.containsKey(STATE_AUTHENTICATION_FAILURE)) {
-            mModel.authenticationFailure = savedState.getBoolean(STATE_AUTHENTICATION_FAILURE);
-            mModel.singlePage = true;
+            mModel.authenticationFailure = mModel.singlePage =
+                    savedState.getBoolean(STATE_AUTHENTICATION_FAILURE);
         } else if (savedState.containsKey(STATE_SINGLE_PAGE)) {
             mModel.singlePage = savedState.getBoolean(STATE_SINGLE_PAGE);
         }
