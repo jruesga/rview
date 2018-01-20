@@ -274,6 +274,7 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
         });
 
         notifyMiniDrawerNavigationOpenStatusChanged(0.0f);
+        mPresenter.setWithMiniDrawer(true);
     }
 
     public void notifyMiniDrawerNavigationOpenStatusChanged(float offset) {

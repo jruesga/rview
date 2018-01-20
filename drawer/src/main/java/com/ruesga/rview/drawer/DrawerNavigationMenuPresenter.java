@@ -74,6 +74,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
     private ColorStateList mTextColor;
     private ColorStateList mIconTintList;
     private Drawable mItemBackground;
+    private boolean mWithMiniDrawer = false;
 
     private OnMenuButtonClickListener mOnMenuButtonClickListener;
 
@@ -125,6 +126,10 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         if (mAdapter != null) {
             mAdapter.update();
         }
+    }
+
+    void setWithMiniDrawer(boolean withMiniDrawer) {
+        mWithMiniDrawer = withMiniDrawer;
     }
 
     @Override
@@ -463,14 +468,16 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
                     final TextView subHeader = (TextView) holder.itemView;
                     NavigationMenuTextItem item = (NavigationMenuTextItem) mItems.get(position);
                     subHeader.setText(item.getMenuItem().getTitle());
-                    mMiniDrawerListener = offset -> {
-                        holder.itemView.setAlpha(offset);
-                        float mMeasureHeight = ((SubheaderViewHolder) holder).mMeasureHeight;
-                        if (mMeasureHeight >= 0) {
-                            holder.itemView.getLayoutParams().height =
-                                    (int) (mMeasureHeight * mMiniDrawerOffset);
-                        }
-                    };
+                    if (mWithMiniDrawer) {
+                        mMiniDrawerListener = offset -> {
+                            holder.itemView.setAlpha(offset);
+                            float mMeasureHeight = ((SubheaderViewHolder) holder).mMeasureHeight;
+                            if (mMeasureHeight >= 0) {
+                                holder.itemView.getLayoutParams().height =
+                                        (int) (mMeasureHeight * mMiniDrawerOffset);
+                            }
+                        };
+                    }
                     break;
                 }
                 case VIEW_TYPE_SEPARATOR: {
@@ -486,11 +493,13 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             }
 
             // Update the offset
-            if (holder.itemView instanceof OnMiniDrawerNavigationOpenStatusChangedListener) {
-                ((OnMiniDrawerNavigationOpenStatusChangedListener) holder.itemView)
-                        .onMiniDrawerNavigationOpenStatusChanged(mMiniDrawerOffset);
-            } else if (mMiniDrawerListener != null) {
-                mMiniDrawerListener.onMiniDrawerNavigationOpenStatusChanged(mMiniDrawerOffset);
+            if (mWithMiniDrawer) {
+                if (holder.itemView instanceof OnMiniDrawerNavigationOpenStatusChangedListener) {
+                    ((OnMiniDrawerNavigationOpenStatusChangedListener) holder.itemView)
+                            .onMiniDrawerNavigationOpenStatusChanged(mMiniDrawerOffset);
+                } else if (mMiniDrawerListener != null) {
+                    mMiniDrawerListener.onMiniDrawerNavigationOpenStatusChanged(mMiniDrawerOffset);
+                }
             }
         }
 
