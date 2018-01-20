@@ -172,7 +172,7 @@ public class Formatter {
 
         // Status
         if (sDisplayAccountStatues && !TextUtils.isEmpty(accountInfo.status)) {
-            accountDisplayName += " " + accountInfo.status;
+            accountDisplayName += " (" + accountInfo.status + ")";
         }
 
         return accountDisplayName;
