@@ -25,7 +25,7 @@ ext {
         okhttp3                     : '3.9.1',
         okio                        : '1.13.0',
         okhttp_digest               : 'f13c5b8f79',
-        rxjava                      : '2.1.7',
+        rxjava                      : '2.1.8',
         rxandroid                   : '2.0.1',
         rxloader2                   : '244a5fddb6',
         // Keep commons-io in 2.5. Prior android versions doesn't have fully support for Files api.
@@ -35,11 +35,11 @@ ext {
         picasso2                    : '2.5.2',
         picasso2_okhttp3_downloader : '1.1.0',
         prettytime                  : '4.0.1.Final',
-        flexboxlayout               : '0.3.1',
+        flexboxlayout               : '0.3.2',
         floatingsearchview          : '2d435bead5',
-        androidsvg                  : '418cf67684',
+        androidsvg                  : '7aa92e837c',
         keyboardvisibilityevent     : '2.1.0',
-        aboutlibraries              : '6.0.0',
+        aboutlibraries              : '6.0.2',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.8.0',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
@@ -102,7 +102,7 @@ subprojects {
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {
             android {
                 compileSdkVersion 27
-                buildToolsVersion '27.0.2'
+                buildToolsVersion '27.0.3'
 
                 defaultConfig {
                     minSdkVersion 16
