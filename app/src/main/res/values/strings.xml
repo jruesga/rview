@@ -636,7 +636,7 @@
     <string name="gallery_chooser_error">Oops, this is embarrassing.\nAn error occurred whilst collecting media items</string>
 
     <!-- Url chooser dialog -->
-    <string name="url_chooser_dialog_title">Choose URL</string>
+    <string name="url_chooser_dialog_title">Input URL</string>
     <string name="url_chooser_dialog_hint">Url</string>
 
     <!-- File chooser -->
