@@ -802,9 +802,9 @@ public class ChangeDetailsFragment extends Fragment implements
                 if (TextUtils.isEmpty(mCurrentRevision)
                         || !change.revisions.containsKey(mCurrentRevision)) {
                     mCurrentRevision = ModelHelper.extractBestRevisionId(change);
-                    //noinspection ConstantConditions
-                    ((BaseActivity) getActivity()).setAnalyticsBase(mCurrentRevision);
                 }
+                //noinspection ConstantConditions
+                ((BaseActivity) getActivity()).setAnalyticsBase(mCurrentRevision);
 
                 // Check supported features
                 final GerritApi api = ModelHelper.getGerritApi(getActivity());
