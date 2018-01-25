@@ -197,7 +197,7 @@
                             tools:ignore="Deprecated"/>
                     </LinearLayout>
 
-                    <com.ruesga.rview.widget.StyleableTextView
+                    <com.ruesga.rview.widget.RegExLinkifyTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -207,7 +207,8 @@
                         android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                         android:ellipsize="none"
                         android:textIsSelectable="true"
-                        app:inlineComment="@{model.commentA.message}"
+                        app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
+                        app:userMessage="@{model.commentA.message}"
                         android:gravity="center_vertical"/>
 
                     <include
@@ -337,7 +338,7 @@
                             tools:ignore="Deprecated"/>
                     </LinearLayout>
 
-                    <com.ruesga.rview.widget.StyleableTextView
+                    <com.ruesga.rview.widget.RegExLinkifyTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -347,7 +348,8 @@
                         android:textSize="@{@dimen/diff_line_text_size * (textSizeFactor == null ? 1f : safeUnbox(textSizeFactor))}"
                         android:ellipsize="none"
                         android:textIsSelectable="true"
-                        app:inlineComment="@{model.commentB.message}"
+                        app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
+                        app:userMessage="@{model.commentB.message}"
                         android:gravity="center_vertical"/>
 
                     <include

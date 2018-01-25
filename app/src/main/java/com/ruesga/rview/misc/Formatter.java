@@ -225,16 +225,6 @@ public class Formatter {
         view.setText(StringHelper.removeLineBreaks(message));
     }
 
-    @BindingAdapter("inlineComment")
-    public static void toInlineComment(TextView view, String msg) {
-        if (msg == null) {
-            view.setText(null);
-            return;
-        }
-
-        view.setText(EmojiHelper.createEmoji(msg));
-    }
-
     @BindingAdapter("userMessage")
     public static void toUserMessage(TextView view, String msg) {
         if (msg == null) {
