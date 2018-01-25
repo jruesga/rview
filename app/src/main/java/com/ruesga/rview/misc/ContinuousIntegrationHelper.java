@@ -195,9 +195,14 @@ public class ContinuousIntegrationHelper {
                                     if (name == null) {
                                         name = getJobName(l, status, url);
                                     }
-                                    if (status != null && name != null && !ciNames.contains(name)) {
-                                        ci.add(new ContinuousIntegrationInfo(name, url, status));
-                                        ciNames.add(name);
+                                    if (status != null && name != null) {
+                                        if (!ciNames.contains(name)) {
+                                            ci.add(new ContinuousIntegrationInfo(name, url, status));
+                                            ciNames.add(name);
+                                        } else if (cii != null &&
+                                                cii.mStatus.equals(BuildStatus.RUNNING)) {
+                                            cii.mStatus = status;
+                                        }
                                         break;
                                     }
                                 }
@@ -237,7 +242,9 @@ public class ContinuousIntegrationHelper {
         }
 
         if (line.contains("PASS: ") || line.contains(": SUCCESS")
-                || (line.contains(" succeeded (") && line.contains(" - ")) || line.contains("\u2705")) {
+                || (line.contains(" succeeded (") && line.contains(" - "))
+                || line.contains("\u2705")
+                || line.contains("Build Successful")) {
             return BuildStatus.SUCCESS;
         }
         if (line.contains("FAIL: ") || line.contains(": FAILURE")
@@ -246,6 +253,9 @@ public class ContinuousIntegrationHelper {
         }
         if (line.contains("SKIPPED: ") || line.contains(": ABORTED")) {
             return BuildStatus.SKIPPED;
+        }
+        if (line.contains("Build Started")) {
+            return BuildStatus.RUNNING;
         }
         return null;
     }

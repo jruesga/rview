@@ -92,6 +92,14 @@ public class ContinuousIntegrationHelperTest {
         cis = extractContinuousIntegrationInfo("Chromium", null);
         assertEquals(0, cis.size());
 
+        // Diamond Light Source
+        cis = extractContinuousIntegrationInfo("Diamond Light Source", null);
+        assertEquals(1, cis.size());
+        assertEquals("GDA.master-junit.tests-gerrit", cis.get(0).mName);
+        assertEquals("http://jenkins.diamond.ac.uk:8080/job/GDA.master-junit.tests-gerrit/8264/",
+                cis.get(0).mUrl);
+        assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
+
         // Gerrit
         cis = extractContinuousIntegrationInfo("Gerrit", null);
         assertEquals(3, cis.size());
@@ -152,7 +160,7 @@ public class ContinuousIntegrationHelperTest {
         final Repository repository = findRepositoryById(id);
 
         Type type = new TypeToken<List<ChangeMessageInfo>>(){}.getType();
-        String testName = id.toLowerCase();
+        String testName = id.toLowerCase().replaceAll(" ", "");
         if (number != null) {
             testName += "-" + number;
         }
