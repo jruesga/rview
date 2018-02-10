@@ -247,11 +247,12 @@ public class ContinuousIntegrationHelper {
                 || line.contains("Build Successful")) {
             return BuildStatus.SUCCESS;
         }
-        if (line.contains("FAIL: ") || line.contains(": FAILURE")
+        if (line.contains("FAIL: ") || line.contains(": FAILURE") || line.contains("_FAILURE")
                 || (line.contains(" failed (") && line.contains(" - ")) || line.contains("\u274C")) {
             return BuildStatus.FAILURE;
         }
-        if (line.contains("SKIPPED: ") || line.contains(": ABORTED")) {
+        if (line.contains("SKIPPED: ") || line.contains(": ABORTED")
+                || line.contains("RETRY_LIMIT")) {
             return BuildStatus.SKIPPED;
         }
         if (line.contains("Build Started")) {
