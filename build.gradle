@@ -23,10 +23,10 @@ ext {
         gson                        : '2.8.2',
         retrofit2                   : '2.3.0',
         okhttp3                     : '3.9.1',
-        okio                        : '1.13.0',
+        okio                        : '1.14.0',
         okhttp_digest               : 'f13c5b8f79',
         rxjava                      : '2.1.9',
-        rxandroid                   : '2.0.1',
+        rxandroid                   : '2.0.2',
         rxloader2                   : '244a5fddb6',
         // Keep commons-io in 2.5. Prior android versions doesn't have fully support for Files api.
         commons_io                  : '2.5',
@@ -37,13 +37,13 @@ ext {
         prettytime                  : '4.0.1.Final',
         flexboxlayout               : '0.3.2',
         floatingsearchview          : '2d435bead5',
-        androidsvg                  : '41261dff54',
+        androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.1.0',
-        aboutlibraries              : '6.0.2',
+        aboutlibraries              : '6.0.6',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
-        crashlytics                 : '2.8.0',
+        crashlytics                 : '2.9.0',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
-        crashlytics_core            : '2.5.0',
+        crashlytics_core            : '2.6.0',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/answers/maven-metadata.xml
         crashlytics_answers         : '1.4.1'
     ]
@@ -51,7 +51,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.13.0',
+        mockito                     : '2.15.0',
         powermock                   : '2.0.0-beta.5',
         base64                      : '2.3.9'
     ]
