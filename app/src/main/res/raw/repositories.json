@@ -32,6 +32,7 @@
   {"name":"GWT", "url":"https://gwt-review.googlesource.com/", "ci_accounts": "^(.* Jenkins)$"},
   {"name":"halogenOS", "url":"https://review.halogenos.org/"},
   {"name":"Intel HPDD", "url":"https://review.whamcloud.com/", "ci_accounts": "^(Jenkins|HPDD Checkpatch|Misc Code Checks Robot.*|.* Buildbot|Autotest|Maloo)$"},
+  {"name":"IoTivity", "url":"https://gerrit.iotivity.org/gerrit/", "ci_accounts": "^(.* Jenkins)$"},
   {"name":"Joyent", "url":"https://cr.joyent.us/", "ci_accounts": "^(Joyent Automation)$"},
   {"name":"Kitware", "url":"http://review.source.kitware.com/", "ci_accounts": "^(Kitware Build Robot)$"},
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/", "ci_accounts": "^(Jenkins)$"},
