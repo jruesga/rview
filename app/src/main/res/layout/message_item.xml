@@ -21,6 +21,7 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="android.text.TextUtils" />
         <import type="com.ruesga.rview.misc.StringHelper" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="index" type="java.lang.Integer" />
@@ -126,7 +127,7 @@
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:onClick="@{handlers::onReplyCommentPressed}"
-            android:visibility="@{!safeUnbox(folded) &amp;&amp; safeUnbox(isAuthenticated) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{!safeUnbox(folded) &amp;&amp; safeUnbox(isAuthenticated) &amp;&amp; TextUtils.isEmpty(model.tag) ? View.VISIBLE : View.GONE}"
             android:tag="@{index}"
             tools:ignore="ContentDescription"/>
 
