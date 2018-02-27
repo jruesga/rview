@@ -39,7 +39,7 @@
   {"name":"Linaro", "url":"https://android-review.linaro.org/", "ci_accounts": "^(lava-bot)$"},
   {"name":"LineageOS", "url":"https://review.lineageos.org/", "ci_accounts": "^(Jenkins)$"},
   {"name":"MediaWiki", "url":"https://gerrit.wikimedia.org/r/", "ci_accounts": "^(jenkins-bot)$"},
-  {"name":"MoKee", "url":"https://review.mfunz.com/"},
+  {"name":"MoKee", "url":"https://mokeedev.review/"},
   {"name":"msm7x30", "url":"https://review.msm7x30.org/"},
   {"name":"OmniROM", "url":"https://gerrit.omnirom.org/"},
   {"name":"Onap", "url":"https://gerrit.onap.org/r/", "ci_accounts": "^(ONAP Jobbuilder)$"},
