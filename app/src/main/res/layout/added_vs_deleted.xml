@@ -34,6 +34,9 @@
             android:layout_weight=".0"
             android:background="@color/approved"/>
         <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent" />
+        <View
             android:id="@+id/deleted"
             android:layout_width="0dp"
             android:layout_height="match_parent"
