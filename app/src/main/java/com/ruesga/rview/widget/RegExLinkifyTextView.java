@@ -153,6 +153,9 @@ public class RegExLinkifyTextView extends StyleableTextView {
                     final Matcher matcher = regEx.mPattern.matcher(text);
                     while (matcher.find()) {
                         String group = regEx.mSingleGroup ? matcher.group(1) : matcher.group();
+                        if (group == null) {
+                            continue;
+                        }
                         int start = regEx.mSingleGroup ? matcher.start(1) : matcher.start();
                         int end = regEx.mSingleGroup ? matcher.end(1) : matcher.end();
 
