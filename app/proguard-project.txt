@@ -2,6 +2,7 @@
 -dontwarn com.google.gson.*
 -dontwarn retrofit2.*
 -dontwarn okio.*
+-dontwarn okhttp3.internal.platform.ConscryptPlatform
 -dontwarn rx.internal.util.unsafe.*
 -dontwarn com.squareup.picasso.*
 -dontwarn java.lang.invoke**
