@@ -201,6 +201,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private static final List<ChangeOptions> MESSAGES_OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.DETAILED_ACCOUNTS);
         add(ChangeOptions.MESSAGES);
+        add(ChangeOptions.REVIEWER_UPDATES);
     }};
 
     private static final Pattern COMMENTS_PATTERN
@@ -1116,10 +1117,10 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
-    private final RxLoaderObserver<ChangeMessageInfo[]> mMessagesRefreshObserver
-            = new RxLoaderObserver<ChangeMessageInfo[]>() {
+    private final RxLoaderObserver<ChangeInfo> mMessagesRefreshObserver
+            = new RxLoaderObserver<ChangeInfo>() {
         @Override
-        public void onNext(ChangeMessageInfo[] messages) {
+        public void onNext(ChangeInfo change) {
             if (mResponse == null) {
                 return;
             }
@@ -1129,10 +1130,11 @@ public class ChangeDetailsFragment extends Fragment implements
             // and the possibility that we are out-of-sync is low, compared to
             // the effort of fetching messages and comments (a user refresh
             // will fix the out-of-sync problem).
-            mResponse.mChange.messages = messages;
-            mModel.msgListModel.visible = messages != null && messages.length > 0;
-            mMessageAdapter.update(mModel.msgListModel, messages, mResponse.mMessagesWithComments,
-                    mResponse.mChange.reviewerUpdates);
+            mResponse.mChange.messages = change.messages;
+            mResponse.mChange.reviewerUpdates = change.reviewerUpdates;
+            mModel.msgListModel.visible = change.messages != null && change.messages.length > 0;
+            mMessageAdapter.update(mModel.msgListModel, change.messages,
+                    mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
             mBinding.setModel(mModel);
         }
 
@@ -1504,7 +1506,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<Pair<String, AccountInfo>, Pair<String, AccountInfo>> mRemoveReviewerVoteLoader;
     private RxLoader1<String, String> mChangeTopicLoader;
     private RxLoader2<String[], String[], String[]> mChangeTagsLoader;
-    private RxLoader<ChangeMessageInfo[]> mMessagesRefreshLoader;
+    private RxLoader<ChangeInfo> mMessagesRefreshLoader;
     private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
     private RxLoader1<String, ChangeInfo> mMoveBranchLoader;
@@ -2257,14 +2259,12 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<ChangeMessageInfo[]> fetchMessages() {
+    private Observable<ChangeInfo> fetchMessages() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        return SafeObservable.fromNullCallable(() -> {
-                    final ChangeInfo change = api.getChange(
-                            String.valueOf(mLegacyChangeId), MESSAGES_OPTIONS).blockingFirst();
-                    return change.messages;
-                })
+        return SafeObservable.fromNullCallable(() ->
+                    api.getChange(
+                        String.valueOf(mLegacyChangeId), MESSAGES_OPTIONS).blockingFirst())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
