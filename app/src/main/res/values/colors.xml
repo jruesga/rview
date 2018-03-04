@@ -22,8 +22,8 @@
     <color name="alert">#ceab56</color>
     <color name="overlay">#90000000</color>
     <color name="secondaryIconColor">#757575</color>
-    <color name="approved">#2e7d32</color>
-    <color name="rejected">#c62828</color>
+    <color name="approved">#388e3c</color>
+    <color name="rejected">#d32f2f</color>
     <color name="noscore">#757575</color>
     <color name="unscored">#cecece</color>
     <color name="primaryBackgroundColor">#e0e0e0</color>
