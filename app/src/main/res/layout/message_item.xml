@@ -23,6 +23,7 @@
         <import type="android.view.View" />
         <import type="android.text.TextUtils" />
         <import type="com.ruesga.rview.misc.Formatter" />
+        <import type="com.ruesga.rview.misc.BindingAdapters" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="index" type="java.lang.Integer" />
         <variable name="folded" type="java.lang.Boolean" />
@@ -144,10 +145,23 @@
             android:layout_alignWithParentIfMissing="true"
             app:userChangeMessage="@{model}"
             app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
-            android:visibility="@{!safeUnbox(folded) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{!safeUnbox(folded) &amp;&amp; BindingAdapters.isEmpty(model._reviewer_updates) ? View.VISIBLE : View.GONE}"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:textColor="?android:attr/textColorPrimary"
             android:textIsSelectable="true" />
+
+        <com.ruesga.rview.widget.ReviewerUpdatesView
+            android:id="@+id/reviewer_updates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_below="@id/author"
+            android:layout_toRightOf="@id/avatar"
+            android:layout_toEndOf="@id/avatar"
+            android:layout_toLeftOf="@id/reply"
+            android:layout_toStartOf="@id/reply"
+            android:layout_alignWithParentIfMissing="true"
+            android:visibility="@{!safeUnbox(folded) &amp;&amp; !BindingAdapters.isEmpty(model._reviewer_updates) ? View.VISIBLE : View.GONE}" />
 
         <com.ruesga.rview.widget.FilesAndCommentsView
             android:id="@+id/comments"

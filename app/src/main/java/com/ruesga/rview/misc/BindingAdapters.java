@@ -37,7 +37,7 @@ import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.widget.TagEditTextView;
 import com.ruesga.rview.widget.TagEditTextView.Tag;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 @Keep
@@ -134,14 +134,14 @@ public class BindingAdapters {
         v.setVisibility(TextUtils.isEmpty(s) ? View.GONE : View.VISIBLE);
     }
 
-    @BindingAdapter("bindEmptyList")
-    public static void bindEmptyList(View v, List<?> o) {
-        v.setVisibility(o == null || o.isEmpty() ? View.GONE : View.VISIBLE);
+    @BindingAdapter("bindEmptyCollection")
+    public static void bindEmptyCollection(View v, Collection<?> o) {
+        v.setVisibility(isEmpty(o) ? View.GONE : View.VISIBLE);
     }
 
-    @BindingAdapter("bindNotEmptyList")
-    public static void bindNotEmptyList(View v, List<?> o) {
-        v.setVisibility(o == null || o.isEmpty() ? View.VISIBLE : View.GONE);
+    @BindingAdapter("bindNotEmptyCollection")
+    public static void bindNotEmptyCollection(View v, Collection<?> o) {
+        v.setVisibility(!isEmpty(o) ? View.VISIBLE : View.GONE);
     }
 
     @BindingAdapter("bindEmptyMap")
@@ -151,7 +151,7 @@ public class BindingAdapters {
 
     @BindingAdapter("bindNotEmptyMap")
     public static void bindNotEmptyMap(View v, Map<?, ?> o) {
-        v.setVisibility(o == null || o.isEmpty() ? View.VISIBLE : View.GONE);
+        v.setVisibility(!(o == null || o.isEmpty()) ? View.VISIBLE : View.GONE);
     }
 
     @BindingAdapter("bindImageTint")
@@ -230,5 +230,9 @@ public class BindingAdapters {
                     tags[i], ContextCompat.getColor(v.getContext(), R.color.noscore));
         }
         v.setTags(t);
+    }
+
+    public static boolean isEmpty(Collection<?> c) {
+        return c == null || c.isEmpty();
     }
 }

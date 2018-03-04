@@ -649,7 +649,7 @@
     <string name="snippet_dialog_snippet_permissions">You must grant permissions to view or write snippets</string>
 
     <!-- Attachment Providers -->
-    <string name="attachment_provider_not_supported">Attachment provider is not supported. Attachment were removed.</string>
+    <string name="attachment_provider_not_supported">Attachment provider is not supported. Attachments will be removed.</string>
 
     <!-- Trending Score -->
     <string name="trending_score">Score:</string>
@@ -657,6 +657,6 @@
     <!-- Reviewer Update -->
     <string name="reviewer_update_reviewer">Added to REVIEWER:</string>
     <string name="reviewer_update_cc">Added to CC:</string>
-    <string name="reviewer_update_removed">Removed reviewer:</string>
+    <string name="reviewer_update_removed">Removed from REVIEWER/CC:</string>
 
 </resources>

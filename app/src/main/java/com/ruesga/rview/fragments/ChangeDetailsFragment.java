@@ -131,6 +131,7 @@ import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+import com.ruesga.rview.widget.AccountChipView;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import com.ruesga.rview.widget.AttachmentsView.OnAttachmentDroppedListener;
@@ -389,7 +390,7 @@ public class ChangeDetailsFragment extends Fragment implements
         public void onMessageAvatarPressed(View v) {
             int position = (int) v.getTag();
             AccountInfo account = mFragment.mResponse.mChange.messages[position].author;
-            mFragment.performAccountClicked(account, null);
+            onAccountChipPressed(account, null);
         }
 
         public void onMessagePressed(View v) {
@@ -421,6 +422,10 @@ public class ChangeDetailsFragment extends Fragment implements
 
         public void onSearchPressed(View v) {
             mFragment.performShowMoreFiles(v);
+        }
+
+        private void onAccountChipPressed(AccountInfo account, Object tag) {
+            mFragment.performAccountClicked(account, tag);
         }
     }
 
@@ -588,8 +593,9 @@ public class ChangeDetailsFragment extends Fragment implements
             return FILE_ITEM_VIEW_TYPE;
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             if (viewType == TOTAL_ITEM_VIEW_TYPE) {
                 return new TotalAddedDeletedViewHolder(DataBindingUtil.inflate(
@@ -603,7 +609,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof TotalAddedDeletedViewHolder) {
                 TotalAddedDeletedBinding binding = ((TotalAddedDeletedViewHolder) holder).mBinding;
                 binding.addedVsDeleted.with(mTotals);
@@ -625,7 +631,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
     private static class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
         private final AccountInfo mBuildBotSystemAccount;
-        private final EventHandlers mEventHandlers;
+        private EventHandlers mEventHandlers = null;
         private ChangeMessageInfo[] mMessages;
         private Map<String, LinkedHashMap<String, List<CommentInfo>>> mMessagesWithComments;
         private boolean[] mFolded;
@@ -636,20 +642,14 @@ public class ChangeDetailsFragment extends Fragment implements
         private boolean mIsHideTaggedMessages;
         private Repository mRepository;
 
-        private final OnLineClickListener mLineClickListener = new OnLineClickListener() {
-            @Override
-            public void onLineClick(View v) {
-                mEventHandlers.onNavigateToComment(v);
-            }
-        };
+        private final OnLineClickListener mLineClickListener =
+                v -> mEventHandlers.onNavigateToComment(v);
 
         private final OnAttachmentPressedListener mAttachmentPressedListener
-                = new OnAttachmentPressedListener() {
-            @Override
-            public void onAttachmentPressed(Attachment attachment) {
-                mEventHandlers.onAttachmentPressed(attachment);
-            }
-        };
+                = attachment -> mEventHandlers.onAttachmentPressed(attachment);
+
+        private final AccountChipView.OnAccountChipClickedListener mAccountPressedListener
+                = (account, tag) -> mEventHandlers.onAccountChipPressed(account, tag);
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
                 boolean isAuthenticated, boolean isFolded) {
@@ -678,9 +678,9 @@ public class ChangeDetailsFragment extends Fragment implements
 
         void update(ListModel listModel, ChangeMessageInfo[] messages,
                 Map<String, LinkedHashMap<String, List<CommentInfo>>> messagesWithComments,
-                ReviewerUpdateInfo[] reviewerUpdate) {
+                ReviewerUpdateInfo[] reviewerUpdates) {
             mMessages = filterTaggedMessages(filterCiAccountsMessages(
-                    joinWithReviewerUpdates(messages, reviewerUpdate)));
+                    joinWithReviewerUpdates(messages, reviewerUpdates)));
             mMessagesWithComments = messagesWithComments;
 
             int count = mMessages.length;
@@ -732,6 +732,10 @@ public class ChangeDetailsFragment extends Fragment implements
             holder.mBinding.setIsAuthenticated(mIsAuthenticated);
             holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);
+            holder.mBinding.reviewerUpdates
+                    .with(mPicasso)
+                    .listenOn(mAccountPressedListener)
+                    .from(message._reviewer_updates);
             holder.mBinding.comments
                     .listenOn(mLineClickListener)
                     .from(comments);
@@ -787,13 +791,29 @@ public class ChangeDetailsFragment extends Fragment implements
             for (ReviewerUpdateInfo ru : reviewerUpdate) {
                 int i = 0;
                 boolean found = false;
-                for (ChangeMessageInfo msg : msgs) {
+                Iterator<ChangeMessageInfo> it = msgs.iterator();
+                while (it.hasNext()) {
+                    ChangeMessageInfo msg = it.next();
                     if (msg.date.compareTo(ru.updated) == 0) {
+                        if (!(ModelHelper.AUTOGENERATED_TAG_REVIEWER_UPDATE.equals(msg.tag) ||
+                                ModelHelper.AUTOGENERATED_TAG_DELETE_REVIEWER.equals(msg.tag))) {
+                            msgs.add(i, ModelHelper.createReviewerUpdateMessage(ru));
+                            found = true;
+                            break;
+                        }
+
+                        if (found) {
+                            it.remove();
+                            continue;
+                        }
                         msg._reviewer_updates.add(ru);
-                        msg.tag = ModelHelper.AUTOGERATED_TAG_REVIEWER_UPDATE;
+                        msg.tag = ModelHelper.AUTOGENERATED_TAG_REVIEWER_UPDATE;
                         found = true;
-                        break;
+
                     } else if (msg.date.compareTo(ru.updated) > 0) {
+                        if (found) {
+                            break;
+                        }
                         msgs.add(i, ModelHelper.createReviewerUpdateMessage(ru));
                         found = true;
                         break;
