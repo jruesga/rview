@@ -176,7 +176,7 @@ public class Preferences {
         return accounts;
     }
 
-    public static List<Account>  removeAccount(Context context, @NonNull Account account) {
+    public static List<Account> removeAccount(Context context, @NonNull Account account) {
         List<Account> accounts = getAccounts(context);
         Iterator<Account> it = accounts.iterator();
         while(it.hasNext()) {

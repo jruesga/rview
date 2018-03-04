@@ -228,6 +228,12 @@
         <item>@string/account_settings_attachments_optimize_format_webp</item>
     </string-array>
 
+    <string-array name="reviewer_update_states">
+        <item>@string/reviewer_update_reviewer</item>
+        <item>@string/reviewer_update_cc</item>
+        <item>@string/reviewer_update_removed</item>
+    </string-array>
+
     <string-array name="libraries_ids" translatable="false">
         <item>crashlytics</item>
         <item>support_v4</item>

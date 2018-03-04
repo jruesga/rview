@@ -17,6 +17,7 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -30,5 +31,8 @@ public class ChangeMessageInfo {
     @SerializedName("message") public String message;
     @SerializedName("tag") public String tag;
     @SerializedName("_revision_number") public int revisionNumber;
+
+    // For internal use only
+    public ArrayList<ReviewerUpdateInfo> _reviewer_updates = new ArrayList<>();
 }
 

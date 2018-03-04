@@ -654,4 +654,9 @@
     <!-- Trending Score -->
     <string name="trending_score">Score:</string>
 
+    <!-- Reviewer Update -->
+    <string name="reviewer_update_reviewer">Added to REVIEWER:</string>
+    <string name="reviewer_update_cc">Added to CC:</string>
+    <string name="reviewer_update_removed">Removed reviewer:</string>
+
 </resources>

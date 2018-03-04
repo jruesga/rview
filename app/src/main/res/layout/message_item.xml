@@ -22,7 +22,7 @@
     <data>
         <import type="android.view.View" />
         <import type="android.text.TextUtils" />
-        <import type="com.ruesga.rview.misc.StringHelper" />
+        <import type="com.ruesga.rview.misc.Formatter" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
         <variable name="index" type="java.lang.Integer" />
         <variable name="folded" type="java.lang.Boolean" />
@@ -108,7 +108,7 @@
             android:singleLine="true"
             android:maxLines="1"
             android:ellipsize="end"
-            app:bindUnwrappedText="@{StringHelper.removeAllAttachments(model.message)}"
+            app:bindUnwrappedText="@{Formatter.toUserChangeMessage(context, model)}"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:visibility="@{safeUnbox(folded) ? View.VISIBLE : View.GONE}"
             android:textColor="?android:attr/textColorPrimary"
@@ -142,7 +142,7 @@
             android:layout_toLeftOf="@id/reply"
             android:layout_toStartOf="@id/reply"
             android:layout_alignWithParentIfMissing="true"
-            app:userMessage="@{StringHelper.removeAllAttachments(model.message)}"
+            app:userChangeMessage="@{model}"
             app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
             android:visibility="@{!safeUnbox(folded) ? View.VISIBLE : View.GONE}"
             android:textAppearance="@style/TextAppearance.VerySmall"

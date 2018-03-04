@@ -50,6 +50,8 @@ import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
 import com.ruesga.rview.gerrit.model.ProjectStatus;
+import com.ruesga.rview.gerrit.model.ReviewerStatus;
+import com.ruesga.rview.gerrit.model.ReviewerUpdateInfo;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
 import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.SubmitType;
@@ -223,6 +225,16 @@ public class Formatter {
         String message = EmojiHelper.createEmoji(
                 info.message.substring(info.subject.length()).trim());
         view.setText(StringHelper.removeLineBreaks(message));
+    }
+
+    @SuppressWarnings("deprecation")
+    @BindingAdapter("userChangeMessage")
+    public static void toUserChangeMessage(TextView view, ChangeMessageInfo msg) {
+        if (msg == null) {
+            view.setText(null);
+            return;
+        }
+        view.setText(toUserChangeMessage(view.getContext(), msg));
     }
 
     @BindingAdapter("userMessage")
@@ -819,5 +831,44 @@ public class Formatter {
     public static void bindToVersion(View v, double version) {
         v.setVisibility(ModelHelper.isEqualsOrGreaterVersionThan(mAccount, version)
                 ? View.VISIBLE : View.GONE);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static CharSequence toUserChangeMessage(Context ctx, ChangeMessageInfo msg) {
+        if (msg == null) {
+            return null;
+        }
+        if (msg._reviewer_updates.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (ReviewerStatus status : ReviewerStatus.values()) {
+                sb.append(toReviewUpdateMessage(
+                        ctx, msg._reviewer_updates, status, sb.length() > 0));
+            }
+            return Html.fromHtml(sb.toString());
+        }
+        return StringHelper.removeAllAttachments(msg.message);
+    }
+
+    private static String toReviewUpdateMessage(
+            Context ctx, List<ReviewerUpdateInfo> updates, ReviewerStatus state, boolean newLine) {
+        boolean first = true;
+        StringBuilder sb = new StringBuilder();
+        for (ReviewerUpdateInfo update : updates) {
+            if (state.equals(update.state)) {
+                if (first) {
+                    if (newLine) {
+                        sb.append("<br/>");
+                    }
+                    sb.append(ctx.getResources().getStringArray(
+                            R.array.reviewer_update_states)[state.ordinal()]);
+                    sb.append(" ");
+                } else {
+                    sb.append(", ");
+                }
+                sb.append("<b>").append(toAccountDisplayName(update.reviewer)).append("</b>");
+                first = false;
+            }
+        }
+        return sb.toString();
     }
 }

@@ -96,14 +96,15 @@ public class BindingAdapters {
     }
 
     @BindingAdapter("bindUnwrappedText")
-    public static void bindUnwrappedText(TextView v, String text) {
+    public static void bindUnwrappedText(TextView v, CharSequence text) {
         if (TextUtils.isEmpty(text)) {
             v.setText(null);
             return;
         }
 
         // Remove line breaks
-        v.setText(text.replaceAll("\r\n", " ").replaceAll("\r", " ").replaceAll("\n", " "));
+        v.setText(text.toString()
+                .replaceAll("\r\n", " ").replaceAll("\r", " ").replaceAll("\n", " "));
     }
 
     @BindingAdapter("bindHtml")
