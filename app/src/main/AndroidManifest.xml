@@ -78,6 +78,20 @@
             android:excludeFromRecents="true"
             android:taskAffinity=""
             android:exported="false" />
+        <activity-alias android:name=".GerritGenericUrlHandlerActivity"
+            android:theme="@style/AppTheme.NoStatusBarColor"
+            android:targetActivity=".UrlHandlerProxyActivity"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="*" android:pathPrefix="/gerrit/" />
+                <data android:scheme="https" android:host="*" android:pathPrefix="/gerrit/" />
+            </intent-filter>
+        </activity-alias>
         <!-- URL-ACTIVITY-HANDLERS -->
 
         <activity
