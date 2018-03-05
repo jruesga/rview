@@ -145,14 +145,6 @@ public class ContinuousIntegrationHelperTest {
         assertEquals(8, cis.size());
         assertEquals("Check Backport", cis.get(0).mName);
         assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
-
-        // Zephyr
-        cis = extractContinuousIntegrationInfo("Zephyr", null);
-        assertEquals(1, cis.size());
-        assertEquals("zephyr-verify", cis.get(0).mName);
-        assertEquals("https://jenkins.zephyrproject.org/job/zephyr-verify/27024/",
-                cis.get(0).mUrl);
-        assertEquals(ContinuousIntegrationInfo.BuildStatus.SUCCESS, cis.get(0).mStatus);
     }
 
     private List<ContinuousIntegrationInfo> extractContinuousIntegrationInfo(
