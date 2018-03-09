@@ -18,11 +18,13 @@ package com.ruesga.rview.widget;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.VisibleForTesting;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SoundEffectConstants;
 import android.view.View;
 
@@ -41,6 +43,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegExLinkifyTextView extends StyleableTextView {
+    private static final String TAG = "RegExLinkifyTextView";
+
     public static class RegExLink {
         interface RegExLinkExtractor {
             String extractLink(String group);
@@ -49,20 +53,20 @@ public class RegExLinkifyTextView extends StyleableTextView {
         public final String mType;
         public final Pattern mPattern;
         private final String mLink;
-        private final boolean mSingleGroup;
+        private final boolean mMultiGroup;
         private final RegExLinkExtractor mExtractor;
 
-        public RegExLink(String type, String regEx, String link, boolean singleGroup) {
-            this(type, regEx, link, singleGroup, null);
+        public RegExLink(String type, String regEx, String link, boolean multiGroup) {
+            this(type, regEx, link, multiGroup, null);
         }
 
         private RegExLink(String type, String regEx, String link,
-                boolean singleGroup, RegExLinkExtractor extractor) {
+                boolean multiGroup, RegExLinkExtractor extractor) {
             mType = type;
             mPattern = Pattern.compile(regEx,
                     Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
             mLink = link;
-            mSingleGroup = singleGroup;
+            mMultiGroup = multiGroup;
             mExtractor = extractor;
         }
     }
@@ -152,16 +156,20 @@ public class RegExLinkifyTextView extends StyleableTextView {
 
                     final Matcher matcher = regEx.mPattern.matcher(text);
                     while (matcher.find()) {
-                        String group = regEx.mSingleGroup ? matcher.group(1) : matcher.group();
-                        if (group == null) {
-                            continue;
+                        final String link = replaceLink(regEx, matcher);
+                        if (link == null) {
+                            return;
                         }
-                        int start = regEx.mSingleGroup ? matcher.start(1) : matcher.start();
-                        int end = regEx.mSingleGroup ? matcher.end(1) : matcher.end();
 
                         // Try to deal with ".", ")", "]" catches by the regexp (this shouldn't
                         // be the case for the 99% of the urls). Also trim up spaces.
-                        if (group.endsWith("/.") || group.endsWith(")") || group.endsWith("]")) {
+                        String group = matcher.group();
+                        int start = matcher.start();
+                        int end = matcher.end();
+                        if (group == null || start == -1 || end == -1) {
+                            return;
+                        }
+                        if (group.endsWith(".") || group.endsWith(")") || group.endsWith("]")) {
                             group = group.substring(0, group.length() - 1);
                             end--;
                         }
@@ -173,12 +181,6 @@ public class RegExLinkifyTextView extends StyleableTextView {
                             group = group.substring(0, group.length() - 1);
                             end++;
                         }
-
-                        // Extract url link
-                        if (regEx.mExtractor != null) {
-                            group = regEx.mExtractor.extractLink(group);
-                        }
-                        final String url = group.trim();
 
                         // Remove previous spans
                         ClickableSpan[] old = span.getSpans(start, end, ClickableSpan.class);
@@ -200,7 +202,6 @@ public class RegExLinkifyTextView extends StyleableTextView {
                                 // Click on span doesn't provide sound feedback it the text view doesn't
                                 // handle a click event. Just perform a click effect.
                                 v.playSoundEffect(SoundEffectConstants.CLICK);
-                                String link = regEx.mLink.replace("$1", url);
 
                                 Uri uri = StringHelper.buildUriAndEnsureScheme(link);
                                 boolean isHttpScheme = uri.getScheme().equals("http")
@@ -225,5 +226,59 @@ public class RegExLinkifyTextView extends StyleableTextView {
     public void addRegEx(RegExLink... regexs) {
         mRegEx.addAll(Arrays.asList(regexs));
         setText(getText(), BufferType.SPANNABLE);
+    }
+
+    @VisibleForTesting
+    public static String replaceLink(
+            RegExLink regEx, Matcher matcher) {
+        List<String> groups = new ArrayList<>();
+        if (regEx.mMultiGroup) {
+            final int count = matcher.groupCount();
+            for(int i = 1; i <= count; i++) {
+                String s = matcher.group(i);
+                groups.add(s == null ? "" : s);
+            }
+        } else {
+            groups.add(matcher.group());
+        }
+
+        if (groups.isEmpty()) {
+            Log.w(TAG, "RegExLinkify empty groups => pattern: '" + regEx.mPattern + "'; link: '"
+                    + "'; multiGroup: " + regEx.mMultiGroup);
+            return null;
+        }
+
+        // Try to deal with ".", ")", "]" catches by the regexp (this shouldn't
+        // be the case for the 99% of the urls). Also trim up spaces.
+        final int count = groups.size();
+        for(int i = 0; i < count; i++) {
+            String group = groups.get(i);
+            if (i == (count - 1)) {
+                if (group.endsWith(".") || group.endsWith(")") || group.endsWith("]")) {
+                    group = group.substring(0, group.length() - 1);
+                }
+            }
+            while (group.startsWith(" ") || group.startsWith("\n")) {
+                group = group.substring(1);
+            }
+            while (group.endsWith(" ") || group.endsWith("\n")) {
+                group = group.substring(0, group.length() - 1);
+            }
+
+            // Extract url link
+            if (regEx.mExtractor != null) {
+                group = regEx.mExtractor.extractLink(group);
+            }
+
+            groups.set(i, group.trim());
+        }
+
+        // Replace the link
+        String link = regEx.mLink;
+        for(int i = 0; i < count; i++) {
+            String group = groups.get(i);
+            link = link.replace("$"+(i+1), group == null ? "" : group);
+        }
+        return link;
     }
 }
