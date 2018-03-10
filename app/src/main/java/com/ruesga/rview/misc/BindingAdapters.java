@@ -141,7 +141,7 @@ public class BindingAdapters {
 
     @BindingAdapter("bindNotEmptyCollection")
     public static void bindNotEmptyCollection(View v, Collection<?> o) {
-        v.setVisibility(!isEmpty(o) ? View.VISIBLE : View.GONE);
+        v.setVisibility(isEmpty(o) ? View.VISIBLE : View.GONE);
     }
 
     @BindingAdapter("bindEmptyMap")
@@ -151,7 +151,7 @@ public class BindingAdapters {
 
     @BindingAdapter("bindNotEmptyMap")
     public static void bindNotEmptyMap(View v, Map<?, ?> o) {
-        v.setVisibility(!(o == null || o.isEmpty()) ? View.VISIBLE : View.GONE);
+        v.setVisibility(o == null || o.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     @BindingAdapter("bindImageTint")
