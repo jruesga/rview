@@ -677,12 +677,13 @@ public class ChangeDetailsFragment extends Fragment implements
             mRepository = repo;
         }
 
-        void update(ListModel listModel, ChangeMessageInfo[] messages,
+        void update(ListModel listModel, ChangeInfo change,
                 Map<String, LinkedHashMap<String, List<CommentInfo>>> messagesWithComments,
                 ReviewerUpdateInfo[] reviewerUpdates) {
             mMessages = filterTaggedMessages(filterCiAccountsMessages(
-                    joinWithReviewerUpdates(messages, reviewerUpdates)));
+                    joinWithReviewerUpdates(change.messages, reviewerUpdates)));
             mMessagesWithComments = messagesWithComments;
+            change.messages = mMessages;
 
             int count = mMessages.length;
             boolean[] old = mFolded;
@@ -903,7 +904,7 @@ public class ChangeDetailsFragment extends Fragment implements
                             ? R.string.change_details_action_show_ci_messages
                             : R.string.change_details_action_hide_ci_messages));
                 }
-                mMessageAdapter.update(mModel.msgListModel, change.messages,
+                mMessageAdapter.update(mModel.msgListModel, change,
                         result.mMessagesWithComments, change.reviewerUpdates);
             }
 
@@ -1023,7 +1024,7 @@ public class ChangeDetailsFragment extends Fragment implements
             // update the message list until a full refresh happens)
             ModelHelper.updateChangeMessageInfo(
                     getActivity(), mAccount, mResponse.mChange, review.first);
-            mMessageAdapter.update(mModel.msgListModel, mResponse.mChange.messages,
+            mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
                     mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
 
             // Fetch the whole change
@@ -1133,7 +1134,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mResponse.mChange.messages = change.messages;
             mResponse.mChange.reviewerUpdates = change.reviewerUpdates;
             mModel.msgListModel.visible = change.messages != null && change.messages.length > 0;
-            mMessageAdapter.update(mModel.msgListModel, change.messages,
+            mMessageAdapter.update(mModel.msgListModel, change,
                     mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
             mBinding.setModel(mModel);
         }
@@ -2596,7 +2597,7 @@ public class ChangeDetailsFragment extends Fragment implements
                         : R.string.change_details_action_hide_tagged_messages));
 
                 mMessageAdapter.updateHideTaggedMessages(mHideTaggedMessages);
-                mMessageAdapter.update(mModel.msgListModel, mResponse.mChange.messages,
+                mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
                         mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
                 mBinding.setModel(mModel);
             }
@@ -2618,7 +2619,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     repo = ModelHelper.findRepositoryForAccount(getContext(), mAccount);
                 }
                 mMessageAdapter.updateHideCIMessages(repo);
-                mMessageAdapter.update(mModel.msgListModel, mResponse.mChange.messages,
+                mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
                         mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
                 updateChangeInfo(mResponse);
                 mBinding.setModel(mModel);
