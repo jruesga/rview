@@ -1,7 +1,6 @@
 [
   {"name":"AICP", "url":"http://gerrit.aicp-rom.com/"},
   {"name":"AllSeenAlliance", "url":"https://git.allseenalliance.org/gerrit/", "ci_accounts": "^(.* jenkins)$"},
-  {"name":"Apache Asterisk DB", "url":"https://asterix-gerrit.ics.uci.edu/"},
   {"name":"AOKP", "url":"http://gerrit.aokp.co/"},
   {"name":"AOSIP", "url":"http://review.aosiprom.com/"},
   {"name":"AOSP", "url":"https://android-review.googlesource.com/", "ci_accounts": "^(Deckard Autoverifier|Treehugger Robot)$"},
@@ -9,6 +8,7 @@
   {"name":"AOSPC", "url":"https://gerrit.cypheros.co/"},
   {"name":"AOSPExtended", "url":"http://gerrit.aospextended.com/"},
   {"name":"Asterisk", "url":"https://gerrit.asterisk.org/", "ci_accounts": "^(Zuul The Gatekeeper|Jenkins2)$"},
+  {"name":"Asterisk DB", "url":"https://asterix-gerrit.ics.uci.edu/"},
   {"name":"Automotive Linux", "url":"https://gerrit.automotivelinux.org/gerrit/", "ci_accounts": "^(Jenkins Job .*)$"},
   {"name":"BlissRoms", "url":"https://review.blissroms.com/"},
   {"name":"CandyRoms", "url":"https://gerrit.bbqdroid.org/"},
