@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.widget;
+package com.ruesga.rview.aceditor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -34,8 +34,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-
-import com.ruesga.rview.R;
 
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -99,13 +97,10 @@ public class EditorView extends FrameLayout {
         int n = a.getIndexCount();
         for (int i = 0; i < n; i++) {
             int attr = a.getIndex(i);
-            switch (attr) {
-                case R.styleable.EditorView_locked:
-                    mReadOnly = a.getBoolean(attr, mReadOnly);
-                    break;
-                case R.styleable.EditorView_wrap:
-                    mWrap = a.getBoolean(attr, mWrap);
-                    break;
+            if (attr == R.styleable.EditorView_locked) {
+                mReadOnly = a.getBoolean(attr, mReadOnly);
+            } if (attr == R.styleable.EditorView_wrap) {
+                mWrap = a.getBoolean(attr, mWrap);
             }
         }
         a.recycle();

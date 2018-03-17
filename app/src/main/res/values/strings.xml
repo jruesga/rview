@@ -610,11 +610,6 @@
     <string name="account_status_out_sick">Out sick</string>
     <string name="account_status_sleeping">Sleeping</string>
 
-    <!-- Editor -->
-    <string name="editor_load_bad_crc">Failed to load file (bad crc)</string>
-    <string name="editor_save_bad_crc">Failed to save file (bad crc)</string>
-    <string name="editor_file_to_big">File too big. Highlight and optimizations were disabled.</string>
-
     <!-- Edit file chooser dialog -->
     <string name="edit_file_add">Add file</string>
     <string name="edit_file_delete">Delete file</string>

@@ -47,7 +47,7 @@
                 android:text="@{advise}"/>
         </FrameLayout>
 
-        <com.ruesga.rview.widget.EditorView
+        <com.ruesga.rview.aceditor.EditorView
             android:id="@+id/editor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

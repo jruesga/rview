@@ -14,4 +14,22 @@
  * limitations under the License.
  */
 
-include ':gerrit', ':attachments', ':wizard', ':drawer', ':aceeditor', ':app'
+apply plugin: 'com.android.library'
+
+def libraries = rootProject.ext.libraries
+
+dependencies {
+    api "com.android.support:support-v4:${libraries.support}"
+    api "com.android.support:appcompat-v7:${libraries.support}"
+    api "com.android.support:design:${libraries.support}"
+}
+
+
+android {
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
+        consumerProguardFiles file('proguard-consumer.txt')
+
+        return void
+    }
+}

@@ -14,17 +14,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <data />
-
-    <com.ruesga.rview.aceditor.EditorView
-        android:id="@+id/editor"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:padding="1dp"
-        android:background="@drawable/bg_border">
-    </com.ruesga.rview.aceditor.EditorView>
-</layout>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="editor_load_bad_crc">Failed to load file (bad crc)</string>
+    <string name="editor_save_bad_crc">Failed to save file (bad crc)</string>
+    <string name="editor_file_to_big">File too big. Highlight and optimizations were disabled.</string>
+</resources>

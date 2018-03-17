@@ -14,17 +14,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <data />
-
-    <com.ruesga.rview.aceditor.EditorView
-        android:id="@+id/editor"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:padding="1dp"
-        android:background="@drawable/bg_border">
-    </com.ruesga.rview.aceditor.EditorView>
-</layout>
+<resources>
+    <declare-styleable name="EditorView">
+        <attr name="locked" format="boolean"/>
+        <attr name="wrap" format="boolean"/>
+    </declare-styleable>
+</resources>

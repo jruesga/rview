@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.widget;
+package com.ruesga.rview.aceditor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

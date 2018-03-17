@@ -59,9 +59,4 @@
         <attr name="chipBackgroundColor" format="color"/>
         <attr name="chipTextColor" format="color"/>
     </declare-styleable>
-    <declare-styleable name="EditorView">
-        <attr name="locked" format="boolean"/>
-        <attr name="wrap" format="boolean"/>
-    </declare-styleable>
-
 </resources>

@@ -35,13 +35,13 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
+import com.ruesga.rview.aceditor.EditorView;
+import com.ruesga.rview.aceditor.EditorView.OnContentChangedListener;
 import com.ruesga.rview.databinding.SnippetContentBinding;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ViewHelper;
-import com.ruesga.rview.widget.EditorView;
-import com.ruesga.rview.widget.EditorView.OnContentChangedListener;
 
 import org.apache.commons.io.IOUtils;
 

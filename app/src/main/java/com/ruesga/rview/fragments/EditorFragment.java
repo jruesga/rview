@@ -44,6 +44,9 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
+import com.ruesga.rview.aceditor.EditorView;
+import com.ruesga.rview.aceditor.EditorView.OnContentChangedListener;
+import com.ruesga.rview.aceditor.EditorView.OnMessageListener;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.databinding.EditActionsHeaderBinding;
 import com.ruesga.rview.databinding.EditFileChooserHeaderBinding;
@@ -65,9 +68,6 @@ import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
-import com.ruesga.rview.widget.EditorView;
-import com.ruesga.rview.widget.EditorView.OnContentChangedListener;
-import com.ruesga.rview.widget.EditorView.OnMessageListener;
 
 import org.apache.commons.io.FileUtils;
 
