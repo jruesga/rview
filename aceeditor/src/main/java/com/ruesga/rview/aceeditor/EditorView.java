@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.aceditor;
+package com.ruesga.rview.aceeditor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -224,7 +224,8 @@ public class EditorView extends FrameLayout {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
-        webview.loadUrl("file:///android_asset/editor/editor.html");
+        webview.loadUrl("file:///android_asset/editor/editor.html?cache="
+                + System.currentTimeMillis());
         return webview;
     }
 

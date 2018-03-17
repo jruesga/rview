@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <script src="ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="ext-metadata.js" type="text/javascript" charset="utf-8"></script>
+    <!--<script src="ext-selection-handles.js" type="text/javascript" charset="utf-8"></script>-->
     <script src="crc32.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="underscore.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="source-lang-detector.min.js" type="text/javascript" charset="utf-8"></script>
@@ -29,7 +30,10 @@
     var edt_MAX_EXCHANGE_SIZE = 25000;
     var edt_TOO_BIG_SIZE = 100000;
     var edt_notify_mimetype_changes = false;
-    var editor = ace.edit("editor");
+    var editor = ace.edit("editor", {
+        selectionHandles: {
+        }
+    });
     editor.setTheme("ace/theme/chrome");
     editor.session.setUseWrapMode(false);
     editor.setReadOnly(false);
