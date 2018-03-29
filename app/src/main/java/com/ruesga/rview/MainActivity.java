@@ -771,7 +771,10 @@ public class MainActivity extends ChangeListBaseActivity {
         requestNavigateTo(Preferences.getAccountHomePageId(this, mAccount), true, true);
     }
 
-    private void requestAccountDeletion(Account account) {
+    private void requestAccountDeletion(final Account account) {
+        if (account == null) {
+            return;
+        }
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.account_deletion_title)
                 .setMessage(R.string.account_deletion_message)
