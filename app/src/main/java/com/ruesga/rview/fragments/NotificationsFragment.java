@@ -142,15 +142,16 @@ public class NotificationsFragment extends Fragment {
             mNotifications.addAll(notifications);
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new NotificationViewHolder(DataBindingUtil.inflate(
                             inflater, R.layout.notification_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             NotificationEntity item = mNotifications.get(position);
             NotificationViewHolder itemViewHolder = (NotificationViewHolder) holder;
             itemViewHolder.mBinding.item.setTag(item);
@@ -372,7 +373,7 @@ public class NotificationsFragment extends Fragment {
                             NotificationEntity.getAllAccountNotifications(
                                 ctx, mAccount.getAccountHash(), false, false);
                     Collections.sort(notifications, (o1, o2) ->
-                            Long.valueOf(o1.mWhen).compareTo(o2.mWhen) * -1);
+                            Long.compare(o1.mWhen, o2.mWhen) * -1);
                     return notifications;
                 })
                 .subscribeOn(Schedulers.io())

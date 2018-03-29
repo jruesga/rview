@@ -137,15 +137,17 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
             mData.clear();
         }
 
+        @NonNull
         @Override
-        public ListChooserItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ListChooserItemViewHolder onCreateViewHolder(
+                @NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new ListChooserItemViewHolder(
                     DataBindingUtil.inflate(inflater, R.layout.list_chooser_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(ListChooserItemViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ListChooserItemViewHolder holder, int position) {
             ItemModel item = mData.get(position);
             holder.mBinding.item.setTag(item);
             holder.mBinding.setHandlers(mHandlers);

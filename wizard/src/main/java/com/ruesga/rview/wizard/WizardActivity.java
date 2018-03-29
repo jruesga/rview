@@ -520,7 +520,7 @@ public abstract class WizardActivity extends AppCompatActivity {
     }
 
     private void performShowPageOptionsMenu(View view) {
-        if (mCurrentPageFragment != null && mCurrentPageFragment.getPageOptionsMenu() > 0) {
+        if (mCurrentPageFragment != null && mCurrentPageFragment.hasPageOptionsMenu()) {
             PopupMenu popup = new PopupMenu(this, view, Gravity.BOTTOM);
             popup.inflate(mCurrentPageFragment.getPageOptionsMenu());
             popup.setOnMenuItemClickListener(

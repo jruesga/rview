@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.services;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -80,6 +81,7 @@ public class DeviceRegistrationService extends JobIntentService {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void performDeviceRegistration(Context ctx, Account account) {
         String deviceId = getToken(account);
         if (deviceId == null) {
@@ -104,6 +106,7 @@ public class DeviceRegistrationService extends JobIntentService {
         }
     }
 
+    @SuppressLint("CheckResult")
     private void performDeviceUnregistration(Context ctx, Account account) {
         String deviceId = getToken(account);
         if (deviceId == null) {

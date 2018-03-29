@@ -51,6 +51,7 @@ public class NotificationReceiver extends BroadcastReceiver {
             = "com.ruesga.rview.action.NOTIFICATION_REPLY";
 
     @Override
+    @SuppressWarnings("IfCanBeSwitch")
     public void onReceive(Context context, Intent intent) {
         final String action = intent != null ? intent.getAction() : null;
 

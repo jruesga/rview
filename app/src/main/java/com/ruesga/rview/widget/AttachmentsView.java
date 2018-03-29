@@ -18,6 +18,7 @@ package com.ruesga.rview.widget;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -99,15 +100,16 @@ public class AttachmentsView extends FrameLayout {
             mAttachments.addAll(attachments);
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new AttachmentsViewHolder(DataBindingUtil.inflate(
                     inflater, R.layout.attachment_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             Attachment item = mAttachments.get(position);
             AttachmentsViewHolder itemViewHolder = (AttachmentsViewHolder) holder;
             itemViewHolder.mBinding.setModel(item);

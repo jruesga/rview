@@ -23,6 +23,7 @@ import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Keep;
+import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -382,33 +383,35 @@ public class DiffView extends FrameLayout {
             mSkipLinesOpHistory.add(new SkipLinesOpHistory(SkipLinesOpHistory.SKIP_DOWN, at));
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == SOURCE_VIEW_TYPE) {
-                return new DiffSourceViewHolder(DataBindingUtil.inflate(
-                        mLayoutInflater, R.layout.diff_source_item, parent, false));
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            switch (viewType) {
+                case SOURCE_VIEW_TYPE:
+                    return new DiffSourceViewHolder(DataBindingUtil.inflate(
+                            mLayoutInflater, R.layout.diff_source_item, parent, false));
 
-            } else if (viewType == SKIP_VIEW_TYPE) {
-                return new DiffSkipViewHolder(DataBindingUtil.inflate(
-                        mLayoutInflater, R.layout.diff_skip_item, parent, false));
+                case SKIP_VIEW_TYPE:
+                    return new DiffSkipViewHolder(DataBindingUtil.inflate(
+                            mLayoutInflater, R.layout.diff_skip_item, parent, false));
 
-            } else if (viewType == COMMENT_VIEW_TYPE) {
-                return new DiffCommentViewHolder(DataBindingUtil.inflate(
-                        mLayoutInflater, R.layout.diff_comment_item, parent, false));
+                case COMMENT_VIEW_TYPE:
+                    return new DiffCommentViewHolder(DataBindingUtil.inflate(
+                            mLayoutInflater, R.layout.diff_comment_item, parent, false));
 
-            } else if (viewType == ADVISE_VIEW_TYPE) {
-                return new DiffAdviseViewHolder(DataBindingUtil.inflate(
-                        mLayoutInflater, R.layout.diff_advise_item, parent, false));
+                case ADVISE_VIEW_TYPE:
+                    return new DiffAdviseViewHolder(DataBindingUtil.inflate(
+                            mLayoutInflater, R.layout.diff_advise_item, parent, false));
 
-            } else if (viewType == DECORATOR_VIEW_TYPE) {
-                return new DiffDecoratorViewHolder(DataBindingUtil.inflate(
-                        mLayoutInflater, R.layout.diff_decorator_item, parent, false));
+                case DECORATOR_VIEW_TYPE:
+                    return new DiffDecoratorViewHolder(DataBindingUtil.inflate(
+                            mLayoutInflater, R.layout.diff_decorator_item, parent, false));
             }
             return null;
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder vh, int position) {
             AbstractModel model = mModel.get(position);
 
             if (vh instanceof DiffSourceViewHolder) {

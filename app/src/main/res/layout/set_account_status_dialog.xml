@@ -72,6 +72,7 @@
                 android:text="@={model.description}"
                 android:hint="@string/account_status_dialog_hint"
                 android:imeOptions="actionDone"
+                android:inputType="text"
                 android:textSize="14sp"
                 android:minLines="1"
                 android:maxLines="1"/>

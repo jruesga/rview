@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -1008,6 +1009,7 @@ public class EditorFragment extends Fragment
     }
 
     @SuppressWarnings("ConstantConditions")
+    @SuppressLint("CheckResult")
     private void publishEditChanges() throws IOException {
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         File dir = CacheHelper.getAccountDiffCacheDir(getContext());

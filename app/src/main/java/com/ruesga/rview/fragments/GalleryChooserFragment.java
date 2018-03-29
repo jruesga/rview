@@ -247,15 +247,16 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
             return selection;
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new GalleryChooserFragment.GalleryViewHolder(DataBindingUtil.inflate(
                     inflater, R.layout.gallery_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             MediaItem mediaItem = mImages.get(position);
             Boolean selected = mSelection.get(position);
 

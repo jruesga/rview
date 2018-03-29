@@ -69,8 +69,8 @@ public class ContinuousIntegrationHelper {
         List<ContinuousIntegrationInfo> statuses = new ArrayList<>();
 
         String url = repository.mCiStatusUrl
-                .replaceFirst("\\{change\\}", changeId)
-                .replaceFirst("\\{revision\\}", String.valueOf(revisionNumber));
+                .replaceFirst("\\{change}", changeId)
+                .replaceFirst("\\{revision}", String.valueOf(revisionNumber));
 
         try {
             OkHttpClient okhttp = NetworkingHelper.createNetworkClient();

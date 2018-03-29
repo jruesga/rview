@@ -283,18 +283,24 @@ public class BitmapUtils {
                     return src;
                 }
                 Matrix matrix = new Matrix();
-                if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
-                    matrix.postRotate(90);
-                } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
-                    matrix.postRotate(180);
-                } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-                    matrix.postRotate(270);
-                } else if (orientation == ExifInterface.ORIENTATION_FLIP_HORIZONTAL) {
-                    matrix.setScale(-1, 1);
-                    matrix.postTranslate(src.getWidth(), 0);
-                } else if (orientation == ExifInterface.ORIENTATION_FLIP_VERTICAL) {
-                    matrix.setScale(1, -1);
-                    matrix.postTranslate(0, src.getHeight());
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        matrix.postRotate(90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        matrix.postRotate(180);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        matrix.postRotate(270);
+                        break;
+                    case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                        matrix.setScale(-1, 1);
+                        matrix.postTranslate(src.getWidth(), 0);
+                        break;
+                    case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                        matrix.setScale(1, -1);
+                        matrix.postTranslate(0, src.getHeight());
+                        break;
                 }
                 // Rotate the bitmap
                 return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);

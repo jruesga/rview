@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -632,7 +633,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
     private static class MessageAdapter extends RecyclerView.Adapter<MessageViewHolder> {
         private final AccountInfo mBuildBotSystemAccount;
-        private EventHandlers mEventHandlers = null;
+        private EventHandlers mEventHandlers;
         private ChangeMessageInfo[] mMessages;
         private Map<String, LinkedHashMap<String, List<CommentInfo>>> mMessagesWithComments;
         private boolean[] mFolded;
@@ -2151,7 +2152,9 @@ public class ChangeDetailsFragment extends Fragment implements
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+
     @SuppressWarnings("ConstantConditions")
+    @SuppressLint("CheckResult")
     private Observable<String> changeTopic(final String newTopic) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -2201,6 +2204,7 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("ConstantConditions")
+    @SuppressLint("CheckResult")
     private Observable<AssigneeInfo> editAssignee(final String assignee) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
@@ -2505,15 +2509,7 @@ public class ChangeDetailsFragment extends Fragment implements
             rev.commit.commit = revision;
             mAllRevisions.add(rev);
         }
-        Collections.sort(mAllRevisions, (o1, o2) -> {
-            if (o1.number > o2.number) {
-                return -1;
-            }
-            if (o1.number < o2.number) {
-                return 1;
-            }
-            return 0;
-        });
+        Collections.sort(mAllRevisions, (o1, o2) -> Integer.compare(o2.number, o1.number));
 
         // All revisions + base - current revision
         mAllRevisionsWithBase.clear();
@@ -3200,6 +3196,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     }
 
+    @SuppressLint("CheckResult")
     private void performSubmitChange(GerritApi api) {
         SubmitInput input = new SubmitInput();
         input.notify = NotifyType.ALL;
@@ -3212,6 +3209,7 @@ public class ChangeDetailsFragment extends Fragment implements
         return api.rebaseChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
+    @SuppressLint("CheckResult")
     private void performAbandonChange(GerritApi api, String msg) {
         AbandonInput input = new AbandonInput();
         input.notify = NotifyType.ALL;
@@ -3221,6 +3219,7 @@ public class ChangeDetailsFragment extends Fragment implements
         api.abandonChange(String.valueOf(mLegacyChangeId), input).blockingFirst();
     }
 
+    @SuppressLint("CheckResult")
     private void performRestoreChange(GerritApi api, String msg) {
         RestoreInput input = new RestoreInput();
         if (!TextUtils.isEmpty(msg)) {
@@ -3239,12 +3238,14 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("deprecation")
+    @SuppressLint("CheckResult")
     private boolean performPublishDraft(GerritApi api) {
         api.publishChangeDraftRevision(String.valueOf(mLegacyChangeId), mCurrentRevision)
                 .blockingFirst();
         return true;
     }
 
+    @SuppressLint("CheckResult")
     private void performDeleteChange(GerritApi api) {
         api.deleteChange(String.valueOf(mLegacyChangeId)).blockingFirst();
     }
@@ -3270,6 +3271,7 @@ public class ChangeDetailsFragment extends Fragment implements
         return api.cherryPickChangeRevision(changeId, mCurrentRevision, input).blockingFirst();
     }
 
+    @SuppressLint("CheckResult")
     private boolean performMarkPrivate(GerritApi api, String message) {
         String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
         final PrivateInput input = new PrivateInput();
@@ -3285,6 +3287,7 @@ public class ChangeDetailsFragment extends Fragment implements
         return true;
     }
 
+    @SuppressLint("CheckResult")
     private boolean performMarkWIP(GerritApi api, String message) {
         String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
         final WorkInProgressInput input = new WorkInProgressInput();
@@ -3300,6 +3303,7 @@ public class ChangeDetailsFragment extends Fragment implements
         return true;
     }
 
+    @SuppressLint("CheckResult")
     private boolean performMarkReviewed(GerritApi api) {
         String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
         if (mResponse.mChange.reviewed) {
@@ -3310,6 +3314,7 @@ public class ChangeDetailsFragment extends Fragment implements
         return true;
     }
 
+    @SuppressLint("CheckResult")
     private boolean performMarkIgnore(GerritApi api) {
         String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
         boolean ignored = mResponse.mChange.stars != null

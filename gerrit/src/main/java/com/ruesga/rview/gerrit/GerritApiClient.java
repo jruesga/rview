@@ -122,9 +122,7 @@ class GerritApiClient implements GerritApi {
         private boolean expired(String name) {
             if (mCookieStore.containsKey(name)) {
                 long expiresAt = mCookieStore.get(name).expiresAt();
-                if (expiresAt > 0 && expiresAt < System.currentTimeMillis()) {
-                    return true;
-                }
+                return expiresAt > 0 && expiresAt < System.currentTimeMillis();
             }
             return false;
         }

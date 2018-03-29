@@ -426,8 +426,9 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             throw new RuntimeException("Unknown item type.");
         }
 
+        @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             switch (viewType) {
                 case VIEW_TYPE_NORMAL:
                     return new NormalViewHolder(mLayoutInflater, parent,
@@ -444,7 +445,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
 
         @Override
         @SuppressWarnings("ConstantConditions")
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
             OnMiniDrawerNavigationOpenStatusChangedListener mMiniDrawerListener = null;
 
             switch (getItemViewType(position)) {
@@ -504,7 +505,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         }
 
         @Override
-        public void onViewRecycled(ViewHolder holder) {
+        public void onViewRecycled(@NonNull ViewHolder holder) {
             if (holder instanceof NormalViewHolder) {
                 ((DrawerNavigationMenuItemView) holder.itemView).recycle();
             }

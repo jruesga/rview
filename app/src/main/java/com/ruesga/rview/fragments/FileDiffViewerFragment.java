@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -910,6 +911,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         return comment;
     }
 
+    @SuppressLint("CheckResult")
     private void performDeleteDraft(GerritApi api, String revision, String draftId) {
         int base = Integer.parseInt(revision);
         String rev = base == 0 ? mRevisionId : revision;

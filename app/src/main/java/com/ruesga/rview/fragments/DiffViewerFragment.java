@@ -616,17 +616,8 @@ public class DiffViewerFragment extends Fragment
         for (String revision : mChange.revisions.keySet()) {
             mAllRevisions.add(String.valueOf(mChange.revisions.get(revision).number));
         }
-        Collections.sort(mAllRevisions, (o1, o2) -> {
-            int a = Integer.valueOf(o1);
-            int b = Integer.valueOf(o2);
-            if (a < b) {
-                return -1;
-            }
-            if (a > b) {
-                return 1;
-            }
-            return 0;
-        });
+        Collections.sort(mAllRevisions, (o1, o2) ->
+                Integer.compare(Integer.valueOf(o1), Integer.valueOf(o2)));
     }
 
     private void openOptionsMenu() {

@@ -134,16 +134,19 @@ public class ActivityHelper {
                     }
                 }
 
-                if (targetIntents.size() == 0) {
-                    throw new ActivityNotFoundException();
-                } else if (targetIntents.size() == 1) {
-                    ctx.startActivity(targetIntents.get(0));
-                } else {
-                    Intent chooserIntent = Intent.createChooser(
-                            intent, ctx.getString(R.string.action_open_with));
-                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
-                            targetIntents.toArray(new Parcelable[] {}));
-                    ctx.startActivity(chooserIntent);
+                switch (targetIntents.size()) {
+                    case 0:
+                        throw new ActivityNotFoundException();
+                    case 1:
+                        ctx.startActivity(targetIntents.get(0));
+                        break;
+                    default:
+                        Intent chooserIntent = Intent.createChooser(
+                                intent, ctx.getString(R.string.action_open_with));
+                        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+                                targetIntents.toArray(new Parcelable[]{}));
+                        ctx.startActivity(chooserIntent);
+                        break;
                 }
             } else {
                 ctx.startActivity(intent);

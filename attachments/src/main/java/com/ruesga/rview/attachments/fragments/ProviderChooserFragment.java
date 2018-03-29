@@ -93,15 +93,16 @@ public class ProviderChooserFragment extends DialogFragment {
             mCurrentProvider = Preferences.getProvider(mFragment.getContext());
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new ProviderViewHolder(DataBindingUtil.inflate(
                     inflater, R.layout.attachment_provider_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             AttachmentsProvider provider = mProviders.get(position);
             AuthenticationInfo auth = Preferences.getAuthenticationInfo(
                     mFragment.getContext(), provider.getType());

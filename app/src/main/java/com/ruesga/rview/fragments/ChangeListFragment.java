@@ -139,8 +139,9 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mData.addAll(changes);
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             switch (viewType) {
                 case FETCHING_MODE_ITEM_VIEW:
@@ -154,7 +155,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ItemViewHolder) {
                 ChangeInfo item = mData.get(position);
                 ItemViewHolder itemViewHolder = (ItemViewHolder) holder;

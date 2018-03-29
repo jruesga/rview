@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.attachments.gdrive;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.support.annotation.DrawableRes;
@@ -110,6 +111,7 @@ public class GDriveAttachmentsProvider implements AttachmentsProvider {
     }
 
     @Override
+    @SuppressLint("CheckResult")
     public boolean createAttachmentsMetadata(List<Attachment> attachments) {
         // Check
         final String folderId = createFolderIfNeeded();
@@ -153,6 +155,7 @@ public class GDriveAttachmentsProvider implements AttachmentsProvider {
     }
 
     @Override
+    @SuppressLint("CheckResult")
     public boolean uploadAttachmentsContent(List<Attachment> attachments) {
         GDriveRestApiClient api = GDriveRestApiClient.newClientInstance(mContext);
         Log.i(TAG, "Uploading " + attachments.size() + " content attachments");
