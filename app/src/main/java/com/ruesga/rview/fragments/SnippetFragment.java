@@ -35,8 +35,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.aceeditor.EditorView;
-import com.ruesga.rview.aceeditor.EditorView.OnContentChangedListener;
+import com.ruesga.rview.aceeditor.AceEditorView;
+import com.ruesga.rview.aceeditor.AceEditorView.OnContentChangedListener;
 import com.ruesga.rview.databinding.SnippetContentBinding;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.AndroidHelper;
@@ -222,7 +222,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
         if (mNeedPermissions) {
             fileName = DEFAULT_SNIPPED_NAME + ".txt";
         } else {
-            String ext = EditorView.resolveExtensionFromMimeType(mMimeType);
+            String ext = AceEditorView.resolveExtensionFromMimeType(mMimeType);
             fileName = DEFAULT_SNIPPED_NAME + "." + ext;
         }
 
@@ -301,7 +301,7 @@ public class SnippetFragment extends BottomSheetBaseFragment {
     private void readFileContent() {
         if (mDirty) {
             mBinding.editor.readContent(
-                    new EditorView.OnReadContentReadyListener() {
+                    new AceEditorView.OnReadContentReadyListener() {
                         @Override
                         public void onReadContentReady(byte[] content, String mimeType) {
                             if (content.length > 0) {

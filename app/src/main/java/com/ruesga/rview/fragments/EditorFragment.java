@@ -44,9 +44,9 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
-import com.ruesga.rview.aceeditor.EditorView;
-import com.ruesga.rview.aceeditor.EditorView.OnContentChangedListener;
-import com.ruesga.rview.aceeditor.EditorView.OnMessageListener;
+import com.ruesga.rview.aceeditor.AceEditorView;
+import com.ruesga.rview.aceeditor.AceEditorView.OnContentChangedListener;
+import com.ruesga.rview.aceeditor.AceEditorView.OnMessageListener;
 import com.ruesga.rview.adapters.SimpleDropDownAdapter;
 import com.ruesga.rview.databinding.EditActionsHeaderBinding;
 import com.ruesga.rview.databinding.EditFileChooserHeaderBinding;
@@ -851,7 +851,7 @@ public class EditorFragment extends Fragment
     private void readFileContent(final OnSavedContentReady cb) {
         final String file = mFile;
         mBinding.editor.readContent(
-            new EditorView.OnReadContentReadyListener() {
+            new AceEditorView.OnReadContentReadyListener() {
                 @Override
                 public void onReadContentReady(byte[] content, String mimeType) {
                     if (content.length > 0) {

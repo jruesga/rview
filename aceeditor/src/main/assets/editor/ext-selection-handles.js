@@ -22,7 +22,7 @@ var SelectionHandles = function(editor, conf) {
     this.$contentObserver = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutationRecord) {
             hideHandles();
-            self.onChange();
+            self.$editor._emit("changeSelection");
         });
     });
 
@@ -39,6 +39,10 @@ var SelectionHandles = function(editor, conf) {
                 }
             }, 100);
         }
+    };
+    this.onScroll = function() {
+        hideHandles();
+        self.$editor._emit("changeSelection");
     };
 
     function showHandles() {
@@ -214,14 +218,15 @@ var SelectionHandles = function(editor, conf) {
 //
 //  selectionHandles: {
 //      color: '#4285f4',
-//      size: 16,
+//      size: 20,
 //      handles: {
-//         left: './selection_handle_left2.svg',
-//         right: './selection_handle_right2.svg'
+//         left: './selection_handle_left.svg',
+//         right: './selection_handle_right.svg'
 //      }
 //  }
 //
-//  color => default handler colors
+//  color => handles color
+//  size => handles size
 //  handles => external image handles.
 //
 
@@ -231,8 +236,7 @@ require("../config").defineOptions(Editor.prototype, "editor", {
         set: function(conf) {
             if (navigator.userAgent.indexOf("Chrome/") == -1
                 && navigator.userAgent.indexOf("Android") != -1) {
-                // TODO for now the selection-handles scripts doesn't support non-chromium webviews
-                this.removeListener("changeSelection", this.selectionHandles.onChange);
+                // TODO for now the selection-handles scripts isn't supported on non-chromium webviews
                 return;
             }
             if (conf) {
@@ -243,11 +247,13 @@ require("../config").defineOptions(Editor.prototype, "editor", {
                     var content = this.selectionHandles.$editor.container.getElementsByClassName('ace_content')[0];
                     this.selectionHandles.$contentObserver.observe(content, { attributes : true, attributeFilter : ['style'] });
                     this.on("changeSelection", this.selectionHandles.onChange);
+                    window.addEventListener("scroll", this.selectionHandles.onScroll);
                 }
             } else if (this.selectionHandles) {
                 // unregister observers and listeners
                 this.selectionHandles.$contentObserver.disconnect();
                 this.removeListener("changeSelection", this.selectionHandles.onChange);
+                window.removeListener("scroll", this.selectionHandles.onScroll);
             }
         }
     }

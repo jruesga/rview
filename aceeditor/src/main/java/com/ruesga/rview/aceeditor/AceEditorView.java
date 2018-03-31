@@ -19,6 +19,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.StringRes;
@@ -27,6 +28,7 @@ import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Pair;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
@@ -35,11 +37,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 
+import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 
-public class EditorView extends FrameLayout {
+public class AceEditorView extends FrameLayout {
 
     public interface OnReadContentReadyListener {
         void onReadContentReady(byte[] content, String mimeType);
@@ -80,26 +83,26 @@ public class EditorView extends FrameLayout {
 
     private SparseArray<Pair<StringBuilder, OnReadContentReadyListener>> mMap = new SparseArray<>();
 
-    public EditorView(Context context) {
+    public AceEditorView(Context context) {
         this(context, null);
     }
 
-    public EditorView(Context context, AttributeSet attrs) {
+    public AceEditorView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public EditorView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public AceEditorView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         Resources.Theme theme = context.getTheme();
         TypedArray a = theme.obtainStyledAttributes(
-                attrs, R.styleable.EditorView, defStyleAttr, 0);
+                attrs, R.styleable.AceEditorView, defStyleAttr, 0);
         int n = a.getIndexCount();
         for (int i = 0; i < n; i++) {
             int attr = a.getIndex(i);
-            if (attr == R.styleable.EditorView_locked) {
+            if (attr == R.styleable.AceEditorView_locked) {
                 mReadOnly = a.getBoolean(attr, mReadOnly);
-            } if (attr == R.styleable.EditorView_wrap) {
+            } if (attr == R.styleable.AceEditorView_wrap) {
                 mWrap = a.getBoolean(attr, mWrap);
             }
         }
@@ -139,13 +142,13 @@ public class EditorView extends FrameLayout {
                 final String msg = consoleMessage.message();
                 if (msg.equals("edt:crc")) {
                     if (mMessageListener != null) {
-                        mMessageListener.onErrorMessage(R.string.editor_load_bad_crc);
+                        mMessageListener.onErrorMessage(R.string.ace_editor_load_bad_crc);
                     }
                     return true;
                 }
                 if (msg.equals("edt:big")) {
                     if (mMessageListener != null) {
-                        mMessageListener.onWarnMessage(R.string.editor_file_to_big);
+                        mMessageListener.onWarnMessage(R.string.ace_editor_file_to_big);
                     }
                     return true;
                 }
@@ -166,7 +169,7 @@ public class EditorView extends FrameLayout {
                     if (TextUtils.isEmpty(mimeType)) {
                         mimeType = "text/plain";
                     }
-                    String ext = EditorView.resolveExtensionFromMimeType(mimeType);
+                    String ext = AceEditorView.resolveExtensionFromMimeType(mimeType);
                     if (mReady) {
                         mWebView.loadUrl("javascript: setFileName('unnamed." + ext + "');");
                     }
@@ -203,12 +206,10 @@ public class EditorView extends FrameLayout {
                             int computedCrc = crc(content);
                             if (crc != -1 && crc != computedCrc) {
                                 if (mMessageListener != null) {
-                                    mMessageListener.onErrorMessage(R.string.editor_save_bad_crc);
+                                    mMessageListener.onErrorMessage(R.string.ace_editor_save_bad_crc);
                                 }
                                 return true;
                             }
-                            System.out.println("CONSOLE: computed hash: " + crc);
-
                             o.second.onReadContentReady(content, mResolveMimetType);
                             mMap.remove(key);
                             break;
@@ -224,8 +225,12 @@ public class EditorView extends FrameLayout {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setUseWideViewPort(true);
-        webview.loadUrl("file:///android_asset/editor/editor.html?cache="
-                + System.currentTimeMillis());
+        String url = String.format(Locale.US,
+                "file:///android_asset/editor/editor.html?cache=%d&enable-selection-handles=%s",
+                System.currentTimeMillis(),
+                // TODO for now the selection-handles scripts doesn't support non-chromium webviews
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT));
+        webview.loadUrl(url);
         return webview;
     }
 
@@ -233,7 +238,7 @@ public class EditorView extends FrameLayout {
         return mWrap;
     }
 
-    public EditorView setWrap(boolean wrap) {
+    public AceEditorView setWrap(boolean wrap) {
         mWrap = wrap;
         if (mReady) {
             mWebView.loadUrl("javascript: setWrapMode(" + mWrap + ");");
@@ -245,7 +250,7 @@ public class EditorView extends FrameLayout {
         return mReadOnly;
     }
 
-    public EditorView setReadOnly(boolean readOnly) {
+    public AceEditorView setReadOnly(boolean readOnly) {
         mReadOnly = readOnly;
         if (mReady) {
             mWebView.loadUrl("javascript: setReadOnly(" + mReadOnly + ");");
@@ -257,7 +262,7 @@ public class EditorView extends FrameLayout {
         return mTextSize;
     }
 
-    public EditorView setTextSize(int textSize) {
+    public AceEditorView setTextSize(int textSize) {
         mTextSize = textSize;
         if (mReady) {
             mWebView.loadUrl("javascript: setTextSize(" + mTextSize + ");");
@@ -269,7 +274,7 @@ public class EditorView extends FrameLayout {
         return mNotifyMimeTypeChanges;
     }
 
-    public EditorView setNotifyMimeTypeChanges(boolean notify) {
+    public AceEditorView setNotifyMimeTypeChanges(boolean notify) {
         mNotifyMimeTypeChanges = notify;
         if (mReady) {
             mWebView.loadUrl("javascript: setNotifyMimeTypeChanges(" + notify + ");");
@@ -281,12 +286,12 @@ public class EditorView extends FrameLayout {
         return mIsDirty;
     }
 
-    public EditorView listenOn(OnContentChangedListener cb) {
+    public AceEditorView listenOn(OnContentChangedListener cb) {
         mContentChangedListener = cb;
         return this;
     }
 
-    public EditorView listenOn(OnMessageListener cb) {
+    public AceEditorView listenOn(OnMessageListener cb) {
         mMessageListener = cb;
         return this;
     }

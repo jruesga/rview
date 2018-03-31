@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     Copyright (C) 2016 Jorge Ruesga
+     Copyright (C) 2017 Jorge Ruesga
 
      Licensed under the Apache License, ServerVersion 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,23 +14,10 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<menu
+<TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/menu_cut"
-        android:title="@android:string/cut"
-        app:showAsAction="ifRoom|withText"/>
-    <item
-        android:id="@+id/menu_copy"
-        android:title="@android:string/copy"
-        app:showAsAction="ifRoom|withText"/>
-    <item
-        android:id="@+id/menu_paste"
-        android:title="@android:string/paste"
-        app:showAsAction="ifRoom|withText"/>
-    <item
-        android:id="@+id/menu_select_all"
-        android:title="@android:string/selectAll"
-        app:showAsAction="ifRoom|withText"/>
-</menu>
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/AceSelection_Item"
+    android:background="?android:attr/selectableItemBackground"
+    android:textAllCaps="true"/>

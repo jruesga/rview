@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     Copyright (C) 2016 Jorge Ruesga
+     Copyright (C) 2017 Jorge Ruesga
 
      Licensed under the Apache License, ServerVersion 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="editor_load_bad_crc">Failed to load file (bad crc)</string>
-    <string name="editor_save_bad_crc">Failed to save file (bad crc)</string>
-    <string name="editor_file_to_big">File too big. Highlight and optimizations were disabled.</string>
+<resources>
+    <string name="ace_editor_load_bad_crc">Failed to load file (bad crc)</string>
+    <string name="ace_editor_save_bad_crc">Failed to save file (bad crc)</string>
+    <string name="ace_editor_file_to_big">File too big. Highlight and optimizations were disabled.</string>
 </resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-     Copyright (C) 2016 Jorge Ruesga
+     Copyright (C) 2017 Jorge Ruesga
 
      Licensed under the Apache License, ServerVersion 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -14,17 +14,11 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <data />
-
-    <com.ruesga.rview.aceeditor.AceEditorView
-        android:id="@+id/editor"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:padding="1dp"
-        android:background="@drawable/bg_border">
-    </com.ruesga.rview.aceeditor.AceEditorView>
-</layout>
+<resources>
+    <string-array name="ace_selection">
+        <item>@android:string/cut</item>
+        <item>@android:string/copy</item>
+        <item>@android:string/paste</item>
+        <item>@android:string/selectAll</item>
+    </string-array>
+</resources>
