@@ -21,5 +21,6 @@
         <item>@android:string/paste</item>
         <item>@android:string/selectAll</item>
         <item>@android:string/search_go</item>
+        <item>@string/ace_clipboard</item>
     </string-array>
 </resources>

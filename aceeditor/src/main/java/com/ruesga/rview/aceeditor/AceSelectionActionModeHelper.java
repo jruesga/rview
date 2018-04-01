@@ -33,6 +33,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -53,6 +54,7 @@ class AceSelectionActionModeHelper {
     static final int OPTION_PASTE = 2;
     static final int OPTION_SELECT_ALL = 3;
     static final int OPTION_SEARCH = 4;
+    private static final int OPTION_CLIPBOARD = 5;
 
     private final Context mContext;
     private final LayoutInflater mLayoutInflater;
@@ -82,11 +84,23 @@ class AceSelectionActionModeHelper {
     private boolean mHasSelection;
     private boolean mReadOnly;
 
+    private View mAnchorView;
+
+    // Clipboard
+    private Object mSemClipboardManager = null;
+
     private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (mOnSelectionItemPressedListener != null) {
                 final int itemId = (int) v.getTag();
+                if (itemId == OPTION_CLIPBOARD) {
+                    closeKeyboard();
+                    openClipboardUi();
+                    dismiss();
+                    return;
+                }
+
                 if (mOnSelectionItemPressedListener.onSelectionItemPressed(
                         itemId, mOptions.get(itemId).first)) {
                     dismiss();
@@ -158,6 +172,7 @@ class AceSelectionActionModeHelper {
         mInitialY = y;
         createPopUp();
         mPopup.showAtLocation(anchor, Gravity.NO_GRAVITY, x, y);
+        mAnchorView = anchor;
     }
 
     void hasSelection(boolean hasSelection) {
@@ -314,6 +329,9 @@ class AceSelectionActionModeHelper {
                     && mClipboard.getPrimaryClipDescription().hasMimeType(
                             ClipDescription.MIMETYPE_TEXT_PLAIN);
         }
+        if (option == OPTION_CLIPBOARD) {
+            return supportsClipboard();
+        }
         return true;
     }
 
@@ -326,5 +344,35 @@ class AceSelectionActionModeHelper {
 
     private boolean isUpperBlock() {
         return mInitialY > (mMetrics.heightPixels / 2);
+    }
+
+    @SuppressLint("WrongConstant")
+    private boolean supportsClipboard() {
+        // Samsung
+        if (android.os.Build.MANUFACTURER.toLowerCase().contains("samsung")) {
+            mSemClipboardManager = mContext.getSystemService("semclipboard");
+            return mSemClipboardManager != null;
+        }
+        return false;
+    }
+
+    private void openClipboardUi() {
+        // Samsung
+        if (mSemClipboardManager != null) {
+            try {
+                mSemClipboardManager.getClass().getMethod("showDialog")
+                        .invoke(mSemClipboardManager);
+            } catch (Exception e) {
+                // failed to open clipboard
+            }
+        }
+    }
+
+    private void closeKeyboard() {
+        InputMethodManager imm = (InputMethodManager)
+                mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(mAnchorView.getWindowToken(), 0);
+        }
     }
 }

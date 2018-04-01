@@ -18,4 +18,5 @@
     <string name="ace_editor_load_bad_crc">Failed to load file (bad crc)</string>
     <string name="ace_editor_save_bad_crc">Failed to save file (bad crc)</string>
     <string name="ace_editor_file_to_big">File too big. Highlight and optimizations were disabled.</string>
+    <string name="ace_clipboard">Clipboard</string>
 </resources>
