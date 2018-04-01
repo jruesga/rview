@@ -81,6 +81,9 @@ var SelectionHandles = function(editor, conf) {
 
             rightHandle.style.top = scrollTopPadding + (styleToSize(end.style.top) + styleToSize(end.style.height)) + 'px';
             pos = scrollLeftPadding + (padding - (handleSize/4))  + styleToSize(end.style.left) + styleToSize(end.style.width);
+            if (pos > (screen.width - handleSize)) {
+                pos = screen.width - handleSize;
+            }
             rightHandle.style.left = pos + 'px';
             rightHandle.style.display = pos < gutter ? 'none' : 'block';
         }
