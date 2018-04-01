@@ -72,15 +72,17 @@ var SelectionHandles = function(editor, conf) {
             var start = selectionStart(selection);
             var end = selectionEnd(selection);
             var handleSize = (self.$conf.size) ? self.$conf.size : DEFAULT_HANDLE_SIZE;
-            var hideBelow = gutter - (gutter / 4);
+            var hideBelow = gutter - handleSize;
 
             leftHandle.style.top = scrollTopPadding + (styleToSize(start.style.top) + styleToSize(start.style.height)) + 'px';
-            leftHandle.style.left = scrollLeftPadding + (padding - handleSize - (handleSize/4)) + styleToSize(start.style.left) + 'px';
-            leftHandle.style.display = styleToSize(leftHandle.style.left) < hideBelow ? 'none' : 'block';
+            var pos = scrollLeftPadding + (padding - handleSize - (handleSize/4)) + styleToSize(start.style.left);
+            leftHandle.style.left = pos + 'px';
+            leftHandle.style.display = pos < hideBelow ? 'none' : 'block';
 
             rightHandle.style.top = scrollTopPadding + (styleToSize(end.style.top) + styleToSize(end.style.height)) + 'px';
-            rightHandle.style.left = scrollLeftPadding + (padding - (handleSize/4))  + styleToSize(end.style.left) + styleToSize(end.style.width) + 'px';
-            rightHandle.style.display = styleToSize(rightHandle.style.left) < hideBelow ? 'none' : 'block';
+            pos = scrollLeftPadding + (padding - (handleSize/4))  + styleToSize(end.style.left) + styleToSize(end.style.width);
+            rightHandle.style.left = pos + 'px';
+            rightHandle.style.display = pos < gutter ? 'none' : 'block';
         }
     };
 
