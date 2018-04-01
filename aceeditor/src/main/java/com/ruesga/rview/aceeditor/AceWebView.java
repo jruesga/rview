@@ -148,7 +148,8 @@ class AceWebView extends WebView implements NestedScrollingChild {
                         mSelectionHelper.hasSelection(mLastSelection.selected);
                         if ((mLastSelection.selected || mHasPaste) && xVisible && yVisible) {
                             mSelectionHelper.show(this,
-                                    mLastSelection.x1 - mActionModeOffsetLeft, mLastSelection.y1);
+                                    Math.max(0, mLastSelection.x1 - mActionModeOffsetLeft),
+                                    mLastSelection.y1);
                         } else {
                             mSelectionHelper.dismiss();
                         }
