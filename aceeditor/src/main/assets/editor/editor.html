@@ -1,3 +1,18 @@
+<!--
+ * Copyright (C) 2017 Jorge Ruesga
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -167,26 +182,46 @@
     }
 
     // Special functions
+    var ace_last_touch = [0, 0];
+    editor.container.addEventListener('touchstart', function(e) {
+        ace_last_touch = [e.touches[0].clientX, e.touches[0].clientY + 20];
+    });
+    function ace_styleToSize(v) {
+        return parseInt(v.toLowerCase().trim().replace('px', ''));
+    };
+    function ace_request_focus() {
+        editor.container.getElementsByClassName('ace_text-input')[0].focus();
+        var coords = editor.renderer.pixelToScreenCoordinates(ace_last_touch[0], ace_last_touch[1]);
+        editor.gotoLine(coords.row, coords.column, true);
+    };
+    function ace_select_word() {
+        if (editor.selection.isEmpty()) {
+            editor.selection.selectWord();
+        };
+    };
     function ace_get_selected_text(action) {
         var range = editor.session.selection.getRange();
         if (!range.isEmpty()) {
             console.log("edt:seltext:" + action + ":" + btoau(editor.getSelectedText()));
         }
-    }
+    };
     function ace_copy(cut) {
         var range = editor.session.selection.getRange();
         if (!range.isEmpty()) {
             console.log("edt:copy:" + btoau(editor.getSelectedText()));
             if (cut) {
-                ace_editor.session.remove(editor.session.selection.getRange());
+                editor.session.remove(editor.session.selection.getRange());
             }
         }
-    }
+    };
     function ace_paste(text) {
         var s = atobu(text);
-        ace_editor.session.remove(editor.session.selection.getRange());
-        ace_editor.session.insert(editor.getCursorPosition(), s);
-    }
+        editor.session.remove(editor.session.selection.getRange());
+        editor.session.insert(editor.getCursorPosition(), s);
+    };
+    function ace_select_all() {
+        editor.selectAll();
+    };
 </script>
 </body>
 </html>

@@ -28,7 +28,6 @@ import android.util.AttributeSet;
 import android.util.Base64;
 import android.util.Pair;
 import android.util.SparseArray;
-import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
@@ -60,7 +59,7 @@ public class AceEditorView extends FrameLayout {
 
     private final static int MAX_EXCHANGE_SIZE = 25000;
 
-    private WebView mWebView;
+    private AceWebView mWebView;
     private final Random mRandom = new Random();
 
     private final Pattern mPattern = Pattern.compile("edt:(\\d)+:[pfm]:");
@@ -114,19 +113,19 @@ public class AceEditorView extends FrameLayout {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private WebView createWebView() {
-        WebView webview = new AceWebView(getContext());
+    private AceWebView createWebView() {
+        AceWebView webview = new AceWebView(getContext());
         webview.setLayoutParams(new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         webview.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
                 // Editor is ready. Send configuration and content
-                mWebView.loadUrl("javascript: setReadOnly(" + mReadOnly + ");");
-                mWebView.loadUrl("javascript: setWrapMode(" + mWrap + ");");
-                mWebView.loadUrl("javascript: setTextSize(" + mTextSize + ");");
-                mWebView.loadUrl("javascript: setNotifyMimeTypeChanges(" + mNotifyMimeTypeChanges + ");");
                 mReady = true;
+                setReadOnly(mReadOnly);
+                setWrap(mWrap);
+                setTextSize(mTextSize);
+                setNotifyMimeTypeChanges(mNotifyMimeTypeChanges);
 
                 if (mPendingContent != null) {
                     loadEncodedContent(mPendingFileName, mPendingContent);
@@ -252,6 +251,7 @@ public class AceEditorView extends FrameLayout {
 
     public AceEditorView setReadOnly(boolean readOnly) {
         mReadOnly = readOnly;
+        mWebView.setReadOnly(readOnly);
         if (mReady) {
             mWebView.loadUrl("javascript: setReadOnly(" + mReadOnly + ");");
         }

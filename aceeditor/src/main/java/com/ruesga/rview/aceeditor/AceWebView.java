@@ -82,30 +82,6 @@ import android.webkit.WebViewClient;
  * @see "https://github.com/takahirom/webview-in-coordinatorlayout"
  */
 class AceWebView extends WebView implements NestedScrollingChild {
-    private static final String JS_REGISTER_INTERFACE =
-            "javascript:" +
-                    "var ace_editor = ace.edit(document.getElementsByClassName('ace_editor')[0].id);" +
-                    "var ace_editor_content = document.getElementsByClassName('ace_content')[0];" +
-                    "var ace_last_touch = [0, 0];" +
-                    "ace_editor.container.addEventListener('touchstart', function(e) {" +
-                    "    ace_last_touch = [e.touches[0].clientX, e.touches[0].clientY + 20];" +
-                    "});" +
-                    "function ace_request_focus() {" +
-                    "    ace_editor.container.getElementsByClassName('ace_text-input')[0].focus();" +
-                    "    var coords = ace_editor.renderer.pixelToScreenCoordinates(ace_last_touch[0], ace_last_touch[1]);" +
-                    "    ace_editor.gotoLine(coords.row, coords.column, true);" +
-                    "};" +
-                    "function ace_select_word() {" +
-                    "    if (ace_editor.selection.isEmpty()) {" +
-                    "        ace_editor.selection.selectWord();" +
-                    "    };" +
-                    "};" +
-                    "function ace_styleToSize(v) {" +
-                    "    return parseInt(v.toLowerCase().trim().replace('px', ''));" +
-                    "};";
-    private static final String JS_REQUEST_FOCUS = "javascript: ace_request_focus();";
-    private static final String JS_SELECT_WORD = "javascript: ace_select_word();";
-
     private int[] mLastTouch = new int[2];
     private int mLastY;
     private long mLastTouchDownEvent;
@@ -113,10 +89,10 @@ class AceWebView extends WebView implements NestedScrollingChild {
     private final int[] mScrollOffset = new int[2];
     private final int[] mScrollConsumed = new int[2];
     private int mNestedOffsetY;
+    private final int mActionModeOffsetLeft;
     private NestedScrollingChildHelper mChildHelper;
     private OnLongClickListener mWrappedLongClickListener = null;
     private final Handler mHandler;
-    private boolean mJsRegistered = false;
 
     private WebChromeClient mWrappedWebChromeClient = new WebChromeClient();
     private WebViewClient mWrappedWebViewClient = new WebViewClient();
@@ -124,6 +100,9 @@ class AceWebView extends WebView implements NestedScrollingChild {
     private AceSelectionActionModeHelper mSelectionHelper;
     private final DisplayMetrics mMetrics;
     private final ClipboardManager mClipboard;
+
+    private boolean mReadOnly;
+    private boolean mHasPaste;
 
     private static class Selection {
         final boolean selected;
@@ -148,6 +127,8 @@ class AceWebView extends WebView implements NestedScrollingChild {
     public AceWebView(Context context) {
         super(context);
         mMetrics = context.getResources().getDisplayMetrics();
+        mActionModeOffsetLeft = (int) (64 * mMetrics.density);
+
         mClipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         mChildHelper = new NestedScrollingChildHelper(this);
         mHandler = new Handler(msg -> {
@@ -165,8 +146,9 @@ class AceWebView extends WebView implements NestedScrollingChild {
                                 && (mLastSelection.y1 < r.height()
                                 || mLastSelection.y2 < r.height());
                         mSelectionHelper.hasSelection(mLastSelection.selected);
-                        if (mLastSelection.selected && xVisible && yVisible) {
-                            mSelectionHelper.show(this, mLastSelection.x1, mLastSelection.y1);
+                        if ((mLastSelection.selected || mHasPaste) && xVisible && yVisible) {
+                            mSelectionHelper.show(this,
+                                    mLastSelection.x1 - mActionModeOffsetLeft, mLastSelection.y1);
                         } else {
                             mSelectionHelper.dismiss();
                         }
@@ -196,57 +178,50 @@ class AceWebView extends WebView implements NestedScrollingChild {
             switch (itemId) {
                 case AceSelectionActionModeHelper.OPTION_CUT:
                     // On old Android versions, cut doesn't work. Just use our own implementation.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        dispatchKeyEvent(new KeyEvent(0, 0,
-                                KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_X, 0, KeyEvent.META_CTRL_ON));
-                    } else {
-                        loadUrl("javascript: ace_copy(true);");
-                    }
-
+                    loadUrl("javascript: ace_copy(true);");
                     requestFocus();
+                    mHasPaste = true;
                     break;
                 case AceSelectionActionModeHelper.OPTION_COPY:
                     // On old Android versions, copy doesn't work. Just use our own implementation.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        dispatchKeyEvent(new KeyEvent(0, 0,
-                                KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_C, 0, KeyEvent.META_CTRL_ON));
-                    } else {
-                        loadUrl("javascript: ace_copy(false);");
-                    }
+                    loadUrl("javascript: ace_copy(false);");
                     requestFocus();
+                    mHasPaste = true;
                     break;
                 case AceSelectionActionModeHelper.OPTION_PASTE:
                     // On old Android versions, paste doesn't work. Just use our own implementation.
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        dispatchKeyEvent(new KeyEvent(0, 0,
-                                KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON));
-                    } else {
-                        CharSequence text = mClipboard.getPrimaryClip().getItemAt(0).getText();
-                        final String s = new String(Base64.encode(
-                                text.toString().getBytes(), Base64.NO_WRAP));
-                        loadUrl("javascript: ace_paste('" + s + "');");
-                    }
+                    CharSequence text = mClipboard.getPrimaryClip().getItemAt(0).getText();
+                    final String s = new String(Base64.encode(
+                            text.toString().getBytes(), Base64.NO_WRAP));
+                    loadUrl("javascript: ace_paste('" + s + "');");
                     requestFocus();
+                    mHasPaste = false;
+
+                    // Clear clipboard
+                    ClipData clipData = ClipData.newPlainText("", "");
+                    mClipboard.setPrimaryClip(clipData);
                     break;
                 case AceSelectionActionModeHelper.OPTION_SELECT_ALL:
-                    dispatchKeyEvent(new KeyEvent(0, 0,
-                            KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A, 0, KeyEvent.META_CTRL_ON));
+                    // On old Android versions, select all doesn't work. Just use our
+                    // own implementation.
+                    loadUrl("javascript: ace_select_all();");
                     return false;
                 default:
                     loadUrl("javascript: ace_get_selected_text('" + itemId + "');");
+                    break;
             }
             return true;
         });
 
         super.setOnClickListener(v -> {});
         super.setOnLongClickListener(v -> {
-            // Ensure the editor has the focus
-            loadUrl(JS_REQUEST_FOCUS);
+            // Show keyboard and ensure the editor has the focus
+            showKeyboard();
+            loadUrl("javascript: ace_request_focus();");
             mHandler.postDelayed(() -> {
                 // Select the current word
-                loadUrl(JS_SELECT_WORD);
+                loadUrl("javascript: ace_select_word();");
                 requestFocus();
-                showKeyboard();
             }, 50L);
 
             // When editor is empty, selection events never fired, so we just ensure
@@ -254,9 +229,7 @@ class AceWebView extends WebView implements NestedScrollingChild {
             mSelectionEvent = false;
             mHandler.postDelayed(() -> {
                 if (!mSelectionEvent) {
-                    int left = mMetrics.widthPixels - getWidth();
-                    int top = mMetrics.heightPixels - getHeight();
-                    mSelectionHelper.show(this, left + mLastTouch[0], top + mLastTouch[1]);
+                    showActionModeAtLastLocation();
                 }
             }, 450L);
 
@@ -265,6 +238,13 @@ class AceWebView extends WebView implements NestedScrollingChild {
             }
             return true;
         });
+    }
+
+    void setReadOnly(boolean readOnly) {
+        mReadOnly = readOnly;
+        if (mSelectionHelper != null) {
+            mSelectionHelper.setReadOnly(readOnly);
+        }
     }
 
     @Override
@@ -377,6 +357,15 @@ class AceWebView extends WebView implements NestedScrollingChild {
                 // Force Keyboard
                 if (!mHasMoveEvent && action == MotionEvent.ACTION_UP) {
                     showKeyboard();
+
+                    if (mHasPaste) {
+                        mSelectionEvent = false;
+                        mHandler.postDelayed(() -> {
+                            if (!mSelectionEvent) {
+                                showActionModeAtLastLocation();
+                            }
+                        }, 450L);
+                    }
                 }
                 break;
         }
@@ -431,42 +420,45 @@ class AceWebView extends WebView implements NestedScrollingChild {
     }
 
     private void showKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT);
+        if (!mReadOnly) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(
+                    Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT);
+            }
         }
     }
 
+    private void showActionModeAtLastLocation() {
+        int left = mMetrics.widthPixels - getWidth();
+        int top = mMetrics.heightPixels - getHeight();
+        mSelectionHelper.show(this, left + mLastTouch[0] - mActionModeOffsetLeft,
+                top + mLastTouch[1]);
+    }
+
     private void filterAceMessage(String msg) {
-        if (!mJsRegistered) {
-            return;
-        }
         if (msg.startsWith("edt:s:")) {
             String[] v = msg.replaceFirst("edt:s:", "").split(";");
             boolean selected = Boolean.valueOf(v[0]);
-            int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-            if (selected) {
-                int[] location = new int[2];
-                getLocationInWindow(location);
-                int screenX = Float.valueOf(v[1]).intValue();
-                int screenY = Float.valueOf(v[2]).intValue();
+            int[] location = new int[2];
+            getLocationInWindow(location);
+            int screenX = Float.valueOf(v[1]).intValue();
+            int screenY = Float.valueOf(v[2]).intValue();
 
-                float padding = (mMetrics.density * 0.2f) / 3.5f;
-                x1 = Float.valueOf(v[3]).intValue();
-                y1 = Float.valueOf(v[4]).intValue()
-                        + (int)(Float.valueOf(v[7]).intValue() * padding);
-                x2 = Float.valueOf(v[5]).intValue();
-                y2 = Float.valueOf(v[6]).intValue()
-                        + (int)(Float.valueOf(v[9]).intValue() * padding);
+            float padding = (mMetrics.density * 0.2f) / 3.5f;
+            int x1 = Float.valueOf(v[3]).intValue();
+            int y1 = Float.valueOf(v[4]).intValue()
+                    + (int)(Float.valueOf(v[7]).intValue() * padding);
+            int x2 = Float.valueOf(v[5]).intValue();
+            int y2 = Float.valueOf(v[6]).intValue()
+                    + (int)(Float.valueOf(v[9]).intValue() * padding);
 
-                x1 = (getRootView().getWidth() * x1 / screenX) + location[0];
-                y1 = (getRootView().getHeight() * y1 / screenY) + location[1]
-                        - mSelectionHelper.getDefaultHeight();
-                x2 = (getRootView().getWidth() * x2 / screenX) + location[0];
-                y2 = (getRootView().getHeight() * y2 / screenY) + location[1]
-                        - mSelectionHelper.getDefaultHeight();
-            }
+            x1 = (getRootView().getWidth() * x1 / screenX) + location[0];
+            y1 = (getRootView().getHeight() * y1 / screenY) + location[1]
+                    - mSelectionHelper.getDefaultHeight();
+            x2 = (getRootView().getWidth() * x2 / screenX) + location[0];
+            y2 = (getRootView().getHeight() * y2 / screenY) + location[1]
+                    - mSelectionHelper.getDefaultHeight();
 
             mHandler.removeMessages(SELECTION_CHANGED_MESSAGE);
             Message message = Message.obtain(mHandler);
@@ -677,15 +669,6 @@ class AceWebView extends WebView implements NestedScrollingChild {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            // TODO for now the selection-handles scripts doesn't support non-chromium webviews
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                mHandler.postDelayed(() -> {
-                    if (!mJsRegistered) {
-                        loadUrl(JS_REGISTER_INTERFACE);
-                        mJsRegistered = true;
-                    }
-                }, 100L);
-            }
             mWrappedWebViewClient.onPageFinished(view, url);
         }
 

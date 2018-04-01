@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,11 +69,14 @@ class AceSelectionActionModeHelper {
     private ViewGroup mPrimaryOptionsView;
     private ViewGroup mSecondaryOptionsUpperView;
     private ViewGroup mSecondaryOptionsLowerView;
+    private View mOverflow;
 
     private OnSelectionItemPressed mOnSelectionItemPressedListener;
     private final List<Pair<String, Intent>> mOptions = new ArrayList<>();
+    private final int basicOptionsLength;
 
     private boolean mHasSelection;
+    private boolean mReadOnly;
 
     private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
@@ -96,6 +99,7 @@ class AceSelectionActionModeHelper {
 
         // Add options
         String[] options = context.getResources().getStringArray(R.array.ace_selection);
+        basicOptionsLength = options.length;
         for (String option : options) {
             mOptions.add(new Pair<>(option, null));
         }
@@ -116,7 +120,7 @@ class AceSelectionActionModeHelper {
         }
     }
 
-    public void listenOn(OnSelectionItemPressed cb) {
+    void listenOn(OnSelectionItemPressed cb) {
         mOnSelectionItemPressedListener = cb;
     }
 
@@ -156,6 +160,10 @@ class AceSelectionActionModeHelper {
         mHasSelection = hasSelection;
     }
 
+    void setReadOnly(boolean readOnly) {
+        mReadOnly = readOnly;
+    }
+
     void processExternalAction(int itemId, String selection) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent i = mOptions.get(itemId).second;
@@ -179,8 +187,8 @@ class AceSelectionActionModeHelper {
                 contentView.findViewById(R.id.ace_selection_secondary_upper_options);
         mSecondaryOptionsLowerView =
                 contentView.findViewById(R.id.ace_selection_secondary_lower_options);
-        View overflow = contentView.findViewById(R.id.ace_selection_overflow);
-        overflow.setOnClickListener(v -> onShowMoreOptions());
+        mOverflow = contentView.findViewById(R.id.ace_selection_overflow);
+        mOverflow.setOnClickListener(v -> onShowMoreOptions());
         View backUpper = contentView.findViewById(R.id.ace_selection_back_upper);
         backUpper.setOnClickListener(v -> onHideMoreOptions());
         View backLower = contentView.findViewById(R.id.ace_selection_back_lower);
@@ -239,6 +247,8 @@ class AceSelectionActionModeHelper {
 
             first = false;
         }
+
+        mOverflow.setVisibility(hasRoom ? View.GONE : View.VISIBLE);
     }
 
     private TextView createOption(boolean hasRoom, int id, String text) {
@@ -274,12 +284,17 @@ class AceSelectionActionModeHelper {
     }
 
     private boolean hasOption(int option) {
+        if (mReadOnly & (option == OPTION_CUT || option == OPTION_PASTE)) {
+            return false;
+        }
+        if (!mHasSelection & (option == OPTION_CUT
+                || option == OPTION_COPY || option >= basicOptionsLength)) {
+            return false;
+        }
         if (option == OPTION_PASTE) {
             return mClipboard.hasPrimaryClip()
                     && mClipboard.getPrimaryClipDescription().hasMimeType(
                             ClipDescription.MIMETYPE_TEXT_PLAIN);
-        } else if (!mHasSelection & (option == OPTION_CUT || option == OPTION_COPY)) {
-            return false;
         }
         return true;
     }
