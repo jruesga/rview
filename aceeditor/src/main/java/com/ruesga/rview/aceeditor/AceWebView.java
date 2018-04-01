@@ -439,6 +439,9 @@ class AceWebView extends WebView implements NestedScrollingChild {
 
     private void filterAceMessage(String msg) {
         if (msg.startsWith("edt:s:")) {
+            if (mSelectionHelper == null) {
+                return;
+            }
             String[] v = msg.replaceFirst("edt:s:", "").split(";");
             boolean selected = Boolean.valueOf(v[0]);
             int[] location = new int[2];
@@ -475,17 +478,18 @@ class AceWebView extends WebView implements NestedScrollingChild {
             }
         } else if (msg.startsWith("edt:seltext:")) {
             if (mSelectionHelper != null) {
-                String s = msg.replaceFirst("edt:seltext:", "");
-                int action = Integer.valueOf(s.substring(0, s.indexOf(':')));
-                s = s.substring(s.indexOf(':') + 1);
-                if (!TextUtils.isEmpty(s)) {
-                    s = new String(Base64.decode(s, Base64.NO_WRAP));
-                } else {
-                    s = "";
-                }
-
-                mSelectionHelper.processExternalAction(action, s);
+                return;
             }
+
+            String s = msg.replaceFirst("edt:seltext:", "");
+            int action = Integer.valueOf(s.substring(0, s.indexOf(':')));
+            s = s.substring(s.indexOf(':') + 1);
+            if (!TextUtils.isEmpty(s)) {
+                s = new String(Base64.decode(s, Base64.NO_WRAP));
+            } else {
+                s = "";
+            }
+            mSelectionHelper.processExternalAction(action, s);
         }
     }
 
