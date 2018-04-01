@@ -16,12 +16,14 @@
 package com.ruesga.rview.aceeditor;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -34,8 +36,9 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -49,6 +52,7 @@ class AceSelectionActionModeHelper {
     static final int OPTION_COPY = 1;
     static final int OPTION_PASTE = 2;
     static final int OPTION_SELECT_ALL = 3;
+    static final int OPTION_SEARCH = 4;
 
     private final Context mContext;
     private final LayoutInflater mLayoutInflater;
@@ -165,6 +169,18 @@ class AceSelectionActionModeHelper {
     }
 
     void processExternalAction(int itemId, String selection) {
+        if (itemId == OPTION_SEARCH) {
+            try {
+                String query = URLEncoder.encode(selection, "utf-8");
+                Uri uri = Uri.parse("https://searchcode.com/?q=" + query);
+                AceActivityHelper.openUriInCustomTabs((Activity) mContext, uri);
+            } catch (UnsupportedEncodingException ex) {
+                // ignore
+            }
+            return;
+        }
+
+        // ACTION_PROCESS_TEXT activities
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent i = mOptions.get(itemId).second;
             i.putExtra(Intent.EXTRA_PROCESS_TEXT, selection);
@@ -283,6 +299,7 @@ class AceSelectionActionModeHelper {
         mPopup.update(mInitialX, mInitialY, mPrimaryWidth, mPrimaryHeight);
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
     private boolean hasOption(int option) {
         if (mReadOnly & (option == OPTION_CUT || option == OPTION_PASTE)) {
             return false;

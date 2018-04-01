@@ -22,8 +22,8 @@ dependencies {
     api "com.android.support:support-v4:${libraries.support}"
     api "com.android.support:appcompat-v7:${libraries.support}"
     api "com.android.support:design:${libraries.support}"
+    api "com.android.support:customtabs:${libraries.support}"
 }
-
 
 android {
     defaultConfig {
