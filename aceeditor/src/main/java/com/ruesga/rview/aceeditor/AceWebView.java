@@ -477,7 +477,7 @@ class AceWebView extends WebView implements NestedScrollingChild {
                 mClipboard.setPrimaryClip(clip);
             }
         } else if (msg.startsWith("edt:seltext:")) {
-            if (mSelectionHelper != null) {
+            if (mSelectionHelper == null) {
                 return;
             }
 
