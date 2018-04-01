@@ -290,6 +290,7 @@ class AceWebView extends WebView implements NestedScrollingChild {
     public boolean dispatchKeyEventPreIme(KeyEvent event) {
         if (mSelectionHelper != null && mSelectionHelper.isShowing()
                 && event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            mHasPaste = true;
             mSelectionHelper.dismiss();
             return !isKeyboardVisible();
         }
