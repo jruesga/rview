@@ -227,8 +227,7 @@ public class AceEditorView extends FrameLayout {
         String url = String.format(Locale.US,
                 "file:///android_asset/editor/editor.html?cache=%d&enable-selection-handles=%s",
                 System.currentTimeMillis(),
-                // TODO for now the selection-handles scripts doesn't support non-chromium webviews
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT));
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN));
         webview.loadUrl(url);
         return webview;
     }

@@ -34,18 +34,33 @@ var SelectionHandles = function(editor, conf) {
     var leftHandle = createHandle('left');
     var rightHandle = createHandle('right');
 
-    this.$contentObserver = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutationRecord) {
-            hideHandles();
-            self.$editor._emit("changeSelection");
-        });
-    });
+    if (window["MutationObserver"]) {
+        this.$contentObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutationRecord) {
+                onDOMStyleChanged();
+            });
+        })
+    } else {
+        this.onDOMAttrModified = function(e) {
+            onDOMStyleChanged();
+        }
+    }
+    var t0 = 0;
+    function onDOMStyleChanged() {
+        if (!drag) {
+            clearTimeout(t1);
+            t1 = setTimeout(function(){
+                hideHandles();
+                self.$editor._emit("changeSelection");
+            }, 50);
+        }
+    }
 
-    var t = 0;
+    var t1 = 0;
     this.onChange = function() {
         if (!drag) {
-            clearTimeout(t);
-            t = setTimeout(function(){
+            clearTimeout(t1);
+            t1 = setTimeout(function(){
                 var hasSelection = !editor.session.selection.getRange().isEmpty();
                 if (hasSelection) {
                     showHandles();
@@ -254,26 +269,33 @@ var Editor = require("../editor").Editor;
 require("../config").defineOptions(Editor.prototype, "editor", {
     selectionHandles: {
         set: function(conf) {
-            if (navigator.userAgent.indexOf("Chrome/") == -1
-                && navigator.userAgent.indexOf("Android") != -1) {
-                // TODO for now the selection-handles scripts isn't supported on non-chromium webviews
-                return;
-            }
             if (conf) {
                 if (!this.selectionHandles) {
                     this.selectionHandles = new SelectionHandles(this, conf);
 
                     // register observers and listeners
                     var content = this.selectionHandles.$editor.container.getElementsByClassName('ace_content')[0];
-                    this.selectionHandles.$contentObserver.observe(content, { attributes : true, attributeFilter : ['style'] });
+                    if (window["MutationObserver"]) {
+                        this.selectionHandles.$contentObserver.observe(content,
+                                { attributes : true, attributeFilter : ['style'] });
+                    } else {
+                        content.addEventListener("DOMNodeInserted",
+                                this.selectionHandles.onDOMAttrModified);
+                    }
                     this.on("changeSelection", this.selectionHandles.onChange);
                     window.addEventListener("scroll", this.selectionHandles.onScroll);
+
                 }
             } else if (this.selectionHandles) {
                 // unregister observers and listeners
-                this.selectionHandles.$contentObserver.disconnect();
+                if (window["MutationObserver"]) {
+                    this.selectionHandles.$contentObserver.disconnect();
+                } else {
+                    content.removeEventListener("DOMNodeInserted",
+                            this.selectionHandles.onDOMAttrModified);
+                }
                 this.removeListener("changeSelection", this.selectionHandles.onChange);
-                window.removeListener("scroll", this.selectionHandles.onScroll);
+                window.removeEventListener("scroll", this.selectionHandles.onScroll);
             }
         }
     }

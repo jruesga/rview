@@ -160,8 +160,7 @@ class AceWebView extends WebView implements NestedScrollingChild {
         });
 
         setNestedScrollingEnabled(true);
-        // TODO for now the selection-handles scripts isn't supported on non-chromium webviews
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             configureActionMode();
         }
         super.setWebChromeClient(mWebChromeClient);
@@ -265,20 +264,20 @@ class AceWebView extends WebView implements NestedScrollingChild {
 
     @Override
     public ActionMode startActionMode(ActionMode.Callback callback) {
-        // TODO for now the selection-handles scripts doesn't support non-chromium webviews
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            return super.startActionMode(callback);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            return null;
         }
-        return null;
+        return super.startActionMode(callback);
+
+
     }
 
     @Override
     public ActionMode startActionMode(ActionMode.Callback callback, int type) {
-        // TODO for now the selection-handles scripts doesn't support non-chromium webviews
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            return super.startActionMode(callback, type);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            return null;
         }
-        return null;
+        return super.startActionMode(callback, type);
     }
 
     private boolean isKeyboardVisible() {
@@ -664,7 +663,7 @@ class AceWebView extends WebView implements NestedScrollingChild {
             // Need to proper load the ace editor in version lower than KitKat
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
                 try {
-                    Thread.sleep(250L);
+                    Thread.sleep(350L);
                 } catch (InterruptedException e) {
                     // ignore
                 }
