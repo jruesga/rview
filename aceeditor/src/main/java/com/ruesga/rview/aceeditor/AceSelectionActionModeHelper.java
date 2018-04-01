@@ -305,7 +305,8 @@ class AceSelectionActionModeHelper {
             return false;
         }
         if (!mHasSelection & (option == OPTION_CUT
-                || option == OPTION_COPY || option >= basicOptionsLength)) {
+                || option == OPTION_COPY || option == OPTION_SEARCH
+                || option >= basicOptionsLength)) {
             return false;
         }
         if (option == OPTION_PASTE) {
