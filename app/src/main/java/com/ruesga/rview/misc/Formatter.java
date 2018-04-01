@@ -770,6 +770,32 @@ public class Formatter {
         }
     }
 
+    @BindingAdapter("toCommitSize")
+    public static void toCommitSize(TextView v, ChangeInfo change) {
+        if (change == null) {
+            v.setText(v.getContext().getString(R.string.commit_size_unknown));
+            return;
+        }
+
+        int delta = change.insertions - change.deletions;
+        final int resId;
+        if (delta < 10) {
+            resId = R.string.commit_size_xs;
+        } else if (delta < 50) {
+            resId = R.string.commit_size_s;
+        } else if (delta < 250) {
+            resId = R.string.commit_size_m;
+        } else if (delta < 1000) {
+            resId = R.string.commit_size_l;
+        } else {
+            resId = R.string.commit_size_xl;
+        }
+        v.setText(String.format(Locale.US, "%s  (+%d, +%d)",
+                v.getContext().getString(resId),
+                change.insertions,
+                Math.abs(change.deletions)));
+    }
+
     @BindingAdapter("resolveAttachmentIcon")
     public static void resolveAttachmentIcon(ImageView v, Attachment attachment) {
         if (attachment == null) {

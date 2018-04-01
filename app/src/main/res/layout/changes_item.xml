@@ -217,11 +217,36 @@
                         android:textSize="12sp" />
                 </LinearLayout>
                 <LinearLayout
+                    android:id="@+id/size_block"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:layout_below="@id/branch_block"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        app:srcCompat="@drawable/ic_stats"
+                        android:tint="@color/secondaryIconColor"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginRight="4dp"
+                        tools:ignore="ContentDescription"/>
+                    <com.ruesga.rview.widget.StyleableTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:toCommitSize="@{model}"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:textSize="12sp" />
+                </LinearLayout>
+                <LinearLayout
                     android:id="@+id/mergeable_block"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="3dp"
-                    android:layout_below="@id/branch_block"
+                    android:layout_below="@id/size_block"
                     android:visibility="@{!model.mergeable &amp;&amp; !model.status.equals(ChangeStatus.MERGED) ? View.VISIBLE : View.GONE}"
                     android:orientation="horizontal">
                     <ImageView

@@ -654,4 +654,11 @@
     <string name="reviewer_update_cc">Added to CC:</string>
     <string name="reviewer_update_removed">Removed from REVIEWER/CC:</string>
 
+    <!-- Commit Size -->
+    <string name="commit_size_unknown">unknown</string>
+    <string name="commit_size_xs">extra-small</string>
+    <string name="commit_size_s">small</string>
+    <string name="commit_size_m">medium</string>
+    <string name="commit_size_l">large</string>
+    <string name="commit_size_xl">extra-large</string>
 </resources>
