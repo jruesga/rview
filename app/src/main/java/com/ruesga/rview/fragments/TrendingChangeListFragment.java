@@ -34,6 +34,7 @@ import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.preferences.Preferences;
@@ -271,12 +272,7 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
             for (ChangeMessageInfo message : change.messages) {
                 if (TextUtils.isEmpty(message.tag) &&
                         (maxAged == -1 || message.date.getTime() < maxAged)) {
-                    String firstLine = message.message;
-                    int pos = message.message.indexOf("\n");
-                    if (pos > 0) {
-                        firstLine = message.message.substring(0, pos);
-                    }
-
+                    String firstLine = StringHelper.firstLine(message.message);
                     if (VOTE_PATTERN.matcher(firstLine).find()) {
                         count++;
                     }

@@ -66,6 +66,8 @@ public class StringHelper {
 
     private static final Pattern ATTACHMENT_REGEXP = Pattern.compile("!\\[ATTACHMENT:\\{.*\\}\\]\\(" + WEB_REGEXP + "\\)");
 
+    public static final Pattern VOTE_PATTERN = Pattern.compile("[+-]\\d+");
+
     public static String cleanUpParagraphs(String message) {
         String msg = message;
         do {
@@ -441,4 +443,11 @@ public class StringHelper {
         return null;
     }
 
+    public static String firstLine(String msg) {
+        int pos = msg.indexOf("\n");
+        if (pos > 0) {
+            return msg.substring(0, pos);
+        }
+        return msg;
+    }
 }

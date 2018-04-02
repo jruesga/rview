@@ -68,12 +68,15 @@ import com.ruesga.rview.widget.StyleableTextView;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 @Keep
 @SuppressWarnings("unused")
@@ -83,6 +86,7 @@ public class Formatter {
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
     private static boolean sDisplayAccountStatues = true;
+    private static boolean sColorifyMessages = true;
 
     private static int sQuoteColor = -1;
     private static int sQuoteWidth = -1;
@@ -93,7 +97,7 @@ public class Formatter {
         sDisplayFormat = Preferences.getAccountDisplayFormat(context, mAccount);
         sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, mAccount);
         sDisplayAccountStatues = Preferences.isAccountDisplayStatuses(context, mAccount);
-
+        sColorifyMessages = Preferences.isAccountMessagesColorify(context, mAccount);
     }
 
     private static PrettyTime getPrettyTime(Context context) {
@@ -794,6 +798,40 @@ public class Formatter {
                 v.getContext().getString(resId),
                 change.insertions,
                 Math.abs(change.deletions)));
+    }
+
+    @BindingAdapter("colorifyReviewedMessage")
+    public static void colorifyReviewedMessage(View v, ChangeMessageInfo message) {
+        if (!sColorifyMessages || message == null || message.message == null) {
+            return;
+        }
+
+        // Extract every review punctuation
+        DecimalFormat df = new DecimalFormat("+#;-#");
+        String firstLine = StringHelper.firstLine(message.message);
+        Matcher m = StringHelper.VOTE_PATTERN.matcher(firstLine);
+        int review = 0;
+        while(m.find()) {
+            try {
+                int value = df.parse(m.group()).intValue();
+                if (Math.abs(value) > Math.abs(review)) {
+                    review = value;
+                } else if (Math.abs(value) == Math.abs(review) && value < 0) {
+                    review = value;
+                }
+            } catch (ParseException ex) {
+                // ignore
+            }
+        }
+
+        int color = android.R.color.transparent;
+        if (review < 0) {
+            color = R.color.messageWithNegativeReview;
+        }
+        if (review > 0) {
+            color = R.color.messageWithPositiveReview;
+        }
+        v.setBackgroundColor(ContextCompat.getColor(v.getContext(), color));
     }
 
     @BindingAdapter("resolveAttachmentIcon")
