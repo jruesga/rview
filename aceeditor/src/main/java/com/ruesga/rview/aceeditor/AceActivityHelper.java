@@ -20,11 +20,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
+import android.util.TypedValue;
 
 class AceActivityHelper {
     static void openUriInCustomTabs(Activity activity, Uri uri) {
         try {
             CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+            setToolbarColor(activity, builder);
             builder.setShowTitle(true);
             CustomTabsIntent intent = builder.build();
 
@@ -50,6 +52,13 @@ class AceActivityHelper {
 
         } catch (ActivityNotFoundException ex) {
             // ignore
+        }
+    }
+
+    private static void setToolbarColor(Context context, CustomTabsIntent.Builder builder) {
+        TypedValue typedValue = new TypedValue();
+        if (context.getTheme().resolveAttribute(R.attr.colorPrimaryDark, typedValue, true)) {
+            builder.setToolbarColor(typedValue.data);
         }
     }
 }
