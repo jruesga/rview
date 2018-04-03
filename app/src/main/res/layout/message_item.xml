@@ -22,6 +22,7 @@
     <data>
         <import type="android.view.View" />
         <import type="android.text.TextUtils" />
+        <import type="com.ruesga.rview.misc.StringHelper" />
         <import type="com.ruesga.rview.misc.Formatter" />
         <import type="com.ruesga.rview.misc.BindingAdapters" />
         <variable name="isAuthenticated" type="java.lang.Boolean" />
@@ -149,7 +150,7 @@
             android:layout_toLeftOf="@id/reply"
             android:layout_toStartOf="@id/reply"
             android:layout_alignWithParentIfMissing="true"
-            app:userChangeMessage="@{model}"
+            app:userMessage="@{StringHelper.removeAllAttachments(model.message)}"
             app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
             android:visibility="@{!safeUnbox(folded) &amp;&amp; BindingAdapters.isEmpty(model._reviewer_updates) ? View.VISIBLE : View.GONE}"
             android:textAppearance="@style/TextAppearance.VerySmall"

@@ -241,6 +241,22 @@ public class Formatter {
         view.setText(toUserChangeMessage(view.getContext(), msg));
     }
 
+    @SuppressWarnings("deprecation")
+    public static CharSequence toUserChangeMessage(Context ctx, ChangeMessageInfo msg) {
+        if (msg == null) {
+            return null;
+        }
+        if (msg._reviewer_updates.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            for (ReviewerStatus status : ReviewerStatus.values()) {
+                sb.append(toReviewUpdateMessage(
+                        ctx, msg._reviewer_updates, status, sb.length() > 0));
+            }
+            return Html.fromHtml(sb.toString());
+        }
+        return StringHelper.removeAllAttachments(msg.message);
+    }
+
     @BindingAdapter("userMessage")
     public static void toUserMessage(TextView view, String msg) {
         if (msg == null) {
@@ -895,22 +911,6 @@ public class Formatter {
     public static void bindToVersion(View v, double version) {
         v.setVisibility(ModelHelper.isEqualsOrGreaterVersionThan(mAccount, version)
                 ? View.VISIBLE : View.GONE);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static CharSequence toUserChangeMessage(Context ctx, ChangeMessageInfo msg) {
-        if (msg == null) {
-            return null;
-        }
-        if (msg._reviewer_updates.size() > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (ReviewerStatus status : ReviewerStatus.values()) {
-                sb.append(toReviewUpdateMessage(
-                        ctx, msg._reviewer_updates, status, sb.length() > 0));
-            }
-            return Html.fromHtml(sb.toString());
-        }
-        return StringHelper.removeAllAttachments(msg.message);
     }
 
     private static String toReviewUpdateMessage(
