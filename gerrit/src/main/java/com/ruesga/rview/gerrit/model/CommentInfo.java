@@ -35,4 +35,6 @@ public class CommentInfo {
     @SerializedName("updated") public Date updated;
     @SerializedName("author") public AccountInfo author;
     @SerializedName("tag") public String tag;
+    @SerializedName("unresolved") public boolean unresolved;
+
 }

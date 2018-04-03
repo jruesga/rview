@@ -34,5 +34,6 @@ public class CommentInput {
     @Nullable @SerializedName("updated") public Date updated;
     @Nullable @SerializedName("message") public String message;
     @Nullable @SerializedName("tag") public String tag;
+    @Nullable @SerializedName("unresolved") public Boolean unresolved;
 }
 
