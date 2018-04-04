@@ -662,4 +662,13 @@
     <string name="commit_size_m">medium</string>
     <string name="commit_size_l">large</string>
     <string name="commit_size_xl">extra-large</string>
+
+    <!-- Revision Kind -->
+    <string name="revision_kind_rework">Rework</string>
+    <string name="revision_kind_trivial_rebase">Rebase</string>
+    <string name="revision_kind_merge_first_parent_update">Merge</string>
+
+    <!-- Unresolved Comments -->
+    <string name="unresolved_comments_zero">(<xliff:g id="comments">%1$d</xliff:g> comments)</string>
+    <string name="unresolved_comments_more">(<xliff:g id="comments">%1$d</xliff:g> comments, <xliff:g id="unresolved">%2$d</xliff:g> unresolved)</string>
 </resources>

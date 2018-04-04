@@ -41,6 +41,7 @@ import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.gerrit.model.AccountDetailInfo;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeKind;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.gerrit.model.CommentInfo;
@@ -58,6 +59,7 @@ import com.ruesga.rview.gerrit.model.SubmitType;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.EmptyState;
+import com.ruesga.rview.model.UnresolvedComment;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.text.QuotedSpan;
@@ -704,6 +706,41 @@ public class Formatter {
     @BindingAdapter("accountStatus")
     public static void toAccountStatus(TextView view, String status) {
         view.setText(EmojiHelper.resolveEmojiStatus(view.getContext(), status));
+    }
+
+    @BindingAdapter("revisionKind")
+    public static void toRevisionKind(TextView view, RevisionInfo revision) {
+        if (revision == null) {
+            view.setText(null);
+            view.setVisibility(View.GONE);
+            return;
+        }
+
+        String text = null;
+        if (ChangeKind.REWORK.equals(revision.kind)) {
+            text = view.getContext().getString(R.string.revision_kind_rework);
+        } else if (ChangeKind.TRIVIAL_REBASE.equals(revision.kind)) {
+            text = view.getContext().getString(R.string.revision_kind_trivial_rebase);
+        } else if (ChangeKind.MERGE_FIRST_PARENT_UPDATE.equals(revision.kind)) {
+            text = view.getContext().getString(R.string.revision_kind_merge_first_parent_update);
+        }
+        view.setText(text);
+        view.setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
+    }
+
+    @BindingAdapter("unresolvedComments")
+    public static void toUnresolvedComments(TextView view, UnresolvedComment unresolvedComment) {
+        if (unresolvedComment == null || unresolvedComment.mTotal == 0) {
+            view.setVisibility(View.GONE);
+            return;
+        }
+
+        final Context ctx = view.getContext();
+        view.setText(unresolvedComment.mUnresolved == 0
+                ? ctx.getString(R.string.unresolved_comments_zero, unresolvedComment.mTotal)
+                : ctx.getString(R.string.unresolved_comments_more,
+                        unresolvedComment.mTotal, unresolvedComment.mUnresolved));
+        view.setVisibility(View.VISIBLE);
     }
 
     @BindingAdapter("emptyStateDrawable")

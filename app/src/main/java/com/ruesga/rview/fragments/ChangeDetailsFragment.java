@@ -130,6 +130,7 @@ import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.ContinuousIntegrationInfo;
 import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.model.Repository;
+import com.ruesga.rview.model.UnresolvedComment;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.AccountChipView;
@@ -842,6 +843,7 @@ public class ChangeDetailsFragment extends Fragment implements
         Map<String, Integer> mDraftComments;
         ConfigInfo mProjectConfig;
         Map<String, LinkedHashMap<String, List<CommentInfo>>> mMessagesWithComments = new HashMap<>();
+        Map<Integer, UnresolvedComment> mUnresolvedComments = new HashMap<>();
         List<ContinuousIntegrationInfo> mCI;
     }
 
@@ -2532,8 +2534,8 @@ public class ChangeDetailsFragment extends Fragment implements
 
         //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
-        PatchSetsAdapter adapter = new PatchSetsAdapter(
-                getContext(), mAllRevisions, mCurrentRevision);
+        PatchSetsAdapter adapter = new PatchSetsAdapter(getContext(),
+                mAllRevisions, mResponse.mUnresolvedComments, mCurrentRevision);
         popupWindow.setAnchorView(anchor);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());
@@ -2557,8 +2559,8 @@ public class ChangeDetailsFragment extends Fragment implements
 
         //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
-        PatchSetsAdapter adapter = new PatchSetsAdapter(
-                getContext(), mAllRevisionsWithBase, mDiffAgainstRevision);
+        PatchSetsAdapter adapter = new PatchSetsAdapter(getContext(),
+                mAllRevisionsWithBase, mResponse.mUnresolvedComments, mDiffAgainstRevision);
         popupWindow.setAnchorView(anchor);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());
@@ -3354,6 +3356,7 @@ public class ChangeDetailsFragment extends Fragment implements
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         response.mMessagesWithComments.clear();
+        response.mUnresolvedComments.clear();
         for (int rev : revisionsWithComments) {
             try {
                 Map<String, List<CommentInfo>> comments = api.getChangeRevisionComments(
@@ -3364,6 +3367,9 @@ public class ChangeDetailsFragment extends Fragment implements
                 }
 
                 updateMessageComments(response, comments);
+                if (api.supportsFeature(Features.UNRESOLVED_COMMENTS)) {
+                    updateUnresolvedComments(response, comments);
+                }
             } catch (Exception ex) {
                 Log.e(TAG, "Can't match comments for messages.", ex);
             }
@@ -3402,6 +3408,25 @@ public class ChangeDetailsFragment extends Fragment implements
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private void updateUnresolvedComments(
+            DataResponse response, Map<String, List<CommentInfo>> comments) {
+        final Map<Integer, UnresolvedComment> unresolvedComments = response.mUnresolvedComments;
+
+        for (Map.Entry<String, List<CommentInfo>> entries : comments.entrySet()) {
+            for (CommentInfo comment : entries.getValue()) {
+                if (!unresolvedComments.containsKey(comment.patchSet)) {
+                    unresolvedComments.put(comment.patchSet, new UnresolvedComment());
+                }
+
+                UnresolvedComment uc = unresolvedComments.get(comment.patchSet);
+                uc.mTotal++;
+                if (comment.unresolved) {
+                    uc.mUnresolved++;
                 }
             }
         }

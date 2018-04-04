@@ -24,18 +24,23 @@ import android.widget.BaseAdapter;
 
 import com.ruesga.rview.databinding.PatchSetDropdownItemBinding;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
+import com.ruesga.rview.model.UnresolvedComment;
 
 import java.util.List;
+import java.util.Map;
 
 public class PatchSetsAdapter extends BaseAdapter {
 
     private Context mContext;
     private List<RevisionInfo> mRevisions;
+    private Map<Integer, UnresolvedComment> mUnresolvedComments;
     private String mCurrentRevision;
 
-    public PatchSetsAdapter(Context context, List<RevisionInfo> revisions, String currentRevision) {
+    public PatchSetsAdapter(Context context, List<RevisionInfo> revisions,
+            Map<Integer, UnresolvedComment> unresolvedComments, String currentRevision) {
         mContext = context;
         mRevisions = revisions;
+        mUnresolvedComments = unresolvedComments;
         mCurrentRevision = currentRevision;
     }
 
@@ -67,6 +72,7 @@ public class PatchSetsAdapter extends BaseAdapter {
         RevisionInfo revision = mRevisions.get(position);
         PatchSetDropdownItemBinding binding = (PatchSetDropdownItemBinding) v.getTag();
         binding.setModel(revision);
+        binding.setUnresolvedComments(mUnresolvedComments);
         String commit = null;
         if (revision.commit != null) {
             commit = revision.commit.commit;

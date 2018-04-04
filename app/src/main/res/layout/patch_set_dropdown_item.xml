@@ -20,8 +20,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="com.ruesga.rview.gerrit.model.Features" />
         <variable name="isSelected" type="Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.RevisionInfo" />
+        <variable name="unresolvedComments" type="java.util.Map&lt;Integer, com.ruesga.rview.model.UnresolvedComment&gt;" />
     </data>
 
     <FrameLayout
@@ -77,6 +79,48 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:minHeight="?attr/listPreferredItemHeightSmall"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            app:bindToFeature="@{Features.UNRESOLVED_COMMENTS}"
+            app:bindToBoolean="@{Boolean.TRUE}"
+            tools:ignore="UselessParent">
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="3dp"
+                android:paddingStart="3dp"
+                android:paddingRight="3dp"
+                android:paddingEnd="3dp"
+                app:revisionKind="@{model}"
+                android:textAllCaps="true"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="9sp"
+                tools:ignore="SmallSp" />
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="3dp"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp"
+                android:paddingRight="3dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:unresolvedComments="@{unresolvedComments[model.number]}"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="9sp"
+                tools:ignore="RtlSymmetry,SmallSp" />
         </LinearLayout>
     </FrameLayout>
 </layout>
