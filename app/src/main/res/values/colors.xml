@@ -40,9 +40,13 @@
 
     <color name="diffLineBackgroundColor">#f5f5f5</color>
     <color name="diffAddedBackgroundColor">#cce2cd</color>
+    <color name="diffAddedDueRebaseBackgroundColor">#eefeff</color>
     <color name="diffDeletedBackgroundColor">#e2cccc</color>
+    <color name="diffDeletedDueRebaseBackgroundColor">#fff6ea</color>
     <color name="diffAddedForegroundColor">#81c784</color>
+    <color name="diffAddedDueRebaseForegroundColor">#a47ddfdf</color>
     <color name="diffDeletedForegroundColor">#e48787</color>
+    <color name="diffDeletedDueRebaseForegroundColor">#a4cc8d4e</color>
     <color name="diffSkipBackgroundColor">#ddeeff</color>
     <color name="diffNoDiffBackgroundColor">#ef9a9a</color>
     <color name="diffCommentBackgroundColor">#fffecc</color>

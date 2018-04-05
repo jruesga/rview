@@ -140,12 +140,20 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         final int noColor = ContextCompat.getColor(context, android.R.color.transparent);
         final int addedBgColor = ContextCompat.getColor(
                 context, R.color.diffAddedBackgroundColor);
+        final int addedDueRebaseBgColor = ContextCompat.getColor(
+                context, R.color.diffAddedDueRebaseBackgroundColor);
         final int addedFgColor = ContextCompat.getColor(
                 context, R.color.diffAddedForegroundColor);
+        final int addedDueRebaseFgColor = ContextCompat.getColor(
+                context, R.color.diffAddedDueRebaseForegroundColor);
         final int deletedBgColor = ContextCompat.getColor(
                 context, R.color.diffDeletedBackgroundColor);
+        final int deletedDueRebaseBgColor = ContextCompat.getColor(
+                context, R.color.diffDeletedDueRebaseBackgroundColor);
         final int deletedFgColor = ContextCompat.getColor(
                 context, R.color.diffDeletedForegroundColor);
+        final int deletedDueRebaseFgColor = ContextCompat.getColor(
+                context, R.color.diffDeletedDueRebaseForegroundColor);
 
         boolean noDiffs = mDiffs.length == 1 && mDiffs[0].a == null  && mDiffs[0].b == null;
         int j = 0;
@@ -168,6 +176,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     m.colorB = noColor;
 
                     if (diff.a != null && i < diff.a.length) {
+                        int bg = diff.dueToRebase ? deletedDueRebaseBgColor : deletedBgColor;
+                        int fg = diff.dueToRebase ? deletedDueRebaseFgColor : deletedFgColor;
+
                         String line = diff.a[i];
                         m.a = ++lineNumberA;
                         m.lineNumberA = String.valueOf(m.a);
@@ -181,7 +192,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                                     int l = posA + line.length();
                                     if ((s1 >= posA && s1 <= l) || (s2 >= posA && s2 <= l)
                                             || (s1 <= posA && s2 >= l)) {
-                                        span.setSpan(new BackgroundColorSpan(deletedFgColor),
+                                        span.setSpan(new BackgroundColorSpan(fg),
                                                 Math.max(posA, s1) - posA, Math.min(l, s2) - posA,
                                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                     }
@@ -190,13 +201,16 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                             m.lineA = span;
                         } else {
                             // No intraline data, but it still could differ at start or at end
-                            processNoIntralineDataA(diff, m, line, deletedFgColor);
+                            processNoIntralineDataA(diff, m, line, fg);
                         }
-                        m.colorA = deletedBgColor;
+                        m.colorA = bg;
                         posA += line.length() + 1;
                     }
 
                     if (diff.b != null && i < diff.b.length) {
+                        int bg = diff.dueToRebase ? addedDueRebaseBgColor : addedBgColor;
+                        int fg = diff.dueToRebase ? addedDueRebaseFgColor : addedFgColor;
+
                         String line = diff.b[i];
                         m.b = ++lineNumberB;
                         m.lineNumberB = String.valueOf(m.b);
@@ -210,7 +224,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                                     int l = posB + line.length();
                                     if ((s1 >= posB && s1 <= l) || (s2 >= posB && s2 <= l)
                                             || (s1 <= posB && s2 >= l)) {
-                                        span.setSpan(new BackgroundColorSpan(addedFgColor),
+                                        span.setSpan(new BackgroundColorSpan(fg),
                                                 Math.max(posB, s1) - posB, Math.min(l, s2) - posB,
                                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                     }
@@ -219,9 +233,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                             m.lineB = span;
                         } else {
                             // No intraline data, but it still could differ at start or at end
-                            processNoIntralineDataB(diff, m, line, addedFgColor);
+                            processNoIntralineDataB(diff, m, line, fg);
                         }
-                        m.colorB = addedBgColor;
+                        m.colorB = bg;
                         posB += line.length() + 1;
                     }
                     processHighlights(m);
@@ -253,12 +267,20 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
         final int noColor = ContextCompat.getColor(context, android.R.color.transparent);
         final int addedBgColor = ContextCompat.getColor(
                 context, R.color.diffAddedBackgroundColor);
+        final int addedDueRebaseBgColor = ContextCompat.getColor(
+                context, R.color.diffAddedDueRebaseBackgroundColor);
         final int addedFgColor = ContextCompat.getColor(
                 context, R.color.diffAddedForegroundColor);
+        final int addedDueRebaseFgColor = ContextCompat.getColor(
+                context, R.color.diffAddedDueRebaseForegroundColor);
         final int deletedBgColor = ContextCompat.getColor(
                 context, R.color.diffDeletedBackgroundColor);
+        final int deletedDueRebaseBgColor = ContextCompat.getColor(
+                context, R.color.diffDeletedDueRebaseBackgroundColor);
         final int deletedFgColor = ContextCompat.getColor(
                 context, R.color.diffDeletedForegroundColor);
+        final int deletedDueRebaseFgColor = ContextCompat.getColor(
+                context, R.color.diffDeletedDueRebaseForegroundColor);
 
         boolean noDiffs = mDiffs.length == 1 && mDiffs[0].a == null  && mDiffs[0].b == null;
         int j = 0;
@@ -271,6 +293,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                 lineNumberB = p[1];
             } else {
                 if (diff.a != null) {
+                    int bg = diff.dueToRebase ? deletedDueRebaseBgColor : deletedBgColor;
+                    int fg = diff.dueToRebase ? deletedDueRebaseFgColor : deletedFgColor;
+
                     int pos = 0;
                     for (String line : diff.a) {
                         DiffInfoModel m = new DiffInfoModel();
@@ -286,7 +311,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                                     int l = pos + line.length();
                                     if ((s1 >= pos && s1 <= l) || (s2 >= pos && s2 <= l)
                                             || (s1 <= pos && s2 >= l)) {
-                                        span.setSpan(new BackgroundColorSpan(deletedFgColor),
+                                        span.setSpan(new BackgroundColorSpan(fg),
                                                 Math.max(pos, s1) - pos, Math.min(l, s2) - pos,
                                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                     }
@@ -295,9 +320,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                             m.lineA = span;
                         } else {
                             // No intraline data, but it still could differ at start or at end
-                            processNoIntralineDataA(diff, m, line, deletedFgColor);
+                            processNoIntralineDataA(diff, m, line, fg);
                         }
-                        m.colorA = deletedBgColor;
+                        m.colorA = bg;
                         m.colorB = noColor;
                         processHighlights(m);
                         model.add(m);
@@ -305,6 +330,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                     }
                 }
                 if (diff.b != null) {
+                    int bg = diff.dueToRebase ? addedDueRebaseBgColor : addedBgColor;
+                    int fg = diff.dueToRebase ? addedDueRebaseFgColor : addedFgColor;
+
                     int pos = 0;
                     for (String line : diff.b) {
                         DiffInfoModel m = new DiffInfoModel();
@@ -320,7 +348,7 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                                     int l = pos + line.length();
                                     if ((s1 >= pos && s1 <= l) || (s2 >= pos && s2 <= l)
                                             || (s1 <= pos && s2 >= l)) {
-                                        span.setSpan(new BackgroundColorSpan(addedFgColor),
+                                        span.setSpan(new BackgroundColorSpan(fg),
                                                 Math.max(pos, s1) - pos, Math.min(l, s2) - pos,
                                                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                                     }
@@ -329,9 +357,9 @@ public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.
                             m.lineB = span;
                         } else {
                             // No intraline data, but it still could differ at start or at end
-                            processNoIntralineDataB(diff, m, line, addedFgColor);
+                            processNoIntralineDataB(diff, m, line, fg);
                         }
-                        m.colorA = addedBgColor;
+                        m.colorA = bg;
                         m.colorB = noColor;
                         processHighlights(m);
                         model.add(m);
