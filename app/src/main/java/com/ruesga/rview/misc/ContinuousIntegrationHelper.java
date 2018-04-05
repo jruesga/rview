@@ -73,7 +73,7 @@ public class ContinuousIntegrationHelper {
                 .replaceFirst("\\{revision}", String.valueOf(revisionNumber));
 
         try {
-            OkHttpClient okhttp = NetworkingHelper.createNetworkClient();
+            OkHttpClient okhttp = NetworkingHelper.createNetworkClient().build();
             Request request = new Request.Builder().url(url).build();
 
             Response response = okhttp.newCall(request).execute();

@@ -24,13 +24,12 @@ public class NetworkingHelper {
 
     private static final String TAG = "NetworkingHelper";
 
-    public static OkHttpClient createNetworkClient() {
+    public static OkHttpClient.Builder createNetworkClient() {
         return new OkHttpClient.Builder()
             .readTimeout(20000, java.util.concurrent.TimeUnit.MILLISECONDS)
             .followRedirects(true)
             .followSslRedirects(true)
-            .addInterceptor(createLoggingInterceptor())
-            .build();
+            .addInterceptor(createLoggingInterceptor());
     }
 
     private static HttpLoggingInterceptor createLoggingInterceptor() {

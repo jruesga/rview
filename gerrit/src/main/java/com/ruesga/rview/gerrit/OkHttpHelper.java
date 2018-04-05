@@ -58,7 +58,7 @@ class OkHttpHelper {
 
     @SuppressLint("BadHostnameVerifier")
     static OkHttpClient.Builder getUnsafeClientBuilder() {
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        OkHttpClient.Builder builder = getSafeClientBuilder();
         try {
             if (sSSLSocketFactory == null) {
                 final SSLContext sslContext = SSLContext.getInstance("SSL");

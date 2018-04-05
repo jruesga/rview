@@ -262,7 +262,7 @@ public class CacheHelper {
 
     public static void downloadAttachmentFile(Context context, Attachment attachment)
             throws IOException {
-        OkHttpClient client = new OkHttpClient.Builder()
+        OkHttpClient client = NetworkingHelper.createNetworkClient()
                 .addNetworkInterceptor(chain -> {
                     Response originalResponse = chain.proceed(chain.request());
                     return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();

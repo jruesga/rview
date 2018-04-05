@@ -63,7 +63,7 @@ public class PicassoHelper {
     public static Picasso getDefaultPicassoClient(Context context) {
         if (sDefaultPicasso == null) {
             final File cacheDir = CacheHelper.getImagesCacheDir(context);
-            OkHttpClient client = new OkHttpClient.Builder()
+            OkHttpClient client = NetworkingHelper.createNetworkClient()
                     .addNetworkInterceptor(chain -> {
                         Response originalResponse = chain.proceed(chain.request());
                         return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();
@@ -83,7 +83,7 @@ public class PicassoHelper {
     public static Picasso getAvatarPicassoClient(Context context) {
         if (sAvatarPicasso == null) {
             final File cacheDir = CacheHelper.getAvatarsCacheDir(context);
-            OkHttpClient client = new OkHttpClient.Builder()
+            OkHttpClient client = NetworkingHelper.createNetworkClient()
                     .addNetworkInterceptor(chain -> {
                         Response originalResponse = chain.proceed(chain.request());
                         return CacheHelper.addCacheControl(originalResponse.newBuilder()).build();
