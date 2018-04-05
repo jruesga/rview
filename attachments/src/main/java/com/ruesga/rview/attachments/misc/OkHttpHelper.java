@@ -13,23 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.gerrit;
+package com.ruesga.rview.attachments.misc;
 
-import android.annotation.SuppressLint;
 import android.net.TrafficStats;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import javax.net.SocketFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
 
@@ -76,27 +68,8 @@ public class OkHttpHelper {
             TrafficStats.tagSocket(socket);
             return socket;
         }
-}
+    }
 
-    @SuppressLint("TrustAllX509TrustManager")
-    private static final X509TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
-        @Override
-        public void checkClientTrusted(
-                X509Certificate[] x509Certificates, String authType) throws CertificateException {
-        }
-
-        @Override
-        public void checkServerTrusted(
-                X509Certificate[] x509Certificates, String authType) throws CertificateException {
-        }
-
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-            return new X509Certificate[]{};
-        }
-    };
-
-    private static SSLSocketFactory sSSLSocketFactory;
     private static DelegatingSocketFactory sDelegatingSocketFactory;
 
     public static OkHttpClient.Builder getSafeClientBuilder() {
@@ -104,24 +77,6 @@ public class OkHttpHelper {
             sDelegatingSocketFactory = new DelegatingSocketFactory(SocketFactory.getDefault());
         }
         return new OkHttpClient.Builder().socketFactory(sDelegatingSocketFactory);
-    }
-
-    @SuppressLint("BadHostnameVerifier")
-    static OkHttpClient.Builder getUnsafeClientBuilder() {
-        OkHttpClient.Builder builder = getSafeClientBuilder();
-        try {
-            if (sSSLSocketFactory == null) {
-                final SSLContext sslContext = SSLContext.getInstance("SSL");
-                sslContext.init(null, new X509TrustManager[]{TRUST_ALL_CERTS}, null);
-                sSSLSocketFactory = sslContext.getSocketFactory();
-            }
-
-            builder.sslSocketFactory(sSSLSocketFactory, TRUST_ALL_CERTS);
-            builder.hostnameVerifier((hostname, session) -> hostname != null);
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            // Ignore
-        }
-        return builder;
     }
 
 }

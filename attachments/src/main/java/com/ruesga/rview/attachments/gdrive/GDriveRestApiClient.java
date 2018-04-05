@@ -38,6 +38,7 @@ import com.ruesga.rview.attachments.gdrive.model.PermissionMetadataInput;
 import com.ruesga.rview.attachments.gdrive.model.PermissionMetadataPageInfo;
 import com.ruesga.rview.attachments.gdrive.oauth.AccessToken;
 import com.ruesga.rview.attachments.misc.ExceptionHelper;
+import com.ruesga.rview.attachments.misc.OkHttpHelper;
 import com.ruesga.rview.attachments.preferences.Config;
 import com.ruesga.rview.attachments.preferences.Preferences;
 
@@ -74,7 +75,7 @@ public class GDriveRestApiClient implements GDriveRestApi {
         mContext = context.getApplicationContext();
 
         // OkHttp client
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        OkHttpClient.Builder clientBuilder = OkHttpHelper.getSafeClientBuilder();
         clientBuilder
                 .readTimeout(20000, java.util.concurrent.TimeUnit.MILLISECONDS)
                 .followRedirects(true)

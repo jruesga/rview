@@ -17,6 +17,8 @@ package com.ruesga.rview.misc;
 
 import android.util.Log;
 
+import com.ruesga.rview.gerrit.OkHttpHelper;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -25,7 +27,7 @@ public class NetworkingHelper {
     private static final String TAG = "NetworkingHelper";
 
     public static OkHttpClient.Builder createNetworkClient() {
-        return new OkHttpClient.Builder()
+        return OkHttpHelper.getSafeClientBuilder()
             .readTimeout(20000, java.util.concurrent.TimeUnit.MILLISECONDS)
             .followRedirects(true)
             .followSslRedirects(true)
