@@ -63,9 +63,13 @@ public class OkHttpHelper {
         }
 
         private Socket configureSocket(Socket socket) throws IOException {
-            TrafficStats.setThreadStatsTag(
-                    Math.max(1, Math.min(0xFFFFFEFF, Thread.currentThread().hashCode())));
-            TrafficStats.tagSocket(socket);
+            try {
+                TrafficStats.setThreadStatsTag(
+                        Math.max(1, Math.min(0xFFFFFEFF, Thread.currentThread().hashCode())));
+                TrafficStats.tagSocket(socket);
+            } catch (Throwable cause) {
+                // Ignore for testing
+            }
             return socket;
         }
     }
