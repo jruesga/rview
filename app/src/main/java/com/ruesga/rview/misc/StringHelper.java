@@ -24,6 +24,8 @@ import com.ruesga.rview.attachments.Attachment;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -66,7 +68,8 @@ public class StringHelper {
 
     private static final Pattern ATTACHMENT_REGEXP = Pattern.compile("!\\[ATTACHMENT:\\{.*\\}\\]\\(" + WEB_REGEXP + "\\)");
 
-    public static final Pattern VOTE_PATTERN = Pattern.compile("[+-]\\d+");
+    public static final Pattern PATCHSET_LINE_PATTERN = Pattern.compile("^Patch Set [\\d]+: .*");
+    public static final Pattern VOTE_PATTERN = Pattern.compile("( ([\\w-]+([+-]\\d+)|([-])[\\w-]+))");
 
     public static String cleanUpParagraphs(String message) {
         String msg = message;
@@ -449,5 +452,19 @@ public class StringHelper {
             return msg.substring(0, pos);
         }
         return msg;
+    }
+
+    public static Number parseNumberWithSign(String number) {
+        try {
+            final DecimalFormat df = new DecimalFormat("+#;-#");
+            return df.parse(number);
+        } catch (ParseException ex) {
+            // ignore
+        }
+        return 0;
+    }
+
+    public static String fold(String message) {
+        return message.replaceAll("\r\n", " ").replaceAll("\r", " ").replaceAll("\n", " ");
     }
 }

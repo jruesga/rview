@@ -310,7 +310,7 @@
     <string name="account_settings_dashboard_outgoing_sort_on">From newer changes to older changes</string>
     <string name="account_settings_messages_category">Messages</string>
     <string name="account_settings_messages_folded">Fold messages</string>
-    <string name="account_settings_messages_colorify">Colorify messages with review scores</string>
+    <string name="account_settings_messages_highlight_scored">Highlight messages with review scores</string>
     <string name="account_settings_inline_comment_in_messages">Display inline comments in messages</string>
     <string name="account_settings_toggle_tagged_messages_title">Toggle tagged messages</string>
     <string name="account_settings_toggle_tagged_messages_summary_off">Show tagged messages</string>

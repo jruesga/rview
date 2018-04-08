@@ -62,8 +62,8 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TRAI
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_UNREVIEWED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HOME_PAGE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES;
-import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_COLORIFY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_FOLDED;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_MESSAGES_HIGHLIGHT_SCORED;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_NOTIFICATIONS_EVENTS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_SEARCH_HISTORY;
@@ -418,9 +418,9 @@ public class Preferences {
                 context, account).getBoolean(PREF_ACCOUNT_MESSAGES_FOLDED, false);
     }
 
-    public static boolean isAccountMessagesColorify(Context context, Account account) {
+    public static boolean isAccountMessagesHighlightScored(Context context, Account account) {
         return account == null || getAccountPreferences(
-                context, account).getBoolean(PREF_ACCOUNT_MESSAGES_COLORIFY, true);
+                context, account).getBoolean(PREF_ACCOUNT_MESSAGES_HIGHLIGHT_SCORED, true);
     }
 
     public static boolean isAccountInlineCommentInMessages(Context context, Account account) {

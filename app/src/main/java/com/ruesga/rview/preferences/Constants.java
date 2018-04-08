@@ -122,7 +122,8 @@ public class Constants {
     public static final String PREF_ACCOUNT_TEXT_SIZE_FACTOR = "account_text_size_factor";
     public static final String PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT = "account_dashboard_outgoing_sort";
     public static final String PREF_ACCOUNT_MESSAGES_FOLDED = "account_messages_folded";
-    public static final String PREF_ACCOUNT_MESSAGES_COLORIFY = "account_messages_colorify";
+    public static final String PREF_ACCOUNT_MESSAGES_HIGHLIGHT_SCORED
+            = "account_messages_highlight_scored";
     public static final String PREF_ACCOUNT_INLINE_COMMENT_IN_MESSAGES
             = "account_inline_comment_in_messages";
     public static final String PREF_ACCOUNT_TOGGLE_TAGGED_MESSAGES = "account_toggle_tagged_messages";

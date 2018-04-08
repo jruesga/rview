@@ -18,6 +18,7 @@ package com.ruesga.rview.misc;
 import android.content.Context;
 import android.content.res.Resources;
 import android.databinding.BindingAdapter;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -25,6 +26,7 @@ import android.support.annotation.Keep;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -63,6 +65,7 @@ import com.ruesga.rview.model.UnresolvedComment;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.text.QuotedSpan;
+import com.ruesga.rview.text.TagSpan;
 import com.ruesga.rview.widget.RegExLinkifyTextView;
 import com.ruesga.rview.widget.RegExLinkifyTextView.RegExLink;
 import com.ruesga.rview.widget.StyleableTextView;
@@ -70,8 +73,6 @@ import com.ruesga.rview.widget.StyleableTextView;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.File;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class Formatter {
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
     private static boolean sDisplayAccountStatues = true;
-    private static boolean sColorifyMessages = true;
+    private static boolean sHighlightScoredMessages = true;
 
     private static int sQuoteColor = -1;
     private static int sQuoteWidth = -1;
@@ -99,7 +100,7 @@ public class Formatter {
         sDisplayFormat = Preferences.getAccountDisplayFormat(context, mAccount);
         sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, mAccount);
         sDisplayAccountStatues = Preferences.isAccountDisplayStatuses(context, mAccount);
-        sColorifyMessages = Preferences.isAccountMessagesColorify(context, mAccount);
+        sHighlightScoredMessages = Preferences.isAccountMessagesHighlightScored(context, mAccount);
     }
 
     private static PrettyTime getPrettyTime(Context context) {
@@ -234,29 +235,30 @@ public class Formatter {
     }
 
     @SuppressWarnings("deprecation")
-    @BindingAdapter("userChangeMessage")
-    public static void toUserChangeMessage(TextView view, ChangeMessageInfo msg) {
+    @BindingAdapter("userFoldMessage")
+    public static void userFoldMessage(TextView view, ChangeMessageInfo msg) {
         if (msg == null) {
             view.setText(null);
             return;
         }
-        view.setText(toUserChangeMessage(view.getContext(), msg));
-    }
 
-    @SuppressWarnings("deprecation")
-    public static CharSequence toUserChangeMessage(Context ctx, ChangeMessageInfo msg) {
-        if (msg == null) {
-            return null;
-        }
+        // Create reviewer updates message
         if (msg._reviewer_updates.size() > 0) {
             StringBuilder sb = new StringBuilder();
             for (ReviewerStatus status : ReviewerStatus.values()) {
                 sb.append(toReviewUpdateMessage(
-                        ctx, msg._reviewer_updates, status, sb.length() > 0));
+                        view.getContext(), msg._reviewer_updates, status, sb.length() > 0));
             }
-            return Html.fromHtml(sb.toString());
+            view.setText(Html.fromHtml(StringHelper.fold(sb.toString())));
+            return;
         }
-        return StringHelper.removeAllAttachments(msg.message);
+
+        // Fold the user message
+        String userMessage = StringHelper.fold(StringHelper.removeAllAttachments(msg.message));
+        final SpannableStringBuilder spannable = new SpannableStringBuilder(userMessage);
+        highlightUserMessageReviewScores(
+                view.getContext(), StringHelper.firstLine(msg.message), spannable);
+        view.setText(spannable);
     }
 
     @BindingAdapter("userMessage")
@@ -298,8 +300,24 @@ public class Formatter {
         }
 
         String userMessage = StringHelper.removeExtraLines(sb.toString());
+
+        // Create the spannable
+        final SpannableStringBuilder spannable;
         if (!formattedMessage) {
-            view.setText(userMessage);
+            spannable = new SpannableStringBuilder(userMessage);
+        } else {
+            spannable = new SpannableStringBuilder(
+                    userMessage.replaceAll(StringHelper.NON_PRINTABLE_CHAR, "")
+                            .replaceAll(StringHelper.NON_PRINTABLE_CHAR2, ""));
+        }
+
+        // Highlight user message's scores
+        highlightUserMessageReviewScores(
+                view.getContext(), StringHelper.firstLine(userMessage), spannable);
+
+        // If the user message is not formatted, do not try to compute unnecessary stuff
+        if (!formattedMessage) {
+            view.setText(spannable);
             return;
         }
 
@@ -308,11 +326,7 @@ public class Formatter {
             sQuoteWidth = (int) view.getContext().getResources().getDimension(R.dimen.quote_width);
             sQuoteMargin = (int) view.getContext().getResources().getDimension(R.dimen.quote_margin);
         }
-
         String[] lines = userMessage.split("\n");
-        SpannableStringBuilder spannable = new SpannableStringBuilder(
-                userMessage.replaceAll(StringHelper.NON_PRINTABLE_CHAR, "")
-                        .replaceAll(StringHelper.NON_PRINTABLE_CHAR2, ""));
 
         // Pre-Format
         int start = 0;
@@ -853,40 +867,6 @@ public class Formatter {
                 Math.abs(change.deletions)));
     }
 
-    @BindingAdapter("colorifyReviewedMessage")
-    public static void colorifyReviewedMessage(View v, ChangeMessageInfo message) {
-        if (!sColorifyMessages || message == null || message.message == null) {
-            return;
-        }
-
-        // Extract every review punctuation
-        DecimalFormat df = new DecimalFormat("+#;-#");
-        String firstLine = StringHelper.firstLine(message.message);
-        Matcher m = StringHelper.VOTE_PATTERN.matcher(firstLine);
-        int review = 0;
-        while(m.find()) {
-            try {
-                int value = df.parse(m.group()).intValue();
-                if (Math.abs(value) > Math.abs(review)) {
-                    review = value;
-                } else if (Math.abs(value) == Math.abs(review) && value < 0) {
-                    review = value;
-                }
-            } catch (ParseException ex) {
-                // ignore
-            }
-        }
-
-        int color = android.R.color.transparent;
-        if (review < 0) {
-            color = R.color.messageWithNegativeReview;
-        }
-        if (review > 0) {
-            color = R.color.messageWithPositiveReview;
-        }
-        v.setBackgroundColor(ContextCompat.getColor(v.getContext(), color));
-    }
-
     @BindingAdapter("resolveAttachmentIcon")
     public static void resolveAttachmentIcon(ImageView v, Attachment attachment) {
         if (attachment == null) {
@@ -971,5 +951,35 @@ public class Formatter {
             }
         }
         return sb.toString();
+    }
+
+    private static void highlightUserMessageReviewScores(
+            Context context, String userMessage, Spannable spannable) {
+        if (!sHighlightScoredMessages) {
+            return;
+        }
+
+        final int approved = ContextCompat.getColor(context, R.color.approved);
+        final int rejected = ContextCompat.getColor(context, R.color.rejected);
+        final int noscore = ContextCompat.getColor(context, R.color.noscore);
+
+        boolean isPatchSetLine = StringHelper.PATCHSET_LINE_PATTERN.matcher(userMessage).matches();
+        if (isPatchSetLine) {
+            Matcher m = StringHelper.VOTE_PATTERN.matcher(userMessage);
+            while (m.find()) {
+                int color = 0;
+                if (m.group(3) != null) {
+                    // Vote added
+                    color = StringHelper.parseNumberWithSign(m.group(3)).intValue() > 0
+                            ? approved : rejected;
+                } else if (m.group(4) != null) {
+                    // Vote removed
+                    color = noscore;
+                }
+
+                final TagSpan span = new TagSpan(context, color, Color.WHITE);
+                spannable.setSpan(span, m.start(2), m.end(2), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
     }
 }

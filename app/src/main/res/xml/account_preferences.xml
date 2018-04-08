@@ -72,8 +72,8 @@
             android:defaultValue="false" />
 
         <SwitchPreference
-            android:key="account_messages_colorify"
-            android:title="@string/account_settings_messages_colorify"
+            android:key="account_messages_highlight_scored"
+            android:title="@string/account_settings_messages_highlight_scored"
             android:defaultValue="true" />
 
         <SwitchPreference

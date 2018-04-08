@@ -40,7 +40,6 @@
         android:layout_height="wrap_content"
         android:onClick="@{foldHandlers::onMessagePressed}"
         android:tag="@{index}"
-        app:colorifyReviewedMessage="@{model}"
         android:padding="16dp">
 
         <com.ruesga.rview.widget.FixedSizeImageView
@@ -116,7 +115,7 @@
             android:singleLine="true"
             android:maxLines="1"
             android:ellipsize="end"
-            app:bindUnwrappedText="@{Formatter.toUserChangeMessage(context, model)}"
+            app:userFoldMessage="@{model}"
             android:textAppearance="@style/TextAppearance.VerySmall"
             android:visibility="@{safeUnbox(folded) ? View.VISIBLE : View.GONE}"
             android:textColor="?android:attr/textColorPrimary"

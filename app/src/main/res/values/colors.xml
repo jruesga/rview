@@ -35,9 +35,6 @@
     <color name="skipped">#c8cccccc</color>
     <color name="running">#c8fcf286</color>
 
-    <color name="messageWithPositiveReview">#becce2cd</color>
-    <color name="messageWithNegativeReview">#bee2cccc</color>
-
     <color name="diffLineBackgroundColor">#f5f5f5</color>
     <color name="diffAddedBackgroundColor">#cce2cd</color>
     <color name="diffAddedDueRebaseBackgroundColor">#eefeff</color>
