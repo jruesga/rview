@@ -20,7 +20,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="score" type="java.lang.Integer" />
+        <variable name="score" type="java.lang.String" />
     </data>
 
     <LinearLayout
@@ -39,7 +39,7 @@
             android:paddingLeft="8dp"
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
-            app:score="@{score}"
+            android:text="@{score}"
             app:fontFamilyType="bold"
             android:textSize="11sp"
             tools:ignore="SmallSp"/>

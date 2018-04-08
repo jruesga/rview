@@ -81,6 +81,9 @@ public class Constants {
     public static final String CUSTOM_URI_COMMIT = "commit";
     public static final String CUSTOM_URI_QUERY = "query";
 
+    public static final String APPROVED = "\u2713";
+    public static final String REJECTED = "\u2717";
+
     public static final int SEARCH_MODE_CHANGE = 0;
     public static final int SEARCH_MODE_COMMIT = 1;
     public static final int SEARCH_MODE_PROJECT = 2;

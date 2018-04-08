@@ -99,7 +99,7 @@ public class LabelsView extends LinearLayout {
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnAccountChipRemovedListener)
                     .withTag(labels.get(i))
-                    .from(change.labels.get(labels.get(i)));
+                    .from(change.owner, change.labels.get(labels.get(i)));
             binding.getRoot().setVisibility(View.VISIBLE);
         }
         for (int i = count; i < children; i++) {

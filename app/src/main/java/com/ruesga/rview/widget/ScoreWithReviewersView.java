@@ -20,6 +20,7 @@ import android.databinding.DataBindingUtil;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import com.ruesga.rview.databinding.ScoreWithReviewItemBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.LabelInfo;
+import com.ruesga.rview.preferences.Constants;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -77,11 +79,11 @@ public class ScoreWithReviewersView extends LinearLayout {
         return this;
     }
 
-    public ScoreWithReviewersView from(LabelInfo info) {
+    public ScoreWithReviewersView from(AccountInfo owner, LabelInfo info) {
         setOrientation(VERTICAL);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        Map<Integer, List<AccountInfo>> scores = sortByScores(info);
+        Map<Integer, List<AccountInfo>> scores = sortByScores(owner, info);
 
         int count = scores.size();
         int children = getChildCount();
@@ -98,7 +100,16 @@ public class ScoreWithReviewersView extends LinearLayout {
         for(Map.Entry<Integer, List<AccountInfo>> entry : scores.entrySet()) {
             ScoreWithReviewItemBinding binding = mBindings.get(n);
             int value = entry.getKey();
-            binding.setScore(value);
+
+            Pair<Integer, Integer> minMaxValues = maxMinLabelValues(info.values);
+            String score = (value >= 0 ? "+" : "") + String.valueOf(value);
+            if (value == minMaxValues.second) {
+                score = Constants.APPROVED;
+            } else if (value == minMaxValues.first) {
+                score = Constants.REJECTED;
+            }
+            binding.setScore(score);
+
             ViewCompat.setBackgroundTintList(binding.scoreItem,
                     ContextCompat.getColorStateList(getContext(),
                             value < 0 ? R.color.rejected : R.color.approved));
@@ -130,8 +141,13 @@ public class ScoreWithReviewersView extends LinearLayout {
         return this;
     }
 
-    private Map<Integer, List<AccountInfo>> sortByScores(LabelInfo label) {
+    private Map<Integer, List<AccountInfo>> sortByScores(AccountInfo owner, LabelInfo label) {
         Map<Integer, List<AccountInfo>> scores = new TreeMap<>();
+        if (label.values == null || label.values.isEmpty()) {
+            List<AccountInfo> reviewers = new ArrayList<>();
+            reviewers.add(owner);
+            scores.put(0, reviewers);
+        }
         if (label.all != null) {
             for (ApprovalInfo approval : label.all) {
                 if (approval.value == null || approval.value == 0) {
@@ -144,5 +160,18 @@ public class ScoreWithReviewersView extends LinearLayout {
             }
         }
         return scores;
+    }
+
+    private Pair<Integer, Integer> maxMinLabelValues(Map<Integer, String> values) {
+        if (values == null || values.isEmpty()) {
+            return new Pair<>(0, 0);
+        }
+
+        int min = 0, max = 0;
+        for (int value : values.keySet()) {
+            min = Math.min(min, value);
+            max = Math.max(max, value);
+        }
+        return new Pair<>(min, max);
     }
 }

@@ -34,6 +34,7 @@ import com.ruesga.rview.databinding.ScoreItemBinding;
 import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.BitmapUtils;
+import com.ruesga.rview.preferences.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -142,10 +143,10 @@ public class ScoreLabelsView extends FlexboxLayout {
                 final Model model = new Model();
                 model.label = (mIsShortLabels ? toShortLabel(label) : label) + ": ";
                 if (info.blocking || info.rejected != null) {
-                    model.score = "\u2717";
+                    model.score = Constants.REJECTED;
                     model.color = mRejectedColor;
                 } else if (info.approved != null) {
-                    model.score = "\u2713";
+                    model.score = Constants.APPROVED;
                     model.color = mApprovedColor;
                 } else if (info.disliked != null) {
                     model.score = "-1";

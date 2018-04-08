@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ReviewScoreItemBinding;
+import com.ruesga.rview.misc.StringHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,8 @@ public class ScoresView extends LinearLayout {
     private OnScoreChanged mCallback;
 
     private OnClickListener mClickListener = v ->
-            changeScore(getSafeScore(((TextView) v).getText().toString()));
+            changeScore(StringHelper.parseNumberWithSign(
+                    ((TextView) v).getText().toString()).intValue());
 
     public ScoresView(Context context) {
         this(context, null);
@@ -125,7 +127,8 @@ public class ScoresView extends LinearLayout {
         int children = getChildCount();
         for (int i = 0; i < children; i++) {
             ReviewScoreItemBinding binding = mBindings.get(i);
-            int s = getSafeScore(binding.scoreItem.getText().toString());
+            int s = StringHelper.parseNumberWithSign(
+                    (binding.scoreItem.getText().toString())).intValue();
             ViewCompat.setBackgroundTintList(binding.scoreItem,
                     ContextCompat.getColorStateList(getContext(), toBackgroundColor(s)));
         }
@@ -140,11 +143,5 @@ public class ScoresView extends LinearLayout {
             return score < 0 ? R.color.rejected : score > 0 ? R.color.approved : R.color.noscore;
         }
         return R.color.unscored;
-    }
-
-    private int getSafeScore(String score) {
-        // Java 1.6 doesn't recognize +1 as a valid positive number, so just
-        // trim the score appropriately.
-        return Integer.valueOf(score.trim().replaceAll("\\+", ""));
     }
 }

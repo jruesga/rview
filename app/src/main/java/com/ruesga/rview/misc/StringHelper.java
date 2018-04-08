@@ -456,9 +456,11 @@ public class StringHelper {
     }
 
     public static Number parseNumberWithSign(String number) {
+        // Java 1.6 doesn't recognize +1 as a valid positive number, so just
+        // trim the score appropriately.
         try {
             final DecimalFormat df = new DecimalFormat("+#;-#");
-            return df.parse(number);
+            return df.parse(number.trim());
         } catch (ParseException ex) {
             // ignore
         }
