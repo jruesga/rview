@@ -41,6 +41,7 @@ import static com.ruesga.rview.preferences.Constants.DEFAULT_ANONYMOUS_HOME;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_AUTHENTICATED_HOME;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.HIGHLIGHT_SCORED_MESSAGE_MESSAGE;
 import static com.ruesga.rview.preferences.Constants.MAX_SEARCH_HISTORY;
 import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
@@ -418,9 +419,13 @@ public class Preferences {
                 context, account).getBoolean(PREF_ACCOUNT_MESSAGES_FOLDED, false);
     }
 
-    public static boolean isAccountMessagesHighlightScored(Context context, Account account) {
-        return account == null || getAccountPreferences(
-                context, account).getBoolean(PREF_ACCOUNT_MESSAGES_HIGHLIGHT_SCORED, true);
+    public static int getAccountMessagesHighlightScored(Context context, Account account) {
+        if (account == null) {
+            return HIGHLIGHT_SCORED_MESSAGE_MESSAGE;
+        }
+        return Integer.parseInt(getAccountPreferences(
+                context, account).getString(PREF_ACCOUNT_MESSAGES_HIGHLIGHT_SCORED,
+                        String.valueOf(HIGHLIGHT_SCORED_MESSAGE_MESSAGE)));
     }
 
     public static boolean isAccountInlineCommentInMessages(Context context, Account account) {

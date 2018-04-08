@@ -70,6 +70,7 @@ public class StringHelper {
 
     public static final Pattern PATCHSET_LINE_PATTERN = Pattern.compile("^Patch Set [\\d]+: .*");
     public static final Pattern VOTE_PATTERN = Pattern.compile("( ([\\w-]+([+-]\\d+)|([-])[\\w-]+))");
+    public static final Pattern VOTE_SCORE_PATTERN = Pattern.compile("[+-]\\d+");
 
     public static String cleanUpParagraphs(String message) {
         String msg = message;

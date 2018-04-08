@@ -97,6 +97,11 @@ public class Constants {
     public static final float DEFAULT_TEXT_SIZE_NORMAL = 1.f;
     public static final float DEFAULT_TEXT_SIZE_BIGGER = 1.2f;
 
+    public static final int HIGHLIGHT_SCORED_MESSAGE_NONE = 0;
+    public static final int HIGHLIGHT_SCORED_MESSAGE_SCORE = 1;
+    public static final int HIGHLIGHT_SCORED_MESSAGE_MESSAGE = 2;
+    public static final int HIGHLIGHT_SCORED_MESSAGE_BOTH = 3;
+
     public static final int MAX_SEARCH_HISTORY = 5;
 
     // --- Preference keys

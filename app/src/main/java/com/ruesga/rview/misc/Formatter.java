@@ -89,7 +89,7 @@ public class Formatter {
     private static String sDisplayFormat = Constants.ACCOUNT_DISPLAY_FORMAT_NAME;
     private static boolean sHighlightNotReviewed = true;
     private static boolean sDisplayAccountStatues = true;
-    private static boolean sHighlightScoredMessages = true;
+    private static int sHighlightScoredMessages = Constants.HIGHLIGHT_SCORED_MESSAGE_MESSAGE;
 
     private static int sQuoteColor = -1;
     private static int sQuoteWidth = -1;
@@ -100,7 +100,7 @@ public class Formatter {
         sDisplayFormat = Preferences.getAccountDisplayFormat(context, mAccount);
         sHighlightNotReviewed = Preferences.isAccountHighlightUnreviewed(context, mAccount);
         sDisplayAccountStatues = Preferences.isAccountDisplayStatuses(context, mAccount);
-        sHighlightScoredMessages = Preferences.isAccountMessagesHighlightScored(context, mAccount);
+        sHighlightScoredMessages = Preferences.getAccountMessagesHighlightScored(context, mAccount);
     }
 
     private static PrettyTime getPrettyTime(Context context) {
@@ -867,6 +867,39 @@ public class Formatter {
                 Math.abs(change.deletions)));
     }
 
+    @BindingAdapter("colorifyReviewedMessage")
+    public static void colorifyReviewedMessage(View v, ChangeMessageInfo message) {
+        if (message == null || message.message == null) {
+            return;
+        }
+        if (!(sHighlightScoredMessages == Constants.HIGHLIGHT_SCORED_MESSAGE_MESSAGE
+                || sHighlightScoredMessages == Constants.HIGHLIGHT_SCORED_MESSAGE_BOTH)) {
+            return;
+        }
+
+        // Extract every review punctuation
+        String firstLine = StringHelper.firstLine(message.message);
+        Matcher m = StringHelper.VOTE_SCORE_PATTERN.matcher(firstLine);
+        int review = 0;
+        while(m.find()) {
+            int value = StringHelper.parseNumberWithSign(m.group()).intValue();
+            if (Math.abs(value) > Math.abs(review)) {
+                review = value;
+            } else if (Math.abs(value) == Math.abs(review) && value < 0) {
+                review = value;
+            }
+        }
+
+        int color = android.R.color.transparent;
+        if (review < 0) {
+            color = R.color.messageWithNegativeReview;
+        }
+        if (review > 0) {
+            color = R.color.messageWithPositiveReview;
+        }
+        v.setBackgroundColor(ContextCompat.getColor(v.getContext(), color));
+    }
+
     @BindingAdapter("resolveAttachmentIcon")
     public static void resolveAttachmentIcon(ImageView v, Attachment attachment) {
         if (attachment == null) {
@@ -955,7 +988,8 @@ public class Formatter {
 
     private static void highlightUserMessageReviewScores(
             Context context, String userMessage, Spannable spannable) {
-        if (!sHighlightScoredMessages) {
+        if (!(sHighlightScoredMessages == Constants.HIGHLIGHT_SCORED_MESSAGE_SCORE
+                || sHighlightScoredMessages == Constants.HIGHLIGHT_SCORED_MESSAGE_BOTH)) {
             return;
         }
 

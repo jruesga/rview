@@ -234,6 +234,19 @@
         <item>@string/reviewer_update_removed</item>
     </string-array>
 
+    <string-array name="highlight_scored_messages_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="highlight_scored_messages_labels">
+        <item>None</item>
+        <item>Score</item>
+        <item>Message</item>
+        <item>Both</item>
+    </string-array>
+
     <string-array name="libraries_ids" translatable="false">
         <item>crashlytics</item>
         <item>support_v4</item>
