@@ -18,11 +18,6 @@ public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButto
 
     private OnVisibilityChangedListener mFabVisibilityListener = new OnVisibilityChangedListener() {
         @Override
-        public void onShown(FloatingActionButton fab) {
-            super.onShown(fab);
-        }
-
-        @Override
         public void onHidden(FloatingActionButton fab) {
             super.onHidden(fab);
             fab.setVisibility(View.INVISIBLE);
