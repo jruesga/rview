@@ -68,9 +68,11 @@ public class ContinuousIntegrationHelper {
             Repository repository, String changeId, int revisionNumber) {
         List<ContinuousIntegrationInfo> statuses = new ArrayList<>();
 
+        // NOTE: Do not fix "Redundant character escape" lint warning. Remove trailing '\'
+        // will cause an PatternSyntaxException
         String url = repository.mCiStatusUrl
-                .replaceFirst("\\{change}", changeId)
-                .replaceFirst("\\{revision}", String.valueOf(revisionNumber));
+                .replaceFirst("\\{change\\}", changeId)
+                .replaceFirst("\\{revision\\}", String.valueOf(revisionNumber));
 
         try {
             OkHttpClient okhttp = NetworkingHelper.createNetworkClient().build();
