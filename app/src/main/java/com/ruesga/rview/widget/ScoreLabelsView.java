@@ -52,7 +52,7 @@ public class ScoreLabelsView extends FlexboxLayout {
         public ColorStateList color;
     }
 
-    private static final Pattern sShortLabelPattern = Pattern.compile("[A-Z]+");
+    private static final Pattern sShortLabelPattern = Pattern.compile("[A-Z]+|-[a-z]");
     private static final Map<String, String> sShortLabelCache = new HashMap<>();
 
     private final Map<String, Model> mScores = new TreeMap<>();
@@ -168,7 +168,7 @@ public class ScoreLabelsView extends FlexboxLayout {
             Matcher matcher = sShortLabelPattern.matcher(label);
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
-                sb.append(matcher.group(0));
+                sb.append(matcher.group(0).toUpperCase().replaceAll("-", ""));
             }
             sShortLabelCache.put(label, sb.toString());
         }
