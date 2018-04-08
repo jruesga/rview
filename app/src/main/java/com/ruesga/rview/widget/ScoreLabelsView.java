@@ -38,9 +38,9 @@ import com.ruesga.rview.preferences.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,7 +56,7 @@ public class ScoreLabelsView extends FlexboxLayout {
     private static final Pattern sShortLabelPattern = Pattern.compile("[A-Z]+|-[a-z]");
     private static final Map<String, String> sShortLabelCache = new HashMap<>();
 
-    private final Map<String, Model> mScores = new TreeMap<>();
+    private final Map<String, Model> mScores = new LinkedHashMap<>();
     private final List<ScoreItemBinding> mBindings = new ArrayList<>();
     private final LayoutInflater mInflater;
     private boolean mIsShortLabels;
