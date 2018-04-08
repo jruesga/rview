@@ -985,6 +985,16 @@ public class EditorFragment extends Fragment
     }
 
     private void performDeleteCurrentEdit() {
+        try {
+            String file = getContentCachedFileName(mFile);
+            if (CacheHelper.hasAccountDiffCache(getContext(), file)) {
+                CacheHelper.writeAccountDiffCacheFile(getContext(), file, new byte[0]);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to delete content of file: " + mFile);
+        }
+        createEmptyEdit(mFile);
+        onEditFileChosen(0, MODE.DELETE, null, mFile);
     }
 
     @SuppressWarnings("Convert2streamapi")
@@ -1145,6 +1155,8 @@ public class EditorFragment extends Fragment
         }
         if (!mFiles.contains(newValue)) {
             mFiles.add(newValue);
+        }
+        if (!TextUtils.isEmpty(newValue)) {
             mFileInfo.put(newValue, info);
         }
         createFileHashes();
