@@ -468,6 +468,9 @@ public class StringHelper {
     }
 
     public static String fold(String message) {
+        if (message == null) {
+            return null;
+        }
         return message.replaceAll("\r\n", " ").replaceAll("\r", " ").replaceAll("\n", " ");
     }
 }

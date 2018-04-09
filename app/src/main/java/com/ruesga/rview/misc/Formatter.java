@@ -255,6 +255,10 @@ public class Formatter {
 
         // Fold the user message
         String userMessage = StringHelper.fold(StringHelper.removeAllAttachments(msg.message));
+        if (userMessage == null) {
+            view.setText(null);
+            return;
+        }
         final SpannableStringBuilder spannable = new SpannableStringBuilder(userMessage);
         highlightUserMessageReviewScores(
                 view.getContext(), StringHelper.firstLine(msg.message), spannable);
