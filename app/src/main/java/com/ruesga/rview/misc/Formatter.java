@@ -845,6 +845,7 @@ public class Formatter {
         }
     }
 
+    // ./polygerrit-ui/app/elements/change-list/gr-change-list-item/gr-change-list-item.js
     @BindingAdapter("toCommitSize")
     public static void toCommitSize(TextView v, ChangeInfo change) {
         if (change == null) {
@@ -852,9 +853,12 @@ public class Formatter {
             return;
         }
 
-        int delta = change.insertions - change.deletions;
+        int delta = change.insertions + change.deletions;
         final int resId;
-        if (delta < 10) {
+        if (delta == 0) {
+            v.setText(v.getContext().getString(R.string.commit_size_unknown));
+            return;
+        } else if (delta < 10) {
             resId = R.string.commit_size_xs;
         } else if (delta < 50) {
             resId = R.string.commit_size_s;
@@ -865,10 +869,10 @@ public class Formatter {
         } else {
             resId = R.string.commit_size_xl;
         }
-        v.setText(String.format(Locale.US, "%s  (+%d, +%d)",
+        v.setText(String.format(Locale.US, "%s  (+%d, -%d)",
                 v.getContext().getString(resId),
                 change.insertions,
-                Math.abs(change.deletions)));
+                change.deletions));
     }
 
     @BindingAdapter("colorifyReviewedMessage")
