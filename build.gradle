@@ -66,7 +66,7 @@ allprojects {
         }
         dependencies {
             // https://developer.android.com/studio/releases/gradle-plugin.html#revisions
-            classpath 'com.android.tools.build:gradle:3.1.0'
+            classpath 'com.android.tools.build:gradle:3.1.1'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
             classpath 'io.fabric.tools:gradle:1.25.2'
