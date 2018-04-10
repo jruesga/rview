@@ -887,14 +887,17 @@ public class Formatter {
 
         // Extract every review punctuation
         String firstLine = StringHelper.firstLine(message.message);
-        Matcher m = StringHelper.VOTE_SCORE_PATTERN.matcher(firstLine);
         int review = 0;
-        while(m.find()) {
-            int value = StringHelper.parseNumberWithSign(m.group()).intValue();
-            if (Math.abs(value) > Math.abs(review)) {
-                review = value;
-            } else if (Math.abs(value) == Math.abs(review) && value < 0) {
-                review = value;
+        boolean isPatchSetLine = StringHelper.PATCHSET_LINE_PATTERN.matcher(firstLine).matches();
+        if (isPatchSetLine) {
+            Matcher m = StringHelper.VOTE_SCORE_PATTERN.matcher(firstLine);
+            while (m.find()) {
+                int value = StringHelper.parseNumberWithSign(m.group()).intValue();
+                if (Math.abs(value) > Math.abs(review)) {
+                    review = value;
+                } else if (Math.abs(value) == Math.abs(review) && value < 0) {
+                    review = value;
+                }
             }
         }
 
