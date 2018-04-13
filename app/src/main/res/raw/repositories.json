@@ -53,6 +53,7 @@
   {"name":"OpenStack", "url":"https://review.openstack.org/", "ci_accounts": "^(.* CI|Jenkins|Zuul|Elastic Recheck)$"},
   {"name":"OpenSwitch", "url":"https://review.openswitch.net/", "ci_accounts": "^(Zuul|Build Bot.*)$"},
   {"name":"OPNFV", "url":"https://gerrit.opnfv.org/gerrit/", "ci_accounts": "^(jenkins-ci)$"},
+  {"name":"OSM", "url":"https://osm.etsi.org/gerrit/", "ci_accounts": "^(jenkins)$"},
   {"name":"oVirt", "url":"https://gerrit.ovirt.org/", "ci_accounts": "^(Jenkins.*|gerrit-hooks)$"},
   {"name":"PureFusionOS", "url":"https://review.purefusionos.com/"},
   {"name":"RDK", "url":"https://code.rdkcentral.com/r/", "ci_accounts": "^(Jenkins|jenkins.*|protex_scan)$"},
