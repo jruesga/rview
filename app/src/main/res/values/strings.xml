@@ -676,6 +676,12 @@
     <string name="unresolved_comments_zero" tools:ignore="PluralsCandidate">(<xliff:g id="comments">%1$d</xliff:g> comments)</string>
     <string name="unresolved_comments_more" tools:ignore="PluralsCandidate">(<xliff:g id="comments">%1$d</xliff:g> comments, <xliff:g id="unresolved">%2$d</xliff:g> unresolved)</string>
 
+    <!-- Highlight Scored Messages -->
+    <string name="highlight_scored_messages_none">None</string>
+    <string name="highlight_scored_messages_score">Score</string>
+    <string name="highlight_scored_messages_message">Message</string>
+    <string name="highlight_scored_messages_both">Both</string>
+
     <!-- Server Info Dialog -->
     <string name="server_info_dialog_title">Server info</string>
     <string name="server_info_dialog_fetching">Fetching data\u2026</string>
