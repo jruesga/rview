@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M2.0039,1.9863L2.0039,17.3887L5.6152,17.3887L5.6152,5.5977L17.3887,5.5977L17.3887,1.9863L2.0039,1.9863z"
+        android:fillColor="#000000"/>
+    <path
+        android:pathData="M6.6152,6.5977L6.6152,22L22,22L22,6.5977L6.6152,6.5977zM8.9238,10.4355L13.5234,10.4355L13.5234,11.9688L8.9238,11.9688L8.9238,10.4355zM15.0586,10.4355L19.6602,10.4355L19.6602,11.9688L15.0586,11.9688L15.0586,10.4355zM10.457,14.2695L11.9902,14.2695L11.9902,15.8027L13.5234,15.8027L13.5234,17.3379L11.9902,17.3379L11.9902,18.8711L10.457,18.8711L10.457,17.3379L8.9238,17.3379L8.9238,15.8027L10.457,15.8027L10.457,14.2695zM16.5918,14.2695L18.125,14.2695L18.125,15.8027L19.6602,15.8027L19.6602,17.3379L18.125,17.3379L18.125,18.8711L16.5918,18.8711L16.5918,17.3379L15.0586,17.3379L15.0586,15.8027L16.5918,15.8027L16.5918,14.2695z"
+        android:fillColor="#000000"/>
+</vector>

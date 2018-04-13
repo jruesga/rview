@@ -74,6 +74,7 @@
     <string name="menu_account_status">Status</string>
     <string name="menu_account_notifications">Notifications</string>
     <string name="menu_account_stats">Statistics</string>
+    <string name="menu_account_server_info">Server info</string>
     <string name="menu_account_password">Password</string>
     <string name="menu_drop_account">Drop account</string>
     <string name="menu_account_category">Account</string>
@@ -674,4 +675,16 @@
     <!-- Unresolved Comments -->
     <string name="unresolved_comments_zero" tools:ignore="PluralsCandidate">(<xliff:g id="comments">%1$d</xliff:g> comments)</string>
     <string name="unresolved_comments_more" tools:ignore="PluralsCandidate">(<xliff:g id="comments">%1$d</xliff:g> comments, <xliff:g id="unresolved">%2$d</xliff:g> unresolved)</string>
+
+    <!-- Server Info Dialog -->
+    <string name="server_info_dialog_title">Server info</string>
+    <string name="server_info_dialog_fetching">Fetching data\u2026</string>
+    <string name="server_info_dialog_name">Name</string>
+    <string name="server_info_dialog_endpoint">Endpoint</string>
+    <string name="server_info_dialog_version">Version</string>
+    <string name="server_info_dialog_backend">Backend</string>
+    <string name="server_info_dialog_backend_reviewdb">ReviewDB</string>
+    <string name="server_info_dialog_backend_notedb">NoteDB</string>
+    <string name="server_info_dialog_backend_plugins">Plugins</string>
+    <string name="server_info_dialog_backend_plugins_empty">No information available</string>
 </resources>

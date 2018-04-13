@@ -201,7 +201,7 @@
         <item>4096</item>
     </string-array>
 
-    <string-array name="emoji_status_codes">
+    <string-array name="emoji_status_codes" translatable="false">
         <item>🏢</item>
         <item>🏠</item>
         <item>🍴</item>
@@ -211,7 +211,7 @@
         <item>🤒</item>
         <item>😴</item>
     </string-array>
-    <string-array name="emoji_status_descriptions">
+    <string-array name="emoji_status_descriptions" translatable="false">
         <item>@string/account_status_at_work</item>
         <item>@string/account_status_at_home</item>
         <item>@string/account_status_lunch</item>
@@ -222,19 +222,19 @@
         <item>@string/account_status_sleeping</item>
     </string-array>
 
-    <string-array name="compression_image_formats">
+    <string-array name="compression_image_formats" translatable="false">
         <item>@string/account_settings_attachments_optimize_format_jpg</item>
         <item>@string/account_settings_attachments_optimize_format_png</item>
         <item>@string/account_settings_attachments_optimize_format_webp</item>
     </string-array>
 
-    <string-array name="reviewer_update_states">
+    <string-array name="reviewer_update_states" translatable="false">
         <item>@string/reviewer_update_reviewer</item>
         <item>@string/reviewer_update_cc</item>
         <item>@string/reviewer_update_removed</item>
     </string-array>
 
-    <string-array name="highlight_scored_messages_values">
+    <string-array name="highlight_scored_messages_values" translatable="false">
         <item>0</item>
         <item>1</item>
         <item>2</item>
@@ -245,6 +245,138 @@
         <item>Score</item>
         <item>Message</item>
         <item>Both</item>
+    </string-array>
+
+    <string-array name="well_known_plugins_ids" translatable="false">
+        <!--<item>admin-console</item>-->
+        <item>analytics</item>
+        <item>approval-extension</item>
+        <item>approver-annotator</item>
+        <item>audit-sl4j</item>
+        <item>auth-htpasswd</item>
+        <item>automerger</item>
+        <item>autosubmitter</item>
+        <item>auto-topic</item>
+        <item>avatars-external</item>
+        <item>avatars-gravatar</item>
+        <item>batch</item>
+        <item>branch-network</item>
+        <item>cfoauth</item>
+        <item>change-head</item>
+        <item>change-labels</item>
+        <item>changemessage</item>
+        <item>cloud-notifications</item>
+        <item>codemirror-editor</item>
+        <item>codenvy</item>
+        <item>commit-message-length-validator</item>
+        <item>commit-validator-sample</item>
+        <item>cookbook-plugin</item>
+        <item>delete-project</item>
+        <item>donation-button</item>
+        <item>download-commands</item>
+        <item>egit</item>
+        <item>emoticons</item>
+        <item>events</item>
+        <item>events-log</item>
+        <item>evict-cache</item>
+        <item>examples</item>
+        <item>find-owners</item>
+        <item>force-draft</item>
+        <item>gerrit-support</item>
+        <item>gitblit</item>
+        <item>gitgroups</item>
+        <item>github</item>
+        <item>github-groups</item>
+        <item>github-profile</item>
+        <item>github-pullrequest</item>
+        <item>github-replication</item>
+        <item>github-webhooks</item>
+        <item>gitiles</item>
+        <item>go-import</item>
+        <item>google-apps-group</item>
+        <item>healthcheck</item>
+        <item>helloworld</item>
+        <item>hide-actions</item>
+        <item>high-availability</item>
+        <item>hooks</item>
+        <item>hooks-audit</item>
+        <item>hooks-bugzilla</item>
+        <item>hooks-its</item>
+        <item>hooks-jira</item>
+        <item>hooks-rtc</item>
+        <item>imagare</item>
+        <item>importer</item>
+        <item>its-base</item>
+        <item>its-bugzilla</item>
+        <item>its-github</item>
+        <item>its-jira</item>
+        <item>its-phabricator</item>
+        <item>its-redmine</item>
+        <item>its-rtc</item>
+        <item>its-storyboard</item>
+        <item>javamelody</item>
+        <item>kafka-events</item>
+        <item>labelui</item>
+        <item>lfs</item>
+        <item>lfs-storage-fs</item>
+        <item>lfs-storage-s3</item>
+        <item>maintainer</item>
+        <item>manifest</item>
+        <item>manifest-subscription</item>
+        <item>menuextender</item>
+        <item>messageoftheday</item>
+        <item>metrics-reporter-cloudwatch</item>
+        <item>metrics-reporter-elasticsearch</item>
+        <item>metrics-reporter-graphite</item>
+        <item>metrics-reporter-jmx</item>
+        <item>metrics-reporter-prometheus</item>
+        <item>motd</item>
+        <item>multi-master</item>
+        <item>oauth</item>
+        <item>out-of-the-box</item>
+        <item>owners</item>
+        <item>plugin-manager</item>
+        <item>project-download-commands</item>
+        <item>project-group-structure</item>
+        <item>push-pull-replication</item>
+        <item>quickstart</item>
+        <item>quota</item>
+        <item>rabbitmq</item>
+        <item>readonly</item>
+        <item>ref-protection</item>
+        <item>rename-project</item>
+        <item>reparent</item>
+        <item>replication</item>
+        <item>replication-status</item>
+        <item>repository-usage</item>
+        <item>reviewassistant</item>
+        <item>reviewers</item>
+        <item>reviewers-by-blame</item>
+        <item>reviewnotes</item>
+        <item>review-strategy</item>
+        <item>scripting/groovy-provider</item>
+        <item>scripting/scala-provider</item>
+        <item>scripts</item>
+        <item>secure-config</item>
+        <item>server-config</item>
+        <item>server-log-viewer</item>
+        <item>serviceuser</item>
+        <item>shutdown</item>
+        <item>simple-submit-rules</item>
+        <item>singleusergroup</item>
+        <item>slack-integration</item>
+        <item>supermanifest</item>
+        <item>sync-events</item>
+        <item>sync-index</item>
+        <item>task</item>
+        <item>uploadvalidator</item>
+        <item>verify-status</item>
+        <item>webhooks</item>
+        <item>websession-flatfile</item>
+        <item>wip</item>
+        <item>x-docs</item>
+        <item>zookeeper-refdb</item>
+        <item>zuul</item>
     </string-array>
 
     <string-array name="libraries_ids" translatable="false">

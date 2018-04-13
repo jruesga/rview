@@ -111,6 +111,10 @@
                     android:icon="@drawable/ic_stats"
                     android:title="@string/menu_account_stats"/>
                 <item
+                    android:id="@+id/menu_account_server_info"
+                    android:icon="@drawable/ic_gerrit"
+                    android:title="@string/menu_account_server_info"/>
+                <item
                     android:id="@+id/menu_account_password"
                     android:icon="@drawable/ic_password"
                     android:title="@string/menu_account_password"/>

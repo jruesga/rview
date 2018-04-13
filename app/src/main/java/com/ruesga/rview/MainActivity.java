@@ -57,6 +57,7 @@ import com.ruesga.rview.drawer.DrawerNavigationView;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.fragments.PageableFragment;
+import com.ruesga.rview.fragments.ServerInfoDialogFragment;
 import com.ruesga.rview.fragments.SetAccountStatusDialogFragment;
 import com.ruesga.rview.fragments.StatsFragment;
 import com.ruesga.rview.fragments.TrendingChangeListFragment;
@@ -565,6 +566,9 @@ public class MainActivity extends ChangeListBaseActivity {
             case R.id.menu_account_stats:
                 openAccountStats();
                 break;
+            case R.id.menu_account_server_info:
+                openAccountServerInfo();
+                break;
             case R.id.menu_account_password:
                 openAccountSetup();
                 break;
@@ -929,6 +933,15 @@ public class MainActivity extends ChangeListBaseActivity {
                 ActivityHelper.openStatsActivity(
                         this, title, displayName, StatsFragment.ACCOUNT_STATS,
                         String.valueOf(mAccount.mAccount.accountId), filter, extra);
+            }
+        });
+    }
+
+    private void openAccountServerInfo() {
+        mUiHandler.post(() -> {
+            if (mAccount != null) {
+                ServerInfoDialogFragment fragment = ServerInfoDialogFragment.newInstance();
+                fragment.show(getSupportFragmentManager(), ServerInfoDialogFragment.TAG);
             }
         });
     }

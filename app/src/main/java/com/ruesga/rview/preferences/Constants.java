@@ -83,6 +83,7 @@ public class Constants {
 
     public static final String APPROVED = "\u2713";
     public static final String REJECTED = "\u2717";
+    public static final String BLOCK = "\u20E0";
 
     public static final int SEARCH_MODE_CHANGE = 0;
     public static final int SEARCH_MODE_COMMIT = 1;

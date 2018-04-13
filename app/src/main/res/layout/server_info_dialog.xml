@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2017 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="android.text.TextUtils" />
+        <variable name="repository" type="com.ruesga.rview.model.Repository" />
+        <variable name="version" type="com.ruesga.rview.gerrit.model.ServerVersion" />
+        <variable name="serverInfo" type="com.ruesga.rview.gerrit.model.ServerInfo" />
+        <variable name="fetching" type="java.lang.Boolean" />
+        <variable name="hasPlugins" type="java.lang.Boolean" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:scrollbars="vertical"
+        android:orientation="vertical">
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/server_info_dialog_name"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp" />
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@{repository.mName}"
+            android:textIsSelectable="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/server_info_dialog_endpoint"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp" />
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:autoLink="web"
+            android:textIsSelectable="true"
+            android:text="@{repository.mUrl}"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/server_info_dialog_version"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp" />
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:autoLink="web"
+            android:textIsSelectable="true"
+            android:text='@{version == null ? @string/server_info_dialog_fetching : String.valueOf(version)}'
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/server_info_dialog_backend"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp" />
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textIsSelectable="true"
+            android:text="@{serverInfo == null ? @string/server_info_dialog_fetching : safeUnbox(serverInfo.noteDbEnabled) ? @string/server_info_dialog_backend_notedb : @string/server_info_dialog_backend_reviewdb}"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+        <com.ruesga.rview.widget.StyleableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/server_info_dialog_backend_plugins"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="8dp">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/plugins"
+                android:layout_width="match_parent"
+                android:layout_height="96dp"
+                android:visibility="@{safeUnbox(fetching) || !safeUnbox(hasPlugins) ? View.GONE : View.VISIBLE}"
+                android:scrollbars="vertical">
+            </android.support.v7.widget.RecyclerView>
+            <ProgressBar
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:paddingTop="8dp"
+                android:visibility="@{safeUnbox(fetching)? View.VISIBLE : View.GONE}"
+                android:layout_gravity="top|center_horizontal"/>
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/server_info_dialog_backend_plugins_empty"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:visibility="@{safeUnbox(fetching) || safeUnbox(hasPlugins) ? View.GONE : View.VISIBLE}"
+                android:textSize="14sp"/>
+        </FrameLayout>
+    </LinearLayout>
+</layout>

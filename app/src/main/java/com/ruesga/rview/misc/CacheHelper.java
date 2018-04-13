@@ -66,6 +66,7 @@ public class CacheHelper {
     public static final String CACHE_PARENT = "parent";
 
     public static final String CACHE_TRENDING_JSON = "trending.json";
+    public static final String CACHE_PLUGINS_JSON = "plugins.json";
 
     public static Response.Builder addCacheControl(Response.Builder builder) {
         return builder.header("Cache-Control", "max-age=" + MAX_AGE_CACHE);
@@ -234,6 +235,31 @@ public class CacheHelper {
     public static void writeTrendingChangesCache(Context context, Account account, byte[] data)
             throws IOException {
         File trending = new File(getAccountCacheDir(context, account), CACHE_TRENDING_JSON);
+        trending.getParentFile().mkdirs();
+        FileUtils.writeByteArrayToFile(trending, data);
+    }
+
+    public static long getPluginsCacheAge(Context context, Account account) {
+        File trending = new File(getAccountCacheDir(context, account), CACHE_PLUGINS_JSON);
+        if (trending.exists()) {
+            return trending.lastModified();
+        }
+        return 0;
+    }
+
+    public static byte[] readPluginsCache(Context context, Account account)
+            throws IOException {
+        File trending = new File(getAccountCacheDir(context, account), CACHE_PLUGINS_JSON);
+        if (trending.exists()) {
+            return FileUtils.readFileToByteArray(trending);
+        }
+        return null;
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void writePluginsCache(Context context, Account account, byte[] data)
+            throws IOException {
+        File trending = new File(getAccountCacheDir(context, account), CACHE_PLUGINS_JSON);
         trending.getParentFile().mkdirs();
         FileUtils.writeByteArrayToFile(trending, data);
     }
