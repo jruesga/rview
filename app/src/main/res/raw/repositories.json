@@ -23,7 +23,7 @@
   {"name":"Eclipse", "url":"https://git.eclipse.org/r/", "ci_accounts": "^(.* CI)$"},
   {"name":"Exynos5420", "url":"https://review.exynos5420.com/"},
   {"name":"FD.io", "url":"https://gerrit.fd.io/r/", "ci_accounts": "^(Container PoC|fd.io JJB)$"},
-  {"name":"FireHound", "url":"http://review.firehound.me/"},
+  {"name":"FireHound", "url":"https://review.firehound.org/"},
   {"name":"Fuchsia", "url":"https://fuchsia-review.googlesource.com/", "ci_accounts": "^(CQ bot account.*)$", "ci_status_mode": "cq", "ci_status_url": "https://cr-buildbucket.appspot.com/_ah/api/buildbucket/v1/search?max_builds=500&fields=builds(status,result,tags,url)&tag=buildset:patch/gerrit/fuchsia-review.googlesource.com/{change}/{revision}"},
   {"name":"Gerrit", "url":"https://gerrit-review.googlesource.com/", "ci_accounts": "^(GerritForge CI|Diffy Cuckoo.*)$"},
   {"name":"GerritHub", "url":"https://review.gerrithub.io/"},
