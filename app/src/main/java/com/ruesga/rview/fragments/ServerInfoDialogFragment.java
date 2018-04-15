@@ -211,6 +211,7 @@ public class ServerInfoDialogFragment extends RevealDialogFragment {
     @SuppressWarnings("ConstantConditions")
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mAccount = Preferences.getAccount(getActivity());
 
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
         RxLoader<ServerVersion> requestServerVersionLoader = loaderManager.create(
@@ -220,11 +221,17 @@ public class ServerInfoDialogFragment extends RevealDialogFragment {
         RxLoader<List<PluginInfo>> requestPluginsLoader = loaderManager.create(
                 "request_plugins", doRequestPlugins(), mRequestPluginsObserver);
 
-        requestServerVersionLoader.start();
-        requestServerInfoLoader.start();
+        if (mAccount.mServerVersion != null) {
+            mRequestServerVersionObserver.onNext(mAccount.mServerVersion);
+        } else {
+            requestServerVersionLoader.start();
+        }
+        if (mAccount.mServerInfo != null) {
+            mRequestServerInfoObserver.onNext(mAccount.mServerInfo);
+        } else {
+            requestServerInfoLoader.start();
+        }
         requestPluginsLoader.start();
-
-        mAccount = Preferences.getAccount(getActivity());
         mBinding.setRepository(mAccount.mRepository);
     }
 
