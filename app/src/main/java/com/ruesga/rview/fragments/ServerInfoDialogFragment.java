@@ -278,12 +278,13 @@ public class ServerInfoDialogFragment extends RevealDialogFragment {
     @SuppressWarnings("ConstantConditions")
     private Collection<PluginInfo> fetchPluginsById(Context ctx, GerritApi api) {
         List<PluginInfo> plugins = null;
-        long age = CacheHelper.getPluginsCacheAge(ctx, mAccount);
+        long age = CacheHelper.getFileCacheAge(ctx, mAccount, CacheHelper.CACHE_PLUGINS_JSON);
         if (System.currentTimeMillis() - age < DateUtils.DAY_IN_MILLIS) {
             try {
                 Type type = new TypeToken<List<PluginInfo>>() {}.getType();
                 plugins = SerializationManager.getInstance().fromJson(
-                        new String(CacheHelper.readPluginsCache(ctx, mAccount)), type);
+                        new String(CacheHelper.readFileCache(
+                                ctx, mAccount, CacheHelper.CACHE_PLUGINS_JSON)), type);
             } catch (Exception ex) {
                 Log.e(TAG, "Failed to read plugins cache file", ex);
             }
@@ -302,7 +303,7 @@ public class ServerInfoDialogFragment extends RevealDialogFragment {
         }
 
         try {
-            CacheHelper.writePluginsCache(ctx, mAccount,
+            CacheHelper.writeFileCache(ctx, mAccount, CacheHelper.CACHE_PLUGINS_JSON,
                     SerializationManager.getInstance().toJson(plugins).getBytes());
         } catch (Exception ex) {
             Log.e(TAG, "Failed to serialize plugins cache file", ex);

@@ -111,12 +111,13 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
         // fetch data only if it is 1 hour aged
         List<ChangeInfo> changes = null;
         Account account = Preferences.getAccount(ctx);
-        long age = CacheHelper.getTrendingChangesCacheAge(ctx, account);
+        long age = CacheHelper.getFileCacheAge(ctx, account, CacheHelper.CACHE_TRENDING_JSON);
         if (!mForceRefresh && System.currentTimeMillis() - age < DateUtils.HOUR_IN_MILLIS) {
             try {
                 Type type = new TypeToken<List<ChangeInfo>>() {}.getType();
                 changes = SerializationManager.getInstance().fromJson(
-                        new String(CacheHelper.readTrendingChangesCache(ctx, account)), type);
+                        new String(CacheHelper.readFileCache(
+                                ctx, account, CacheHelper.CACHE_TRENDING_JSON)), type);
             } catch (Exception ex) {
                 Log.e(TAG, "Failed to read trending cache file", ex);
             }
@@ -141,7 +142,7 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
 
             changes = extractTrendingChanges(changes);
             try {
-                CacheHelper.writeTrendingChangesCache(ctx, account,
+                CacheHelper.writeFileCache(ctx, account, CacheHelper.CACHE_TRENDING_JSON,
                         SerializationManager.getInstance().toJson(changes).getBytes());
             } catch (Exception ex) {
                 Log.e(TAG, "Failed to serialize trending cache file", ex);

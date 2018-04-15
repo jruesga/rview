@@ -214,55 +214,40 @@ public class CacheHelper {
         }
     }
 
-    public static long getTrendingChangesCacheAge(Context context, Account account) {
-        File trending = new File(getAccountCacheDir(context, account), CACHE_TRENDING_JSON);
-        if (trending.exists()) {
-            return trending.lastModified();
+
+    public static long getFileCacheAge(Context context, Account account, String name) {
+        File file = new File(getAccountCacheDir(context, account), name);
+        if (file.exists()) {
+            return file.lastModified();
         }
         return 0;
     }
 
-    public static byte[] readTrendingChangesCache(Context context, Account account)
+    public static byte[] readFileCache(Context context, Account account, String name)
             throws IOException {
-        File trending = new File(getAccountCacheDir(context, account), CACHE_TRENDING_JSON);
-        if (trending.exists()) {
-            return FileUtils.readFileToByteArray(trending);
+        File file = new File(getAccountCacheDir(context, account), name);
+        if (file.exists()) {
+            return FileUtils.readFileToByteArray(file);
         }
         return null;
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void writeTrendingChangesCache(Context context, Account account, byte[] data)
+    public static void writeFileCache(Context context, Account account, String name, byte[] data)
             throws IOException {
-        File trending = new File(getAccountCacheDir(context, account), CACHE_TRENDING_JSON);
-        trending.getParentFile().mkdirs();
-        FileUtils.writeByteArrayToFile(trending, data);
-    }
-
-    public static long getPluginsCacheAge(Context context, Account account) {
-        File trending = new File(getAccountCacheDir(context, account), CACHE_PLUGINS_JSON);
-        if (trending.exists()) {
-            return trending.lastModified();
-        }
-        return 0;
-    }
-
-    public static byte[] readPluginsCache(Context context, Account account)
-            throws IOException {
-        File trending = new File(getAccountCacheDir(context, account), CACHE_PLUGINS_JSON);
-        if (trending.exists()) {
-            return FileUtils.readFileToByteArray(trending);
-        }
-        return null;
+        File file = new File(getAccountCacheDir(context, account), name);
+        file.getParentFile().mkdirs();
+        FileUtils.writeByteArrayToFile(file, data);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void writePluginsCache(Context context, Account account, byte[] data)
-            throws IOException {
-        File trending = new File(getAccountCacheDir(context, account), CACHE_PLUGINS_JSON);
-        trending.getParentFile().mkdirs();
-        FileUtils.writeByteArrayToFile(trending, data);
+    public static void removeFileCache(Context context, Account account, String name) {
+        File file = new File(getAccountCacheDir(context, account), name);
+        if (file.exists()) {
+            file.delete();
+        }
     }
+
 
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
