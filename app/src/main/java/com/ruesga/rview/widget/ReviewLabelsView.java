@@ -27,6 +27,7 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ReviewLabelItemBinding;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
@@ -177,7 +178,13 @@ public class ReviewLabelsView extends LinearLayout {
                 .withValue(value)
                 .listenTo(mScoreChangedListener)
                 .update();
-            view.setVisibility(View.VISIBLE);
+
+            if (ChangeStatus.MERGED.equals(change.status) && scores.length <= 1) {
+                mLabelsLayout.getChildAt(i).setVisibility(View.GONE);
+                view.setVisibility(View.GONE);
+            } else {
+                view.setVisibility(View.VISIBLE);
+            }
         }
         for (int i = count; i < children; i++) {
             ScoresView view = mScoresViews.get(i);
