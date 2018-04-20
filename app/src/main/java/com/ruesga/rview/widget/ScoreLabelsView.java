@@ -159,7 +159,7 @@ public class ScoreLabelsView extends FlexboxLayout {
                     model.color = mNoScoreColor;
                 }
                 model.visible = true;
-                mScores.put(model.label, model);
+                mScores.put(label, model);
             }
         }
     }
