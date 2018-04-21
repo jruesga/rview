@@ -46,13 +46,12 @@ import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
-import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.providers.NotificationEntity;
 import com.ruesga.rview.widget.DividerItemDecoration;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -124,14 +123,12 @@ public class NotificationsFragment extends Fragment {
 
         final List<NotificationEntity> mNotifications = new ArrayList<>();
         private final ItemEventHandlers mHandlers;
-        private final Picasso mPicasso;
         private final Context mContext;
 
         private NotificationsAdapter(NotificationsFragment fragment) {
             setHasStableIds(true);
             mContext = fragment.getContext();
             mHandlers = new ItemEventHandlers(fragment);
-            mPicasso = PicassoHelper.getAvatarPicassoClient(mContext);
         }
 
         private void clear() {
@@ -164,9 +161,9 @@ public class NotificationsFragment extends Fragment {
             model.notification = NotificationsHelper.getContentMessage(mContext, item, false, false);
             itemViewHolder.mBinding.setModel(model);
             itemViewHolder.mBinding.setHandlers(mHandlers);
-            PicassoHelper.bindAvatar(mContext, mPicasso, model.who,
+            RviewImageHelper.bindAvatar(mContext, model.who,
                     itemViewHolder.mBinding.avatar,
-                    PicassoHelper.getDefaultAvatar(mContext, R.color.primaryDarkForeground));
+                    RviewImageHelper.getDefaultAvatar(mContext, R.color.primaryDarkForeground));
         }
 
         @Override

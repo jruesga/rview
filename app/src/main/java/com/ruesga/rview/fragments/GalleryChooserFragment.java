@@ -46,8 +46,7 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.GalleryChooserContentBinding;
 import com.ruesga.rview.databinding.GalleryItemBinding;
-import com.ruesga.rview.misc.PicassoHelper;
-import com.squareup.picasso.Picasso;
+import com.ruesga.rview.misc.RviewImageHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -181,7 +180,6 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
 
     private static class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private final Context mContext;
-        private final Picasso mPicasso;
         private final int mImageWidth, mImageHeight;
         private final EventHandlers mHandlers;
 
@@ -196,7 +194,6 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
             setHasStableIds(true);
             mContext = fragment.getContext();
             mHandlers = new EventHandlers(fragment);
-            mPicasso = PicassoHelper.getDefaultPicassoClient(mContext);
             mImageHeight = mImageWidth = imageWidth;
             mPrevSelection = prevSelection;
         }
@@ -277,7 +274,7 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
             itemViewHolder.mBinding.setIsVideo(
                     mediaItem.mMediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
             itemViewHolder.mBinding.setHandlers(mHandlers);
-            PicassoHelper.bindImage(mPicasso, image, null, mediaItem.mUri,
+            RviewImageHelper.bindImage(mContext, image, null, mediaItem.mUri,
                     new Rect(0, 0, mImageWidth, mImageHeight));
         }
 

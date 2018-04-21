@@ -394,8 +394,7 @@
         <item>rxloader</item>
         <item>commons-io</item>
         <item>smoothprogressbar</item>
-        <item>picasso</item>
-        <item>picasso2_okhttp3_downloader</item>
+        <item>glide</item>
         <item>prettytime</item>
         <item>flexbox-layout</item>
         <item>floatingsearchview</item>

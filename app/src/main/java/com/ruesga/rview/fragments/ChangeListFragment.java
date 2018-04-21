@@ -43,13 +43,12 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.ModelHelper;
-import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.EmptyState;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.EndlessRecyclerViewScrollListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -115,7 +114,6 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
         final List<ChangeInfo> mData = new ArrayList<>();
         private final ItemEventHandlers mHandlers;
-        private final Picasso mPicasso;
         private final Context mContext;
 
         private int mChangeId = NO_SELECTION;
@@ -124,7 +122,6 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             setHasStableIds(true);
             mHandlers = new ItemEventHandlers(fragment);
             mContext = fragment.getContext();
-            mPicasso = PicassoHelper.getAvatarPicassoClient(mContext);
         }
 
         private void clear() {
@@ -164,9 +161,8 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
                 itemViewHolder.mBinding.scores.setScores(item.labels);
                 itemViewHolder.mBinding.setModel(item);
                 itemViewHolder.mBinding.setHandlers(mHandlers);
-                PicassoHelper.bindAvatar(mContext, mPicasso, item.owner,
-                        itemViewHolder.mBinding.avatar,
-                        PicassoHelper.getDefaultAvatar(mContext, R.color.primaryDarkForeground));
+                RviewImageHelper.bindAvatar(mContext, item.owner, itemViewHolder.mBinding.avatar,
+                        RviewImageHelper.getDefaultAvatar(mContext, R.color.primaryDarkForeground));
             }
         }
 

@@ -72,7 +72,7 @@ import com.ruesga.rview.misc.EmojiHelper;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
-import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
@@ -714,9 +714,8 @@ public class MainActivity extends ChangeListBaseActivity {
                     + "false";
             MenuItem item = otherAccountsSubMenu.add(group.getGroupId(), id, Menu.NONE, title);
 
-            PicassoHelper.bindAvatar(this, PicassoHelper.getAvatarPicassoClient(this),
-                    account, account.mAccount, item,
-                    PicassoHelper.getDefaultAvatar(this, R.color.primaryDarkForeground));
+            RviewImageHelper.bindAvatar(this, account, account.mAccount, item,
+                    RviewImageHelper.getDefaultAvatar(this, R.color.primaryDarkForeground));
             i++;
         }
 
@@ -731,9 +730,8 @@ public class MainActivity extends ChangeListBaseActivity {
         mHeaderDrawerBinding.setModel(mModel);
         mHeaderDrawerBinding.executePendingBindings();
 
-        PicassoHelper.bindAvatar(this, PicassoHelper.getAvatarPicassoClient(this),
-                mAccount.mAccount, mHeaderDrawerBinding.accountAvatar,
-                PicassoHelper.getDefaultAvatar(this, android.R.color.white));
+        RviewImageHelper.bindAvatar(this, mAccount.mAccount, mHeaderDrawerBinding.accountAvatar,
+                RviewImageHelper.getDefaultAvatar(this, android.R.color.white));
     }
 
     @SuppressLint("RestrictedApi")

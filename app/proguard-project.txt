@@ -48,3 +48,12 @@
 -keep class org.ocpsoft.prettytime.i18n.**
 -keepnames class ** implements org.ocpsoft.prettytime.TimeUnit
 ##---------------End: proguard configuration for PrettyTime  ----------
+
+##---------------Begin: proguard configuration for Glide  ----------
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+##---------------End: proguard configuration for Glide  ----------

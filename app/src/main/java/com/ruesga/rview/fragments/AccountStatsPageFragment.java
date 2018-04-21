@@ -18,7 +18,6 @@ package com.ruesga.rview.fragments;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,13 +33,12 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.ModelHelper;
-import com.ruesga.rview.misc.PicassoHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +53,6 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
     private AccountDetailsViewBinding mBinding;
     private String mAccountId;
     private AccountDetailInfo mCachedAccount;
-    private Picasso mPicasso;
 
     public static AccountStatsPageFragment newFragment(String accountId, String account) {
         AccountStatsPageFragment fragment = new AccountStatsPageFragment();
@@ -74,30 +71,6 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
         mCachedAccount = SerializationManager.getInstance().fromJson(
                 getArguments().getString(Constants.EXTRA_FRAGMENT_EXTRA),
                 AccountDetailInfo.class);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        loadWithContext();
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        loadWithContext();
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    private void loadWithContext() {
-        if (getActivity() == null) {
-            return;
-        }
-
-        if (mPicasso == null) {
-            mPicasso = PicassoHelper.getAvatarPicassoClient(getContext());
-        }
     }
 
     @Override
@@ -160,8 +133,8 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
 
     @Override
     public void bindDetails(AccountDetailInfo result) {
-        PicassoHelper.bindAvatar(getContext(), mPicasso, result, mBinding.avatar,
-                PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDarkForeground));
+        RviewImageHelper.bindAvatar(getContext(), result, mBinding.avatar,
+                RviewImageHelper.getDefaultAvatar(getContext(), R.color.primaryDarkForeground));
         mBinding.setModel(result);
         mBinding.executePendingBindings();
     }

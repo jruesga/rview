@@ -32,7 +32,6 @@ import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.LabelInfo;
 import com.ruesga.rview.preferences.Constants;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,6 @@ import static com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListen
 
 public class ScoreWithReviewersView extends LinearLayout {
     private List<ScoreWithReviewItemBinding> mBindings = new ArrayList<>();
-    private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
     private AccountInfo[] mRemovableReviewers;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
@@ -61,11 +59,6 @@ public class ScoreWithReviewersView extends LinearLayout {
 
     public ScoreWithReviewersView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public ScoreWithReviewersView with(Picasso picasso) {
-        mPicasso = picasso;
-        return this;
     }
 
     public ScoreWithReviewersView withRemovableReviewers(boolean removable, AccountInfo[] removableReviewers) {
@@ -114,7 +107,6 @@ public class ScoreWithReviewersView extends LinearLayout {
                     ContextCompat.getColorStateList(getContext(),
                             value < 0 ? R.color.rejected : R.color.approved));
             binding.reviewers
-                    .with(mPicasso)
                     .withRemovableReviewers(mIsRemovableReviewers)
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnAccountChipRemovedListener)

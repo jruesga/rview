@@ -27,7 +27,6 @@ import com.ruesga.rview.databinding.LabelItemBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ModelHelper;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +35,6 @@ import static com.ruesga.rview.widget.AccountChipView.*;
 
 public class LabelsView extends LinearLayout {
     private List<LabelItemBinding> mBindings = new ArrayList<>();
-    private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
     private AccountInfo[] mRemovableReviewers;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
@@ -53,11 +51,6 @@ public class LabelsView extends LinearLayout {
     public LabelsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOrientation(VERTICAL);
-    }
-
-    public LabelsView with(Picasso picasso) {
-        mPicasso = picasso;
-        return this;
     }
 
     public LabelsView withRemovableReviewers(boolean removable, AccountInfo[] removableReviewers) {
@@ -94,7 +87,6 @@ public class LabelsView extends LinearLayout {
             LabelItemBinding binding = mBindings.get(i);
             binding.setLabel(labels.get(i));
             binding.scores
-                    .with(mPicasso)
                     .withRemovableReviewers(mIsRemovableReviewers, mRemovableReviewers)
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnAccountChipRemovedListener)

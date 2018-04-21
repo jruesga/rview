@@ -27,7 +27,6 @@ import com.ruesga.rview.databinding.ReviewerUpdatesItemBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.ReviewerUpdateInfo;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +37,6 @@ import static com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListen
 
 public class ReviewerUpdatesView extends LinearLayout {
     private List<ReviewerUpdatesItemBinding> mBindings = new ArrayList<>();
-    private Picasso mPicasso;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
 
     public ReviewerUpdatesView(Context context) {
@@ -52,11 +50,6 @@ public class ReviewerUpdatesView extends LinearLayout {
     public ReviewerUpdatesView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOrientation(VERTICAL);
-    }
-
-    public ReviewerUpdatesView with(Picasso picasso) {
-        mPicasso = picasso;
-        return this;
     }
 
     public ReviewerUpdatesView listenOn(OnAccountChipClickedListener cb) {
@@ -85,7 +78,6 @@ public class ReviewerUpdatesView extends LinearLayout {
                     R.array.reviewer_update_states)[entry.getKey().ordinal()];
             binding.setLabel(label);
             binding.reviewers
-                    .with(mPicasso)
                     .withRemovableReviewers(false)
                     .listenOn(mOnAccountChipClickedListener)
                     .withTag(label)

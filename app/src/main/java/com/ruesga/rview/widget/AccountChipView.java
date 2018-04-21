@@ -26,8 +26,7 @@ import android.widget.FrameLayout;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.AccountChipBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
-import com.ruesga.rview.misc.PicassoHelper;
-import com.squareup.picasso.Picasso;
+import com.ruesga.rview.misc.RviewImageHelper;
 
 public class AccountChipView extends FrameLayout {
 
@@ -57,7 +56,6 @@ public class AccountChipView extends FrameLayout {
     }
 
     private AccountChipBinding mBinding;
-    private Picasso mPicasso;
     private OnAccountChipClickedListener mOnAccountChipClickedListener;
     private OnAccountChipRemovedListener mOnAccountChipRemovedListener;
     private Object mTag;
@@ -86,11 +84,6 @@ public class AccountChipView extends FrameLayout {
         return this;
     }
 
-    public AccountChipView with(Picasso picasso) {
-        mPicasso = picasso;
-        return this;
-    }
-
     public AccountChipView removable(boolean removable) {
         mBinding.setRemovable(removable);
         return this;
@@ -113,8 +106,8 @@ public class AccountChipView extends FrameLayout {
         }
 
         setVisibility(View.VISIBLE);
-        PicassoHelper.bindAvatar(getContext(), mPicasso, account, mBinding.avatar,
-                PicassoHelper.getDefaultAvatar(getContext(), R.color.primaryDarkForeground));
+        RviewImageHelper.bindAvatar(getContext(), account, mBinding.avatar,
+                RviewImageHelper.getDefaultAvatar(getContext(), R.color.primaryDarkForeground));
         mBinding.setModel(account);
         return this;
     }

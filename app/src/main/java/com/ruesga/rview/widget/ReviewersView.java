@@ -29,14 +29,12 @@ import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipClickedListener;
 import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ReviewersView extends FlexboxLayout {
-    private Picasso mPicasso;
     private boolean mIsRemovableReviewers;
     private boolean mIsFilterCIAccounts;
     private ReviewerStatus mReviewerStatus = null;
@@ -54,11 +52,6 @@ public class ReviewersView extends FlexboxLayout {
 
     public ReviewersView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public ReviewersView with(Picasso picasso) {
-        mPicasso = picasso;
-        return this;
     }
 
     private ReviewersView from(List<AccountInfo> reviewers, List<Integer> removableReviewers) {
@@ -80,8 +73,7 @@ public class ReviewersView extends FlexboxLayout {
         }
         for (int i = 0; i < count; i++) {
             AccountChipView view = (AccountChipView) getChildAt(i);
-            view.with(mPicasso)
-                    .removable(mIsRemovableReviewers &&
+            view.removable(mIsRemovableReviewers &&
                             removableReviewers.contains(filteredReviewers.get(i).accountId))
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnAccountChipRemovedListener)

@@ -123,7 +123,7 @@ import com.ruesga.rview.misc.ContinuousIntegrationHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.FileHelper;
 import com.ruesga.rview.misc.ModelHelper;
-import com.ruesga.rview.misc.PicassoHelper;
+import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
@@ -142,7 +142,6 @@ import com.ruesga.rview.widget.ContinuousIntegrationView.OnContinuousIntegration
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.LinesWithCommentsView.OnLineClickListener;
 import com.ruesga.rview.widget.TagEditTextView.Tag;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -640,7 +639,6 @@ public class ChangeDetailsFragment extends Fragment implements
         private boolean[] mFolded;
         private final boolean mIsAuthenticated;
         private final boolean mIsFolded;
-        private final Picasso mPicasso;
 
         private boolean mIsHideTaggedMessages;
         private Repository mRepository;
@@ -654,13 +652,12 @@ public class ChangeDetailsFragment extends Fragment implements
         private final AccountChipView.OnAccountChipClickedListener mAccountPressedListener
                 = (account, tag) -> mEventHandlers.onAccountChipPressed(account, tag);
 
-        MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers, Picasso picasso,
+        MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers,
                 boolean isAuthenticated, boolean isFolded) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
             mIsAuthenticated = isAuthenticated;
             mIsFolded = isFolded;
-            mPicasso = picasso;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -725,19 +722,16 @@ public class ChangeDetailsFragment extends Fragment implements
             Map<String, List<CommentInfo>> comments = mMessagesWithComments.get(message.id);
 
             List<Attachment> attachments = StringHelper.extractAllAttachments(message);
-            PicassoHelper.bindAvatar(context, mPicasso,
-                    message.author, holder.mBinding.avatar,
-                    PicassoHelper.getDefaultAvatar(context, R.color.primaryDarkForeground));
+            RviewImageHelper.bindAvatar(context, message.author, holder.mBinding.avatar,
+                    RviewImageHelper.getDefaultAvatar(context, R.color.primaryDarkForeground));
             if (ModelHelper.isOnBehalfOf(message)) {
-                PicassoHelper.bindAvatar(context, mPicasso,
-                        message.realAuthor, holder.mBinding.onBehalfOfAvatar,
-                        PicassoHelper.getDefaultAvatar(context, R.color.primaryDarkForeground));
+                RviewImageHelper.bindAvatar(context, message.realAuthor, holder.mBinding.onBehalfOfAvatar,
+                        RviewImageHelper.getDefaultAvatar(context, R.color.primaryDarkForeground));
             }
             holder.mBinding.setIsAuthenticated(mIsAuthenticated);
             holder.mBinding.setIndex(position);
             holder.mBinding.setModel(message);
             holder.mBinding.reviewerUpdates
-                    .with(mPicasso)
                     .listenOn(mAccountPressedListener)
                     .from(message._reviewer_updates);
             holder.mBinding.comments
@@ -1478,7 +1472,6 @@ public class ChangeDetailsFragment extends Fragment implements
             = this::performContinuousIntegrationPressed;
 
     private ChangeDetailsFragmentBinding mBinding;
-    private Picasso mPicasso;
     private ProgressDialog mDialog;
 
     private FileAdapter mFileAdapter;
@@ -1703,7 +1696,6 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         if (mFileAdapter == null) {
-            mPicasso = PicassoHelper.getAvatarPicassoClient(getContext());
             mAttachmentsSupport = new AttachmentsSupport(getContext());
 
             IntentFilter filter = new IntentFilter();
@@ -1761,7 +1753,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
 
-            mMessageAdapter = new MessageAdapter(this, mEventHandlers, mPicasso,
+            mMessageAdapter = new MessageAdapter(this, mEventHandlers,
                     mModel.isAuthenticated, isMessagesFolded);
             mMessageAdapter.updateHideTaggedMessages(mHideTaggedMessages);
             mMessageAdapter.updateHideCIMessages(repo);
@@ -1907,17 +1899,14 @@ public class ChangeDetailsFragment extends Fragment implements
                 mAccount.getServerInfo() != null && mAccount.getServerInfo().noteDbEnabled;
 
         mBinding.changeInfo.owner
-                .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
                 .from(response.mChange.owner);
         mBinding.changeInfo.assignee
-                .with(mPicasso)
                 .removable(mAccount.hasAuthenticatedAccessMode() && supportAssignee && canAssignee)
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnAssigneeRemovedListener)
                 .from(response.mChange.assignee);
         mBinding.changeInfo.reviewers
-                .with(mPicasso)
                 .listenOn(mOnAccountChipClickedListener)
                 .listenOn(mOnReviewerRemovedListener)
                 .withRemovableReviewers(mAccount.hasAuthenticatedAccessMode() && open)
@@ -1926,7 +1915,6 @@ public class ChangeDetailsFragment extends Fragment implements
                 .from(response.mChange);
         if (supportsCC) {
             mBinding.changeInfo.cc
-                    .with(mPicasso)
                     .listenOn(mOnAccountChipClickedListener)
                     .listenOn(mOnReviewerRemovedListener)
                     .withRemovableReviewers(mAccount.hasAuthenticatedAccessMode() && open)
@@ -1935,7 +1923,6 @@ public class ChangeDetailsFragment extends Fragment implements
                     .from(response.mChange);
         }
         mBinding.changeInfo.labels
-                .with(mPicasso)
                 .withRemovableReviewers(mAccount.hasAuthenticatedAccessMode() &&
                         open && supportVotes, response.mChange.removableReviewers)
                 .listenOn(mOnAccountChipClickedListener)
