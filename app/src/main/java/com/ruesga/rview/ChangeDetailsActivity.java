@@ -337,7 +337,7 @@ public class ChangeDetailsActivity extends BaseActivity {
 
     private void notifyInvalidArgsAndFinish() {
         Toast.makeText(this, getString(
-                R.string.exception_cannot_handle_link, getIntent().getData().toString()),
+                R.string.exception_cannot_handle_link, String.valueOf(getIntent().getData())),
                 Toast.LENGTH_SHORT).show();
         ActivityHelper.performFinishActivity(this, false);
     }
