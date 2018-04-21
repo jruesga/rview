@@ -60,7 +60,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
-import com.ruesga.rview.drawer.DrawerNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +71,6 @@ import java.util.regex.Pattern;
  *
  * TODO Add support for RTL
  */
-@SuppressWarnings("unused")
 public class TagEditTextView extends LinearLayout {
 
     private class TagEditText extends AppCompatEditText {
@@ -829,21 +827,21 @@ public class TagEditTextView extends LinearLayout {
             }
         }
 
-        public static final Parcelable.ClassLoaderCreator<DrawerNavigationView.SavedState> CREATOR
-                = new Parcelable.ClassLoaderCreator<DrawerNavigationView.SavedState>() {
+        public static final Parcelable.ClassLoaderCreator<TagEditTextView.SavedState> CREATOR
+                = new Parcelable.ClassLoaderCreator<TagEditTextView.SavedState>() {
             @Override
-            public DrawerNavigationView.SavedState createFromParcel(Parcel source) {
+            public TagEditTextView.SavedState createFromParcel(Parcel source) {
                 return createFromParcel(source, null);
             }
 
             @Override
-            public DrawerNavigationView.SavedState createFromParcel(Parcel source, ClassLoader loader) {
-                return new DrawerNavigationView.SavedState(source, loader);
+            public TagEditTextView.SavedState createFromParcel(Parcel source, ClassLoader loader) {
+                return new TagEditTextView.SavedState(source, loader);
             }
 
             @Override
-            public DrawerNavigationView.SavedState[] newArray(int size) {
-                return new DrawerNavigationView.SavedState[size];
+            public TagEditTextView.SavedState[] newArray(int size) {
+                return new TagEditTextView.SavedState[size];
             }
         };
     }
