@@ -46,6 +46,7 @@ import static com.ruesga.rview.preferences.Constants.MAX_SEARCH_HISTORY;
 import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNTS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ANIMATED_AVATARS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY;
@@ -261,6 +262,11 @@ public class Preferences {
         }
         return getAccountPreferences(context, account).getString(
                 PREF_ACCOUNT_DISPLAY_FORMAT, DEFAULT_DISPLAY_FORMAT);
+    }
+
+    public static boolean isAccountAnimatedAvatars(Context context, Account account) {
+        return account == null || getAccountPreferences(context, account)
+                .getBoolean(PREF_ACCOUNT_ANIMATED_AVATARS, true);
     }
 
     public static boolean isAccountDisplayStatuses(Context context, Account account) {

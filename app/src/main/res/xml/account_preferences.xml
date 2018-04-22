@@ -40,6 +40,11 @@
             android:defaultValue="name" />
 
         <SwitchPreference
+            android:key="account_animated_avatars"
+            android:title="@string/account_settings_animated_avatars"
+            android:defaultValue="true" />
+
+        <SwitchPreference
             android:key="account_display_statuses"
             android:title="@string/account_settings_display_account_statuses"
             android:defaultValue="true" />

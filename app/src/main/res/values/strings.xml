@@ -306,8 +306,9 @@
     <string name="account_settings_display_format_name">Name</string>
     <string name="account_settings_display_format_email">Email</string>
     <string name="account_settings_display_format_username">Username</string>
-    <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>
+    <string name="account_settings_animated_avatars">Display animated avatars</string>
     <string name="account_settings_display_account_statuses">Display account statuses</string>
+    <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>
     <string name="account_settings_dashboard_category">Dashboard</string>
     <string name="account_settings_dashboard_outgoing_sort">Outgoing sort</string>
     <string name="account_settings_dashboard_outgoing_sort_off">From older changes to newer changes</string>
