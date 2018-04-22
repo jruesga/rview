@@ -557,16 +557,15 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
             dest.writeBundle(menuState);
         }
 
-        public static final Parcelable.ClassLoaderCreator<SavedState> CREATOR
-                = new Parcelable.ClassLoaderCreator<SavedState>() {
+        public static final Creator<SavedState> CREATOR = new ClassLoaderCreator<SavedState>() {
             @Override
-            public SavedState createFromParcel(Parcel source) {
-                return createFromParcel(source, null);
+            public SavedState createFromParcel(Parcel in, ClassLoader loader) {
+                return new SavedState(in, loader);
             }
 
             @Override
-            public SavedState createFromParcel(Parcel source, ClassLoader loader) {
-                return new SavedState(source, loader);
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in, null);
             }
 
             @Override

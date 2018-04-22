@@ -34,6 +34,7 @@ import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.widget.TextViewCompat;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.view.menu.MenuView;
+import android.support.v7.widget.TooltipCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -109,8 +110,10 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         mButton = findViewById(R.id.drawer_menu_item_button);
         mTextView = findViewById(R.id.drawer_menu_item_text);
         mTextView.setDuplicateParentStateEnabled(true);
+        ViewCompat.setAccessibilityDelegate(mTextView, mAccessibilityDelegate);
         mSubTextView = findViewById(R.id.drawer_menu_item_subtext);
         mSubTextView.setDuplicateParentStateEnabled(true);
+        ViewCompat.setAccessibilityDelegate(mSubTextView, mAccessibilityDelegate);
 
         mButton.setOnClickListener(v -> {
             if (mOnMenuButtonClickListener != null) {
@@ -135,6 +138,8 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         setTitle(itemData.getTitle());
         setIcon(itemData.getIcon());
         setActionView(itemData.getActionView());
+        setContentDescription(itemData.getContentDescription());
+        TooltipCompat.setTooltipText(this, itemData.getTooltipText());
         adjustAppearance();
     }
 

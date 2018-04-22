@@ -625,7 +625,8 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             }
             // Store the states of the action views.
             SparseArray<ParcelableSparseArray> actionViewStates = new SparseArray<>();
-            for (NavigationMenuItem navigationMenuItem : mItems) {
+            for (int i = 0, size = mItems.size(); i < size; i++) {
+                NavigationMenuItem navigationMenuItem = mItems.get(i);
                 if (navigationMenuItem instanceof NavigationMenuTextItem) {
                     MenuItemImpl item = ((NavigationMenuTextItem) navigationMenuItem).getMenuItem();
                     View actionView = item != null ? item.getActionView() : null;
@@ -645,7 +646,8 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             int checkedItem = state.getInt(STATE_CHECKED_ITEM, 0);
             if (checkedItem != 0) {
                 mUpdateSuspended = true;
-                for (NavigationMenuItem item : mItems) {
+                for (int i = 0, size = mItems.size(); i < size; i++) {
+                    NavigationMenuItem item = mItems.get(i);
                     if (item instanceof NavigationMenuTextItem) {
                         MenuItemImpl menuItem = ((NavigationMenuTextItem) item).getMenuItem();
                         if (menuItem != null && menuItem.getItemId() == checkedItem) {
@@ -661,7 +663,8 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             SparseArray<ParcelableSparseArray> actionViewStates = state
                     .getSparseParcelableArray(STATE_ACTION_VIEWS);
             if (actionViewStates != null) {
-               for (NavigationMenuItem navigationMenuItem : mItems) {
+                for (int i = 0, size = mItems.size(); i < size; i++) {
+                    NavigationMenuItem navigationMenuItem = mItems.get(i);
                     if (!(navigationMenuItem instanceof NavigationMenuTextItem)) {
                         continue;
                     }
@@ -678,7 +681,7 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
                         continue;
                     }
                     actionView.restoreHierarchyState(container);
-               }
+                }
             }
         }
 
