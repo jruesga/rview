@@ -421,7 +421,7 @@ public class Preferences {
     }
 
     public static boolean isAccountMessagesFolded(Context context, Account account) {
-        return account == null || getAccountPreferences(
+        return account != null && getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_MESSAGES_FOLDED, false);
     }
 
@@ -440,22 +440,22 @@ public class Preferences {
     }
 
     public static boolean isAccountToggleTaggedMessages(Context context, Account account) {
-        return account == null || getAccountPreferences(
+        return account != null && getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_TOGGLE_TAGGED_MESSAGES, false);
     }
 
     public static boolean isAccountToggleCIAccountsMessages(Context context, Account account) {
-        return account == null || getAccountPreferences(
+        return account != null && getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_TOGGLE_CI_MESSAGES, false);
     }
 
     public static boolean isAccountShortFilenames(Context context, Account account) {
-        return account == null || getAccountPreferences(
+        return account != null && getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_SHORT_FILENAMES, false);
     }
 
     public static boolean isAccountImageAttachmentsOptimizations(Context context, Account account) {
-        return account == null || getAccountPreferences(
+        return account != null && getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS, false);
     }
 
@@ -563,7 +563,7 @@ public class Preferences {
     }
 
     public static boolean isAccountNotificationsEnabled(Context context, Account account) {
-        return account == null || getAccountPreferences(
+        return account != null && getAccountPreferences(
                 context, account).getBoolean(PREF_ACCOUNT_NOTIFICATIONS, false);
     }
 
@@ -655,7 +655,7 @@ public class Preferences {
     }
 
     public static boolean isAccountDashboardOngoingSort(Context context, Account account) {
-        return account == null || getAccountPreferences(context, account)
+        return account != null && getAccountPreferences(context, account)
                 .getBoolean(PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT, false);
     }
 }
