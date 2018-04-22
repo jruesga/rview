@@ -430,17 +430,17 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             switch (viewType) {
-                case VIEW_TYPE_NORMAL:
-                    return new NormalViewHolder(mLayoutInflater, parent,
-                            mOnClickListener, mOnMenuButtonClickListener);
                 case VIEW_TYPE_SUBHEADER:
                     return new SubheaderViewHolder(this, mLayoutInflater, parent);
                 case VIEW_TYPE_SEPARATOR:
                     return new SeparatorViewHolder(mLayoutInflater, parent);
                 case VIEW_TYPE_HEADER:
                     return new HeaderViewHolder(mHeaderLayout);
+                case VIEW_TYPE_NORMAL:
+                default:
+                    return new NormalViewHolder(mLayoutInflater, parent,
+                            mOnClickListener, mOnMenuButtonClickListener);
             }
-            return null;
         }
 
         @Override
@@ -449,22 +449,6 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             OnMiniDrawerNavigationOpenStatusChangedListener mMiniDrawerListener = null;
 
             switch (getItemViewType(position)) {
-                case VIEW_TYPE_NORMAL: {
-                    DrawerNavigationMenuItemView itemView = (DrawerNavigationMenuItemView) holder.itemView;
-                    itemView.setIconTintList(mIconTintList);
-                    if (mTextAppearanceSet) {
-                        itemView.setTextAppearance(mTextAppearance);
-                    }
-                    if (mTextColor != null) {
-                        itemView.setTextColor(mTextColor);
-                    }
-                    ViewCompat.setBackground(itemView, mItemBackground != null ?
-                            mItemBackground.getConstantState().newDrawable() : null);
-                    NavigationMenuTextItem item = (NavigationMenuTextItem) mItems.get(position);
-                    itemView.setNeedsEmptyIcon(item.needsEmptyIcon);
-                    itemView.initialize(item.getMenuItem(), 0);
-                    break;
-                }
                 case VIEW_TYPE_SUBHEADER: {
                     final TextView subHeader = (TextView) holder.itemView;
                     NavigationMenuTextItem item = (NavigationMenuTextItem) mItems.get(position);
@@ -489,6 +473,23 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
                     break;
                 }
                 case VIEW_TYPE_HEADER: {
+                    break;
+                }
+                case VIEW_TYPE_NORMAL:
+                default: {
+                    DrawerNavigationMenuItemView itemView = (DrawerNavigationMenuItemView) holder.itemView;
+                    itemView.setIconTintList(mIconTintList);
+                    if (mTextAppearanceSet) {
+                        itemView.setTextAppearance(mTextAppearance);
+                    }
+                    if (mTextColor != null) {
+                        itemView.setTextColor(mTextColor);
+                    }
+                    ViewCompat.setBackground(itemView, mItemBackground != null ?
+                            mItemBackground.getConstantState().newDrawable() : null);
+                    NavigationMenuTextItem item = (NavigationMenuTextItem) mItems.get(position);
+                    itemView.setNeedsEmptyIcon(item.needsEmptyIcon);
+                    itemView.initialize(item.getMenuItem(), 0);
                     break;
                 }
             }
