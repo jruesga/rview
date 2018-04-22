@@ -329,11 +329,10 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
             itemView.getViewTreeObserver().addOnGlobalLayoutListener(
                     new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
-                @SuppressWarnings("deprecation")
                 public void onGlobalLayout() {
-                    if (itemView.getMeasuredHeight() > 0) {
-                        mMeasureHeight = itemView.getHeight();
-                        itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    if (itemView.getMeasuredHeight() != mMeasureHeight) {
+                        mMeasureHeight = itemView.getMeasuredHeight();
                         adapter.notifyDataSetChanged();
                     }
                 }
