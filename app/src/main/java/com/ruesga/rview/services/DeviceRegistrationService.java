@@ -26,6 +26,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.CloudNotificationInput;
 import com.ruesga.rview.gerrit.model.CloudNotificationResponseMode;
+import com.ruesga.rview.misc.ExceptionHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
@@ -115,14 +116,30 @@ public class DeviceRegistrationService extends JobIntentService {
 
         final String accountToken = account.getAccountHash();
         GerritApi api = ModelHelper.getGerritApi(ctx, account);
+        boolean unregistered = false;
         try {
             SafeObservable.fromNullCallable(() -> {
                         api.unregisterCloudNotification(
                                 GerritApi.SELF_ACCOUNT, deviceId, accountToken).blockingFirst();
                         return Empty.NULL;
                     }).blockingFirst();
+            unregistered = true;
         } catch (Exception ex) {
-            Log.e(TAG, "Failed to unregister device: " + deviceId + "/" + accountToken, ex);
+            if (ExceptionHelper.isResourceNotFoundException(ex)) {
+                unregistered = true;
+            } else {
+                Log.e(TAG, "Failed to unregister device: " + deviceId + "/" + accountToken, ex);
+            }
+        }
+
+        if (unregistered) {
+            Log.i(TAG, "Device unregistered: " + deviceId + "/" + accountToken);
+            account.mNotificationsSenderId = null;
+            Preferences.addOrUpdateAccount(this, account);
+            Account acct = Preferences.getAccount(this);
+            if (acct != null && account.getAccountHash().equals(acct.getAccountHash())) {
+                Preferences.setAccount(this, account);
+            }
         }
     }
 
