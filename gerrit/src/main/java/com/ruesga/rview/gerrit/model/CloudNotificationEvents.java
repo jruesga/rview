@@ -32,4 +32,6 @@ public final class CloudNotificationEvents {
     public static final int TOPIC_CHANGED_EVENT = 0x400;
     public static final int ASSIGNEE_CHANGED_EVENT = 0x800;
     public static final int VOTE_DELETED_EVENT = 0x1000;
+    public static final int PRIVATE_STATE_CHANGED_EVENT = 0x2000;
+    public static final int WIP_STATE_CHANGED_EVENT = 0x4000;
 }

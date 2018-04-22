@@ -355,6 +355,8 @@
     <string name="account_settings_notifications_events_1024">Topic changed</string>
     <string name="account_settings_notifications_events_2048">Assignee changed</string>
     <string name="account_settings_notifications_events_4096">Vote deleted</string>
+    <string name="account_settings_notifications_events_8192">Private state changed</string>
+    <string name="account_settings_notifications_events_16384">WIP state changed</string>
     <string name="account_settings_external_category">External viewers</string>
     <string name="account_settings_handle_links">Open Gerrit links in Rview</string>
     <string name="account_settings_use_custom_tabs">Open external links in a custom tab</string>
@@ -597,6 +599,8 @@
     <string name="notification_content_title_2048_assign">assigned <xliff:g id="assignee">%1$s</xliff:g> to this change</string>
     <string name="notification_content_title_2048_unassign">unassigned <xliff:g id="assignee">%1$s</xliff:g> from this change</string>
     <string name="notification_content_title_4096">removed a vote on this change</string>
+    <string name="notification_content_title_8192">private state was changed on this change</string>
+    <string name="notification_content_title_16384">work in progress state was changed on this change</string>
 
     <!-- Links -->
     <string name="link_play_store" translatable="false">https://play.google.com/store/apps/details?id=<xliff:g id="package_name" example="com.ruesga.rview">%1$s</xliff:g></string>

@@ -107,6 +107,8 @@ public class NotificationsHelper {
             case CloudNotificationEvents.TOPIC_CHANGED_EVENT:
             case CloudNotificationEvents.ASSIGNEE_CHANGED_EVENT:
             case CloudNotificationEvents.VOTE_DELETED_EVENT:
+            case CloudNotificationEvents.PRIVATE_STATE_CHANGED_EVENT:
+            case CloudNotificationEvents.WIP_STATE_CHANGED_EVENT:
                 return true;
 
             case CloudNotificationEvents.REVIEWER_ADDED_EVENT:
@@ -447,6 +449,10 @@ public class NotificationsHelper {
                         ModelHelper.getAccountDisplayName(assignee._new));
             case CloudNotificationEvents.VOTE_DELETED_EVENT:
                 return ctx.getString(R.string.notification_content_title_4096);
+            case CloudNotificationEvents.PRIVATE_STATE_CHANGED_EVENT:
+                return ctx.getString(R.string.notification_content_title_8192);
+            case CloudNotificationEvents.WIP_STATE_CHANGED_EVENT:
+                return ctx.getString(R.string.notification_content_title_16384);
         }
         return null;
     }

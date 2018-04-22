@@ -171,6 +171,8 @@
         <item>@string/account_settings_notifications_events_1024</item>
         <item>@string/account_settings_notifications_events_2048</item>
         <item>@string/account_settings_notifications_events_4096</item>
+        <item>@string/account_settings_notifications_events_8192</item>
+        <item>@string/account_settings_notifications_events_16384</item>
     </string-array>
     <string-array name="notifications_events_values" translatable="false">
         <item>1</item>
@@ -185,6 +187,8 @@
         <item>1024</item>
         <item>2048</item>
         <item>4096</item>
+        <item>8192</item>
+        <item>16384</item>
     </string-array>
     <string-array name="notifications_events_defaults" translatable="false">
         <item>1</item>
@@ -199,6 +203,8 @@
         <item>1024</item>
         <item>2048</item>
         <item>4096</item>
+        <item>8192</item>
+        <item>16384</item>
     </string-array>
 
     <string-array name="emoji_status_codes" translatable="false">
