@@ -63,6 +63,10 @@ public class AuthorizationAccountSetupActivity extends WizardActivity {
         // Update the authentication account variables
         Account account = Preferences.getAccount(this);
         if (account != null) {
+            Account oldAccount = new Account();
+            oldAccount.mAccount = account.mAccount;
+            oldAccount.mRepository = account.mRepository;
+
             boolean authenticatedMode = savedState.getBoolean(
                     AccountPageFragment.STATE_ACCOUNT_ACCESS_MODE);
             account.mAccount = SerializationManager.getInstance().fromJson(
@@ -72,7 +76,7 @@ public class AuthorizationAccountSetupActivity extends WizardActivity {
                 account.mToken = savedState.getString(AccountPageFragment.STATE_ACCOUNT_PASSWORD);
             }
 
-            Preferences.addOrUpdateAccount(this, account);
+            Preferences.addOrUpdateAccount(this, oldAccount, account);
             Preferences.setAccount(this, account);
             Formatter.refreshCachedPreferences(this);
         }

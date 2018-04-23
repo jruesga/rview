@@ -159,19 +159,24 @@ public class Preferences {
     }
 
     public static List<Account> addOrUpdateAccount(Context context, @NonNull Account account) {
+        return addOrUpdateAccount(context, account, account);
+    }
+
+    public static List<Account> addOrUpdateAccount(Context context,
+                @NonNull Account oldAccount, @NonNull Account newAccount) {
         List<Account> accounts = getAccounts(context);
         int count = accounts.size();
         boolean found = false;
         for (int i = 0; i < count; i++) {
             Account acct = accounts.get(i);
-            if (acct.getAccountHash().equals(account.getAccountHash())) {
-                accounts.set(i, account);
+            if (acct.getAccountHash().equals(oldAccount.getAccountHash())) {
+                accounts.set(i, newAccount);
                 found = true;
                 break;
             }
         }
         if (!found) {
-            accounts.add(account);
+            accounts.add(newAccount);
         }
 
         Collections.sort(accounts);
