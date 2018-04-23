@@ -466,8 +466,26 @@ public class DiffViewerFragment extends Fragment
             mChange = SerializationManager.getInstance().fromJson(
                     new String(CacheHelper.readAccountDiffCacheFile(
                             getContext(), CacheHelper.CACHE_CHANGE_JSON)), ChangeInfo.class);
-            if (!mChange.revisions.containsKey(mRevisionId)) {
-                Log.e(TAG, "Don't have a valid revision " + mRevisionId + " for change " + mChange.legacyChangeId);
+            if (mChange == null) {
+                Log.e(TAG, "Change cached data is null. Exiting...");
+                Toast.makeText(getContext(),
+                        R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
+                //noinspection ConstantConditions
+                getActivity().finish();
+                return;
+            }
+            if (mChange.revisions == null) {
+                Log.e(TAG, "Change has no revisions. Exiting...");
+                Toast.makeText(getContext(),
+                        R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
+                //noinspection ConstantConditions
+                getActivity().finish();
+                return;
+            }
+            if (mChange.revisions.get(mRevisionId) == null) {
+                Log.e(TAG, "Revision " + mRevisionId + " not found. Exiting...");
+                Toast.makeText(getContext(),
+                        R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
                 //noinspection ConstantConditions
                 getActivity().finish();
                 return;

@@ -423,6 +423,13 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                     getActivity().finish();
                     return;
                 }
+                if (mChange.revisions.get(mRevisionId) == null) {
+                    Log.e(TAG, "Revision " + mRevisionId + " not found. Exiting...");
+                    Toast.makeText(getContext(),
+                            R.string.exception_item_not_found, Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                    return;
+                }
 
             } catch (IOException ex) {
                 Log.e(TAG, "Failed to load change cached data", ex);
