@@ -45,7 +45,7 @@
                 android:layout_gravity="center_vertical"
                 android:orientation="vertical">
 
-                <TextView
+                <com.ruesga.rview.widget.SelectableCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@{model.message}"
@@ -67,7 +67,7 @@
                         android:paddingBottom="8dp"
                         android:background="?attr/selectableItemBackground"
                         android:onClick="@{handlers::onClickPressed}">
-                        <TextView
+                        <com.ruesga.rview.widget.SelectableCompatTextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -82,7 +82,7 @@
                             android:checked="@{model.authenticatedAccess}"/>
                     </LinearLayout>
 
-                    <TextView
+                    <com.ruesga.rview.widget.SelectableCompatTextView
                         android:id="@+id/account_authentication_hint"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

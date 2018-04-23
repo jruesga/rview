@@ -61,14 +61,14 @@
                 android:paddingEnd="3dp"
                 android:layout_gravity="center_vertical"
                 android:orientation="vertical">
-                <TextView
+                <com.ruesga.rview.widget.SelectableCompatTextView
                     android:id="@+id/account_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
                     android:textColor="@android:color/white"
                     android:text="@{model.accountName}"/>
-                <TextView
+                <com.ruesga.rview.widget.SelectableCompatTextView
                     android:id="@+id/account_repository"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -41,7 +41,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
+                <com.ruesga.rview.widget.SelectableCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/account_wizard_repository_page_message1"
@@ -91,7 +91,7 @@
                     android:checked="@={model.trustAllCertificates}"
                     android:text="@string/account_wizard_repository_page_trust_all_certificates"/>
 
-                <TextView
+                <com.ruesga.rview.widget.SelectableCompatTextView
                     android:id="@+id/repository_predefined"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

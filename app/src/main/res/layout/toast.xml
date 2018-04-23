@@ -23,7 +23,7 @@
         <variable name="handlers" type="com.ruesga.rview.widget.ToastView.EventHandlers" />
     </data>
 
-    <TextView
+    <com.ruesga.rview.widget.SelectableCompatTextView
         android:id="@+id/toast"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

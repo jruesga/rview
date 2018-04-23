@@ -29,7 +29,7 @@
         android:layout_marginEnd="48dp"
         android:paddingTop="32dp"
         android:paddingBottom="16dp">
-        <TextView
+        <com.ruesga.rview.widget.SelectableCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/account_wizard_account_setup_page_message"
