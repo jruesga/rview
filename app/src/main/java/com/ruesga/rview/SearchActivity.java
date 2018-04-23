@@ -340,9 +340,11 @@ public class SearchActivity extends AppCompatDelegateActivity {
             textView.setText(performFilterHighlight(s));
             if (s.mSuggestionIcon != 0) {
                 Drawable dw = ContextCompat.getDrawable(this, s.mSuggestionIcon);
-                //noinspection ConstantConditions
-                DrawableCompat.setTint(dw, ContextCompat.getColor(
-                        this, R.color.gray_active_icon));
+                if (dw != null) {
+                    dw = DrawableCompat.wrap(dw.mutate());
+                    DrawableCompat.setTint(dw, ContextCompat.getColor(
+                            this, R.color.gray_active_icon));
+                }
                 imageView.setImageDrawable(dw);
             } else {
                 imageView.setImageDrawable(null);

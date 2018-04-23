@@ -196,8 +196,10 @@ public class Formatter {
             view.setText(ctx.getString(R.string.menu_draft).toUpperCase(
                     AndroidHelper.getCurrentLocale(ctx)));
             Drawable dw = ContextCompat.getDrawable(ctx, R.drawable.bg_tag);
-            //noinspection ConstantConditions
-            DrawableCompat.setTint(dw, ContextCompat.getColor(ctx, R.color.unscored));
+            if (dw != null) {
+                dw = DrawableCompat.wrap(dw.mutate());
+                DrawableCompat.setTint(dw, ContextCompat.getColor(ctx, R.color.unscored));
+            }
             view.setBackground(dw);
             return;
         }

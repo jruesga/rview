@@ -351,8 +351,10 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
         }
         if (id > 0) {
             Drawable dw = ContextCompat.getDrawable(getContext(), id);
-            //noinspection ConstantConditions
-            DrawableCompat.setTintList(dw, mIconTintList);
+            if (dw != null) {
+                dw = DrawableCompat.wrap(dw.mutate());
+                DrawableCompat.setTintList(dw, mIconTintList);
+            }
             mButton.setImageDrawable(dw);
             mButton.setVisibility(View.VISIBLE);
         } else {

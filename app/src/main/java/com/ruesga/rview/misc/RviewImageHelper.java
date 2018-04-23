@@ -102,10 +102,12 @@ public final class RviewImageHelper extends AppGlideModule {
 
 
     public static Drawable getDefaultAvatar(Context context, @ColorRes int color) {
-        Drawable drawable = ContextCompat.getDrawable(context, R.drawable.ic_account_circle);
-        //noinspection ConstantConditions
-        DrawableCompat.setTint(drawable, ContextCompat.getColor(context, color));
-        return drawable;
+        Drawable dw = ContextCompat.getDrawable(context, R.drawable.ic_account_circle);
+        if (dw != null) {
+            dw = DrawableCompat.wrap(dw.mutate());
+            DrawableCompat.setTint(dw, ContextCompat.getColor(context, color));
+        }
+        return dw;
     }
 
     public static void bindImage(Context ctx, ImageView view, Drawable placeholder, Uri url) {

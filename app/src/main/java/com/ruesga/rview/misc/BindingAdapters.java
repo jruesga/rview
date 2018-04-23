@@ -195,7 +195,7 @@ public class BindingAdapters {
     public static void bindBackgroundTint(View v, int color) {
         Drawable dw = v.getBackground();
         if (dw != null) {
-            dw = dw.mutate();
+            dw = DrawableCompat.wrap(dw.mutate());
             DrawableCompat.setTint(dw, color);
         }
         v.setBackground(dw);
