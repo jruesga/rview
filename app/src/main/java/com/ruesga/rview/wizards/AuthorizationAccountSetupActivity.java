@@ -74,6 +74,10 @@ public class AuthorizationAccountSetupActivity extends WizardActivity {
                             AccountInfo.class);
             if (authenticatedMode) {
                 account.mToken = savedState.getString(AccountPageFragment.STATE_ACCOUNT_PASSWORD);
+                if (account.mAccount.username == null) {
+                    account.mAccount.username =
+                            savedState.getString(AccountPageFragment.STATE_ACCOUNT_USERNAME);
+                }
             }
 
             Preferences.addOrUpdateAccount(this, oldAccount, account);
