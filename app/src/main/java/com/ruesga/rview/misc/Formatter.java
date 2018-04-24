@@ -892,13 +892,16 @@ public class Formatter {
         int review = 0;
         boolean isPatchSetLine = StringHelper.PATCHSET_LINE_PATTERN.matcher(firstLine).matches();
         if (isPatchSetLine) {
-            Matcher m = StringHelper.VOTE_SCORE_PATTERN.matcher(firstLine);
+            Matcher m = StringHelper.VOTE_PATTERN.matcher(firstLine);
             while (m.find()) {
-                int value = StringHelper.parseNumberWithSign(m.group()).intValue();
-                if (Math.abs(value) > Math.abs(review)) {
-                    review = value;
-                } else if (Math.abs(value) == Math.abs(review) && value < 0) {
-                    review = value;
+                String vote = null;
+                if (m.group(3) != null) {
+                    int value = StringHelper.parseNumberWithSign(m.group(3)).intValue();
+                    if (Math.abs(value) > Math.abs(review)) {
+                        review = value;
+                    } else if (Math.abs(value) == Math.abs(review) && value < 0) {
+                        review = value;
+                    }
                 }
             }
         }
