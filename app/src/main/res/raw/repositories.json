@@ -38,7 +38,7 @@
   {"name":"Joyent", "url":"https://cr.joyent.us/", "ci_accounts": "^(Joyent Automation)$"},
   {"name":"Kitware", "url":"http://review.source.kitware.com/", "ci_accounts": "^(Kitware Build Robot)$"},
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/", "ci_accounts": "^(Jenkins)$"},
-  {"name":"Linaro", "url":"https://android-review.linaro.org/", "ci_accounts": "^(lava-bot)$"},
+  {"name":"Linaro", "url":"https://review.linaro.org/", "ci_accounts": "^(lava-bot)$"},
   {"name":"LineageOS", "url":"https://review.lineageos.org/", "ci_accounts": "^(Jenkins|Mr Robot)$"},
   {"name":"MediaWiki", "url":"https://gerrit.wikimedia.org/r/", "ci_accounts": "^(jenkins-bot)$"},
   {"name":"MoKee", "url":"https://mokeedev.review/"},
