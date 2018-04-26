@@ -40,9 +40,9 @@ ext {
         keyboardvisibilityevent     : '2.1.0',
         aboutlibraries              : '6.0.8',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
-        crashlytics                 : '2.9.1',
+        crashlytics                 : '2.9.2',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
-        crashlytics_core            : '2.6.1',
+        crashlytics_core            : '2.6.2',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/answers/maven-metadata.xml
         crashlytics_answers         : '1.4.1'
     ]
@@ -50,7 +50,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.18.0',
+        mockito                     : '2.18.3',
         powermock                   : '2.0.0-beta.5',
         base64                      : '2.3.9'
     ]
@@ -65,7 +65,7 @@ allprojects {
         }
         dependencies {
             // https://developer.android.com/studio/releases/gradle-plugin.html#revisions
-            classpath 'com.android.tools.build:gradle:3.1.1'
+            classpath 'com.android.tools.build:gradle:3.1.2'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
             classpath 'io.fabric.tools:gradle:1.25.3'
