@@ -791,7 +791,7 @@ public class EditorFragment extends Fragment
         //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
-                getContext(), files, icons, new File(mFile).getName());
+                getContext(), files, icons, mFile == null ? null : new File(mFile).getName());
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());
