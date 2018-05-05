@@ -302,23 +302,37 @@ public class ContinuousIntegrationHelper {
             List<String> parts = Arrays.asList(decodedUrl.split("/"));
             Collections.reverse(parts);
             c = 0;
+            String bestPart = null;
+            boolean foundOnlyNumeric = false;
             for (String part : parts) {
                 c++;
                 if (part.equalsIgnoreCase("console") || part.equalsIgnoreCase("build")
                         || part.equalsIgnoreCase("builds") || part.equalsIgnoreCase("job")) {
-                    continue;
-                }
-
-                if (c <= 1) {
+                    foundOnlyNumeric = false;
                     continue;
                 }
 
                 if (StringHelper.isOnlyNumeric(part)) {
+                    foundOnlyNumeric = true;
+                    continue;
+                }
+
+                if (c <= 1) {
+                    foundOnlyNumeric = false;
                     continue;
                 }
 
                 // Found a valid job name
-                return part;
+                if (foundOnlyNumeric) {
+                    return part;
+                }
+                if (bestPart == null) {
+                    bestPart = part;
+                }
+            }
+
+            if (bestPart != null) {
+                return bestPart;
             }
         }
 

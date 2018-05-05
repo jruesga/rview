@@ -92,6 +92,12 @@ public class ContinuousIntegrationHelperTest {
         cis = extractContinuousIntegrationInfo("Chromium", null);
         assertEquals(0, cis.size());
 
+        // CouchBase
+        cis = extractContinuousIntegrationInfo("CouchBase", null);
+        assertEquals(3, cis.size());
+        assertEquals("restricted-branch-check", cis.get(2).mName);
+        assertEquals(ContinuousIntegrationInfo.BuildStatus.FAILURE, cis.get(2).mStatus);
+
         // Diamond Light Source
         cis = extractContinuousIntegrationInfo("Diamond Light Source", null);
         assertEquals(1, cis.size());
