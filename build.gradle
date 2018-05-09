@@ -22,12 +22,12 @@ ext {
         play_services               : '15.0.1',
         // https://firebase.google.com/support/release-notes/android
         firebase                    : '15.0.2',
-        gson                        : '2.8.2',
+        gson                        : '2.8.4',
         retrofit2                   : '2.4.0',
         okhttp3                     : '3.10.0',
-        okio                        : '1.14.0',
+        okio                        : '1.14.1',
         okhttp_digest               : 'f13c5b8f79',
-        rxjava                      : '2.1.12',
+        rxjava                      : '2.1.13',
         rxandroid                   : '2.0.2',
         rxloader2                   : '244a5fddb6',
         // Keep commons-io in 2.5. Prior android versions doesn't have fully support for Files api.
@@ -70,7 +70,7 @@ allprojects {
             classpath 'com.android.tools.build:gradle:3.1.2'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.25.3'
+            classpath 'io.fabric.tools:gradle:1.25.4'
         }
     }
 
