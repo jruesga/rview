@@ -15,13 +15,17 @@
  */
 package com.ruesga.rview.widget;
 
+import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
+import com.ruesga.rview.widget.RegExLinkifyTextView.RegExLink;
 
 import org.junit.Test;
 
+import java.util.List;
 import java.util.regex.Matcher;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class RegExLinkifyTextViewTest {
     @Test
@@ -35,6 +39,27 @@ public class RegExLinkifyTextViewTest {
         assertEquals("http://test.com/a/",
                 replaceLink(RegExLinkifyTextView.WEB_LINK_REGEX,
                         "text http://test.com/a/. test"));
+
+
+        Repository repository = new Repository("test.com", "http://test.com/", false);
+        List<RegExLink> links = RegExLinkifyTextView.createRepositoryRegExpLinks(repository);
+        assertEquals(3, links.size());
+        assertNull(replaceLink(links.get(0),
+                "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
+        assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
+                replaceLink(links.get(1),
+                        "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
+        assertNull(replaceLink(links.get(2),
+                "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
+
+        assertNull(replaceLink(links.get(0),
+                "aaa\n\nhttps://test.com/#/c/project_aa_aa/abc/+/129166/\n\nhttps://test.com/#/c/project/abc/+/129167/\n\naa"));
+        assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
+                replaceLink(links.get(1),
+                        "aaa\n\nhttps://test.com/#/c/project_aa_aa/abc/+/129166/\n\nhttps://test.com/#/c/project/abc/+/129167/\n\naa"));
+        assertNull(replaceLink(links.get(2),
+                "aaa\n\nhttps://test.com/#/c/project_aa_aa/abc/+/129166/\n\nhttps://test.com/#/c/project/abc/+/129167/\n\naa"));
+
 
 
         assertEquals("mailto:test@test.com",
@@ -81,7 +106,7 @@ public class RegExLinkifyTextViewTest {
                         "#JIRA-894"));
     }
 
-    private String replaceLink(RegExLinkifyTextView.RegExLink regEx, String test) {
+    private String replaceLink(RegExLink regEx, String test) {
         Matcher matcher = regEx.mPattern.matcher(test);
         if (!matcher.find()) {
            return null;
@@ -89,8 +114,8 @@ public class RegExLinkifyTextViewTest {
         return RegExLinkifyTextView.replaceLink(regEx, matcher);
     }
 
-    private static RegExLinkifyTextView.RegExLink createRegExLink(String regex, String link) {
-        return new RegExLinkifyTextView.RegExLink(
+    private static RegExLink createRegExLink(String regex, String link) {
+        return new RegExLink(
                 "web", regex, link, true);
     }
 }
