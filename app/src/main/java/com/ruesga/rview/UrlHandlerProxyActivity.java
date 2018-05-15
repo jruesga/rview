@@ -196,7 +196,7 @@ public class UrlHandlerProxyActivity extends AppCompatActivity {
 
                     final Uri referrer = ActivityCompat.getReferrer(this);
                     boolean external = referrer == null ||
-                            !referrer.getAuthority().equals(getPackageName());
+                            !getPackageName().equals(referrer.getAuthority());
                     ActivityHelper.openChangeListByFilterActivity(this, null, filter, true, external);
                     break;
                 }
