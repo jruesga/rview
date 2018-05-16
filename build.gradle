@@ -40,6 +40,7 @@ ext {
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.1.0',
+        better_link_movement_method : '2.2.0',
         aboutlibraries              : '6.0.8',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.9.2',

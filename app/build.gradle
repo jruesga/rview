@@ -44,6 +44,7 @@ dependencies {
     implementation "com.github.BigBadaboom:androidsvg:${libraries.androidsvg}"
     implementation "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:${libraries.keyboardvisibilityevent}"
     implementation ("com.mikepenz:aboutlibraries:${libraries.aboutlibraries}@aar") { transitive = true }
+    implementation "me.saket:better-link-movement-method:${libraries.better_link_movement_method}"
 }
 
 android {

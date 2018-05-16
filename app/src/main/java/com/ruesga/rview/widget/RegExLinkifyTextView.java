@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.support.annotation.VisibleForTesting;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -41,6 +40,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 public class RegExLinkifyTextView extends StyleableTextView {
     private static final String TAG = "RegExLinkifyTextView";
@@ -104,7 +105,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
 
     public RegExLinkifyTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setMovementMethod(LinkMovementMethod.getInstance());
+        setMovementMethod(BetterLinkMovementMethod.getInstance());
         addRegEx(EMAIL_REGEX, WEB_LINK_REGEX);
     }
 

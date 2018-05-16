@@ -29,7 +29,6 @@ import android.text.Html;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -63,6 +62,8 @@ import com.ruesga.rview.wizard.validators.Validator;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
+
+import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 import static com.ruesga.rview.misc.ExceptionHelper.isException;
 import static com.ruesga.rview.misc.ExceptionHelper.isServerUnavailableException;
@@ -501,7 +502,7 @@ public class AccountPageFragment extends WizardPageFragment {
     }
 
     private void bindHelpLinks() {
-        mBinding.accountAuthenticationHint.setMovementMethod(LinkMovementMethod.getInstance());
+        mBinding.accountAuthenticationHint.setMovementMethod(BetterLinkMovementMethod.getInstance());
         String msg = getString(R.string.account_wizard_account_page_authenticated_access_hint);
         String link = getString(R.string.account_wizard_account_page_password_hint_here);
         String text = String.format(Locale.getDefault(), msg, link, link);

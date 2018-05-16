@@ -28,7 +28,6 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,6 +59,8 @@ import com.ruesga.rview.wizard.validators.WebUrlValidator;
 
 import java.util.Locale;
 import java.util.concurrent.Callable;
+
+import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 import static com.ruesga.rview.misc.ExceptionHelper.isException;
 import static com.ruesga.rview.misc.ExceptionHelper.isServerUnavailableException;
@@ -337,7 +338,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
     }
 
     private void bindPredefinedRepositoriesLink() {
-        mBinding.repositoryPredefined.setMovementMethod(new LinkMovementMethod());
+        mBinding.repositoryPredefined.setMovementMethod(BetterLinkMovementMethod.getInstance());
         String msg = getString(R.string.account_wizard_repository_page_message2);
         String link = getString(R.string.account_wizard_repository_page_message2_predefined);
         String text = String.format(Locale.getDefault(), msg, link);
