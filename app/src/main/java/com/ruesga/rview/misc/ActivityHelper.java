@@ -262,6 +262,11 @@ public class ActivityHelper {
         if (forceNavigateUp || !hasParent) {
             Intent upIntent = NavUtils.getParentActivityIntent(activity);
             if (upIntent != null) {
+                if (!hasParent) {
+                    upIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                }
+
                 if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
                     TaskStackBuilder.create(activity)
                             .addNextIntentWithParentStack(upIntent)
