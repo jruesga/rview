@@ -221,6 +221,7 @@
     <string name="change_details_change_id">Change-Id</string>
     <string name="change_details_description">Description</string>
     <string name="change_details_related_changes">Related changes</string>
+    <string name="change_details_included_in">Included in</string>
     <string name="change_details_download_patchset">Download</string>
     <string name="change_details_view_patchset">View</string>
     <string name="change_details_edit_message">Edit</string>
@@ -417,6 +418,12 @@
     <string name="actions_change_base">Change parent revision</string>
     <string name="actions_base_hint">Subject, change number, or leave empty</string>
     <string name="actions_confirm_submit">Submit this patchset?</string>
+
+    <!-- Included In dialog -->
+    <string name="included_in_dialog_title">Included in</string>
+    <string name="included_in_dialog_branches_title">Branches:</string>
+    <string name="included_in_dialog_fetching_branches">Fetching data\u2026</string>
+    <string name="included_in_dialog_no_branches">Not included in branches</string>
 
     <!-- Download commands dialog -->
     <string name="download_commands_dialog_title">Download</string>

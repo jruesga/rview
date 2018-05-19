@@ -666,7 +666,7 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-included-in"
      */
-    Observable<IncludeInInfo> getChangeIncludedIn(@NonNull String changeId);
+    Observable<IncludedInInfo> getChangeIncludedIn(@NonNull String changeId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#index-change"

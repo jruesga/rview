@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#included-in-info"
  */
-public class IncludeInInfo {
+public class IncludedInInfo {
     @SerializedName("branches") public String[] branches;
     @SerializedName("tags") public String[] tags;
     @SerializedName("external") public Map<String, String> external;

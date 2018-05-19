@@ -342,9 +342,28 @@
                     android:padding="5dp"
                     android:gravity="center"
                     android:background="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{handlers::onIncludedInPressed}"
+                    android:text="@string/change_details_included_in"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:visibility="@{change.status.equals(ChangeStatus.MERGED) ? View.VISIBLE : View.GONE}"
+                    android:textColor="?attr/colorAccent"
+                    app:fontFamilyType="condensed"
+                    app:allCaps="true"
+                    android:textSize="12sp"
+                    tools:ignore="RtlSymmetry"/>
+
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:padding="5dp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:onClick="@{handlers::onDownloadPatchSetPressed}"
                     android:text="@string/change_details_download_patchset"
                     android:textAppearance="?android:attr/textAppearanceSmall"
+
                     android:textColor="?attr/colorAccent"
                     app:fontFamilyType="condensed"
                     app:allCaps="true"

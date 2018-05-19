@@ -696,7 +696,7 @@ interface GerritRestApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-included-in"
      */
     @GET("changes/{change-id}/in")
-    Observable<IncludeInInfo> getChangeIncludedIn(@NonNull @Path("change-id") String changeId);
+    Observable<IncludedInInfo> getChangeIncludedIn(@NonNull @Path("change-id") String changeId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#index-change"

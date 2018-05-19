@@ -1080,7 +1080,7 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<IncludeInInfo> getChangeIncludedIn(@NonNull String changeId) {
+    public Observable<IncludedInInfo> getChangeIncludedIn(@NonNull String changeId) {
         return withVersionRequestCheck(mService.getChangeIncludedIn(changeId));
     }
 

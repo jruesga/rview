@@ -345,6 +345,10 @@ public class ChangeDetailsFragment extends Fragment implements
             mFragment.performOpenRelatedChanges();
         }
 
+        public void onIncludedInPressed(View v) {
+            mFragment.performOpenIncludedInDialog();
+        }
+
         public void onDownloadPatchSetPressed(View v) {
             mFragment.performOpenDownloadDialog();
         }
@@ -2764,6 +2768,12 @@ public class ChangeDetailsFragment extends Fragment implements
                 action, hint, false, true, true, null, v,
                 REQUEST_CODE_EDIT_REVISION_DESCRIPTION, null);
         fragment.show(getChildFragmentManager(), EditDialogFragment.TAG);
+    }
+
+    private void performOpenIncludedInDialog() {
+        IncludedInDialogFragment fragment = IncludedInDialogFragment.newInstance(
+                mResponse.mChange);
+        fragment.show(getChildFragmentManager(), IncludedInDialogFragment.TAG);
     }
 
     private void performOpenDownloadDialog() {
