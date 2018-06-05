@@ -1372,6 +1372,10 @@ class GerritApiClient implements GerritApi {
     public Observable<ReviewResultInfo> setChangeRevisionReview(@NonNull String changeId,
             @NonNull String revisionId, @NonNull ReviewInput input) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
+            if (mServerVersion.getVersion() >= 2.15) {
+                // Since 2.15, strictLabels was remove from ReviewInput
+                return input.strictLabels = null;
+            }
             input.drafts = resolveDraftActionType(input.drafts);
             return mService.setChangeRevisionReview(
                     changeId, revisionId, input).blockingFirst();
