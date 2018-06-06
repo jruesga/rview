@@ -67,8 +67,10 @@
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_drafts">Drafts</string>
     <string name="menu_draft">Draft</string>
+    <string name="menu_draft_comments">Draft comments</string>
     <string name="menu_starred">Starred</string>
     <string name="menu_watched">Watched</string>
+    <string name="menu_edits">Edits</string>
     <string name="menu_my_filters_category">My filters</string>
     <string name="menu_account_settings">Settings</string>
     <string name="menu_account_status">Status</string>

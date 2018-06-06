@@ -19,8 +19,10 @@
     <item name="menu_merged" type="id"/>
     <item name="menu_abandoned" type="id"/>
     <item name="menu_drafts" type="id"/>
+    <item name="menu_draft_comments" type="id"/>
     <item name="menu_starred" type="id"/>
     <item name="menu_watched" type="id"/>
+    <item name="menu_edits" type="id"/>
 
     <item name="tag_key" type="id"/>
 

@@ -56,24 +56,37 @@
                     android:id="@+id/menu_dashboard"
                     android:icon="@drawable/ic_dashboard"
                     android:title="@string/menu_dashboard"
+                    android:orderInCategory="4"
                     android:checkable="true"/>
                 <item
                     android:id="@id/menu_drafts"
                     android:icon="@drawable/ic_draft"
                     android:title="@string/menu_drafts"
-                    android:orderInCategory="4"
+                    android:orderInCategory="5"
+                    android:checkable="true"/>
+                <item
+                    android:id="@id/menu_draft_comments"
+                    android:icon="@drawable/ic_forum"
+                    android:title="@string/menu_draft_comments"
+                    android:orderInCategory="6"
                     android:checkable="true"/>
                 <item
                     android:id="@id/menu_starred"
                     android:icon="@drawable/ic_starred"
                     android:title="@string/menu_starred"
-                    android:orderInCategory="5"
+                    android:orderInCategory="7"
                     android:checkable="true"/>
                 <item
                     android:id="@id/menu_watched"
                     android:icon="@drawable/ic_watch"
                     android:title="@string/menu_watched"
-                    android:orderInCategory="6"
+                    android:orderInCategory="8"
+                    android:checkable="true"/>
+                <item
+                    android:id="@id/menu_edits"
+                    android:icon="@drawable/ic_code"
+                    android:title="@string/menu_edits"
+                    android:orderInCategory="9"
                     android:checkable="true"/>
             </menu>
         </item>
