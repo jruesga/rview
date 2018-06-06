@@ -3337,38 +3337,53 @@ public class ChangeDetailsFragment extends Fragment implements
             return;
         }
 
-        // Determine which patchset needs request comments for
-        List<Integer> revisionsWithComments = new ArrayList<>();
-        if (response.mChange.messages != null) {
-            for (ChangeMessageInfo message : response.mChange.messages) {
-                if (message.message != null && COMMENTS_PATTERN.matcher(message.message).find()) {
-                    if (!revisionsWithComments.contains(message.revisionNumber)) {
-                        revisionsWithComments.add(message.revisionNumber);
+        final Context ctx = getActivity();
+        final GerritApi api = ModelHelper.getGerritApi(ctx);
+        if (mAccount == null || mAccount.mServerVersion == null ||
+                mAccount.mServerVersion.getVersion() <= 2.11d) {
+            // Determine which patchset needs request comments for
+            List<Integer> revisionsWithComments = new ArrayList<>();
+            if (response.mChange.messages != null) {
+                for (ChangeMessageInfo message : response.mChange.messages) {
+                    if (message.message != null && COMMENTS_PATTERN.matcher(message.message).find()) {
+                        if (!revisionsWithComments.contains(message.revisionNumber)) {
+                            revisionsWithComments.add(message.revisionNumber);
+                        }
                     }
                 }
             }
-        }
 
-        // Fetch comments of needed revisions
+            // Fetch comments of needed revisions
+            response.mMessagesWithComments.clear();
+            response.mUnresolvedComments.clear();
+            for (int rev : revisionsWithComments) {
+                try {
+                    updateRevisionComments(response,
+                            api.getChangeRevisionComments(
+                                    String.valueOf(response.mChange.legacyChangeId),
+                                    String.valueOf(rev)).blockingFirst());
+                } catch (Exception ex) {
+                    Log.e(TAG, "Can't match comments for messages.", ex);
+                }
+            }
+        } else {
+            // Perform a single fetch
+            updateRevisionComments(response,
+                    api.getChangeComments(
+                        String.valueOf(response.mChange.legacyChangeId)).blockingFirst());
+
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void updateRevisionComments(
+            DataResponse response, Map<String, List<CommentInfo>> comments) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
-        response.mMessagesWithComments.clear();
-        response.mUnresolvedComments.clear();
-        for (int rev : revisionsWithComments) {
-            try {
-                Map<String, List<CommentInfo>> comments = api.getChangeRevisionComments(
-                        String.valueOf(response.mChange.legacyChangeId),
-                        String.valueOf(rev)).blockingFirst();
-                if (comments == null) {
-                    continue;
-                }
-
-                updateMessageComments(response, comments);
-                if (api.supportsFeature(Features.UNRESOLVED_COMMENTS)) {
-                    updateUnresolvedComments(response, comments);
-                }
-            } catch (Exception ex) {
-                Log.e(TAG, "Can't match comments for messages.", ex);
+        if (comments != null) {
+            updateMessageComments(response, comments);
+            if (api.supportsFeature(Features.UNRESOLVED_COMMENTS)) {
+                updateUnresolvedComments(response, comments);
             }
         }
     }
