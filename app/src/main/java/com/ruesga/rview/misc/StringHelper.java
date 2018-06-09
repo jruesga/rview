@@ -243,7 +243,7 @@ public class StringHelper {
                 int start = matcher.start(1) - QUOTE_START_TAG.length();
                 int end = matcher.end(1) + QUOTE_END_TAG.length();
                 if (last < start) {
-                    sb.append(msg.substring(last, start));
+                    sb.append(msg, last, start);
                 }
 
                 String quote = (" > " + matcher.group(1))

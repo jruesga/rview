@@ -126,7 +126,7 @@ public class GerritApiClientTest {
         final GerritApiClient client = getGerritClient(ENDPOINT);
         ServerInfo info = client.getServerInfo().blockingFirst();
         assertNotNull(info);
-        assertTrue(info.gerrit.docUrl.equals(ENDPOINT + "Documentation/"));
+        assertEquals(info.gerrit.docUrl, ENDPOINT + "Documentation/");
     }
 
 }

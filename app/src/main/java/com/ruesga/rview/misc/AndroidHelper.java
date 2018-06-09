@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
@@ -24,6 +25,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -65,8 +69,12 @@ public class AndroidHelper {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     }
 
-    public static boolean isApi26OrGreater() {
+    public static boolean isApiNougatOrGreater() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    public static boolean isApi28OrGreater() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -103,40 +111,39 @@ public class AndroidHelper {
         if (view != null) {
             InputMethodManager imm = (InputMethodManager) context.getSystemService(
                     Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
         }
     }
 
     public static String loadRawResourceAsStream(Context ctx) throws IOException {
         StringBuilder sb = new StringBuilder();
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(
-                    ctx.getResources().openRawResource(R.raw.repositories)));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                ctx.getResources().openRawResource(R.raw.repositories)))) {
             char[] chars = new char[4096];
             int read;
             while ((read = reader.read(chars, 0, 4096)) != -1) {
                 sb.append(chars, 0, read);
             }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    // Ignore
-                }
-            }
         }
         return sb.toString();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @TargetApi(Build.VERSION_CODES.P)
+    @SuppressLint("Deprecated")
     public static void configureTaskDescription(Activity activity) {
         if (isLollipopOrGreater()) {
-            Bitmap icon = BitmapFactory.decodeResource(
-                    activity.getResources(), R.mipmap.ic_launcher);
-            TaskDescription taskDesc = new TaskDescription(
-                    null, icon, ContextCompat.getColor(activity, R.color.primaryDark));
+            final TaskDescription taskDesc;
+            if (isApi28OrGreater()) {
+                taskDesc = new TaskDescription(null, R.mipmap.ic_launcher,
+                        ContextCompat.getColor(activity, R.color.primaryDark));
+            } else {
+                Bitmap icon = BitmapFactory.decodeResource(
+                        activity.getResources(), R.mipmap.ic_launcher);
+                taskDesc = new TaskDescription(
+                        null, icon, ContextCompat.getColor(activity, R.color.primaryDark));
+            }
             activity.setTaskDescription(taskDesc);
         }
     }
@@ -165,7 +172,8 @@ public class AndroidHelper {
         String url = null;
         ClipboardManager clipboard =
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        if (clipboard.getPrimaryClip() != null && clipboard.getPrimaryClip().getItemCount() > 0) {
+        if (clipboard != null && clipboard.getPrimaryClip() != null
+                && clipboard.getPrimaryClip().getItemCount() > 0) {
             ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
             CharSequence data = item.getText();
             if (data != null) {
@@ -176,5 +184,16 @@ public class AndroidHelper {
             }
         }
         return url;
+    }
+
+    @TargetApi(Build.VERSION_CODES.P)
+    public static boolean isRoaming(ConnectivityManager cm) {
+        if (isApi28OrGreater()) {
+            NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
+            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING);
+        }
+
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        return ni.isRoaming();
     }
 }

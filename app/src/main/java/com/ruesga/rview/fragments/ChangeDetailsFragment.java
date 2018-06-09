@@ -761,7 +761,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     msgs.add(msg);
                 }
             }
-            return msgs.toArray(new ChangeMessageInfo[msgs.size()]);
+            return msgs.toArray(new ChangeMessageInfo[0]);
         }
 
         private ChangeMessageInfo[] filterCiAccountsMessages(ChangeMessageInfo[] messages) {
@@ -777,7 +777,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     msgs.add(msg);
                 }
             }
-            return msgs.toArray(new ChangeMessageInfo[msgs.size()]);
+            return msgs.toArray(new ChangeMessageInfo[0]);
         }
 
         private ChangeMessageInfo[] joinWithReviewerUpdates(ChangeMessageInfo[] messages,
@@ -828,7 +828,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 }
             }
 
-            return msgs.toArray(new ChangeMessageInfo[msgs.size()]);
+            return msgs.toArray(new ChangeMessageInfo[0]);
         }
     }
 
@@ -1665,11 +1665,8 @@ public class ChangeDetailsFragment extends Fragment implements
             }
         } else if (requestCode == REQUEST_ATTACHMENT_FILE && resultCode == Activity.RESULT_OK) {
             if (data.getData() != null) {
-                Cursor c = null;
-                try {
-                    //noinspection ConstantConditions
-                    ContentResolver cr = getContext().getContentResolver();
-                    c = cr.query(data.getData(), null, null, null, null);
+                ContentResolver cr = getContext().getContentResolver();
+                try (Cursor c = cr.query(data.getData(), null, null, null, null)) {
                     if (c != null) {
                         c.moveToFirst();
                         Attachment attachment = new Attachment();
@@ -1680,14 +1677,6 @@ public class ChangeDetailsFragment extends Fragment implements
                         attachment.mSize = c.getLong(c.getColumnIndex(OpenableColumns.SIZE));
                         attachment.mMimeType = cr.getType(attachment.mLocalUri);
                         addPendingAttachments(attachment);
-                    }
-                } finally {
-                    try {
-                        if (c != null) {
-                            c.close();
-                        }
-                    } catch (Exception ex) {
-                        // ignore
                     }
                 }
             }
@@ -3620,8 +3609,8 @@ public class ChangeDetailsFragment extends Fragment implements
         // Save the tags
         mChangeTagsLoader.clear();
         mChangeTagsLoader.restart(
-                newTags.toArray(new String[newTags.size()]),
-                oldTags.toArray(new String[oldTags.size()]));
+                newTags.toArray(new String[0]),
+                oldTags.toArray(new String[0]));
     }
 
     @Override

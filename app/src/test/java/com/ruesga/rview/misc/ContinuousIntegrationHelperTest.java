@@ -167,8 +167,9 @@ public class ContinuousIntegrationHelperTest {
 
         List<ContinuousIntegrationInfo> cis =
                 ContinuousIntegrationHelper.extractContinuousIntegrationInfo(
-                        DEFAULT_PATCHSET_NUMBER, messages.toArray(
-                                new ChangeMessageInfo[messages.size()]), repository);
+                        DEFAULT_PATCHSET_NUMBER,
+                        messages.toArray(new ChangeMessageInfo[0]),
+                        repository);
         Collections.sort(cis);
         return cis;
     }

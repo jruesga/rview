@@ -170,9 +170,7 @@ public final class RviewImageHelper extends AppGlideModule {
                 public void onLoadFailed(@Nullable Drawable errorDrawable) {
                     // Next url
                     synchronized (urls) {
-                        if (urls.contains(nextUrl)) {
-                            urls.remove(nextUrl);
-                        }
+                        urls.remove(nextUrl);
                     }
                     loadWithFallbackUrls(context, into, placeholder, urls, width, height, animate);
                 }

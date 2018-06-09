@@ -48,6 +48,7 @@ import com.ruesga.rview.gerrit.model.DownloadFormat;
 import com.ruesga.rview.gerrit.model.FetchInfo;
 import com.ruesga.rview.gerrit.model.PatchFileFormat;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
@@ -286,10 +287,12 @@ public class DownloadDialogFragment extends RevealDialogFragment {
                         request.mStatus = 1;
                         return request;
                     }
-                    if (ConnectivityManagerCompat.isActiveNetworkMetered(cm) || ni.isRoaming()) {
+                    if (ConnectivityManagerCompat.isActiveNetworkMetered(cm)
+                            || AndroidHelper.isRoaming(cm)) {
                         request.mStatus = 2;
                         return request;
                     }
+
                     return request;
                 }
                 throw new IllegalStateException();

@@ -521,9 +521,7 @@ public class TagEditTextView extends LinearLayout {
     }
 
     public void removeTagEventListener(OnTagEventListener callback) {
-        if (mTagEventCallBacks.contains(callback)) {
-            mTagEventCallBacks.remove(callback);
-        }
+        mTagEventCallBacks.remove(callback);
     }
 
     public void setOnTagClickListener(OnTagClickListener callback) {
@@ -761,7 +759,7 @@ public class TagEditTextView extends LinearLayout {
                 }
             }
         }
-        setTags(tags.toArray(new Tag[tags.size()]));
+        setTags(tags.toArray(new Tag[0]));
     }
 
     @Override

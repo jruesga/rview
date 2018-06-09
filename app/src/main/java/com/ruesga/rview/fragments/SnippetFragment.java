@@ -185,22 +185,12 @@ public class SnippetFragment extends BottomSheetBaseFragment {
             try {
                 //noinspection ConstantConditions
                 ContentResolver cr = getContext().getContentResolver();
-                InputStream is = null;
-                try {
-                    is = cr.openInputStream(snippetUri);
+                try (InputStream is = cr.openInputStream(snippetUri)) {
                     if (is != null) {
                         byte[] data = new byte[is.available()];
                         IOUtils.read(is, data);
                         loadContent(data);
                         return;
-                    }
-                } finally {
-                    if (is != null) {
-                        try {
-                            is.close();
-                        } catch (IOException ex) {
-                            // ignore
-                        }
                     }
                 }
             } catch (IOException ex) {
@@ -327,18 +317,9 @@ public class SnippetFragment extends BottomSheetBaseFragment {
         if (snippetUri != null && getActivity() != null) {
             try {
                 ContentResolver cr = getActivity().getContentResolver();
-                OutputStream os = cr.openOutputStream(snippetUri);
-                try {
+                try (OutputStream os = cr.openOutputStream(snippetUri)) {
                     IOUtils.write(content, os);
                     mContentSize = content.length;
-                } finally {
-                    try {
-                        if (os != null) {
-                            os.close();
-                        }
-                    } catch (IOException ex) {
-                        // ignore
-                    }
                 }
             } catch (IOException ex) {
                 Log.e(TAG, "Cannot load content stream: " + snippetUri, ex);

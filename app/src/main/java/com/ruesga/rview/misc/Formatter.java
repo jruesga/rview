@@ -405,7 +405,7 @@ public class Formatter {
         }
 
         if (!linksScanners.isEmpty()) {
-            view.addRegEx(linksScanners.toArray(new RegExLink[linksScanners.size()]));
+            view.addRegEx(linksScanners.toArray(new RegExLink[0]));
         }
     }
 
@@ -448,7 +448,7 @@ public class Formatter {
             }
         }
 
-        view.addRegEx(linksScanners.toArray(new RegExLink[linksScanners.size()]));
+        view.addRegEx(linksScanners.toArray(new RegExLink[0]));
     }
 
     @BindingAdapter("committer")

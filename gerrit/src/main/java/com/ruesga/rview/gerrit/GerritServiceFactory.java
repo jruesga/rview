@@ -16,12 +16,14 @@
 package com.ruesga.rview.gerrit;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -52,12 +54,20 @@ public class GerritServiceFactory {
             mDebuggable = isApkDebugSigned(mApplicationContext);
         }
 
-        @SuppressLint("PackageManagerGetSignatures")
+        @TargetApi(Build.VERSION_CODES.P)
+        @SuppressLint({"PackageManagerGetSignatures", "Deprecated"})
         private boolean isApkDebugSigned(Context ctx) {
             try {
-                PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(
-                        ctx.getPackageName(), PackageManager.GET_SIGNATURES);
-                Signature signatures[] = packageInfo.signatures;
+                final Signature[] signatures;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(
+                            ctx.getPackageName(), PackageManager.GET_SIGNING_CERTIFICATES);
+                    signatures = packageInfo.signingInfo.getApkContentsSigners();
+                } else {
+                    PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(
+                            ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+                    signatures = packageInfo.signatures;
+                }
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");
                 for (Signature signature : signatures) {
                     ByteArrayInputStream stream =
@@ -101,11 +111,15 @@ public class GerritServiceFactory {
         }
 
         @Override
+        @SuppressLint("Deprecated")
         public boolean hasConnectivity() {
             ConnectivityManager cm = (ConnectivityManager) mApplicationContext.getSystemService(
                     Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+            if (cm != null) {
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+            }
+            return false;
         }
     }
 

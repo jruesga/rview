@@ -361,7 +361,7 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
         GalleryChooserFragment fragment = new GalleryChooserFragment();
         Bundle arguments = new Bundle();
         arguments.putParcelableArray(EXTRA_SELECTION,
-                selection.toArray(new MediaItem[selection.size()]));
+                selection.toArray(new MediaItem[0]));
         fragment.setArguments(arguments);
         return fragment;
     }

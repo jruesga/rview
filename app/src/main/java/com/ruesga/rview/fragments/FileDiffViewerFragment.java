@@ -1076,10 +1076,8 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private boolean writeDiffToFile(FileDiffResponse response, File file, boolean isA) {
-        Writer writer = null;
         boolean hasData = false;
-        try {
-            writer = new BufferedWriter(new FileWriter(file));
+        try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 
             DiffContentInfo[] content = response.diff.content;
             for (DiffContentInfo c : content) {
@@ -1117,14 +1115,6 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             hasData = false;
 
         } finally {
-            try {
-                if (writer != null) {
-                    writer.close();
-                }
-            } catch (IOException e) {
-                // Ignore
-            }
-
             if (!hasData) {
                 file.delete();
             }

@@ -138,11 +138,15 @@ public class GDriveRestApiClient implements GDriveRestApi {
         };
     }
 
+    @SuppressLint("Deprecated")
     private boolean hasConnectivity() {
         ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        if (cm != null) {
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        }
+        return false;
     }
 
     private <T> Observable<T> withAccessTokenCheck(final Observable<T> observable) {

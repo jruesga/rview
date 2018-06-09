@@ -978,7 +978,7 @@ public class EditorFragment extends Fragment
     }
 
     private void performRenameEdit(String source, View v) {
-        final String[] prevFiles = mFiles.toArray(new String[mFiles.size()]);
+        final String[] prevFiles = mFiles.toArray(new String[0]);
         EditFileChooserDialogFragment fragment = EditFileChooserDialogFragment.newRenameInstance(
                 getActivity(), 0, mLegacyChangeId, mRevisionId, source, prevFiles, v);
         fragment.show(getChildFragmentManager(), EditFileChooserDialogFragment.TAG);

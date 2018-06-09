@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.misc;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -271,6 +272,7 @@ public class CacheHelper {
         return getAttachmentFile(context, attachment).exists();
     }
 
+    @SuppressLint("Deprecated")
     public static void downloadAttachmentFile(Context context, Attachment attachment)
             throws IOException {
         OkHttpClient client = NetworkingHelper.createNetworkClient()
@@ -284,9 +286,11 @@ public class CacheHelper {
                 .addInterceptor(chain -> {
                     ConnectivityManager cm = (ConnectivityManager) context.getSystemService(
                             Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                    if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
-                        return chain.proceed(chain.request());
+                    if (cm != null) {
+                        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+                            return chain.proceed(chain.request());
+                        }
                     }
                     throw new NoConnectivityException();
                 })

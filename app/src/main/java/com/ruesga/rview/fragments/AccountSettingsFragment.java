@@ -187,8 +187,8 @@ public class AccountSettingsFragment extends PreferenceFragmentCompat
 
         // Add the entries y values
         mHomePage = (ListPreference) findPreference(PREF_ACCOUNT_HOME_PAGE);
-        mHomePage.setEntries(titles.toArray(new String[titles.size()]));
-        mHomePage.setEntryValues(names.toArray(new String[names.size()]));
+        mHomePage.setEntries(titles.toArray(new String[0]));
+        mHomePage.setEntryValues(names.toArray(new String[0]));
         mHomePage.setDefaultValue(Preferences.getDefaultHomePageForAccount(mAccount));
         String value = Preferences.getAccountHomePage(getContext(), mAccount);
         if (!names.contains(value)) {

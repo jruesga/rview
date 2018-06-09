@@ -126,7 +126,7 @@
             android:layout_height="match_parent"
             android:maxWidth="320dp"
             android:layout_gravity="start"
-            app:theme="@style/AppTheme.DrawerMenu"
+            android:theme="@style/AppTheme.DrawerMenu"
             app:menu="@menu/drawer">
         </com.ruesga.rview.drawer.DrawerNavigationView>
 
@@ -136,7 +136,7 @@
             android:layout_height="match_parent"
             android:maxWidth="320dp"
             android:layout_gravity="end"
-            app:theme="@style/AppTheme.DrawerMenu"
+            android:theme="@style/AppTheme.DrawerMenu"
             app:headerLayout="@layout/options_header">
         </com.ruesga.rview.drawer.DrawerNavigationView>
 

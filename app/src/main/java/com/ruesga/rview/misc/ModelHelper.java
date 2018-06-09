@@ -248,7 +248,7 @@ public class ModelHelper {
             }
         }
         ModelHelper.sortReviewers(context, newAccounts);
-        return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
+        return newAccounts.toArray(new AccountInfo[0]);
     }
 
     public static ApprovalInfo[] removeApproval(AccountInfo account, ApprovalInfo[] approvals) {
@@ -261,12 +261,12 @@ public class ModelHelper {
                 newApprovals.add(a);
             }
         }
-        return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
+        return newApprovals.toArray(new ApprovalInfo[0]);
     }
 
     public static AccountInfo[] addReviewers(ReviewerInfo[] reviewers, AccountInfo[] accounts) {
         final List<AccountInfo> newReviewers = new ArrayList<>(Arrays.asList(reviewers));
-        return addReviewers(newReviewers.toArray(new AccountInfo[newReviewers.size()]), accounts);
+        return addReviewers(newReviewers.toArray(new AccountInfo[0]), accounts);
     }
 
     public static AccountInfo[] addReviewers(AccountInfo[] reviewers, AccountInfo[] accounts) {
@@ -286,7 +286,7 @@ public class ModelHelper {
                 newAccounts.add(reviewer);
             }
         }
-        return newAccounts.toArray(new AccountInfo[newAccounts.size()]);
+        return newAccounts.toArray(new AccountInfo[0]);
     }
 
     public static void addRemovableReviewer(ChangeInfo change, AccountInfo account) {
@@ -309,7 +309,7 @@ public class ModelHelper {
                 newAccounts.add(account);
             }
         }
-        change.removableReviewers = newAccounts.toArray(new AccountInfo[newAccounts.size()]);
+        change.removableReviewers = newAccounts.toArray(new AccountInfo[0]);
     }
 
     public static ApprovalInfo[] updateApprovals(
@@ -343,7 +343,7 @@ public class ModelHelper {
                 }
             }
         }
-        return newApprovals.toArray(new ApprovalInfo[newApprovals.size()]);
+        return newApprovals.toArray(new ApprovalInfo[0]);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -396,8 +396,7 @@ public class ModelHelper {
             }
         }
 
-        change.removableReviewers = newRemovableAccounts.toArray(
-                new AccountInfo[newRemovableAccounts.size()]);
+        change.removableReviewers = newRemovableAccounts.toArray(new AccountInfo[0]);
     }
 
     public static boolean isReviewer(AccountInfo account, ChangeInfo change) {
@@ -506,7 +505,7 @@ public class ModelHelper {
     private static String hex(byte[] array) {
         StringBuilder sb = new StringBuilder();
         for (byte v : array) {
-            sb.append(Integer.toHexString((v & 0xFF) | 0x100).substring(1, 3));
+            sb.append(Integer.toHexString((v & 0xFF) | 0x100), 1, 3);
         }
         return sb.toString();
     }

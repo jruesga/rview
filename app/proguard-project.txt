@@ -7,6 +7,7 @@
 -dontwarn com.squareup.picasso.*
 -dontwarn java.lang.invoke**
 -dontwarn com.google.android.gms.measurement.*
+-dontwarn com.caverock.androidsvg.SVGAndroidRenderer
 
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable,*Annotation*

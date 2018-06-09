@@ -71,6 +71,7 @@
                 android:layout_marginLeft="8dp"
                 android:text="@={model.description}"
                 android:hint="@string/account_status_dialog_hint"
+                android:importantForAutofill="no"
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:textSize="14sp"

@@ -197,25 +197,14 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
             return null;
         }
 
-        Reader reader = null;
-        try {
+        try (Reader reader = new BufferedReader(new FileReader(file))) {
             // Convert the vector drawable to a svg document
-            reader = new BufferedReader(new FileReader(file));
             CharSequence svgDocument = VectorDrawableConverter.toSvg(context, reader);
             return loadSvg(new ByteArrayInputStream(svgDocument.toString().getBytes()));
 
         } catch (Exception ex) {
             Log.e(TAG, "Can't parse " + file.getAbsolutePath() + " as VectorDrawable.", ex);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    // Ignore
-                }
-            }
         }
-
         return null;
     }
 
@@ -231,9 +220,7 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
 
     private static String readXmlHeader(File file) {
         if (file != null && file.exists()) {
-            Reader reader = null;
-            try {
-                reader = new BufferedReader(new FileReader(file));
+            try (Reader reader = new BufferedReader(new FileReader(file))) {
                 char[] data = new char[1024];
                 int read = reader.read(data, 0, 1024);
                 if (read != -1) {
@@ -241,14 +228,6 @@ public class AsyncImageDiffProcessor extends AsyncTask<Void, Void, ImageDiffMode
                 }
             } catch (IOException ex) {
                 // Ignore
-            } finally {
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException ex) {
-                    // Ignore
-                }
             }
         }
         return null;

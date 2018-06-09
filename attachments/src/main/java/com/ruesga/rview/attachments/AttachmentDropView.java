@@ -138,9 +138,7 @@ public class AttachmentDropView extends View implements View.OnDragListener {
             attachment.mMimeType = "application/octet-stream";
         }
 
-        Cursor c = null;
-        try {
-            c = cr.query(attachment.mLocalUri, null, null, null, null);
+        try (Cursor c = cr.query(attachment.mLocalUri, null, null, null, null)) {
             if (c != null) {
                 c.moveToFirst();
                 attachment.mName = new File(
@@ -148,16 +146,7 @@ public class AttachmentDropView extends View implements View.OnDragListener {
                                 c.getColumnIndex(OpenableColumns.DISPLAY_NAME))).getName();
                 attachment.mSize = c.getLong(c.getColumnIndex(OpenableColumns.SIZE));
             }
-        } finally {
-            try {
-                if (c != null) {
-                    c.close();
-                }
-            } catch (Exception ex) {
-                // ignore
-            }
         }
-
     }
 
     private void fillAttachmentFromFileUri(Attachment attachment) {

@@ -114,7 +114,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
                                 }
                             }
                             mCachedAccount.secondaryEmails =
-                                    secondaryEmails.toArray(new String[secondaryEmails.size()]);
+                                    secondaryEmails.toArray(new String[0]);
                         }
                     } catch (Exception ex) {
                         // Ignore

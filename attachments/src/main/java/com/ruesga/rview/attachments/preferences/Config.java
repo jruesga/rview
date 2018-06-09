@@ -16,10 +16,12 @@
 package com.ruesga.rview.attachments.preferences;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.os.Build;
 
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
@@ -31,12 +33,20 @@ public class Config {
     private static final X500Principal DEBUG_DN =
             new X500Principal("CN=Android Debug,O=Android,C=US");
 
-    @SuppressLint("PackageManagerGetSignatures")
+    @TargetApi(Build.VERSION_CODES.P)
+    @SuppressLint({"PackageManagerGetSignatures", "Deprecated"})
     public static boolean isApkDebugSigned(Context ctx) {
         try {
-            PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(
-                    ctx.getPackageName(), PackageManager.GET_SIGNATURES);
-            Signature signatures[] = packageInfo.signatures;
+            final Signature[] signatures;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(
+                        ctx.getPackageName(), PackageManager.GET_SIGNING_CERTIFICATES);
+                signatures = packageInfo.signingInfo.getApkContentsSigners();
+            } else {
+                PackageInfo packageInfo = ctx.getPackageManager().getPackageInfo(
+                        ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+                signatures = packageInfo.signatures;
+            }
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             for (Signature signature : signatures) {
                 ByteArrayInputStream stream =

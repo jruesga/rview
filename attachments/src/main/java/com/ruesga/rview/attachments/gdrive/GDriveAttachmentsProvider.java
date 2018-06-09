@@ -219,6 +219,7 @@ public class GDriveAttachmentsProvider implements AttachmentsProvider {
         return metadata.id;
     }
 
+    @SuppressWarnings("TryFinallyCanBeTryWithResources")
     private File createTemporaryAttachmentFile(Attachment attachment) throws IOException {
         InputStream is = null;
         OutputStream os = null;
