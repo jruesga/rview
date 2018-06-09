@@ -3036,7 +3036,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         return new SimpleDropDownAdapter<>(getContext(), options, null,
-                ids.toArray(new Integer[ids.size()]), null);
+                ids.toArray(new Integer[0]), null);
     }
 
 
