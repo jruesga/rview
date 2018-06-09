@@ -171,6 +171,7 @@ public class UrlHandlerProxyActivity extends AppCompatActivity {
 
                 // We cannot handle this
                 openExternalHttpLinkAndFinish(uri);
+                Preferences.setAccount(this, prevAccount);
                 break;
 
 
@@ -190,6 +191,7 @@ public class UrlHandlerProxyActivity extends AppCompatActivity {
                             // Ignore. Try to open the url.
                             Log.w(TAG, "Can parse query: " + query);
                             openExternalHttpLinkAndFinish(uri);
+                            Preferences.setAccount(this, prevAccount);
                             return;
                         }
                     }
@@ -205,6 +207,7 @@ public class UrlHandlerProxyActivity extends AppCompatActivity {
             default:
                 // We cannot handle this
                 openExternalHttpLinkAndFinish(uri);
+                Preferences.setAccount(this, prevAccount);
                 break;
         }
     }
