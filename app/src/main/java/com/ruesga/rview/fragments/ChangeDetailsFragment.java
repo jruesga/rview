@@ -3022,12 +3022,12 @@ public class ChangeDetailsFragment extends Fragment implements
                         ? R.string.change_action_mark_ready : R.string.change_action_mark_wip));
                 ids.add(R.id.mark_wip);
             }
-            // Mute
+            // Ignore
             if (ModelHelper.isEqualsOrGreaterVersionThan(mAccount, 2.15d) && !isOwner) {
                 options.add(getString(mResponse.mChange.stars != null
                         && Arrays.asList(mResponse.mChange.stars).contains(ModelHelper.ACTION_IGNORE)
-                        ? R.string.change_action_unmute : R.string.change_action_mute));
-                ids.add(R.id.mute);
+                        ? R.string.change_action_unignore : R.string.change_action_ignore));
+                ids.add(R.id.ignore);
             }
             // Reviewed
             options.add(getString(mResponse.mChange.reviewed
@@ -3167,7 +3167,7 @@ public class ChangeDetailsFragment extends Fragment implements
                     mActionLoader.restart(ModelHelper.ACTION_MARK_REVIEWED, null);
                     break;
 
-                case R.id.mute:
+                case R.id.ignore:
                     mActionLoader.clear();
                     mActionLoader.restart(ModelHelper.ACTION_IGNORE, null);
                     break;

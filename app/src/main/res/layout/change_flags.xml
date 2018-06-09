@@ -128,7 +128,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/flag_mute"
+            android:id="@+id/flag_ignored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
@@ -149,7 +149,7 @@
                 android:textColor="?android:attr/textColorSecondary"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:text="@string/change_flag_muted"
+                android:text="@string/change_flag_ignored"
                 android:maxLines="1"
                 android:ellipsize="end"
                 app:allCaps="true"/>

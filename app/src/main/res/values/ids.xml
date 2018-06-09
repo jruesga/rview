@@ -34,5 +34,5 @@
     <item name="mark_private" type="id"/>
     <item name="mark_reviewed" type="id"/>
     <item name="mark_wip" type="id"/>
-    <item name="mute" type="id"/>
+    <item name="ignore" type="id"/>
 </resources>

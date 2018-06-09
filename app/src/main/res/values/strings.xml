@@ -280,14 +280,14 @@
     <string name="change_action_mark_ready">Mark as ready</string>
     <string name="change_action_mark_reviewed">Mark as reviewed</string>
     <string name="change_action_mark_unreviewed">Mark as unreviewed</string>
-    <string name="change_action_mute">Mute</string>
-    <string name="change_action_unmute">Unmute</string>
+    <string name="change_action_ignore">Ignore</string>
+    <string name="change_action_unignore">Unignore</string>
 
     <!-- Flags -->
     <string name="change_flag_private">Private</string>
     <string name="change_flag_reviewed">Reviewed</string>
     <string name="change_flag_wip">WIP</string>
-    <string name="change_flag_muted">Muted</string>
+    <string name="change_flag_ignored">Ignored</string>
 
     <!-- Revert -->
     <string name="revert_msg_template">Revert \"<xliff:g id="commit_msg">%1$s</xliff:g>\"\n\nThis reverts commit <xliff:g id="commit_id">%2$s</xliff:g>.</string>
