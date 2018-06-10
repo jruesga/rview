@@ -37,4 +37,7 @@ public class CommentInfo {
     @SerializedName("tag") public String tag;
     @SerializedName("unresolved") public boolean unresolved;
 
+    // For internal use only
+    @SerializedName("draft") public boolean draft;
+    @SerializedName("message_patch_set") public int messagePatchSet;
 }

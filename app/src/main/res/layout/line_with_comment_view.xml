@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:minWidth="@dimen/line_min_width"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@color/primaryDarkForeground"
+            android:textColor="@{model.draft ? @color/accent : @color/primaryDarkForeground}"
             app:commentLine="@{model}"
             android:onClick="@{handlers::onItemClicked}"
             android:tag="@{model}"

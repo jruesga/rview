@@ -622,7 +622,7 @@ public class ModelHelper {
     }
 
     public static void updateChangeMessageInfo(
-            Context ctx, Account account, ChangeInfo change, ReviewInput input) {
+            Account account, ChangeInfo change, ReviewInput input) {
         // Copy the old structure
         int count = change.messages.length;
         ChangeMessageInfo[] messages = new ChangeMessageInfo[count + 1];

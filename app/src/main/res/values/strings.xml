@@ -232,6 +232,7 @@
     <string name="change_details_comment_line_number">L<xliff:g id="line_number" example="1">%1$d</xliff:g>:</string>
     <string name="change_details_comment_base_line_number">B,L<xliff:g id="line_number" example="1">%1$d</xliff:g>:</string>
     <string name="change_details_comment_file">File:</string>
+    <string name="change_details_comment_patchset">PS<xliff:g id="patch_set" example="1">%1$d</xliff:g>,</string>
     <string name="change_details_fast_scroll_msg">Scroll to last message</string>
     <string name="change_details_action_hide_tagged_messages">Hide tagged</string>
     <string name="change_details_action_show_tagged_messages">Show tagged</string>

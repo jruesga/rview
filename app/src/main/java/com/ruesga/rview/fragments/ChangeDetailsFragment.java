@@ -1023,8 +1023,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
             // Update the messages (since it was update at server side, we can temporary
             // update the message list until a full refresh happens)
-            ModelHelper.updateChangeMessageInfo(
-                    getActivity(), mAccount, mResponse.mChange, review.first);
+            ModelHelper.updateChangeMessageInfo(mAccount, mResponse.mChange, review.first);
             mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
                     mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
 
@@ -1138,6 +1137,8 @@ public class ChangeDetailsFragment extends Fragment implements
             mMessageAdapter.update(mModel.msgListModel, change,
                     mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
             mBinding.setModel(mModel);
+
+            performDraftsRefresh();
         }
 
         @Override
@@ -1149,19 +1150,25 @@ public class ChangeDetailsFragment extends Fragment implements
         }
     };
 
-    private final RxLoaderObserver<Map<String, Integer>> mDraftsRefreshObserver
-            = new RxLoaderObserver<Map<String, Integer>>() {
+    private final RxLoaderObserver<Map<String, List<CommentInfo>>> mDraftsRefreshObserver
+            = new RxLoaderObserver<Map<String, List<CommentInfo>>>() {
         @Override
-        public void onNext(Map<String, Integer> drafts) {
+        public void onNext(Map<String, List<CommentInfo>> drafts) {
             if (mResponse == null) {
                 return;
             }
 
-            mResponse.mDraftComments = drafts;
+            // Compute number of drafts of the current revision
+            mResponse.mDraftComments = computeNumberOfComments(drafts);
+
+            // Update drafts
+            updateRevisionComments(mResponse, drafts, true);
 
             mModel.filesListModel.visible = mResponse.mFiles != null && !mResponse.mFiles.isEmpty();
             mFileAdapter.update(mModel.filesListModel, mResponse.mFiles,
                     mResponse.mInlineComments, mResponse.mDraftComments);
+            mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
+                    mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
             mBinding.setModel(mModel);
 
             mDraftsRefreshLoader.clear();
@@ -1508,7 +1515,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<String, String> mChangeTopicLoader;
     private RxLoader2<String[], String[], String[]> mChangeTagsLoader;
     private RxLoader<ChangeInfo> mMessagesRefreshLoader;
-    private RxLoader<Map<String, Integer>> mDraftsRefreshLoader;
+    private RxLoader<Map<String, List<CommentInfo>>> mDraftsRefreshLoader;
     private RxLoader2<String, String[], Object> mActionLoader;
     private RxLoader1<String, ChangeInfo> mMoveBranchLoader;
     private RxLoader1<Attachment, Attachment> mAttachmentDownloadLoader;
@@ -2257,7 +2264,7 @@ public class ChangeDetailsFragment extends Fragment implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    private Observable<Map<String, Integer>> fetchDrafts() {
+    private Observable<Map<String, List<CommentInfo>>> fetchDrafts() {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         return SafeObservable.fromNullCallable(() -> {
@@ -2266,15 +2273,16 @@ public class ChangeDetailsFragment extends Fragment implements
                         Map<String, List<CommentInfo>> drafts =
                                 api.getChangeRevisionDrafts(String.valueOf(mLegacyChangeId),
                                         mCurrentRevision).blockingFirst();
-                        Map<String, Integer> draftComments = new HashMap<>();
-                        if (drafts != null) {
-                            for (String file : drafts.keySet()) {
-                                draftComments.put(file, drafts.get(file).size());
+                        int number = mResponse.mChange.revisions.get(mCurrentRevision).number;
+                        for (List<CommentInfo> comments : drafts.values()) {
+                            for (CommentInfo c : comments) {
+                                c.patchSet = number;
+                                c.author = mAccount.mAccount;
                             }
                         }
-                        return draftComments;
+                        return drafts;
                     }
-                    return new HashMap<String, Integer>();
+                    return new HashMap<String, List<CommentInfo>>();
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -3334,7 +3342,8 @@ public class ChangeDetailsFragment extends Fragment implements
             List<Integer> revisionsWithComments = new ArrayList<>();
             if (response.mChange.messages != null) {
                 for (ChangeMessageInfo message : response.mChange.messages) {
-                    if (message.message != null && COMMENTS_PATTERN.matcher(message.message).find()) {
+                    if (message.message != null
+                            && COMMENTS_PATTERN.matcher(message.message).find()) {
                         if (!revisionsWithComments.contains(message.revisionNumber)) {
                             revisionsWithComments.add(message.revisionNumber);
                         }
@@ -3350,27 +3359,31 @@ public class ChangeDetailsFragment extends Fragment implements
                     updateRevisionComments(response,
                             api.getChangeRevisionComments(
                                     String.valueOf(response.mChange.legacyChangeId),
-                                    String.valueOf(rev)).blockingFirst());
+                                    String.valueOf(rev)).blockingFirst(), false);
                 } catch (Exception ex) {
                     Log.e(TAG, "Can't match comments for messages.", ex);
                 }
             }
         } else {
-            // Perform a single fetch
+            // Perform a single fetch of comments and drafts
             updateRevisionComments(response,
                     api.getChangeComments(
-                        String.valueOf(response.mChange.legacyChangeId)).blockingFirst());
-
+                        String.valueOf(response.mChange.legacyChangeId)).blockingFirst(), false);
+            if (mAccount.hasAuthenticatedAccessMode()) {
+                updateRevisionComments(response,
+                        api.getChangeDraftComments(
+                            String.valueOf(response.mChange.legacyChangeId)).blockingFirst(), true);
+            }
         }
     }
 
     @SuppressWarnings("ConstantConditions")
     private void updateRevisionComments(
-            DataResponse response, Map<String, List<CommentInfo>> comments) {
+            DataResponse response, Map<String, List<CommentInfo>> comments, boolean draft) {
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
         if (comments != null) {
-            updateMessageComments(response, comments);
+            updateMessageComments(response, comments, draft);
             if (api.supportsFeature(Features.UNRESOLVED_COMMENTS)) {
                 updateUnresolvedComments(response, comments);
             }
@@ -3379,32 +3392,99 @@ public class ChangeDetailsFragment extends Fragment implements
 
     @SuppressWarnings("Convert2streamapi")
     private void updateMessageComments(
-            DataResponse response, Map<String, List<CommentInfo>> comments) {
+            DataResponse response, Map<String, List<CommentInfo>> comments, boolean draft) {
         final Map<String, LinkedHashMap<String, List<CommentInfo>>> mwc =
                 response.mMessagesWithComments;
 
+        // Create new ChangeMessageInfo if needed
+        if (draft) {
+            for (String file : comments.keySet()) {
+                List<CommentInfo> items = comments.get(file);
+                if (items != null) {
+                    for (CommentInfo comment : items) {
+                        boolean found = false;
+                        int last = 0;
+                        for (ChangeMessageInfo message : response.mChange.messages) {
+                            if (message.id.equals("draft_" + comment.patchSet)) {
+                                found = true;
+                                break;
+                            } else if (comment.updated.compareTo(message.date) <= 0) {
+                                break;
+                            }
+                            last++;
+                        }
+
+                        if (!found) {
+                            final List<ChangeMessageInfo> messages = new ArrayList<>(
+                                    Arrays.asList(response.mChange.messages));
+                            ChangeMessageInfo message = new ChangeMessageInfo();
+                            message.id = "draft_" + comment.patchSet;
+                            message.date = comment.updated;
+                            message.author = mAccount.mAccount;
+                            message.realAuthor = mAccount.mAccount;
+                            message.message = "Patch Set " + comment.patchSet + ":\n\n(draft)";
+                            message.revisionNumber = comment.patchSet;
+                            messages.add(last, message);
+                            response.mChange.messages = messages.toArray(new ChangeMessageInfo[0]);
+                        } else {
+                            response.mChange.messages[last].date = comment.updated;
+                        }
+                    }
+                }
+            }
+        }
+
         // Match comments with messages
         for (ChangeMessageInfo message : response.mChange.messages) {
-            if (message.message != null && COMMENTS_PATTERN.matcher(message.message).find()) {
+            if (message.message != null) {
                 for (String file : comments.keySet()) {
                     List<CommentInfo> items = comments.get(file);
-                    if (items != null) {
-                        for (CommentInfo comment : items) {
-                            comment.path = file;
-                            if (comment.updated.compareTo(message.date) == 0 &&
-                                    comment.author.accountId == message.author.accountId) {
-                                if (!mwc.containsKey(message.id)) {
-                                    mwc.put(message.id, new LinkedHashMap<>());
-                                }
+                    if (items == null) {
+                        continue;
+                    }
+                    Collections.sort(items, (c1, c2) -> {
+                        if (c1.line == null && c2.line != null) {
+                            return -1;
+                        }
+                        if (c1.line != null && c2.line == null) {
+                            return 1;
+                        }
+                        if (c1.line == null) {
+                            return c1.updated.compareTo(c2.updated);
+                        }
+                        int ret = Integer.compare(c1.line, c2.line);
+                        if (ret == 0) {
+                            return c1.updated.compareTo(c2.updated);
+                        }
+                        return ret;
+                    });
+                    for (CommentInfo comment : items) {
+                        comment.draft = draft;
+                        comment.path = file;
+                        AccountInfo commentAuthor = comment.author != null
+                                ? comment.author : mAccount.mAccount;
+                        boolean sameComment = !draft &&
+                                comment.updated.compareTo(message.date) == 0 &&
+                                commentAuthor.accountId == message.author.accountId;
+                        boolean sameDraft = draft &&
+                                message.id.equals("draft_" + comment.patchSet);
+                        if (sameComment || sameDraft) {
+                            if (!mwc.containsKey(message.id)) {
+                                mwc.put(message.id, new LinkedHashMap<>());
+                            }
 
-                                final LinkedHashMap<String, List<CommentInfo>> filesAndComments
-                                        = mwc.get(message.id);
-                                if (!filesAndComments.containsKey(file)) {
-                                    filesAndComments.put(file, new ArrayList<>());
-                                }
+                            final LinkedHashMap<String, List<CommentInfo>> filesAndComments
+                                    = mwc.get(message.id);
+                            if (!filesAndComments.containsKey(file)) {
+                                filesAndComments.put(file, new ArrayList<>());
+                            }
 
-                                List<CommentInfo> list = filesAndComments.get(file);
-                                comment.patchSet = message.revisionNumber;
+                            List<CommentInfo> list = filesAndComments.get(file);
+                            if (!containsComment(list, comment)) {
+                                comment.messagePatchSet = message.revisionNumber;
+                                if (comment.patchSet == 0) {
+                                    comment.patchSet = message.revisionNumber;
+                                }
                                 list.add(comment);
                             }
                         }
@@ -3473,6 +3553,16 @@ public class ChangeDetailsFragment extends Fragment implements
             }
         }
         return count;
+    }
+
+    private Map<String, Integer> computeNumberOfComments(Map<String, List<CommentInfo>> comments) {
+        Map<String, Integer> map = new HashMap<>();
+        if (comments != null) {
+            for (String file : comments.keySet()) {
+                map.put(file, comments.get(file).size());
+            }
+        }
+        return map;
     }
 
     private boolean isLocked() {
@@ -3742,5 +3832,14 @@ public class ChangeDetailsFragment extends Fragment implements
             }
             input.message += "\n\n" + sb.toString();
         }
+    }
+
+    private boolean containsComment(List<CommentInfo> comments, CommentInfo comment) {
+        for (CommentInfo c : comments) {
+            if (c.id.equals(comment.id)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -712,15 +712,24 @@ public class Formatter {
     public static void toCommentLine(TextView v, CommentInfo comment) {
         if (comment == null) {
             v.setText(null);
-        } else if (comment.line == null) {
-            v.setText(R.string.change_details_comment_file);
-        } else if (SideType.PARENT.equals(comment.side)) {
-            v.setText(v.getContext().getString(
-                    R.string.change_details_comment_base_line_number, comment.line));
-        } else {
-            v.setText(v.getContext().getString(
-                    R.string.change_details_comment_line_number, comment.line));
+            return;
         }
+
+        String link = "";
+        if (comment.patchSet != comment.messagePatchSet) {
+            link = v.getContext().getString(
+                    R.string.change_details_comment_patchset, comment.patchSet);
+        }
+        if (comment.line == null) {
+            link += v.getContext().getString(R.string.change_details_comment_file);
+        } else if (SideType.PARENT.equals(comment.side)) {
+            link += v.getContext().getString(
+                    R.string.change_details_comment_base_line_number, comment.line);
+        } else {
+            link += v.getContext().getString(
+                    R.string.change_details_comment_line_number, comment.line);
+        }
+        v.setText(link);
     }
 
     @BindingAdapter("accountStatus")
