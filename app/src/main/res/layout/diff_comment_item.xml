@@ -146,6 +146,7 @@
                         android:layout_height="wrap_content"
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <com.ruesga.rview.widget.StyleableTextView
@@ -210,6 +211,13 @@
                         app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
                         app:userMessage="@{model.commentA.message}"
                         android:gravity="center_vertical"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="?android:attr/listDivider" />
 
                     <include
                         android:id="@+id/actionsA"
@@ -305,6 +313,7 @@
                         android:layout_height="wrap_content"
                         android:paddingTop="3dp"
                         android:paddingBottom="3dp"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <com.ruesga.rview.widget.StyleableTextView
@@ -351,6 +360,13 @@
                         app:regexpLinkifyCommitsOnly="@{Boolean.TRUE}"
                         app:userMessage="@{model.commentB.message}"
                         android:gravity="center_vertical"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="?android:attr/listDivider" />
 
                     <include
                         android:id="@+id/actionsB"

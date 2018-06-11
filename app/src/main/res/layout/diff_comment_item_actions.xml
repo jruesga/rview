@@ -20,6 +20,7 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.Features" />
         <variable name="canEdit" type="java.lang.Boolean" />
         <variable name="isDraft" type="java.lang.Boolean" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.CommentInfo" />
@@ -29,7 +30,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="5dp"
+        android:gravity="center_vertical"
         android:visibility="@{!safeUnbox(canEdit) ? View.GONE : View.VISIBLE}">
         <ImageView
             android:id="@+id/reply"
@@ -58,6 +59,19 @@
             android:onClick="@{handlers::onDonePressed}"
             tools:ignore="ContentDescription"/>
         <ImageView
+            android:id="@+id/ack"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            app:srcCompat="@drawable/ic_thumb_up"
+            android:tint="?attr/colorAccent"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
+            android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
+            android:onClick="@{handlers::onAckPressed}"
+            tools:ignore="ContentDescription"/>
+        <ImageView
             android:id="@+id/edit"
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -67,7 +81,7 @@
             android:tint="?attr/colorAccent"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:visibility="@{safeUnbox(isDraft) ? View.VISIBLE : View.GONE}"
-            android:tag='@{model.patchSet + "/" + model.id + "/" + (model.inReplyTo == null ? "" : model.inReplyTo) + "/" + model.line}'
+            android:tag='@{model.patchSet + "/" + model.id + "/" + safeUnbox(model.unresolved) + "/" + (model.inReplyTo == null ? "" : model.inReplyTo) + "/" + model.line}'
             android:onClick="@{handlers::onEditPressed}"
             tools:ignore="ContentDescription"/>
         <ImageView
@@ -83,6 +97,21 @@
             android:onClick="@{handlers::onDeletePressed}"
             android:tag='@{model.patchSet + "/" + model.id}'
             tools:ignore="ContentDescription"/>
+        <Switch
+            android:id="@+id/unresolved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:bindToFeature="@{Features.UNRESOLVED_COMMENTS}"
+            app:bindToBoolean="@{safeUnbox(isDraft)}"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp"
+            android:scaleX="0.80"
+            android:scaleY="0.80"
+            android:text="@string/draft_resolved"
+            android:onClick="@{handlers::onResolvedPressed}"
+            android:tag='@{model.patchSet + "/" + model.id + "/" + safeUnbox(model.unresolved) + "/" + (model.inReplyTo == null ? "" : model.inReplyTo) + "/" + model.line}'
+            android:checked="@={!model.unresolved}"/>
     </LinearLayout>
 
 </layout>

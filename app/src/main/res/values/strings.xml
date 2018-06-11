@@ -474,6 +474,8 @@
     <string name="draft_file_comment">File comment in &lt;b&gt;<xliff:g id="side" example="left">%1$s</xliff:g>&lt;/b&gt; side</string>
     <string name="draft_hint">Draft comment</string>
     <string name="draft_reply_done" translatable="false">Done</string>
+    <string name="draft_reply_ack" translatable="false">Ack</string>
+    <string name="draft_resolved">Resolved</string>
 
     <!-- Diff viewer -->
     <string name="diff_viewer_no_diffs">No differences</string>

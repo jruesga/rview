@@ -83,9 +83,9 @@ public class EditDialogFragment extends RevealDialogFragment {
 
 
     public static EditDialogFragment newInstance(String title, String subtitle, String value,
-                String action, String hint, boolean allowEmpty, boolean allowSuggestions,
-                boolean multiLine, String regexp, View anchor, int requestCode,
-                @Nullable Bundle data) {
+            String action, String hint, boolean allowEmpty, boolean allowSuggestions,
+            boolean multiLine, String regexp, View anchor, int requestCode,
+            @Nullable Bundle data) {
         EditDialogFragment fragment = new EditDialogFragment();
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_TITLE, title);
@@ -114,7 +114,7 @@ public class EditDialogFragment extends RevealDialogFragment {
     private Bundle mRequestData;
     private Pattern mRegExp = null;
 
-    private EditDialogBinding mBinding;
+    protected EditDialogBinding mBinding;
     private final Model mModel = new Model();
 
     private String mOriginalValue;

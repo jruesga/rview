@@ -40,7 +40,7 @@ public enum Features {
     REVISION_DESCRIPTION,
     @Since(2.14)
     TAGGED_MESSAGES,
-    @Since(2.15)
+    @Since(2.14)
     UNRESOLVED_COMMENTS,
     @Since(2.13)
     VOTES

@@ -214,7 +214,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         }
 
         @Override
-        public void onReply(View v, String revisionId, String commentId, Integer line) {
+        public void onReplyToDraft(View v, String revisionId, String commentId, Integer line) {
             boolean left = !(revisionId.equals(mRevision));
 
             Bundle data = new Bundle();
@@ -225,7 +225,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         }
 
         @Override
-        public void onDone(View v, String revisionId, String commentId, Integer line) {
+        public void onDoneToDraft(View v, String revisionId, String commentId, Integer line) {
             String msg = getString(R.string.draft_reply_done);
             mActionLoader.clear();
             mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
@@ -234,8 +234,17 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         }
 
         @Override
+        public void onAckToDraft(View v, String revisionId, String commentId, Integer line) {
+            String msg = getString(R.string.draft_reply_ack);
+            mActionLoader.clear();
+            mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
+                    new String[]{revisionId, commentId,
+                            line == null ? null : String.valueOf(line), msg});
+        }
+
+        @Override
         public void onEditDraft(View v, String revisionId, String draftId,
-                String inReplyTo, Integer line, String msg) {
+                String inReplyTo, Integer line, String msg, boolean unresolved) {
             boolean left = !(revisionId.equals(mRevision));
 
             Bundle data = new Bundle();
@@ -243,7 +252,18 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             data.putString("revisionId", revisionId);
             data.putString("draftId", draftId);
             data.putString("inReplyTo", inReplyTo);
+            data.putBoolean("unresolved", unresolved);
             performShowDraftMessageDialog(v, line, left, msg, REQUEST_CODE_EDIT, data);
+        }
+
+        @Override
+        public void onResolvedDraftChanged(View v, String revisionId, String draftId,
+                String inReplyTo, Integer line, String msg, boolean resolved) {
+            mActionLoader.clear();
+            mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
+                    new String[]{revisionId, draftId, inReplyTo,
+                            line == null ? null : String.valueOf(line),
+                            msg, String.valueOf(resolved)});
         }
 
         @Override
@@ -831,7 +851,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                         case ModelHelper.ACTION_UPDATE_DRAFT:
                             line = params[3] == null ? null : Integer.valueOf(params[3]);
                             return performUpdateDraft(api, params[0], params[1], params[2],
-                                    line, params[4]);
+                                    line, params[4], Boolean.parseBoolean(params[5]));
                         case ModelHelper.ACTION_DELETE_DRAFT:
                             performDeleteDraft(api, params[0], params[1]);
                             break;
@@ -877,12 +897,14 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             input.inReplyTo = commentId;
         }
         input.message = msg;
-        input.message = msg;
         if (line != null) {
             input.line = line;
         }
         input.path = mFile;
         input.side = side;
+        if (api.supportsFeature(Features.UNRESOLVED_COMMENTS)) {
+            input.unresolved = TextUtils.isEmpty(input.inReplyTo);
+        }
         CommentInfo comment = api.createChangeRevisionDraft(
                 String.valueOf(mChange.legacyChangeId), rev, input).blockingFirst();
 
@@ -894,7 +916,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
     }
 
     private CommentInfo performUpdateDraft(GerritApi api, String revision,
-            String draftId, String inReplyTo, Integer line, String msg) {
+            String draftId, String inReplyTo, Integer line, String msg, boolean unresolved) {
         int base = Integer.parseInt(revision);
         SideType side = base == 0 ? SideType.PARENT : SideType.REVISION;
         String rev = base == 0 ? mRevisionId : revision;
@@ -908,6 +930,9 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         }
         input.path = mFile;
         input.side = side;
+        if (api.supportsFeature(Features.UNRESOLVED_COMMENTS)) {
+            input.unresolved = unresolved;
+        }
         CommentInfo comment = api.updateChangeRevisionDraft(
                 String.valueOf(mChange.legacyChangeId), rev, draftId, input).blockingFirst();
 
@@ -1164,26 +1189,27 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         String commentId = requestData.getString("commentId");
         String draftId = requestData.getString("draftId");
         String inReplyTo = requestData.getString("inReplyTo");
+        String unresolved = String.valueOf(requestData.getBoolean("unresolved", false));
         switch (requestCode) {
             case REQUEST_CODE_NEW_DRAFT:
                 mActionLoader.clear();
                 mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
                         new String[]{revisionId, null,
-                                line == null ? null : String.valueOf(line), newValue});
+                                line == null ? null : String.valueOf(line), newValue, unresolved});
                 break;
 
             case REQUEST_CODE_REPLY:
                 mActionLoader.clear();
                 mActionLoader.restart(ModelHelper.ACTION_CREATE_DRAFT,
                         new String[]{revisionId, commentId,
-                                line == null ? null : String.valueOf(line), newValue});
+                                line == null ? null : String.valueOf(line), newValue, unresolved});
                 break;
 
             case REQUEST_CODE_EDIT:
                 mActionLoader.clear();
                 mActionLoader.restart(ModelHelper.ACTION_UPDATE_DRAFT,
                         new String[]{revisionId, draftId, inReplyTo,
-                                line == null ? null : String.valueOf(line), newValue});
+                                line == null ? null : String.valueOf(line), newValue, unresolved});
                 break;
         }
     }

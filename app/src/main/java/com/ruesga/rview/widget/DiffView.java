@@ -33,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.google.gson.annotations.SerializedName;
@@ -95,7 +96,7 @@ public class DiffView extends FrameLayout {
             if (mView.mOnCommentListener != null) {
                 String[] s = ((String) v.getTag()).split("/");
                 Integer line = s[2] == null || s[2].equals("null") ? null : Integer.valueOf(s[2]);
-                mView.mOnCommentListener.onReply(v, s[0], s[1], line);
+                mView.mOnCommentListener.onReplyToDraft(v, s[0], s[1], line);
             }
         }
 
@@ -103,7 +104,15 @@ public class DiffView extends FrameLayout {
             if (mView.mOnCommentListener != null) {
                 String[] s = ((String) v.getTag()).split("/");
                 Integer line = s[2] == null || s[2].equals("null") ? null : Integer.valueOf(s[2]);
-                mView.mOnCommentListener.onDone(v, s[0], s[1], line);
+                mView.mOnCommentListener.onDoneToDraft(v, s[0], s[1], line);
+            }
+        }
+
+        public void onAckPressed(View v) {
+            if (mView.mOnCommentListener != null) {
+                String[] s = ((String) v.getTag()).split("/");
+                Integer line = s[2] == null || s[2].equals("null") ? null : Integer.valueOf(s[2]);
+                mView.mOnCommentListener.onAckToDraft(v, s[0], s[1], line);
             }
         }
 
@@ -111,9 +120,20 @@ public class DiffView extends FrameLayout {
             if (mView.mOnCommentListener != null) {
                 String[] s = ((String) v.getTag()).split("/");
                 String msg = (String) v.getTag(R.id.tag_key);
-                Integer line = s[3] == null || s[3].equals("null") ? null : Integer.valueOf(s[3]);
-                mView.mOnCommentListener.onEditDraft(
-                        v, s[0], s[1], s[2], line, msg);
+                Integer line = s[4] == null || s[4].equals("null") ? null : Integer.valueOf(s[4]);
+                boolean unresolved = Boolean.parseBoolean(s[2]);
+                mView.mOnCommentListener.onEditDraft(v, s[0], s[1], s[3], line, msg, unresolved);
+            }
+        }
+
+        public void onResolvedPressed(View v) {
+            if (mView.mOnCommentListener != null) {
+                String[] s = ((String) v.getTag()).split("/");
+                String msg = (String) v.getTag(R.id.tag_key);
+                Integer line = s[4] == null || s[4].equals("null") ? null : Integer.valueOf(s[4]);
+                boolean unresolved = !((Switch) v).isChecked();
+                mView.mOnCommentListener.onResolvedDraftChanged(
+                        v, s[0], s[1], s[3], line, msg, unresolved);
             }
         }
 
@@ -143,12 +163,17 @@ public class DiffView extends FrameLayout {
     public interface OnCommentListener {
         void onNewDraft(View v, boolean left, Integer line);
 
-        void onReply(View v, String revisionId, String commentId, Integer line);
+        void onReplyToDraft(View v, String revisionId, String commentId, Integer line);
 
-        void onDone(View v, String revisionId, String commentId, Integer line);
+        void onDoneToDraft(View v, String revisionId, String commentId, Integer line);
+
+        void onAckToDraft(View v, String revisionId, String commentId, Integer line);
 
         void onEditDraft(View v, String revisionId, String draftId,
-                String inReplyTo, Integer line, String msg);
+                String inReplyTo, Integer line, String msg, boolean unresolved);
+
+        void onResolvedDraftChanged(View v, String revisionId, String draftId,
+                         String inReplyTo, Integer line, String msg, boolean resolved);
 
         void onDeleteDraft(View v, String revisionId, String draftId);
     }
@@ -465,9 +490,11 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setHandlers(mEventHandlers);
                 if (comment.commentA != null) {
                     holder.mBinding.actionsA.edit.setTag(R.id.tag_key, comment.commentA.message);
+                    holder.mBinding.actionsA.unresolved.setTag(R.id.tag_key, comment.commentA.message);
                 }
                 if (comment.commentB != null) {
                     holder.mBinding.actionsB.edit.setTag(R.id.tag_key, comment.commentB.message);
+                    holder.mBinding.actionsB.unresolved.setTag(R.id.tag_key, comment.commentB.message);
                 }
                 holder.mBinding.executePendingBindings();
 
