@@ -18,7 +18,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_diff_options"
-        android:icon="@drawable/ic_filter_list"
+        android:icon="@drawable/ic_more_horiz"
         android:title="@string/menu_diff_options"
         app:showAsAction="always"/>
 </menu>
