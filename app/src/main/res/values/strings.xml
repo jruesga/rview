@@ -62,7 +62,6 @@
     <string name="menu_open">Open</string>
     <string name="menu_merged">Merged</string>
     <string name="menu_abandoned">Abandoned</string>
-    <string name="menu_trending">Trending</string>
     <string name="menu_my_menu_category">My menu</string>
     <string name="menu_dashboard">Dashboard</string>
     <string name="menu_drafts">Drafts</string>
@@ -71,6 +70,9 @@
     <string name="menu_starred">Starred</string>
     <string name="menu_watched">Watched</string>
     <string name="menu_edits">Edits</string>
+    <string name="menu_hot_changes_category">Hot changes</string>
+    <string name="menu_trending">Trending</string>
+    <string name="menu_following">Following</string>
     <string name="menu_my_filters_category">My filters</string>
     <string name="menu_account_settings">Settings</string>
     <string name="menu_account_status">Status</string>
@@ -555,6 +557,8 @@
     <string name="account_details_emails">Emails</string>
     <string name="account_details_registered_on">Registered</string>
     <string name="account_details_status">Status</string>
+    <string name="account_details_follow">Follow</string>
+    <string name="account_details_unfollow">Unfollow</string>
 
     <!-- Project stats -->
     <string name="project_details_name">Name</string>
@@ -575,6 +579,7 @@
     <string name="empty_states_server_not_reached">Server is down or not reached</string>
     <string name="empty_states_error">Something went wrong</string>
     <string name="empty_states_no_trending">No trending activity detected\nin the last hours</string>
+    <string name="empty_states_no_following">Tap on accounts avatars\nand start following people</string>
 
     <!-- Untrusted connection dialog -->
     <string name="untrusted_connection_title">Untrusted connection</string>

@@ -56,6 +56,7 @@ import com.ruesga.rview.drawer.DrawerNavigationSubMenu;
 import com.ruesga.rview.drawer.DrawerNavigationView;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.fragments.DashboardFragment;
+import com.ruesga.rview.fragments.FollowingChangeListFragment;
 import com.ruesga.rview.fragments.PageableFragment;
 import com.ruesga.rview.fragments.ServerInfoDialogFragment;
 import com.ruesga.rview.fragments.SetAccountStatusDialogFragment;
@@ -491,6 +492,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 && Preferences.isAccountNotificationsEnabled(this, mAccount);
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
+        menu.setGroupVisible(R.id.category_hot, !show);
         menu.setGroupVisible(R.id.category_my_menu, !show && auth);
         // Drafts are removed from Api on 2.15+
         menu.findItem(R.id.menu_drafts).setVisible(!show && auth
@@ -540,6 +542,7 @@ public class MainActivity extends ChangeListBaseActivity {
         if (mBinding.drawerLayout != null) {
             if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                 mBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+                mBinding.drawerNavigationView.updateNavigationView();
             }
         }
 
@@ -631,6 +634,10 @@ public class MainActivity extends ChangeListBaseActivity {
         switch (item.getItemId()) {
             case R.id.menu_trending:
                 openTrendingFragment();
+                break;
+
+            case R.id.menu_following:
+                openFollowingFragment();
                 break;
 
             case R.id.menu_dashboard:
@@ -808,6 +815,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 if (mBinding.drawerLayout != null) {
                     if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                         mBinding.drawerLayout.closeDrawer(GravityCompat.START, true);
+                        mBinding.drawerNavigationView.updateNavigationView();
                     }
                 }
                 break;
@@ -958,6 +966,14 @@ public class MainActivity extends ChangeListBaseActivity {
 
         Fragment newFragment = TrendingChangeListFragment.newInstance();
         openFragment(-1, getString(R.string.menu_trending), null, newFragment);
+    }
+
+    private void openFollowingFragment() {
+        mModel.filterName = getString(R.string.menu_following);
+        mModel.filterQuery = null;
+
+        Fragment newFragment = FollowingChangeListFragment.newInstance();
+        openFragment(-1, getString(R.string.menu_following), null, newFragment);
     }
 
     private void openFilterFragment(int id, CharSequence title, String filter) {

@@ -519,6 +519,13 @@ public class DrawerNavigationView extends DrawerScrimInsetsFrameLayout {
         });
     }
 
+    public void updateNavigationView() {
+        if (mPresenter != null) {
+            mPresenter.updateMenuView(false);
+            mPresenter.resetScroll();
+        }
+    }
+
     /**
      * Listener for handling events on navigation items.
      */

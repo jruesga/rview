@@ -489,4 +489,8 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         mAdapter.add(new ChangeInfo());
         mAdapter.notifyItemInserted(mAdapter.mData.size() - 1);
     }
+
+    void resetScroll() {
+        mBinding.list.scrollToPosition(0);
+    }
 }

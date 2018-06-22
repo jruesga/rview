@@ -794,6 +794,9 @@ public class Formatter {
         } else if (state.state == EmptyState.NO_TRENDING_STATE) {
             v.setImageDrawable(ContextCompat.getDrawable(
                     v.getContext(), R.drawable.ic_vitals));
+        } else if (state.state == EmptyState.NO_FOLLOWING_STATE) {
+            v.setImageDrawable(ContextCompat.getDrawable(
+                    v.getContext(), R.drawable.ic_follow_person));
         }
     }
 
@@ -813,7 +816,14 @@ public class Formatter {
             v.setText(R.string.empty_states_error);
         } else if (state.state == EmptyState.NO_TRENDING_STATE) {
             v.setText(R.string.empty_states_no_trending);
+        } else if (state.state == EmptyState.NO_FOLLOWING_STATE) {
+            v.setText(R.string.empty_states_no_following);
         }
+    }
+
+    public static boolean hasEmptyStateRetry(int state) {
+        return state != EmptyState.NORMAL_STATE
+                && state != EmptyState.NO_FOLLOWING_STATE;
     }
 
     @BindingAdapter("humanReadableSize")

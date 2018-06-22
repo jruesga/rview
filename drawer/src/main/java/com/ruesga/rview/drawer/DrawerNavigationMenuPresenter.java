@@ -128,6 +128,10 @@ class DrawerNavigationMenuPresenter implements MenuPresenter {
         }
     }
 
+    void resetScroll() {
+        mMenuView.scrollToPosition(0);
+    }
+
     void setWithMiniDrawer(boolean withMiniDrawer) {
         mWithMiniDrawer = withMiniDrawer;
     }

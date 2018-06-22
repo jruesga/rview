@@ -19,49 +19,53 @@
         <item>menu_open</item>
         <item>menu_merged</item>
         <item>menu_abandoned</item>
-        <item>menu_trending</item>
         <item>menu_dashboard</item>
         <item>menu_drafts</item>
         <item>menu_draft_comments</item>
         <item>menu_starred</item>
         <item>menu_watched</item>
         <item>menu_edits</item>
+        <item>menu_trending</item>
+        <item>menu_following</item>
     </string-array>
     <string-array name="query_filters_ids_titles" translatable="false">
         <item>@string/menu_open</item>
         <item>@string/menu_merged</item>
         <item>@string/menu_abandoned</item>
-        <item>@string/menu_trending</item>
         <item>@string/menu_dashboard</item>
         <item>@string/menu_drafts</item>
         <item>@string/menu_draft_comments</item>
         <item>@string/menu_starred</item>
         <item>@string/menu_watched</item>
         <item>@string/menu_edits</item>
+        <item>@string/menu_trending</item>
+        <item>@string/menu_following</item>
     </string-array>
     <string-array name="query_filters_auth" translatable="false">
         <item>false</item>
         <item>false</item>
         <item>false</item>
+        <item>true</item>
+        <item>true</item>
+        <item>true</item>
+        <item>true</item>
+        <item>true</item>
+        <item>true</item>
         <item>false</item>
-        <item>true</item>
-        <item>true</item>
-        <item>true</item>
-        <item>true</item>
-        <item>true</item>
-        <item>true</item>
+        <item>false</item>
     </string-array>
     <string-array name="query_filters_values" translatable="false">
         <item>status:open</item>
         <item>status:merged</item>
         <item>status:abandoned</item>
         <item />
-        <item />
         <item>is:draft</item>
         <item>has:draft</item>
         <item>is:starred</item>
         <item>is:watched AND is:open</item>
         <item>has:edit</item>
+        <item />
+        <item />
     </string-array>
 
     <string-array name="dashboard_titles" translatable="false">

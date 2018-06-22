@@ -38,12 +38,6 @@
                     android:title="@string/menu_abandoned"
                     android:orderInCategory="2"
                     android:checkable="true"/>
-                <item
-                    android:id="@+id/menu_trending"
-                    android:icon="@drawable/ic_trending_up"
-                    android:title="@string/menu_trending"
-                    android:orderInCategory="3"
-                    android:checkable="true"/>
             </menu>
         </item>
     </group>
@@ -98,6 +92,26 @@
             <menu
                 >
                 <!-- Custom filters goes here -->
+            </menu>
+        </item>
+    </group>
+    <group
+        android:id="@+id/category_hot"
+        android:checkableBehavior="all">
+        <item android:title="@string/menu_hot_changes_category">
+            <menu>
+                <item
+                    android:id="@+id/menu_trending"
+                    android:icon="@drawable/ic_trending_up"
+                    android:title="@string/menu_trending"
+                    android:orderInCategory="9998"
+                    android:checkable="true"/>
+                <item
+                    android:id="@+id/menu_following"
+                    android:icon="@drawable/ic_follow_person"
+                    android:title="@string/menu_following"
+                    android:orderInCategory="9999"
+                    android:checkable="true"/>
             </menu>
         </item>
     </group>

@@ -124,7 +124,8 @@ public class ChangeListByFilterFragment extends ChangeListFragment
     }
 
     void setupLoaders(RxLoaderManager loaderManager) {
-        mNewChangeLoader = loaderManager.create("new_change", this::performCreateNewChange, mNewChangeObserver);
+        mNewChangeLoader = loaderManager.create("new_change",
+                this::performCreateNewChange, mNewChangeObserver);
     }
 
     @Override
@@ -152,8 +153,18 @@ public class ChangeListByFilterFragment extends ChangeListFragment
     }
 
     @SuppressWarnings("ConstantConditions")
+    protected String getFilter() {
+        return getArguments().getString(EXTRA_FILTER);
+    }
+
+    @SuppressWarnings("ConstantConditions")
     protected List<ChangeInfo> doFetchChanges(Integer count, Integer start) {
-        final ChangeQuery query = ChangeQuery.parse(getArguments().getString(EXTRA_FILTER));
+        final String filter = getFilter();
+        if (filter == null) {
+            return new ArrayList<>();
+        }
+
+        final ChangeQuery query = ChangeQuery.parse(getFilter());
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
 
@@ -187,6 +198,8 @@ public class ChangeListByFilterFragment extends ChangeListFragment
 
     @Override
     public void fetchNewItems() {
+        resetScroll();
+
         final int count = Preferences.getAccountFetchedItems(
                 getContext(), Preferences.getAccount(getContext()));
         final int start = 0;

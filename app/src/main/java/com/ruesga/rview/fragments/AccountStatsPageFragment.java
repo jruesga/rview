@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,21 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
 
     private static final String TAG = "AccountStatsPageFragment";
 
+    @Keep
+    @SuppressWarnings({"UnusedParameters", "unused"})
+    public static class EventHandlers {
+        private final AccountStatsPageFragment mFragment;
+
+        public EventHandlers(AccountStatsPageFragment fragment) {
+            mFragment = fragment;
+        }
+
+        public void onFollowPressed(View v) {
+            mFragment.onFollowPressed(v);
+        }
+    }
+
+
     private AccountDetailsViewBinding mBinding;
     private String mAccountId;
     private AccountDetailInfo mCachedAccount;
@@ -78,6 +94,7 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.account_details_view, container, false);
         mBinding.setModel(null);
+        mBinding.setHandlers(new EventHandlers(this));
         return mBinding.getRoot();
     }
 
@@ -136,6 +153,8 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
         RviewImageHelper.bindAvatar(getContext(), result, mBinding.avatar,
                 RviewImageHelper.getDefaultAvatar(getContext(), R.color.primaryDarkForeground));
         mBinding.setModel(result);
+        Account account = Preferences.getAccount(getContext());
+        mBinding.setFollow(Preferences.isAccountFollowingState(getContext(), account, result));
         mBinding.executePendingBindings();
     }
 
@@ -165,5 +184,13 @@ public class AccountStatsPageFragment extends StatsPageFragment<AccountDetailInf
         ChangeQuery filter = new ChangeQuery().project(item);
         ActivityHelper.openStatsActivity(getContext(), title, item,
                 StatsFragment.PROJECT_STATS, item, filter, null);
+    }
+
+    private void onFollowPressed(View v) {
+        Account account = Preferences.getAccount(v.getContext());
+        boolean following = Preferences.isAccountFollowingState(
+                v.getContext(), account, mCachedAccount);
+        Preferences.setAccountFollowingState(v.getContext(), account, mCachedAccount, !following);
+        mBinding.setFollow(!following);
     }
 }

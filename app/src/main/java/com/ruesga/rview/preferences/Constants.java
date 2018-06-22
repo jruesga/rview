@@ -161,4 +161,5 @@ public class Constants {
     public static final String PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY
             = "account_attachments_image_optimizations_quality";
     public static final String PREF_ACCOUNT_CI_SHOW = "account_ci_show";
+    public static final String PREF_ACCOUNT_FOLLOWING = "following";
 }

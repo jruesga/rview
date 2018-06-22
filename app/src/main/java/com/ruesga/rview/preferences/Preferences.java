@@ -24,6 +24,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.ruesga.rview.R;
+import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
@@ -57,6 +58,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_STATUSES;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FETCHED_ITEMS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_FOLLOWING;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HANDLE_LINKS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_INTRALINE_DIFFS;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_HIGHLIGHT_TABS;
@@ -662,5 +664,52 @@ public class Preferences {
     public static boolean isAccountDashboardOngoingSort(Context context, Account account) {
         return account != null && getAccountPreferences(context, account)
                 .getBoolean(PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT, false);
+    }
+
+    public static Set<AccountInfo> getAccountFollowingState(Context context, Account account) {
+        if (account == null) {
+            return new HashSet<>();
+        }
+
+        Set<String> followingAccounts = getAccountPreferences(
+                context, account).getStringSet(PREF_ACCOUNT_FOLLOWING, null);
+        if (followingAccounts == null) {
+            return new HashSet<>();
+        }
+
+        Set<AccountInfo> accounts = new HashSet<>();
+        for (String acct : followingAccounts) {
+            accounts.add(SerializationManager.getInstance().fromJson(acct, AccountInfo.class));
+        }
+        return accounts;
+    }
+
+    public static boolean isAccountFollowingState(
+            Context context, Account account, AccountInfo accountId) {
+        for (AccountInfo acct : getAccountFollowingState(context, account)) {
+            if (acct.accountId == accountId.accountId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void setAccountFollowingState(
+            Context context, Account account, AccountInfo acct, boolean follow) {
+        Set<AccountInfo> accounts = getAccountFollowingState(context, account);
+        Set<String> followingAccounts = new HashSet<>();
+        for (AccountInfo c : accounts) {
+            if (c.accountId != acct.accountId) {
+                followingAccounts.add(SerializationManager.getInstance().toJson(c));
+            }
+        }
+        String json = SerializationManager.getInstance().toJson(acct);
+        if (follow) {
+            followingAccounts.add(json);
+        }
+
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putStringSet(PREF_ACCOUNT_FOLLOWING, followingAccounts);
+        editor.apply();
     }
 }

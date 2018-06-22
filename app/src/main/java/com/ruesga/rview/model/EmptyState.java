@@ -33,6 +33,7 @@ public class EmptyState {
     public static final int SERVER_CANNOT_BE_REACHED = 4;
     public static final int ERROR_STATE = 5;
     public static final int NO_TRENDING_STATE = 6;
+    public static final int NO_FOLLOWING_STATE = 7;
 
     public int state = NORMAL_STATE;
 }

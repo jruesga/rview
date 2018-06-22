@@ -21,6 +21,7 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.misc.Formatter" />
         <import type="com.ruesga.rview.model.EmptyState" />
         <variable name="model" type="com.ruesga.rview.model.EmptyState" />
         <variable name="handlers" type="com.ruesga.rview.model.EmptyState.EventHandlers" />
@@ -48,11 +49,11 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:layout_marginTop="20dp"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="?android:attr/textColorSecondary"
             android:maxLines="2"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
             app:emptyStatedDescription="@{model}"
             tools:ignore="Deprecated"/>
 
@@ -63,8 +64,8 @@
             android:layout_marginTop="70dp"
             android:padding="5dp"
             android:gravity="center"
-            android:text="@{model != null &amp;&amp; model.state != EmptyState.NORMAL_STATE ? @string/action_retry : null}"
-            android:visibility="@{handlers != null ? View.VISIBLE : View.GONE}"
+            android:text="@{model != null &amp;&amp; Formatter.hasEmptyStateRetry(model.state) ? @string/action_retry : null}"
+            android:visibility="@{handlers != null &amp;&amp; Formatter.hasEmptyStateRetry(model.state) ? View.VISIBLE : View.GONE}"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="?attr/colorAccent"
