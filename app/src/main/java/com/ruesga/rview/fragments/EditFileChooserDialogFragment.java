@@ -275,10 +275,10 @@ public class EditFileChooserDialogFragment extends FilterableDialogFragment {
     public boolean handleResult(int requestCode, Object[] result) {
         Activity a = getActivity();
         Fragment f = getParentFragment();
-        if (f != null && f instanceof OnEditFileChosen) {
+        if (f instanceof OnEditFileChosen) {
             ((OnEditFileChosen) f).onEditFileChosen(
                     getRequestCode(), mModel.mode,  mModel.value1, mModel.value2);
-        } else if (a != null && a instanceof OnEditFileChosen) {
+        } else if (a instanceof OnEditFileChosen) {
             ((OnEditFileChosen) a).onEditFileChosen(
                     getRequestCode(), mModel.mode,  mModel.value1, mModel.value2);
         }

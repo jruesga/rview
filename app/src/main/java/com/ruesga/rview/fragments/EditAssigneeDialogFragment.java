@@ -115,9 +115,9 @@ public class EditAssigneeDialogFragment extends RevealDialogFragment {
     private void performAssigneeSelected() {
         final Activity a = getActivity();
         final Fragment f = getParentFragment();
-        if (f != null && f instanceof OnAssigneeSelected) {
+        if (f instanceof OnAssigneeSelected) {
             ((OnAssigneeSelected) f).onAssigneeSelected(mModel.assignee);
-        } else if (a != null && a instanceof OnAssigneeSelected) {
+        } else if (a instanceof OnAssigneeSelected) {
             ((OnAssigneeSelected) a).onAssigneeSelected(mModel.assignee);
         }
     }

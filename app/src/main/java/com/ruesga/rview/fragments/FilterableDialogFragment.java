@@ -188,9 +188,9 @@ public abstract class FilterableDialogFragment extends RevealDialogFragment {
         if (valid && !handleResult(mRequestCode, result)) {
             Activity a = getActivity();
             Fragment f = getParentFragment();
-            if (f != null && f instanceof OnFilterSelectedListener) {
+            if (f instanceof OnFilterSelectedListener) {
                 ((OnFilterSelectedListener) f).onFilterSelected(mRequestCode, result);
-            } else if (a != null && a instanceof OnFilterSelectedListener) {
+            } else if (a instanceof OnFilterSelectedListener) {
                 ((OnFilterSelectedListener) a).onFilterSelected(mRequestCode, result);
             }
         }

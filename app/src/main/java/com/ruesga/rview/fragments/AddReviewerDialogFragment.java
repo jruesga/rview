@@ -138,9 +138,9 @@ public class AddReviewerDialogFragment extends RevealDialogFragment {
     private void performAddReviewer() {
         final Activity a = getActivity();
         final Fragment f = getParentFragment();
-        if (f != null && f instanceof OnReviewerAdded) {
+        if (f instanceof OnReviewerAdded) {
             ((OnReviewerAdded) f).onReviewerAdded(mModel.reviewer, mReviewerState);
-        } else if (a != null && a instanceof OnReviewerAdded) {
+        } else if (a instanceof OnReviewerAdded) {
             ((OnReviewerAdded) a).onReviewerAdded(mModel.reviewer, mReviewerState);
         }
     }

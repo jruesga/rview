@@ -178,11 +178,11 @@ public class NewChangeDialogFragment extends FilterableDialogFragment {
     public boolean handleResult(int requestCode, Object[] result) {
         Activity a = getActivity();
         Fragment f = getParentFragment();
-        if (f != null && f instanceof OnNewChangeRequestedListener) {
+        if (f instanceof OnNewChangeRequestedListener) {
             ((OnNewChangeRequestedListener) f).onNewChangeRequested(
                     getRequestCode(), mModel.project, mModel.branch, mModel.topic,
                             mModel.subject, mModel.isPrivate, mModel.isWorkInProgress);
-        } else if (a != null && a instanceof OnNewChangeRequestedListener) {
+        } else if (a instanceof OnNewChangeRequestedListener) {
             ((OnNewChangeRequestedListener) a).onNewChangeRequested(
                     getRequestCode(), mModel.project, mModel.branch, mModel.topic,
                             mModel.subject, mModel.isPrivate, mModel.isWorkInProgress);

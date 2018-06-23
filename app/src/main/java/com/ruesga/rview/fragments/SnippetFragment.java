@@ -242,9 +242,9 @@ public class SnippetFragment extends BottomSheetBaseFragment {
             if (snippetUri != null) {
                 Activity a = getActivity();
                 Fragment f = getParentFragment();
-                if (f != null && f instanceof OnSnippetSavedListener) {
+                if (f instanceof OnSnippetSavedListener) {
                     ((OnSnippetSavedListener) f).onSnippetSaved(snippetUri, mMimeType, mContentSize);
-                } else if (a != null && a instanceof OnSnippetSavedListener) {
+                } else if (a instanceof OnSnippetSavedListener) {
                     ((OnSnippetSavedListener) a).onSnippetSaved(snippetUri, mMimeType, mContentSize);
                 }
             }

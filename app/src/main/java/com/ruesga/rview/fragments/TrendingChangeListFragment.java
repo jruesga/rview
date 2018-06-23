@@ -76,7 +76,7 @@ public class TrendingChangeListFragment extends ChangeListByFilterFragment {
     public static TrendingChangeListFragment newInstance() {
         TrendingChangeListFragment fragment = new TrendingChangeListFragment();
         Bundle arguments = new Bundle();
-        arguments.putBoolean(EXTRA_HAS_SEARCH, true);
+        arguments.putBoolean(EXTRA_HAS_SEARCH, false);
         arguments.putBoolean(EXTRA_HAS_FAB, false);
         fragment.setArguments(arguments);
         return fragment;

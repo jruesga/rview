@@ -566,9 +566,9 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
         if (!(mLoading || mEmpty || mError || mNeedPermissions)) {
             Activity a = getActivity();
             Fragment f = getParentFragment();
-            if (f != null && f instanceof OnGallerySelectedListener) {
+            if (f instanceof OnGallerySelectedListener) {
                 ((OnGallerySelectedListener) f).onGallerySelection(mAdapter.getSelection());
-            } else if (a != null && a instanceof OnGallerySelectedListener) {
+            } else if (a instanceof OnGallerySelectedListener) {
                 ((OnGallerySelectedListener) a).onGallerySelection(mAdapter.getSelection());
             }
         }

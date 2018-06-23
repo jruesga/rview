@@ -199,9 +199,9 @@ public class EditDialogFragment extends RevealDialogFragment {
     private void performEditChanged() {
         Activity a = getActivity();
         Fragment f = getParentFragment();
-        if (f != null && f instanceof OnEditChanged) {
+        if (f instanceof OnEditChanged) {
             ((OnEditChanged) f).onEditChanged(mRequestCode, mRequestData, mModel.value);
-        } else if (a != null && a instanceof OnEditChanged) {
+        } else if (a instanceof OnEditChanged) {
             ((OnEditChanged) a).onEditChanged(mRequestCode, mRequestData, mModel.value);
         }
     }

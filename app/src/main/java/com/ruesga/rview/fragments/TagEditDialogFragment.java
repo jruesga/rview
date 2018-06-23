@@ -142,9 +142,9 @@ public class TagEditDialogFragment extends RevealDialogFragment {
         mBinding.tagsEditor.computeTags(null);
         Activity a = getActivity();
         Fragment f = getParentFragment();
-        if (f != null && f instanceof OnTagEditChanged) {
+        if (f instanceof OnTagEditChanged) {
             ((OnTagEditChanged) f).onTagEditChanged(mRequestCode, mBinding.tagsEditor.getTags());
-        } else if (a != null && a instanceof OnTagEditChanged) {
+        } else if (a instanceof OnTagEditChanged) {
             ((OnTagEditChanged) a).onTagEditChanged(mRequestCode, mBinding.tagsEditor.getTags());
         }
     }

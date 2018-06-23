@@ -213,9 +213,9 @@ public class ProviderChooserFragment extends DialogFragment {
     private void notifyOnProviderSelected(Provider provider) {
         Activity a = getActivity();
         Fragment f = getParentFragment();
-        if (f != null && f instanceof OnAttachmentProviderSelectedListener) {
+        if (f instanceof OnAttachmentProviderSelectedListener) {
             ((OnAttachmentProviderSelectedListener) f).onAttachmentProviderSelection(provider);
-        } else if (a != null && a instanceof OnAttachmentProviderSelectedListener) {
+        } else if (a instanceof OnAttachmentProviderSelectedListener) {
             ((OnAttachmentProviderSelectedListener) a).onAttachmentProviderSelection(provider);
         }
     }

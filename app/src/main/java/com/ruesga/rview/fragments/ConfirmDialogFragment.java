@@ -70,9 +70,9 @@ public class ConfirmDialogFragment extends RevealDialogFragment {
     private void performConfirmAction() {
         Activity a = getActivity();
         Fragment f = getParentFragment();
-        if (f != null & f instanceof OnActionConfirmed) {
+        if (f instanceof OnActionConfirmed) {
             ((OnActionConfirmed) f).onActionConfirmed(mRequestCode);
-        } else if (a != null & a instanceof OnActionConfirmed) {
+        } else if (a instanceof OnActionConfirmed) {
             ((OnActionConfirmed) a).onActionConfirmed(mRequestCode);
         }
     }
