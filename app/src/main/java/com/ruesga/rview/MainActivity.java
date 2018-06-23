@@ -492,7 +492,7 @@ public class MainActivity extends ChangeListBaseActivity {
                 && Preferences.isAccountNotificationsEnabled(this, mAccount);
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
-        menu.setGroupVisible(R.id.category_hot, !show);
+        menu.setGroupVisible(R.id.category_other_changes, !show);
         menu.setGroupVisible(R.id.category_my_menu, !show && auth);
         // Drafts are removed from Api on 2.15+
         menu.findItem(R.id.menu_drafts).setVisible(!show && auth

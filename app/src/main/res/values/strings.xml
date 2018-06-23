@@ -70,10 +70,10 @@
     <string name="menu_starred">Starred</string>
     <string name="menu_watched">Watched</string>
     <string name="menu_edits">Edits</string>
-    <string name="menu_hot_changes_category">Hot changes</string>
+    <string name="menu_my_filters_category">My filters</string>
+    <string name="menu_other_changes_category">Other changes</string>
     <string name="menu_trending">Trending</string>
     <string name="menu_following">Following</string>
-    <string name="menu_my_filters_category">My filters</string>
     <string name="menu_account_settings">Settings</string>
     <string name="menu_account_status">Status</string>
     <string name="menu_account_notifications">Notifications</string>
