@@ -715,4 +715,7 @@
     <string name="server_info_dialog_backend_notedb">NoteDB</string>
     <string name="server_info_dialog_backend_plugins">Plugins</string>
     <string name="server_info_dialog_backend_plugins_empty">No information available</string>
+
+    <!-- Following Dialog -->
+    <string name="start_following_title">Start following to</string>
 </resources>

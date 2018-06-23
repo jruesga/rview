@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class FilesDialogFragment extends ListDialogFragment {
+public class FilesDialogFragment extends ListDialogFragment<FileItemModel> {
 
     public static final String TAG = "FilesDialogFragment";
 
@@ -157,16 +157,21 @@ public class FilesDialogFragment extends ListDialogFragment {
     }
 
     @Override
-    public boolean onFilterChanged(String newFilter) {
+    public List<FileItemModel> onFilterChanged(String newFilter) {
         List<FileItemModel> filteredFiles = new ArrayList<>();
         for (FileItemModel item : mFiles) {
             if (item.file.toLowerCase(Locale.US).contains(newFilter)) {
                 filteredFiles.add(item);
             }
         }
-        mAdapter.addAll(filteredFiles);
+        return filteredFiles;
+    }
+
+    @Override
+    public boolean onDataRefreshed(List<FileItemModel> data) {
+        mAdapter.addAll(data);
         mAdapter.notifyDataSetChanged();
-        return filteredFiles.isEmpty();
+        return data.isEmpty();
     }
 
     private void performFilePressed(String file) {
@@ -174,9 +179,9 @@ public class FilesDialogFragment extends ListDialogFragment {
 
         final Activity a = getActivity();
         final Fragment f = getParentFragment();
-        if (f != null && f instanceof OnFilePressed) {
+        if (f instanceof OnFilePressed) {
             ((OnFilePressed) f).onFilePressed(file);
-        } else if (a != null && a instanceof OnFilePressed) {
+        } else if (a instanceof OnFilePressed) {
             ((OnFilePressed) a).onFilePressed(file);
         }
     }

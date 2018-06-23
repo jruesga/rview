@@ -31,7 +31,19 @@ import android.view.View;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ListDialogBinding;
 
-public abstract class ListDialogFragment extends RevealDialogFragment {
+import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import me.tatarka.rxloader2.RxLoader;
+import me.tatarka.rxloader2.RxLoaderManager;
+import me.tatarka.rxloader2.RxLoaderManagerCompat;
+import me.tatarka.rxloader2.RxLoaderObserver;
+import me.tatarka.rxloader2.safe.SafeObservable;
+
+public abstract class ListDialogFragment<T> extends RevealDialogFragment {
 
     private static final int MESSAGE_FILTER_CHANGED = 1;
 
@@ -66,15 +78,30 @@ public abstract class ListDialogFragment extends RevealDialogFragment {
         }
     };
 
+    private final RxLoaderObserver<List<T>> mFilterObserver = new RxLoaderObserver<List<T>>() {
+                @Override
+                public void onNext(List<T> filter) {
+                    if (mBinding != null) {
+                        mBinding.setEmpty(onDataRefreshed(filter));
+                    }
+                }
+
+                @Override
+                public void onError(Throwable error) {
+                    if (mBinding != null) {
+                        mBinding.setEmpty(onDataRefreshed(new ArrayList<>()));
+                    }
+                }
+            };
+
     private ListDialogBinding mBinding;
     private final Handler mHandler;
+    private RxLoader<List<T>> mLoader;
 
     public ListDialogFragment() {
         mHandler = new Handler(msg -> {
             if (msg.what == MESSAGE_FILTER_CHANGED) {
-                if (mBinding != null) {
-                    mBinding.setEmpty(onFilterChanged(mBinding.search.getText().toString()));
-                }
+                restartData();
             }
             return true;
         });
@@ -103,6 +130,14 @@ public abstract class ListDialogFragment extends RevealDialogFragment {
         builder.setTitle(getTitle())
                 .setView(mBinding.getRoot())
                 .setNegativeButton(R.string.action_cancel, null);
+
+        startLoadersWithValidContext();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        startLoadersWithValidContext();
     }
 
     @Override
@@ -112,14 +147,44 @@ public abstract class ListDialogFragment extends RevealDialogFragment {
         mBinding.unbind();
     }
 
+    private void startLoadersWithValidContext() {
+        RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
+        mLoader = loaderManager.create(refreshItems(), mFilterObserver);
+    }
+
+    private void restartData() {
+        mLoader.clear();
+        mLoader.restart();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<List<T>> refreshItems() {
+        return SafeObservable.fromCallable(() -> {
+                if (mBinding != null) {
+                    return onFilterChanged(mBinding.search.getText().toString());
+                }
+                return new ArrayList<T>();
+            })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public void performClearFilter() {
         mBinding.setFilter("");
         mBinding.search.setText("");
+    }
+
+    public void refresh() {
+        mHandler.removeMessages(MESSAGE_FILTER_CHANGED);
+        mHandler.sendEmptyMessageDelayed(MESSAGE_FILTER_CHANGED, 1L);
+        mBinding.setFilter(mBinding.search.getText().toString());
     }
 
     public abstract RecyclerView.Adapter<RecyclerView.ViewHolder> getAdapter();
 
     public abstract @StringRes int getTitle();
 
-    public abstract boolean onFilterChanged(String newFilter);
+    public abstract List<T> onFilterChanged(String newFilter);
+
+    public abstract boolean onDataRefreshed(List<T> data);
 }

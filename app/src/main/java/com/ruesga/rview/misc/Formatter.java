@@ -152,7 +152,7 @@ public class Formatter {
         view.setText(toAccountDisplayName(accountInfo));
     }
 
-    private static String toAccountDisplayName(AccountInfo accountInfo) {
+    public static String toAccountDisplayName(AccountInfo accountInfo) {
         // Display Name
         String accountDisplayName = null;
         switch (sDisplayFormat) {
