@@ -189,9 +189,13 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             new RxLoaderObserver<List<ChangeInfo>>() {
         @Override
         public void onNext(List<ChangeInfo> result) {
-            mAdapter.clear();
-            mAdapter.addAll(result);
-            mAdapter.notifyDataSetChanged();
+            if (result == null || result.isEmpty()) {
+                createNewAdapter();
+            } else {
+                mAdapter.clear();
+                mAdapter.addAll(result);
+                mAdapter.notifyDataSetChanged();
+            }
             mEmptyState.state = result != null && !result.isEmpty()
                     ? EmptyState.NORMAL_STATE : getNotResultEmptyState();
             mBinding.setEmpty(mEmptyState);
@@ -367,7 +371,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mBinding.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.list.addItemDecoration(new DividerItemDecoration(
-                    getContext(), LinearLayoutManager.VERTICAL));
+                    getActivity(), LinearLayoutManager.VERTICAL));
             mBinding.list.setAdapter(mAdapter);
             mEndlessScroller = new EndlessRecyclerViewScrollListener(
                     mBinding.list.getLayoutManager()) {
@@ -492,5 +496,10 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
     void resetScroll() {
         mBinding.list.scrollToPosition(0);
+    }
+
+    private void createNewAdapter() {
+        mAdapter = new ChangesAdapter(ChangeListFragment.this);
+        mBinding.list.setAdapter(mAdapter);
     }
 }
