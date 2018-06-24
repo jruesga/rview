@@ -197,7 +197,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         mHandler = new Handler(msg -> {
             if (msg.what == MESSAGE_FILTER_CHANGED) {
                 if (mBinding != null) {
-                    restartData();
+                    fetchData();
                 }
             }
             return true;
@@ -238,7 +238,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         // Fetch or join current loader
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
         mLoader = loaderManager.create(refreshItems(), mDataProducerObserver);
-        restartData();
+        fetchData();
     }
 
     @Override
@@ -269,7 +269,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         close();
     }
 
-    private void restartData() {
+    private void fetchData() {
         mLoader.clear();
         mLoader.restart();
     }
@@ -288,7 +288,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
     private void performClearFilter() {
         mModel.filter = "";
         mBinding.setModel(mModel);
-        restartData();
+        fetchData();
     }
 
     public String getFilter() {

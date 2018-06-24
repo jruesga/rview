@@ -101,7 +101,7 @@ public abstract class ListDialogFragment<T> extends RevealDialogFragment {
     public ListDialogFragment() {
         mHandler = new Handler(msg -> {
             if (msg.what == MESSAGE_FILTER_CHANGED) {
-                restartData();
+                fetchData();
             }
             return true;
         });
@@ -152,7 +152,7 @@ public abstract class ListDialogFragment<T> extends RevealDialogFragment {
         mLoader = loaderManager.create(refreshItems(), mFilterObserver);
     }
 
-    private void restartData() {
+    private void fetchData() {
         mLoader.clear();
         mLoader.restart();
     }
