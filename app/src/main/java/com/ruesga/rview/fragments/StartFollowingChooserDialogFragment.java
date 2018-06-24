@@ -139,6 +139,9 @@ public class StartFollowingChooserDialogFragment extends ListDialogFragment<Acco
     @Override
     @SuppressWarnings("ConstantConditions")
     public List<AccountInfo> onFilterChanged(String newFilter) {
+        if (getActivity() == null) {
+            return new ArrayList<>();
+        }
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         final List<AccountInfo> filtered;
         if (newFilter.isEmpty()) {
