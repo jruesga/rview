@@ -62,6 +62,7 @@
   {"name":"OPNFV", "url":"https://gerrit.opnfv.org/gerrit/", "ci_accounts": "^(jenkins-ci)$"},
   {"name":"OSM", "url":"https://osm.etsi.org/gerrit/", "ci_accounts": "^(jenkins)$"},
   {"name":"oVirt", "url":"https://gerrit.ovirt.org/", "ci_accounts": "^(Jenkins.*|gerrit-hooks)$"},
+  {"name":"PotatoProject", "url":"https://review.potatoproject.co/"},
   {"name":"PureFusionOS", "url":"https://review.purefusionos.com/"},
   {"name":"R8", "url":"https://r8-review.googlesource.com/"},
   {"name":"ResurrectionRemix", "url":"https://gerrit.resurrectionremix.com/"},
