@@ -144,8 +144,10 @@ public class FollowingChangeListFragment extends ChangeListByFilterFragment {
     }
 
     private void fetchNewItemsIfInfoChanged() {
-        if (mLastHash != -1 && mLastHash != computeHash()) {
+        long newHash = computeHash();
+        if (mLastHash != -1 && mLastHash != newHash) {
             fetchNewItems();
         }
+        mLastHash = newHash;
     }
 }
