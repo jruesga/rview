@@ -78,6 +78,5 @@
   {"name":"Typo3", "url":"https://review.typo3.org/", "ci_accounts": "^(TYPO3com)$"},
   {"name":"TWRP", "url":"https://gerrit.twrp.me/"},
   {"name":"Unlegacy Android", "url":"https://gerrit.unlegacy-android.org/"},
-  {"name":"Wireshark", "url":"https://code.wireshark.org/review/", "ci_accounts": "^(.* Buildbot)$"},
-  {"name":"XOSP", "url":"http://review.xosp.org/"}
+  {"name":"Wireshark", "url":"https://code.wireshark.org/review/", "ci_accounts": "^(.* Buildbot)$"}
 ]
