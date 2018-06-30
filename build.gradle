@@ -22,7 +22,7 @@ ext {
         play_services_auth          : '15.0.1',
         // https://firebase.google.com/support/release-notes/android
         firebase_core               : '16.0.1',
-        firebase_messaging          : '17.0.0',
+        firebase_messaging          : '17.1.0',
         gson                        : '2.8.5',
         retrofit2                   : '2.4.0',
         okhttp3                     : '3.10.0',
