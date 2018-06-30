@@ -43,7 +43,7 @@ public class RegExLinkifyTextViewTest {
 
         Repository repository = new Repository("test.com", "http://test.com/", false);
         List<RegExLink> links = RegExLinkifyTextView.createRepositoryRegExpLinks(repository);
-        assertEquals(3, links.size());
+        assertEquals(4, links.size());
         assertNull(replaceLink(links.get(0),
                 "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
         assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
@@ -51,6 +51,9 @@ public class RegExLinkifyTextViewTest {
                         "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
         assertNull(replaceLink(links.get(2),
                 "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
+        assertEquals("https://test.com/dashboard/?title=aa&mine=status:open",
+                replaceLink(links.get(3),
+                        "aaa https://test.com/dashboard/?title=aa&mine=status:open aa"));
 
         assertNull(replaceLink(links.get(0),
                 "aaa\n\nhttps://test.com/#/c/project_aa_aa/abc/+/129166/\n\nhttps://test.com/#/c/project/abc/+/129167/\n\naa"));
@@ -59,6 +62,9 @@ public class RegExLinkifyTextViewTest {
                         "aaa\n\nhttps://test.com/#/c/project_aa_aa/abc/+/129166/\n\nhttps://test.com/#/c/project/abc/+/129167/\n\naa"));
         assertNull(replaceLink(links.get(2),
                 "aaa\n\nhttps://test.com/#/c/project_aa_aa/abc/+/129166/\n\nhttps://test.com/#/c/project/abc/+/129167/\n\naa"));
+        assertEquals("https://test.com/dashboard/?title=aa&mine=status:open",
+                replaceLink(links.get(3),
+                        "aaa\n\nhttps://test.com/dashboard/?title=aa&mine=status:open\n\naa"));
 
 
 
