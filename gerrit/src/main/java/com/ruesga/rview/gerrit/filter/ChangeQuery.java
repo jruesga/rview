@@ -407,6 +407,17 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                 case QueryLexer.OR:
                     int childType = tree.getChild(0).getType();
                     switch (childType) {
+                        case QueryLexer.AND:
+                        case QueryLexer.OR:
+                            ChangeQuery q = toChangeQuery(tree.getChild(0));
+                            if (query.queries().isEmpty()) {
+                                query = q;
+                            } else if (childType == QueryLexer.AND) {
+                                query.and(q);
+                            } else {
+                                query.or(q);
+                            }
+                            break;
                         case QueryLexer.DEFAULT_FIELD:
                             query.add(getDefaultFieldText(tree.getChild(0)));
                             break;

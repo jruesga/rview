@@ -94,6 +94,19 @@ public class ChangeQueryTest {
                 new ChangeQuery().owner("Test <test@test.com>")
                         .and(new ChangeQuery().simple("aaa")
                                 .and(new ChangeQuery().branch("test2"))));
+
+
+        testParseQuery("(is:open label:Verified=+1 -age:1month) AND NOT (is:open reviewerin:Tuleap-Integrators -age:1month label:Verified=+1 -is:draft)",
+                new ChangeQuery().is(IsType.OPEN)
+                        .and(new ChangeQuery().label("Verified", 1))
+                        .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.MONTHS, 1)))
+                        .and(new ChangeQuery().negate(
+                                new ChangeQuery().is(IsType.OPEN)
+                                        .and(new ChangeQuery().reviewerIn("Tuleap-Integrators"))
+                                        .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.MONTHS, 1)))
+                                        .and(new ChangeQuery().label("Verified", 1))
+                                        .and(new ChangeQuery().negate(new ChangeQuery().is(IsType.DRAFT)))
+                        )));
     }
 
     private void testParseQuery(String expression, ChangeQuery expectedResult) {
