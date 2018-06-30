@@ -38,7 +38,7 @@ import com.ruesga.rview.preferences.Preferences;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StartFollowingChooserDialogFragment extends ListDialogFragment<AccountInfo> {
+public class StartFollowingChooserDialogFragment extends ListDialogFragment<AccountInfo, Void> {
 
     public static final String TAG = "StartFollowDialogFrag";
 
@@ -134,6 +134,11 @@ public class StartFollowingChooserDialogFragment extends ListDialogFragment<Acco
     @Override
     public int getTitle() {
         return R.string.start_following_title;
+    }
+
+    @Override
+    public boolean hasLoading() {
+        return true;
     }
 
     @Override

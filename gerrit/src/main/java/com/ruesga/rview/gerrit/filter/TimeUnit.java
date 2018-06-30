@@ -18,14 +18,20 @@ package com.ruesga.rview.gerrit.filter;
 import java.util.Locale;
 
 public enum TimeUnit {
-    SECONDS("s"), MINUTES("m"), HOURS("h"), DAYS("d"), WEEKS("w"), MONTHS("mon"), YEARS("y");
+    SECONDS("s", "sec", "second", "seconds"),
+    MINUTES("m", "min", "minute", "minutes"),
+    HOURS("h", "hour", "hours"),
+    DAYS("d", "day", "days"),
+    WEEKS("w", "week", "week"),
+    MONTHS("mon", "month", "months"),
+    YEARS("y", "year", "years");
 
-    public final String mUnit;
-    TimeUnit(String unit) {
-        mUnit = unit;
+    public final String[] mUnits;
+    TimeUnit(String... units) {
+        mUnits = units;
     }
 
     public String toQuery(int value) {
-        return String.format(Locale.US, "%d%s", value, mUnit);
+        return String.format(Locale.US, "%d%s", value, mUnits[0]);
     }
 }

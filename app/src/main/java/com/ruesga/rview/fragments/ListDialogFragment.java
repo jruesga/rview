@@ -38,12 +38,13 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import me.tatarka.rxloader2.RxLoader;
+import me.tatarka.rxloader2.RxLoader1;
 import me.tatarka.rxloader2.RxLoaderManager;
 import me.tatarka.rxloader2.RxLoaderManagerCompat;
 import me.tatarka.rxloader2.RxLoaderObserver;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
-public abstract class ListDialogFragment<T> extends RevealDialogFragment {
+public abstract class ListDialogFragment<T, S> extends RevealDialogFragment {
 
     private static final int MESSAGE_FILTER_CHANGED = 1;
 
@@ -79,24 +80,57 @@ public abstract class ListDialogFragment<T> extends RevealDialogFragment {
     };
 
     private final RxLoaderObserver<List<T>> mFilterObserver = new RxLoaderObserver<List<T>>() {
-                @Override
-                public void onNext(List<T> filter) {
-                    if (mBinding != null) {
-                        mBinding.setEmpty(onDataRefreshed(filter));
-                    }
-                }
+        @Override
+        public void onStarted() {
+            mBinding.setLoading(hasLoading());
+        }
 
-                @Override
-                public void onError(Throwable error) {
-                    if (mBinding != null) {
-                        mBinding.setEmpty(onDataRefreshed(new ArrayList<>()));
-                    }
-                }
-            };
+        @Override
+        public void onNext(List<T> filter) {
+            if (mBinding != null) {
+                mBinding.setEmpty(onDataRefreshed(filter));
+                mBinding.setLoading(false);
+            }
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            if (mBinding != null) {
+                mBinding.setEmpty(onDataRefreshed(new ArrayList<>()));
+                mBinding.setLoading(false);
+            }
+        }
+    };
+
+    private final RxLoaderObserver<List<S>> mSecondaryObserver = new RxLoaderObserver<List<S>>() {
+        @Override
+        public void onStarted() {
+            mBinding.setEmpty2(false);
+            mBinding.setLoading2(hasLoading());
+        }
+
+        @Override
+        public void onNext(List<S> items) {
+            if (mBinding != null) {
+                mBinding.setEmpty2(items == null || items.isEmpty());
+                mBinding.setLoading2(false);
+                performSecondaryDataRefresh(onSecondaryDataRefreshed(items));
+            }
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            if (mBinding != null) {
+                mBinding.setEmpty2(true);
+                mBinding.setLoading2(false);
+            }
+        }
+    };
 
     private ListDialogBinding mBinding;
     private final Handler mHandler;
     private RxLoader<List<T>> mLoader;
+    private RxLoader1<T, List<S>> mSecondaryLoader;
 
     public ListDialogFragment() {
         mHandler = new Handler(msg -> {
@@ -127,6 +161,9 @@ public abstract class ListDialogFragment<T> extends RevealDialogFragment {
         mBinding.setEmpty(false);
         mBinding.setHandlers(new EventHandlers(this));
 
+        mBinding.list2.setLayoutManager(
+                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+
         builder.setTitle(getTitle())
                 .setView(mBinding.getRoot())
                 .setNegativeButton(R.string.action_cancel, null);
@@ -150,6 +187,7 @@ public abstract class ListDialogFragment<T> extends RevealDialogFragment {
     private void startLoadersWithValidContext() {
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
         mLoader = loaderManager.create(refreshItems(), mFilterObserver);
+        mSecondaryLoader = loaderManager.create(this::refreshSecondaryItems, mSecondaryObserver);
     }
 
     private void fetchData() {
@@ -157,14 +195,26 @@ public abstract class ListDialogFragment<T> extends RevealDialogFragment {
         mLoader.restart();
     }
 
+    private void fetchSecondaryData(T o) {
+        mSecondaryLoader.clear();
+        mSecondaryLoader.restart(o);
+    }
+
     @SuppressWarnings("ConstantConditions")
     private Observable<List<T>> refreshItems() {
-        return SafeObservable.fromCallable(() -> {
+        return SafeObservable.fromNullCallable(() -> {
                 if (mBinding != null) {
                     return onFilterChanged(mBinding.search.getText().toString());
                 }
                 return new ArrayList<T>();
             })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<List<S>> refreshSecondaryItems(T o) {
+        return SafeObservable.fromNullCallable(() -> onSecondaryDataRequest(o))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread());
     }
@@ -186,5 +236,36 @@ public abstract class ListDialogFragment<T> extends RevealDialogFragment {
 
     public abstract List<T> onFilterChanged(String newFilter);
 
+    public List<S> onSecondaryDataRequest(T o) {
+        return new ArrayList<>();
+    }
+
     public abstract boolean onDataRefreshed(List<T> data);
+
+    public RecyclerView.Adapter<RecyclerView.ViewHolder> onSecondaryDataRefreshed(List<S> data) {
+        return null;
+    }
+
+    private void performSecondaryDataRefresh(
+            RecyclerView.Adapter<RecyclerView.ViewHolder> adapter) {
+        mBinding.list2.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+    }
+
+    public boolean hasLoading() {
+        return false;
+    }
+
+    public void hideSecondaryHierarchyPage() {
+        mBinding.flipper.setInAnimation(getContext(), R.anim.slide_in_left);
+        mBinding.flipper.setOutAnimation(getContext(), R.anim.slide_out_right);
+        mBinding.flipper.showPrevious();
+    }
+
+    public void showSecondaryHierarchyPage(T o) {
+        mBinding.flipper.setInAnimation(getContext(), R.anim.slide_in_right);
+        mBinding.flipper.setOutAnimation(getContext(), R.anim.slide_out_left);
+        mBinding.flipper.showNext();
+        fetchSecondaryData(o);
+    }
 }

@@ -28,7 +28,9 @@ import android.widget.Toast;
 
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
+import com.ruesga.rview.gerrit.model.DashboardInfo;
 import com.ruesga.rview.misc.ActivityHelper;
+import com.ruesga.rview.misc.DashboardHelper;
 import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
@@ -174,6 +176,17 @@ public class UrlHandlerProxyActivity extends AppCompatActivity {
                 Preferences.setAccount(this, prevAccount);
                 break;
 
+            case Constants.CUSTOM_URI_DASHBOARD:
+                DashboardInfo dashboard = DashboardHelper.createDashboardFromUri(uri.toString());
+                if (dashboard != null) {
+                    ActivityHelper.openDashboardActivity(this, dashboard, true);
+                    break;
+                }
+
+                // We cannot handle this
+                openExternalHttpLinkAndFinish(uri);
+                Preferences.setAccount(this, prevAccount);
+                break;
 
             case Constants.CUSTOM_URI_QUERY:
                 String query = UriHelper.extractQuery(uri);
@@ -202,7 +215,11 @@ public class UrlHandlerProxyActivity extends AppCompatActivity {
                     ActivityHelper.openChangeListByFilterActivity(this, null, filter, true, external);
                     break;
                 }
-                // fallback to default
+
+                // We cannot handle this
+                openExternalHttpLinkAndFinish(uri);
+                Preferences.setAccount(this, prevAccount);
+                break;
 
             default:
                 // We cannot handle this

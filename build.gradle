@@ -56,6 +56,7 @@ ext {
         hamcrest                    : '1.4-atlassian-1',
         mockito                     : '2.19.0',
         powermock                   : '2.0.0-beta.5',
+        robolectric                 : '3.8',
         base64                      : '2.3.9'
     ]
 }
@@ -100,6 +101,7 @@ subprojects {
             testImplementation "org.powermock:powermock-module-junit4:${testLibraries.powermock}"
             testImplementation "org.powermock:powermock-module-junit4-rule:${testLibraries.powermock}"
             testImplementation "org.powermock:powermock-api-mockito2:${testLibraries.powermock}"
+            testImplementation "org.robolectric:robolectric:${testLibraries.robolectric}"
         }
 
         if (project.plugins.hasPlugin('android') || project.plugins.hasPlugin('android-library')) {

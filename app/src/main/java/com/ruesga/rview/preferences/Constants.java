@@ -53,6 +53,7 @@ public class Constants {
     public static final String EXTRA_CONTENT_FILE = "content_file";
     public static final String EXTRA_SIZE = "size";
     public static final String EXTRA_READ_ONLY = "read_only";
+    public static final String EXTRA_DASHBOARD = "dashboard";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
     public static final String EXTRA_HAS_FORCE_UP = "has_force_up";
@@ -80,6 +81,7 @@ public class Constants {
     public static final String CUSTOM_URI_CHANGE_ID = "changeid";
     public static final String CUSTOM_URI_COMMIT = "commit";
     public static final String CUSTOM_URI_QUERY = "query";
+    public static final String CUSTOM_URI_DASHBOARD = "dashboard";
 
     public static final String APPROVED = "\u2713";
     public static final String REJECTED = "\u2717";
@@ -107,6 +109,8 @@ public class Constants {
     public static final int HIGHLIGHT_SCORED_MESSAGE_BOTH = 3;
 
     public static final int MAX_SEARCH_HISTORY = 5;
+
+    public static final String DASHBOARD_DEFAULT_ID = ":default";
 
     // --- Preference keys
     public static final String PREF_IS_FIRST_RUN = "first_run";
@@ -162,4 +166,5 @@ public class Constants {
             = "account_attachments_image_optimizations_quality";
     public static final String PREF_ACCOUNT_CI_SHOW = "account_ci_show";
     public static final String PREF_ACCOUNT_FOLLOWING = "following";
+    public static final String PREF_ACCOUNT_DASHBOARD = "dashboard";
 }

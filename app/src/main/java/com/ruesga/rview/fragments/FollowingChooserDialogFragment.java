@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class FollowingChooserDialogFragment extends ListDialogFragment<AccountInfo> {
+public class FollowingChooserDialogFragment extends ListDialogFragment<AccountInfo, Void> {
 
     public static final String TAG = "FollowDialogFragment";
 

@@ -23,79 +23,144 @@
         <import type="android.view.View" />
         <variable name="filter" type="java.lang.String" />
         <variable name="empty" type="java.lang.Boolean" />
+        <variable name="empty2" type="java.lang.Boolean" />
+        <variable name="loading" type="java.lang.Boolean" />
+        <variable name="loading2" type="java.lang.Boolean" />
         <variable name="handlers" type="com.ruesga.rview.fragments.ListDialogFragment.EventHandlers" />
     </data>
 
-    <LinearLayout
+    <ViewFlipper
+        android:id="@+id/flipper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
+        <!-- Main Filter page -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_filter"
-                app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                tools:ignore="ContentDescription"/>
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/search"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_margin="16dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_filter"
+                    app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    tools:ignore="ContentDescription"/>
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/search"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:background="@null"
+                    android:hint="@string/filter_hint"
+                    android:textSize="14sp"
+                    android:maxLines="1"
+                    android:selectAllOnFocus="true"
+                    android:text="@{filter}">
+                    <requestFocus />
+                </android.support.design.widget.TextInputEditText>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_close"
+                    app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:bindEmpty="@{filter}"
+                    android:onClick="@{handlers::onClearFilter}"
+                    tools:ignore="ContentDescription"/>
+
+                <ProgressBar
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:visibility="@{safeUnbox(loading) ? View.VISIBLE : View.GONE}"
+                    android:layout_gravity="center"/>
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{safeUnbox(empty) ? View.GONE : View.VISIBLE}"
+                android:scrollbars="vertical">
+            </android.support.v7.widget.RecyclerView>
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="16dp"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="?android:attr/textColorSecondary"
-                android:background="@null"
-                android:hint="@string/filter_hint"
-                android:textSize="14sp"
-                android:maxLines="1"
-                android:selectAllOnFocus="true"
-                android:text="@{filter}">
-                <requestFocus />
-            </android.support.design.widget.TextInputEditText>
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_close"
-                app:bindImageTintAttr="@{android.R.attr.textColorSecondary}"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:bindEmpty="@{filter}"
-                android:onClick="@{handlers::onClearFilter}"
-                tools:ignore="ContentDescription"/>
+                android:visibility="@{safeUnbox(empty) ? View.VISIBLE : View.GONE}"
+                android:text="@string/filter_no_matches_found"
+                android:textSize="14sp"/>
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/list"
+        <!-- Secondary Hierarchy page -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="@{safeUnbox(empty) ? View.GONE : View.VISIBLE}"
-            android:scrollbars="vertical">
-        </android.support.v7.widget.RecyclerView>
+            android:layout_height="match_parent">
 
-        <com.ruesga.rview.widget.StyleableTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="16dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorSecondary"
-            android:visibility="@{safeUnbox(empty) ? View.VISIBLE : View.GONE}"
-            android:text="@string/filter_no_matches_found"
-            android:textSize="14sp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{safeUnbox(loading2) ? View.VISIBLE : View.GONE}"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+                <ProgressBar
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:gravity="center_vertical"
+                    android:layout_margin="5dp"/>
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:text="@string/filter_fetching"
+                    android:textSize="14sp"/>
+            </LinearLayout>
 
-    </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{safeUnbox(loading2) || safeUnbox(empty2) ? View.GONE : View.VISIBLE}"
+                android:scrollbars="vertical">
+            </android.support.v7.widget.RecyclerView>
+
+            <com.ruesga.rview.widget.StyleableTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="16dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:visibility="@{safeUnbox(empty2) ? View.VISIBLE : View.GONE}"
+                android:textColor="?android:attr/textColorSecondary"
+                android:text="@string/filter_no_matches_found"
+                android:textSize="14sp"/>
+        </FrameLayout>
+    </ViewFlipper>
 </layout>

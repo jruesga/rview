@@ -90,7 +90,7 @@ import java.util.List;
 import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.OTHER_ACCOUNTS_GROUP_BASE_ID;
 
-public class MainActivity extends ChangeListBaseActivity {
+public class MainActivity extends ChangeListBaseActivity implements Reloadable {
 
     private static final String TAG = "MainActivity";
 
@@ -1119,5 +1119,10 @@ public class MainActivity extends ChangeListBaseActivity {
         } catch (IllegalStateException ex) {
             Log.w(TAG, "Can't start account fetcher service.", ex);
         }
+    }
+
+    @Override
+    public void performReload() {
+        Message.obtain(mUiHandler, MESSAGE_NAVIGATE_TO).sendToTarget();
     }
 }

@@ -362,7 +362,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
                 PageFragmentAdapter adapter = (PageFragmentAdapter) mViewPager.getAdapter();
                 //noinspection ConstantConditions
                 Fragment fragment = adapter.getCachedFragment(tab.getPosition());
-                if (fragment != null && fragment instanceof SelectableFragment) {
+                if (fragment instanceof SelectableFragment) {
                     mUiHandler.post(((SelectableFragment) fragment)::onFragmentSelected);
                 }
 
@@ -562,7 +562,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
 
     private View getSnackBarTarget(View root) {
         View v = root.findViewById(R.id.page_content_layout);
-        if (v != null && v instanceof CoordinatorLayout) {
+        if (v instanceof CoordinatorLayout) {
             return v;
         }
         return root;
@@ -673,6 +673,13 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             for (Fragment fragment : fragments) {
                 fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
             }
+        }
+    }
+
+    public void setSafeActionBarTitle(String title, String subtitle) {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+            getSupportActionBar().setSubtitle(subtitle);
         }
     }
 }

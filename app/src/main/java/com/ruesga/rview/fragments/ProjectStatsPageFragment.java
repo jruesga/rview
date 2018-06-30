@@ -18,6 +18,7 @@ package com.ruesga.rview.fragments;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,20 +30,31 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.TimeUnit;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.DashboardInfo;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
-import io.reactivex.Observable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ProjectStatsPageFragment extends StatsPageFragment<ProjectInfo> {
+import io.reactivex.Observable;
+import me.tatarka.rxloader2.safe.SafeObservable;
+
+public class ProjectStatsPageFragment
+        extends StatsPageFragment<ProjectStatsPageFragment.ProjectStatsInfo> {
 
     private static final String TAG = "ProjectStatsPageFragment";
 
     private ProjectDetailsViewBinding mBinding;
     private String mProjectName;
+
+    static class ProjectStatsInfo {
+        private ProjectInfo mProjectInfo;
+        private List<DashboardInfo> mDashboards;
+    }
 
     public static ProjectStatsPageFragment newFragment(String projectName) {
         ProjectStatsPageFragment fragment = new ProjectStatsPageFragment();
@@ -68,12 +80,26 @@ public class ProjectStatsPageFragment extends StatsPageFragment<ProjectInfo> {
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    public Observable<ProjectInfo> fetchDetails() {
-        GerritApi api = ModelHelper.getGerritApi(getContext());
-        return api.getProject(mProjectName);
+    public Observable<ProjectStatsInfo> fetchDetails() {
+        final GerritApi api = ModelHelper.getGerritApi(getContext());
+        return SafeObservable.fromNullCallable(() -> {
+            ProjectStatsInfo stats = new ProjectStatsInfo();
+            stats.mProjectInfo = api.getProject(mProjectName).blockingFirst();
+            stats.mDashboards = fetchDashboards(api, stats.mProjectInfo);
+            return stats;
+        });
     }
 
+    private List<DashboardInfo> fetchDashboards(GerritApi api, ProjectInfo project) {
+        List<DashboardInfo> dashboards = new ArrayList<>(
+                api.getProjectDashboards(project.name).blockingFirst());
+        if (!TextUtils.isEmpty(project.parent)) {
+            dashboards.addAll(fetchDashboards(
+                    api, api.getProject(project.parent).blockingFirst()));
+        }
+        return dashboards;
 
+    }
 
     @Override
     public ChangeQuery getStatsQuery() {
@@ -82,9 +108,14 @@ public class ProjectStatsPageFragment extends StatsPageFragment<ProjectInfo> {
     }
 
     @Override
-    public void bindDetails(ProjectInfo result) {
-        mBinding.setModel(result);
+    public void bindDetails(ProjectStatsInfo result) {
+        mBinding.setModel(result.mProjectInfo);
+        mBinding.dashboards
+                .listenOn(dashboard -> ActivityHelper.openDashboardActivity(
+                        getContext(), dashboard, false))
+                .from(result.mProjectInfo, result.mDashboards);
         mBinding.executePendingBindings();
+
     }
 
     @Override

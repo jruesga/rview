@@ -140,6 +140,14 @@ public class RegExLinkifyTextView extends StyleableTextView {
                 false,
                 null));
 
+        // Dashboards
+        regexLinks.add(new RegExLink(
+                Constants.CUSTOM_URI_DASHBOARD,
+                "http(s)?://" + uri + "(#/)?dashboard/.*",
+                "$1",
+                false,
+                null));
+
         return regexLinks;
     }
 

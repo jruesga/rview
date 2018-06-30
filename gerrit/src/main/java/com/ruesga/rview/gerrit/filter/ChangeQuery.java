@@ -477,15 +477,18 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                     } else {
                         text = GerritApi.SELF_ACCOUNT;
                     }
+                } else if (type.equals(Integer.class)) {
+                    // ignore
 
                 } else if (type.equals(TimeUnit.class)) {
                     int value = 0;
                     TimeUnit unit = null;
                     for (TimeUnit u : TimeUnit.values()) {
-                        if (text.toLowerCase(Locale.US).endsWith(u.mUnit)) {
+                        String s = findTimeUnit(text, u);
+                        if (s != null) {
                             try {
                                 value = Integer.valueOf(text.substring(
-                                        0, text.length() - u.mUnit.length()));
+                                        0, text.length() - s.length()));
                                 unit = u;
                                 break;
                             } catch (Exception ex) {
@@ -568,6 +571,15 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
 
         private String getFieldText(Tree tree) {
             return tree.getChild(0).getText();
+        }
+
+        private String findTimeUnit(String text, TimeUnit unit) {
+            for (String s : unit.mUnits) {
+                if (text.toLowerCase(Locale.US).endsWith(s)) {
+                    return s;
+                }
+            }
+            return null;
         }
     }
 }

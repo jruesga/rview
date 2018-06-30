@@ -189,6 +189,7 @@
     <string name="filter_unnamed">Unnamed</string>
     <string name="filter_no_matches_found">No matches found</string>
     <string name="filter_hint">Type to filter list</string>
+    <string name="filter_fetching">Fetching data\u2026</string>
 
     <!-- Change Details -->
     <string name="change_details_title">Change #<xliff:g id="changeId" example="157838">%1$d</xliff:g></string>
@@ -568,6 +569,7 @@
     <string name="project_details_status_active">Active</string>
     <string name="project_details_status_read_only">Read-only</string>
     <string name="project_details_status_hidden">Hidden</string>
+    <string name="project_details_dashboards">Dashboards</string>
 
     <!-- NotificationEntity -->
     <string name="notification_file_download_text_failure">File <xliff:g id="height">%1$s</xliff:g> download failed</string>
@@ -718,4 +720,10 @@
 
     <!-- Following Dialog -->
     <string name="start_following_title">Start following to</string>
+
+    <!-- Dashboard Chooser Dialog -->
+    <string name="dashboard_chooser_title">Choose dashboard</string>
+    <string name="dashboard_default">Default</string>
+    <string name="dashboard_inherit_from">(inherit from <xliff:g id="project">%1$s</xliff:g>)</string>
+    <string name="dashboard_chooser_up">Return back to filter</string>
 </resources>

@@ -37,6 +37,8 @@ import com.ruesga.rview.preferences.Preferences;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -48,6 +50,8 @@ import me.tatarka.rxloader2.safe.SafeObservable;
 
 public class ChangeListByFilterFragment extends ChangeListFragment
         implements NewChangeDialogFragment.OnNewChangeRequestedListener {
+
+    private static final Pattern LIMIT_FILTER_PATTERN = Pattern.compile(".*( limit:(\\d+))");
 
     private static final List<ChangeOptions> OPTIONS = new ArrayList<ChangeOptions>() {{
         add(ChangeOptions.DETAILED_ACCOUNTS);
@@ -159,12 +163,21 @@ public class ChangeListByFilterFragment extends ChangeListFragment
 
     @SuppressWarnings("ConstantConditions")
     protected List<ChangeInfo> doFetchChanges(Integer count, Integer start) {
-        final String filter = getFilter();
+        String filter = getFilter();
         if (filter == null) {
             return new ArrayList<>();
         }
 
-        final ChangeQuery query = ChangeQuery.parse(getFilter());
+        // Extract limit filter
+        int limit = count;
+        Matcher m = LIMIT_FILTER_PATTERN.matcher(filter);
+        if (m.find()) {
+            limit = Integer.parseInt(m.group(2));
+            filter = filter.substring(0, m.start(1));
+            notifyNoMoreItems();
+        }
+
+        final ChangeQuery query = ChangeQuery.parse(filter);
         final Context ctx = getActivity();
         final GerritApi api = ModelHelper.getGerritApi(ctx);
 
@@ -179,12 +192,12 @@ public class ChangeListByFilterFragment extends ChangeListFragment
             int s = 0;
             while (true) {
                 List<ChangeInfo> fetched = api.getChanges(
-                        query, count, Math.max(0, s), OPTIONS).blockingFirst();
+                        query, limit, Math.max(0, s), OPTIONS).blockingFirst();
                 changes.addAll(fetched);
-                if (fetched.size() < count) {
+                if (fetched.size() < limit) {
                     break;
                 }
-                s += count;
+                s += limit;
             }
 
             // Sort by created date
@@ -193,7 +206,7 @@ public class ChangeListByFilterFragment extends ChangeListFragment
         }
 
         // Normal fetch
-        return api.getChanges(query, count, Math.max(0, start), OPTIONS).blockingFirst();
+        return api.getChanges(query, limit, Math.max(0, start), OPTIONS).blockingFirst();
     }
 
     @Override

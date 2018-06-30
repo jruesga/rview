@@ -478,13 +478,14 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
     @Override
     public void onFragmentSelected() {
-        //noinspection ConstantConditions
-        ((BaseActivity) getActivity()).setUseTwoPanel(true);
-        if (mAdapter == null || mAdapter.mData.isEmpty()) {
-            ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);
-        } else {
-            int changeId = mAdapter.mData.get(0).legacyChangeId;
-            ((OnChangeItemListener) getActivity()).onChangeItemSelected(changeId);
+        if (getActivity() != null) {
+            ((BaseActivity) getActivity()).setUseTwoPanel(true);
+            if (mAdapter == null || mAdapter.mData.isEmpty()) {
+                ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);
+            } else {
+                int changeId = mAdapter.mData.get(0).legacyChangeId;
+                ((OnChangeItemListener) getActivity()).onChangeItemSelected(changeId);
+            }
         }
     }
 

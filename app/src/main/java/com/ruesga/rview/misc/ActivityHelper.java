@@ -43,10 +43,12 @@ import com.ruesga.rview.EditorActivity;
 import com.ruesga.rview.R;
 import com.ruesga.rview.SearchActivity;
 import com.ruesga.rview.TabFragmentActivity;
+import com.ruesga.rview.fragments.DashboardFragment;
 import com.ruesga.rview.fragments.RelatedChangesFragment;
 import com.ruesga.rview.fragments.StatsFragment;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
+import com.ruesga.rview.gerrit.model.DashboardInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -58,6 +60,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -442,6 +445,24 @@ public class ActivityHelper {
         Intent intent = new Intent(activity, SearchActivity.class);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);
+    }
+
+    public static void openDashboardActivity(
+            Context ctx, DashboardInfo dashboard, boolean clearStack) {
+        Intent intent = new Intent(ctx, TabFragmentActivity.class);
+        if (clearStack) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        } else {
+            intent.putExtra(Constants.EXTRA_HAS_PARENT, true);
+        }
+
+        ArrayList<String> args = new ArrayList<>(
+                Collections.singletonList(SerializationManager.getInstance().toJson(dashboard)));
+        intent.putExtra(Constants.EXTRA_TITLE, ctx.getString(R.string.menu_dashboard));
+        intent.putExtra(Constants.EXTRA_SUBTITLE, dashboard.title);
+        intent.putExtra(Constants.EXTRA_FRAGMENT, DashboardFragment.class.getName());
+        intent.putStringArrayListExtra(Constants.EXTRA_FRAGMENT_ARGS, args);
+        ctx.startActivity(intent);
     }
 
     public static Uri resolveRepositoryUri(Context context, String uri) {

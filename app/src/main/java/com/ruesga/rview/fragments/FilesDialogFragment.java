@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class FilesDialogFragment extends ListDialogFragment<FileItemModel> {
+public class FilesDialogFragment extends ListDialogFragment<FileItemModel, Void> {
 
     public static final String TAG = "FilesDialogFragment";
 

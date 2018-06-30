@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TabFragmentActivity extends ChangeListBaseActivity {
+public class TabFragmentActivity extends ChangeListBaseActivity implements Reloadable {
 
     private final String EXTRA_SELECTED_ITEM = "selected_item";
 
@@ -184,5 +184,12 @@ public class TabFragmentActivity extends ChangeListBaseActivity {
         } else if (result instanceof ChangeInfo) {
             mSelectedChangeId = ((ChangeInfo) result).legacyChangeId;
         }
+    }
+
+    @Override
+    public void performReload() {
+        String fragment = getIntent().getStringExtra(Constants.EXTRA_FRAGMENT);
+        ArrayList<String> args = getIntent().getStringArrayListExtra(Constants.EXTRA_FRAGMENT_ARGS);
+        openFragment(fragment, args);
     }
 }

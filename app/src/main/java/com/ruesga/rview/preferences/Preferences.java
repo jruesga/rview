@@ -25,6 +25,8 @@ import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.AccountInfo;
+import com.ruesga.rview.gerrit.model.DashboardInfo;
+import com.ruesga.rview.misc.DashboardHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
@@ -53,6 +55,7 @@ import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IM
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_ATTACHMENTS_IMAGE_OPTIMIZATIONS_QUALITY;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CI_SHOW;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_CUSTOM_FILTERS;
+import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DASHBOARD_OUTGOING_SORT;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DIFF_MODE;
 import static com.ruesga.rview.preferences.Constants.PREF_ACCOUNT_DISPLAY_FORMAT;
@@ -710,6 +713,23 @@ public class Preferences {
 
         Editor editor = getAccountPreferences(context, account).edit();
         editor.putStringSet(PREF_ACCOUNT_FOLLOWING, followingAccounts);
+        editor.apply();
+    }
+
+    public static DashboardInfo getAccountDashboard(Context context, Account account) {
+        String dashboard = getAccountPreferences(
+                context, account).getString(PREF_ACCOUNT_DASHBOARD, null);
+        if (dashboard == null) {
+            return DashboardHelper.createDefaultDashboard(context);
+        }
+        return SerializationManager.getInstance().fromJson(dashboard, DashboardInfo.class);
+    }
+
+    public static void setAccountDashboard(
+            Context context, Account account, DashboardInfo dashboard) {
+        Editor editor = getAccountPreferences(context, account).edit();
+        editor.putString(PREF_ACCOUNT_DASHBOARD,
+                SerializationManager.getInstance().toJson(dashboard));
         editor.apply();
     }
 }
