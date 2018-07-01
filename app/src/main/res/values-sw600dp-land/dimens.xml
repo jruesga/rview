@@ -14,7 +14,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <dimen name="wizard_max_content_width">0dp</dimen>
-    <dimen name="drawer_header_margin_top" tools:ignore="UnusedAttribute">0dp</dimen>
+    <dimen name="drawer_header_margin_top">0dp</dimen>
 </resources>

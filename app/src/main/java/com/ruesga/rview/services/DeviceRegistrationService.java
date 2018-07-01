@@ -145,6 +145,7 @@ public class DeviceRegistrationService extends JobIntentService {
         }
     }
 
+    @SuppressLint("MissingFirebaseInstanceTokenRefresh")
     private String getToken(Account account) {
         try {
             return FirebaseInstanceId.getInstance().getToken(

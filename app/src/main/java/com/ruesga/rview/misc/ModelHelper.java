@@ -36,7 +36,6 @@ import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
-import com.ruesga.rview.gerrit.model.DashboardInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.LabelInfo;

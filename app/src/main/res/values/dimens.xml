@@ -16,6 +16,7 @@
  -->
 <resources>
     <dimen name="wizard_max_content_width">400dp</dimen>
+    <dimen name="drawer_header_margin_top">36dp</dimen>
     <dimen name="max_avatar_size">48dp</dimen>
     <dimen name="chips_margin">3dp</dimen>
     <dimen name="label_min_width">72dp</dimen>

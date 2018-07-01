@@ -18,5 +18,4 @@
     <dimen name="wizard_min_actionbar_size">64dp</dimen>
     <dimen name="wizard_max_actionbar_size">240dp</dimen>
     <dimen name="wizard_actionbar_size">@dimen/wizard_min_actionbar_size</dimen>
-    <dimen name="drawer_header_margin_top" tools:ignore="UnusedAttribute">36dp</dimen>
 </resources>
