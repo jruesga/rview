@@ -18,17 +18,16 @@ package com.ruesga.rview.services;
 import android.content.Intent;
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.google.firebase.messaging.FirebaseMessagingService;
 
-public class FirebaseIdService extends FirebaseInstanceIdService {
-
-    private static final String TAG = "FirebaseIdService";
+public class FirebaseMessagingListenerService extends FirebaseMessagingService {
+    private static final String TAG = "MessagingListenerSrv";
 
     @Override
-    public void onTokenRefresh() {
-        // Obtain the new token
+    public void onNewToken(String token) {
         if (Log.isLoggable(TAG, Log.DEBUG)) {
-            Log.d(TAG, "Firebase device token changed. Registering all accounts");
+            Log.d(TAG, "Firebase device token changed (new token: " + token
+                    + "). Re-registering all accounts");
         }
 
         // Register all accounts

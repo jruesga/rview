@@ -83,6 +83,7 @@ public class DeviceRegistrationService extends JobIntentService {
     }
 
     @SuppressLint("CheckResult")
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void performDeviceRegistration(Context ctx, Account account) {
         String deviceId = getToken(account);
         if (deviceId == null) {
@@ -108,6 +109,7 @@ public class DeviceRegistrationService extends JobIntentService {
     }
 
     @SuppressLint("CheckResult")
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void performDeviceUnregistration(Context ctx, Account account) {
         String deviceId = getToken(account);
         if (deviceId == null) {
@@ -145,11 +147,6 @@ public class DeviceRegistrationService extends JobIntentService {
 
     private String getToken(Account account) {
         try {
-            String deviceId = FirebaseInstanceId.getInstance().getToken();
-            if (deviceId == null) {
-                return null;
-            }
-
             return FirebaseInstanceId.getInstance().getToken(
                     account.mNotificationsSenderId, TOKEN_SCOPE);
         } catch (Exception ex) {

@@ -177,7 +177,7 @@
         </service>
 
         <service
-            android:name=".services.FirebaseIdService"
+            android:name=".services.FirebaseMessagingListenerService"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
