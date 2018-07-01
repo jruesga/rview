@@ -683,6 +683,10 @@
     <string name="reviewer_update_reviewer">Added to REVIEWER:</string>
     <string name="reviewer_update_cc">Added to CC:</string>
     <string name="reviewer_update_removed">Removed from REVIEWER/CC:</string>
+    <string name="reviewer_update_moved_reviewer_cc">Moved from REVIEWER to CC:</string>
+    <string name="reviewer_update_moved_cc_reviewer">Moved from CC to REVIEWER:</string>
+    <string name="reviewer_update_removed_reviewer">Removed from REVIEWER:</string>
+    <string name="reviewer_update_removed_cc">Removed from CC:</string>
 
     <!-- Commit Size -->
     <string name="commit_size_unknown">unknown</string>

@@ -97,10 +97,10 @@ public class ReviewerUpdatesView extends LinearLayout {
             List<ReviewerUpdateInfo> reviewerUpdates) {
         Map<ReviewerStatus, List<AccountInfo>> data = new TreeMap<>();
         for (ReviewerUpdateInfo ru : reviewerUpdates) {
-            if (!data.containsKey(ru.state)) {
-                data.put(ru.state, new ArrayList<>());
+            if (!data.containsKey(ru._extendedState)) {
+                data.put(ru._extendedState, new ArrayList<>());
             }
-            data.get(ru.state).add(ru.reviewer);
+            data.get(ru._extendedState).add(ru.reviewer);
         }
         return data;
     }

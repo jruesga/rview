@@ -1009,7 +1009,7 @@ public class Formatter {
         boolean first = true;
         StringBuilder sb = new StringBuilder();
         for (ReviewerUpdateInfo update : updates) {
-            if (state.equals(update.state)) {
+            if (state.equals(update._extendedState)) {
                 if (first) {
                     if (newLine) {
                         sb.append("<br/>");

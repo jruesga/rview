@@ -27,5 +27,8 @@ public class ReviewerUpdateInfo {
     @SerializedName("updated_by") public AccountInfo updatedBy;
     @SerializedName("reviewer") public AccountInfo reviewer;
     @SerializedName("state") public ReviewerStatus state;
+
+    // For internal use only
+    public ReviewerStatus _extendedState;
 }
 

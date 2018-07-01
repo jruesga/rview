@@ -250,6 +250,10 @@
         <item>@string/reviewer_update_reviewer</item>
         <item>@string/reviewer_update_cc</item>
         <item>@string/reviewer_update_removed</item>
+        <item>@string/reviewer_update_moved_reviewer_cc</item>
+        <item>@string/reviewer_update_moved_cc_reviewer</item>
+        <item>@string/reviewer_update_removed_reviewer</item>
+        <item>@string/reviewer_update_removed_cc</item>
     </string-array>
 
     <string-array name="highlight_scored_messages_values" translatable="false">

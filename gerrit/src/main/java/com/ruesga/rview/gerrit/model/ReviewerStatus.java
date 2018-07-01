@@ -16,5 +16,8 @@
 package com.ruesga.rview.gerrit.model;
 
 public enum ReviewerStatus {
-    REVIEWER, CC, REMOVED
+    REVIEWER, CC, REMOVED,
+
+    // For internal use only
+    _MOVED_REVIEWER_CC, _MOVED_CC_REVIEWER, _REMOVED_REVIEWER, _REMOVED_CC
 }
