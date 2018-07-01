@@ -117,7 +117,7 @@ public class ScoreLabelsView extends FlexboxLayout {
             model.visible = true;
             ScoreItemBinding binding = mBindings.get(i);
 
-            if (!AndroidHelper.isLollipopOrGreater()) {
+            if (!AndroidHelper.isLollipopMr1OrGreater()) {
                 Drawable dw = ContextCompat.getDrawable(getContext(), R.drawable.bg_tag);
                 binding.scoreLayout.setBackground(BitmapUtils.tintDrawable(
                         getResources(), dw, model.color.getDefaultColor()));

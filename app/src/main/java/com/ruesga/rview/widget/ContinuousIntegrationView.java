@@ -139,7 +139,7 @@ public class ContinuousIntegrationView extends FlexboxLayout {
             color = mUnknownColor;
         }
 
-        if (!AndroidHelper.isLollipopOrGreater()) {
+        if (!AndroidHelper.isLollipopMr1OrGreater()) {
             Drawable dw = ContextCompat.getDrawable(getContext(), R.drawable.bg_tag);
             binding.ciLayout.setBackground(BitmapUtils.tintDrawable(
                     getResources(), dw, color.getDefaultColor()));

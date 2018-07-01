@@ -65,6 +65,10 @@ public class AndroidHelper {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
+    public static boolean isLollipopMr1OrGreater() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1;
+    }
+
     public static boolean isNougatOrGreater() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     }

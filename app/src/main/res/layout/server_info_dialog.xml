@@ -32,7 +32,9 @@
         android:layout_height="match_parent"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
+        android:paddingLeft="32dp"
         android:paddingStart="32dp"
+        android:paddingRight="32dp"
         android:paddingEnd="32dp"
         android:scrollbars="vertical"
         android:orientation="vertical">
