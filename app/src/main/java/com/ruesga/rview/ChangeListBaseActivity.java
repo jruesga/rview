@@ -22,6 +22,7 @@ import android.support.v4.app.FragmentTransaction;
 
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.fragments.ChangeListFragment;
+import com.ruesga.rview.fragments.EmptySelectionDetailsFragment;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ActivityHelper;
 
@@ -83,7 +84,10 @@ public abstract class ChangeListBaseActivity extends BaseActivity implements OnC
                 if (oldFragment != null) {
                     tx.remove(oldFragment);
                 }
-                tx.commit();
+
+                Fragment newFragment = EmptySelectionDetailsFragment.newInstance();
+                tx.replace(R.id.details, newFragment,
+                        FRAGMENT_TAG_DETAILS).commit();
             } else {
                 // Load the details of the change
                 loadChangeDetailsFragment(changeId);

@@ -582,6 +582,7 @@
     <string name="empty_states_error">Something went wrong</string>
     <string name="empty_states_no_trending">No trending activity detected\nin the last hours</string>
     <string name="empty_states_no_following">Tap on accounts avatars\nand start following people</string>
+    <string name="empty_states_no_selection">No selection. Tap on an item\non the left list to display its details</string>
 
     <!-- Untrusted connection dialog -->
     <string name="untrusted_connection_title">Untrusted connection</string>

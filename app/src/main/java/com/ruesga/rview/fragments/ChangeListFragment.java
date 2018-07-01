@@ -191,6 +191,9 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         public void onNext(List<ChangeInfo> result) {
             if (result == null || result.isEmpty()) {
                 createNewAdapter();
+                if (getActivity() instanceof OnChangeItemListener) {
+                    ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);
+                }
             } else {
                 mAdapter.clear();
                 mAdapter.addAll(result);
@@ -210,6 +213,9 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             // Hide your progress indicator and show that there was an error.
             mEmptyState.state = ExceptionHelper.resolveEmptyState(error);
             mBinding.setEmpty(mEmptyState);
+            if (getActivity() instanceof OnChangeItemListener) {
+                ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);
+            }
 
             showProgress(false);
             //noinspection ConstantConditions
@@ -459,7 +465,9 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             mAdapter.notifyDataSetChanged();
         }
         //noinspection ConstantConditions
-        ((OnChangeItemListener) getActivity()).onChangeItemPressed(item);
+        if (getActivity() instanceof OnChangeItemListener) {
+            ((OnChangeItemListener) getActivity()).onChangeItemPressed(item);
+        }
     }
 
     private void onAvatarClick(AccountInfo account) {
@@ -473,7 +481,9 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
 
     private void notifyItemRestored() {
         //noinspection ConstantConditions
-        ((OnChangeItemListener) getActivity()).onChangeItemRestored(mAdapter.mChangeId);
+        if (getActivity() instanceof OnChangeItemListener) {
+            ((OnChangeItemListener) getActivity()).onChangeItemRestored(mAdapter.mChangeId);
+        }
     }
 
     @Override
@@ -481,10 +491,14 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
         if (getActivity() != null) {
             ((BaseActivity) getActivity()).setUseTwoPanel(true);
             if (mAdapter == null || mAdapter.mData.isEmpty()) {
-                ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);
+                if (getActivity() instanceof OnChangeItemListener) {
+                    ((OnChangeItemListener) getActivity()).onChangeItemSelected(NO_SELECTION);
+                }
             } else {
                 int changeId = mAdapter.mData.get(0).legacyChangeId;
-                ((OnChangeItemListener) getActivity()).onChangeItemSelected(changeId);
+                if (getActivity() instanceof OnChangeItemListener) {
+                    ((OnChangeItemListener) getActivity()).onChangeItemSelected(changeId);
+                }
             }
         }
     }
