@@ -684,10 +684,10 @@ public class ChangeDetailsFragment extends Fragment implements
         void update(ListModel listModel, ChangeInfo change,
                 Map<String, LinkedHashMap<String, List<CommentInfo>>> messagesWithComments,
                 ReviewerUpdateInfo[] reviewerUpdates) {
-            mMessages = filterTaggedMessages(filterCiAccountsMessages(
-                    joinWithReviewerUpdates(change.messages, reviewerUpdates)));
+            change.messages = joinWithReviewerUpdates(change.messages, reviewerUpdates);
             mMessagesWithComments = messagesWithComments;
-            change.messages = mMessages;
+
+            mMessages = filterTaggedMessages(filterCiAccountsMessages(change.messages));
 
             int count = mMessages.length;
             boolean[] old = mFolded;
@@ -1030,7 +1030,7 @@ public class ChangeDetailsFragment extends Fragment implements
             // update the message list until a full refresh happens)
             ModelHelper.updateChangeMessageInfo(mAccount, mResponse.mChange, review.first);
             mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
-                    mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
+                    mResponse.mMessagesWithComments, null);
 
             // Fetch the whole change
             forceRefresh();
@@ -1173,7 +1173,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mFileAdapter.update(mModel.filesListModel, mResponse.mFiles,
                     mResponse.mInlineComments, mResponse.mDraftComments);
             mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
-                    mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
+                    mResponse.mMessagesWithComments, null);
             mBinding.setModel(mModel);
 
             mDraftsRefreshLoader.clear();
@@ -2589,7 +2589,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
                 mMessageAdapter.updateHideTaggedMessages(mHideTaggedMessages);
                 mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
-                        mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
+                        mResponse.mMessagesWithComments, null);
                 mBinding.setModel(mModel);
             }
             mModel.isLocked = false;
@@ -2611,7 +2611,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 }
                 mMessageAdapter.updateHideCIMessages(repo);
                 mMessageAdapter.update(mModel.msgListModel, mResponse.mChange,
-                        mResponse.mMessagesWithComments, mResponse.mChange.reviewerUpdates);
+                        mResponse.mMessagesWithComments, null);
                 updateChangeInfo(mResponse);
                 mBinding.setModel(mModel);
             }
