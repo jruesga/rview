@@ -10,11 +10,17 @@
 -dontwarn com.caverock.androidsvg.SVGAndroidRenderer
 
 -renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable,*Annotation*
+-keepattributes SourceFile,LineNumberTable,*Annotation*,Signature
 
 -keepclassmembers class com.ruesga.rview.fragments.** {
    public static *** newFragment(...);
 }
+
+##---------------Begin: proguard configuration for Datasbinding  ----------
+-dontwarn android.databinding.**
+-keep class android.databinding.** { *; }
+##---------------End: proguard configuration for Datasbinding  ----------
+
 
 ##---------------Begin: proguard configuration for Crashlytics  ----------
 -keep class com.crashlytics.** { *; }
@@ -37,8 +43,6 @@
 
 
 ##---------------Begin: proguard configuration for Gson  ----------
--keepattributes Signature
--keepattributes *Annotation*
 -keep class sun.misc.Unsafe { *; }
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer

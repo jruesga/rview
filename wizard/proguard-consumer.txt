@@ -2,6 +2,11 @@
 -dontwarn rx.internal.util.unsafe.*
 -dontwarn java.lang.invoke**
 
+##---------------Begin: proguard configuration for Datasbinding  ----------
+-dontwarn android.databinding.**
+-keep class android.databinding.** { *; }
+##---------------End: proguard configuration for Datasbinding  ----------
+
 ##---------------Begin: proguard configuration for RxJava  ----------
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
    long producerIndex;
