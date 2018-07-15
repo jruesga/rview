@@ -47,7 +47,7 @@ public class StringHelper {
     private static final String QUOTE_END_TAG = "[/QUOTE]";
 
     private static final Pattern QUOTE_REGEXP
-            = Pattern.compile("^\\[QUOTE](.+?)\\[/QUOTE]$", Pattern.MULTILINE | Pattern.DOTALL);
+            = Pattern.compile("^\\s+?\\[QUOTE](.+?)\\[/QUOTE]$", Pattern.MULTILINE | Pattern.DOTALL);
 
     public static final String EMAIL_REGEXP = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
     public static final String WEB_REGEXP ="((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.)" +
