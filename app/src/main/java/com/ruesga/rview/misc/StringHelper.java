@@ -47,7 +47,7 @@ public class StringHelper {
     private static final String QUOTE_END_TAG = "[/QUOTE]";
 
     private static final Pattern QUOTE_REGEXP
-            = Pattern.compile("^\\s+?\\[QUOTE](.+?)\\[/QUOTE]$", Pattern.MULTILINE | Pattern.DOTALL);
+            = Pattern.compile("^(\\s+)?\\[QUOTE](.+?)\\[/QUOTE]$", Pattern.MULTILINE | Pattern.DOTALL);
 
     public static final String EMAIL_REGEXP = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
     public static final String WEB_REGEXP ="((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.)" +
@@ -240,13 +240,16 @@ public class StringHelper {
             StringBuilder sb = new StringBuilder();
             int last = 0;
             do {
-                int start = matcher.start(1) - QUOTE_START_TAG.length();
-                int end = matcher.end(1) + QUOTE_END_TAG.length();
+                int start = matcher.start(2) - QUOTE_START_TAG.length();
+                if (matcher.group(1) != null) {
+                    start -= matcher.group(1).length();
+                }
+                int end = matcher.end(2) + QUOTE_END_TAG.length();
                 if (last < start) {
                     sb.append(msg, last, start);
                 }
 
-                String quote = (" > " + matcher.group(1))
+                String quote = (" > " + matcher.group(2))
                         .replaceAll("\n", "\n > ")
                         .replaceAll(NON_PRINTABLE_CHAR, " > ");
                 while (true) {

@@ -100,6 +100,15 @@ public class DiffView extends FrameLayout {
             }
         }
 
+        public void onQuotePressed(View v) {
+            if (mView.mOnCommentListener != null) {
+                String[] s = ((String) v.getTag()).split("/");
+                String msg = (String) v.getTag(R.id.tag_key);
+                Integer line = s[2] == null || s[2].equals("null") ? null : Integer.valueOf(s[2]);
+                mView.mOnCommentListener.onQuoteDraft(v, s[0], s[1], line, msg);
+            }
+        }
+
         public void onDonePressed(View v) {
             if (mView.mOnCommentListener != null) {
                 String[] s = ((String) v.getTag()).split("/");
@@ -164,6 +173,8 @@ public class DiffView extends FrameLayout {
         void onNewDraft(View v, boolean left, Integer line);
 
         void onReplyToDraft(View v, String revisionId, String commentId, Integer line);
+
+        void onQuoteDraft(View v, String revisionId, String commentId, Integer line, String msg);
 
         void onDoneToDraft(View v, String revisionId, String commentId, Integer line);
 
@@ -489,10 +500,12 @@ public class DiffView extends FrameLayout {
                 holder.mBinding.setMeasurement(mDiffViewMeasurement);
                 holder.mBinding.setHandlers(mEventHandlers);
                 if (comment.commentA != null) {
+                    holder.mBinding.actionsA.quote.setTag(R.id.tag_key, comment.commentA.message);
                     holder.mBinding.actionsA.edit.setTag(R.id.tag_key, comment.commentA.message);
                     holder.mBinding.actionsA.unresolved.setTag(R.id.tag_key, comment.commentA.message);
                 }
                 if (comment.commentB != null) {
+                    holder.mBinding.actionsB.quote.setTag(R.id.tag_key, comment.commentB.message);
                     holder.mBinding.actionsB.edit.setTag(R.id.tag_key, comment.commentB.message);
                     holder.mBinding.actionsB.unresolved.setTag(R.id.tag_key, comment.commentB.message);
                 }

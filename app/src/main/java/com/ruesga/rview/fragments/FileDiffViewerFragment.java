@@ -57,6 +57,7 @@ import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
+import com.ruesga.rview.misc.StringHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
@@ -225,6 +226,19 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         }
 
         @Override
+        public void onQuoteDraft(View v, String revisionId, String commentId,
+                Integer line, String msg) {
+            boolean left = !(revisionId.equals(mRevision));
+
+            Bundle data = new Bundle();
+            data.putString("line", line == null ? null : String.valueOf(line));
+            data.putString("revisionId", revisionId);
+            data.putString("commentId", commentId);
+            performShowDraftMessageDialog(v, line, left,
+                    StringHelper.quoteMessage("", msg), REQUEST_CODE_REPLY, data);
+        }
+
+        @Override
         public void onDoneToDraft(View v, String revisionId, String commentId, Integer line) {
             String msg = getString(R.string.draft_reply_done);
             mActionLoader.clear();
@@ -253,7 +267,8 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             data.putString("draftId", draftId);
             data.putString("inReplyTo", inReplyTo);
             data.putBoolean("unresolved", unresolved);
-            performShowDraftMessageDialog(v, line, left, msg, REQUEST_CODE_EDIT, data);
+            performShowDraftMessageDialog(v, line, left,
+                    StringHelper.quoteMessage("", msg), REQUEST_CODE_EDIT, data);
         }
 
         @Override
@@ -896,7 +911,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         if (!TextUtils.isEmpty(commentId)) {
             input.inReplyTo = commentId;
         }
-        input.message = msg;
+        input.message = StringHelper.obtainQuoteFromMessage(msg);
         if (line != null) {
             input.line = line;
         }
@@ -924,7 +939,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
         CommentInput input = new CommentInput();
         input.id = draftId;
         input.inReplyTo = inReplyTo;
-        input.message = msg;
+        input.message = StringHelper.obtainQuoteFromMessage(msg);
         if (line != null) {
             input.line = line;
         }
