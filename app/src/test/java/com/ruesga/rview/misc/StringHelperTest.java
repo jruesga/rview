@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNotNull;
 public class StringHelperTest {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         TestUtils.mockCommonAndroidClasses();
     }
 
@@ -85,6 +85,20 @@ public class StringHelperTest {
                 "/com/ruesga/rview/misc/removeExtraLines03.expected.txt");
 
         testPrepareForQuotes(testMessage, expectedMessage);
+    }
+
+    @Test
+    public void testQuoteMessage() {
+        assertEquals("test\n\n[QUOTE][QUOTE]abc[/QUOTE]\n\n\nabc[/QUOTE]\n\n",
+                StringHelper.quoteMessage("test", " > abc\n\n\nabc"));
+        assertEquals("[QUOTE][QUOTE][QUOTE]linea1\nlinea2[/QUOTE]\nlinea3[/QUOTE]\n\nlinea4[/QUOTE]\n\n",
+                StringHelper.quoteMessage(null, "> > linea1\n > > linea2\n > linea3\n\nlinea4"));
+        assertEquals("[QUOTE][QUOTE]linea1[/QUOTE][/QUOTE]\n\n",
+                StringHelper.quoteMessage(null, "> linea1"));
+        assertEquals("[QUOTE][QUOTE]linea1[/QUOTE]\n\n[QUOTE][QUOTE]linea2\nlinea3[/QUOTE][/QUOTE]\n\ncomment\n[QUOTE]linea4[/QUOTE]\n\ncomment[/QUOTE]\n\n",
+                StringHelper.quoteMessage(null, "> linea1\n\n > > linea2\n > > linea3\n\ncomment\n > linea4\n\ncomment"));
+        assertEquals("[QUOTE]comment[/QUOTE]\n\n",
+                StringHelper.quoteMessage(null, "comment"));
     }
 
     private void testPrepareForQuotes(String testMessage, String expectedMessage) {

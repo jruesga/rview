@@ -211,6 +211,20 @@ public class StringHelper {
         return indent;
     }
 
+    private static int computeQuoteIndentationEx(String line) {
+        int i = 0;
+        if (line != null) {
+            int length = line.length();
+            final char quote = NON_PRINTABLE_CHAR.charAt(0);
+            for (; i < length; i++) {
+                if (line.charAt(i) != quote) {
+                    break;
+                }
+            }
+        }
+        return i;
+    }
+
     private static String stripQuoteIndentation(String line) {
         int c = line.length();
         int i = 0;
@@ -284,16 +298,49 @@ public class StringHelper {
     }
 
     public static String quoteMessage(String prev, String msg) {
-        if (msg.contains("\n\n")) {
-            msg = msg.substring(msg.indexOf("\n\n") + 2);
+        StringBuilder sb = new StringBuilder();
+        if (prev != null && !prev.isEmpty()) {
+            sb.append(prev);
+            if (!prev.endsWith("\n")) {
+                sb.append("\n");
+            }
+            if (!prev.endsWith("\n\n")) {
+                sb.append("\n");
+            }
         }
-        msg = QUOTE_START_TAG + StringHelper.obtainQuote(msg)  + QUOTE_END_TAG + "\n\n";
-        if (!TextUtils.isEmpty(prev) && !prev.endsWith("\n")) {
-            msg = prev + "\n" + msg;
-        } else {
-            msg = prev + msg;
+
+        int currentIndent = 0;
+        String[] lines = obtainQuote(msg).split("\n");
+        int l = lines.length;
+        sb.append(QUOTE_START_TAG);
+        for (int i = 0; i < l; i++) {
+            boolean last = (i >= (l - 1));
+            String line = lines[i];
+            String nextLine = null;
+            if (!last) {
+                nextLine = lines[i + 1];
+            }
+
+            int indent = computeQuoteIndentationEx(line);
+            int indentNext = computeQuoteIndentationEx(nextLine);
+            if (currentIndent < indent) {
+                for (int j = currentIndent; j < indent; j++) {
+                    sb.append(QUOTE_START_TAG);
+                }
+            }
+            sb.append(line);
+            if (indentNext < indent) {
+                for (int j = indentNext; j < indent; j++) {
+                    sb.append(QUOTE_END_TAG);
+                }
+            }
+            if (!last) {
+                sb.append("\n");
+            }
+            currentIndent = indent;
         }
-        return msg;
+        sb.append(QUOTE_END_TAG).append("\n\n");
+        return sb.toString().replaceAll(NON_PRINTABLE_CHAR, "");
     }
 
     public static String removeExtraLines(String msg) {
