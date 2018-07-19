@@ -307,10 +307,15 @@ public class StringHelper {
             }
         }
 
+        sb.append(QUOTE_START_TAG).append(quoteMessage(msg)).append(QUOTE_END_TAG).append("\n\n");
+        return sb.toString();
+    }
+
+    public static String quoteMessage(String msg) {
+        StringBuilder sb = new StringBuilder();
         int currentIndent = 0;
         String[] lines = obtainQuote(msg).split("\n");
         int l = lines.length;
-        sb.append(QUOTE_START_TAG);
         for (int i = 0; i < l; i++) {
             boolean last = (i >= (l - 1));
             String line = lines[i];
@@ -337,7 +342,6 @@ public class StringHelper {
             }
             currentIndent = indent;
         }
-        sb.append(QUOTE_END_TAG).append("\n\n");
         return sb.toString().replaceAll(NON_PRINTABLE_CHAR, "");
     }
 

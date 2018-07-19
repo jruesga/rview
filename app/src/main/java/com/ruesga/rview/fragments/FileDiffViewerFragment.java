@@ -268,7 +268,7 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
             data.putString("inReplyTo", inReplyTo);
             data.putBoolean("unresolved", unresolved);
             performShowDraftMessageDialog(v, line, left,
-                    StringHelper.quoteMessage("", msg), REQUEST_CODE_EDIT, data);
+                    StringHelper.quoteMessage(msg), REQUEST_CODE_EDIT, data);
         }
 
         @Override
