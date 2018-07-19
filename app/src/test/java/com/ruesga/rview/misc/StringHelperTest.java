@@ -101,6 +101,20 @@ public class StringHelperTest {
                 StringHelper.quoteMessage(null, "comment"));
     }
 
+    @Test
+    public void testObtainQuoteFromMessage() {
+        assertEquals("test\n\n >  > abc\n > \n > \n > abc\n\nreply",
+                StringHelper.obtainQuoteFromMessage("test\n\n[QUOTE][QUOTE]abc[/QUOTE]\n\n\nabc[/QUOTE]\n\nreply"));
+        assertEquals(" >  >  > linea1\n >  >  > linea2\n >  > linea3\n > \n > linea4\n\nreply",
+                StringHelper.obtainQuoteFromMessage("[QUOTE][QUOTE][QUOTE]linea1\nlinea2[/QUOTE]\nlinea3[/QUOTE]\n\nlinea4[/QUOTE]\n\nreply"));
+        assertEquals(" >  > linea1\n\nreply",
+                StringHelper.obtainQuoteFromMessage("[QUOTE][QUOTE]linea1[/QUOTE][/QUOTE]\n\nreply"));
+        assertEquals(" >  > linea1\n > \n >  >  > linea2\n >  >  > linea3\n > \n > comment\n >  > linea4\n > \n > comment\n\nreply",
+                StringHelper.obtainQuoteFromMessage("[QUOTE][QUOTE]linea1[/QUOTE]\n\n[QUOTE][QUOTE]linea2\nlinea3[/QUOTE][/QUOTE]\n\ncomment\n[QUOTE]linea4[/QUOTE]\n\ncomment[/QUOTE]\n\nreply"));
+        assertEquals(" > comment\n\nreply",
+                StringHelper.obtainQuoteFromMessage("[QUOTE]comment[/QUOTE]\n\nreply"));
+    }
+
     private void testPrepareForQuotes(String testMessage, String expectedMessage) {
         String[] paragraphs = StringHelper.obtainParagraphs(testMessage);
         StringBuilder sb = new StringBuilder();

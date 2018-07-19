@@ -45,9 +45,8 @@ public class StringHelper {
 
     private static final String QUOTE_START_TAG = "[QUOTE]";
     private static final String QUOTE_END_TAG = "[/QUOTE]";
-
-    private static final Pattern QUOTE_REGEXP
-            = Pattern.compile("^(\\s+)?\\[QUOTE](.+?)\\[/QUOTE]$", Pattern.MULTILINE | Pattern.DOTALL);
+    private static final String QUOTE_START_TAG_REGEXP = "\\[QUOTE]";
+    private static final String QUOTE_END_TAG_REGEXP = "\\[/QUOTE]";
 
     public static final String EMAIL_REGEXP = "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
     public static final String WEB_REGEXP ="((ht|f)tp(s?):\\/\\/|www\\.)(([\\w\\-]+\\.)" +
@@ -248,40 +247,39 @@ public class StringHelper {
         return -1;
     }
 
-    public static String obtainQuoteFromMessage(String msg) {
-        Matcher matcher = QUOTE_REGEXP.matcher(msg);
-        if (matcher.find()) {
-            StringBuilder sb = new StringBuilder();
-            int last = 0;
-            do {
-                int start = matcher.start(2) - QUOTE_START_TAG.length();
-                if (matcher.group(1) != null) {
-                    start -= matcher.group(1).length();
-                }
-                int end = matcher.end(2) + QUOTE_END_TAG.length();
-                if (last < start) {
-                    sb.append(msg, last, start);
-                }
+    public static int countTokens(String src, String token, String tokenRegexp) {
+        String temp = src.replaceAll(tokenRegexp, "");
+        return (src.length() - temp.length()) / token.length();
+    }
 
-                String quote = (" > " + matcher.group(2))
-                        .replaceAll("\n", "\n > ")
-                        .replaceAll(NON_PRINTABLE_CHAR, " > ");
-                while (true) {
-                    String m = quote;
-                    quote = quote.replaceAll("> {2}>", "> >");
-                    if (quote.equals(m)) {
-                        break;
-                    }
-                }
-                sb.append(quote);
-                last = end;
-            } while (matcher.find());
-            if (last < msg.length()) {
-                sb.append(msg.substring(last));
+    @SuppressWarnings("StringConcatenationInLoop")
+    public static String obtainQuoteFromMessage(String msg) {
+        int indent = 0;
+        StringBuilder sb = new StringBuilder();
+        String[] lines = msg.split("\n");
+        int l = lines.length;
+        for (int i = 0; i < l; i++) {
+            boolean last = (i >= (l - 1));
+            String line = lines[i];
+            int startTokens = countTokens(line, QUOTE_START_TAG, QUOTE_START_TAG_REGEXP);
+            int endTokens = countTokens(line, QUOTE_END_TAG, QUOTE_END_TAG_REGEXP);
+            if (startTokens > 0) {
+                line = line.replaceAll(QUOTE_START_TAG_REGEXP, "");
+                indent += startTokens;
             }
-            return sb.toString();
+            for (int j = 0; j < indent; j++) {
+                line = " > " + line;
+            }
+            if (endTokens > 0) {
+                line = line.replaceAll(QUOTE_END_TAG_REGEXP, "");
+                indent -= endTokens;
+            }
+            sb.append(line);
+            if (!last) {
+                sb.append("\n");
+            }
         }
-        return msg;
+        return sb.toString();
     }
 
     public static String obtainPreFormatMessage(String msg) {
