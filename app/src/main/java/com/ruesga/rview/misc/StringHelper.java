@@ -270,7 +270,7 @@ public class StringHelper {
             for (int j = 0; j < indent; j++) {
                 line = " > " + line;
             }
-            if (endTokens > 0) {
+            if (endTokens > 0 && indent > 0) {
                 line = line.replaceAll(QUOTE_END_TAG_REGEXP, "");
                 indent -= endTokens;
             }
