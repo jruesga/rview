@@ -42,7 +42,7 @@ ext {
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.1.0',
         better_link_movement_method : '2.2.0',
-        aboutlibraries              : '6.0.9',
+        aboutlibraries              : '6.1.0',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.9.4',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
@@ -54,7 +54,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.19.0',
+        mockito                     : '2.19.1',
         powermock                   : '2.0.0-beta.5',
         robolectric                 : '3.8',
         base64                      : '2.3.9'
