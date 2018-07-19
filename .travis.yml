@@ -2,24 +2,27 @@ sudo: false
 
 language: android
 
-android:
-  components:
-     - tools
-     - tools
-     - android-28
-     - build-tools-28.0.1
-     - platform-tools
-     - extra-android-m2repository
-     - extra-google-m2repository
-
 jdk:
   - oraclejdk8
 
-before_install:
-  - echo "y" | sdkmanager "platforms;android-28"
+install:
+  # https://medium.com/@bod/cache-your-android-sdk-with-travis-c816b9264708
+  # Download and unzip the Android SDK tools (if not already there thanks to the cache mechanism)
+  # Latest version available here: https://developer.android.com/studio/#command-tools
+  - if test ! -e $HOME/android-sdk-dl/sdk-tools.zip ; then curl https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip > $HOME/android-sdk-dl/sdk-tools.zip ; fi
+  - unzip -qq -n $HOME/android-sdk-dl/sdk-tools.zip -d $HOME/android-sdk
+
+  # Install or update Android SDK components (will not do anything if already up to date thanks to the cache mechanism)
+  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'tools' > /dev/null
+  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'platform-tools' > /dev/null
+  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'build-tools;28.0.1' > /dev/null
+  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'platforms;android-28' > /dev/null
+
+env:
+  - ANDROID_HOME=$HOME/android-sdk
 
 script:
-  - ./gradlew clean lintDebug testDebug
+  - ./gradlew --no-daemon --parallel clean lintDebug testDebug
 
 notifications:
   email:
@@ -32,6 +35,8 @@ before_cache:
 
 cache:
   directories:
-     - $HOME/.gradle/caches/
-     - $HOME/.gradle/wrapper/
-     - $HOME/.android/build-cache
+    - $HOME/android-sdk-dl
+    - $HOME/android-sdk
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
