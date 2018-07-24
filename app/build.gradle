@@ -184,17 +184,13 @@ def addActivityAliases(manifest) {
 def registerAddActivityAliases(task, build) {
     def buildName = build.name.toString()
     def manifestFull = new File(
-            (project.path + "/build/intermediates/manifests/full/${buildName}/AndroidManifest.xml")
+            (project.path + "/build/intermediates/merged_manifests/${buildName}/process${buildName.capitalize()}Manifest/merged/AndroidManifest.xml")
             .replace(":", ""))
-    def manifestInstantRun = new File(
-            (project.path + "/build/intermediates/manifests/instant-run/${buildName}/AndroidManifest.xml")
-                    .replace(":", ""))
 
     def addActivityAliasesTaskName = "addActivityAliases${buildName.capitalize()}"
     project.task(addActivityAliasesTaskName).doLast({
         description = 'Include extra activity-alias to final AndroidManifest.xml'
         addActivityAliases(manifestFull)
-        addActivityAliases(manifestInstantRun)
     })
 
     task.dependsOn(addActivityAliasesTaskName)
