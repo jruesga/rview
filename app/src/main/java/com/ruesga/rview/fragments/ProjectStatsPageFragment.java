@@ -19,6 +19,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,7 @@ import me.tatarka.rxloader2.safe.SafeObservable;
 public class ProjectStatsPageFragment
         extends StatsPageFragment<ProjectStatsPageFragment.ProjectStatsInfo> {
 
-    private static final String TAG = "ProjectStatsPageFragment";
+    private static final String TAG = "ProjectStatsPageFrgm";
 
     private ProjectDetailsViewBinding mBinding;
     private String mProjectName;
@@ -94,8 +95,13 @@ public class ProjectStatsPageFragment
         List<DashboardInfo> dashboards = new ArrayList<>(
                 api.getProjectDashboards(project.name).blockingFirst());
         if (!TextUtils.isEmpty(project.parent)) {
-            dashboards.addAll(fetchDashboards(
-                    api, api.getProject(project.parent).blockingFirst()));
+            try {
+                dashboards.addAll(fetchDashboards(
+                        api, api.getProject(project.parent).blockingFirst()));
+            } catch (Exception e) {
+                Log.w(TAG, "Cannot fetch '" + project.parent + "'project dashboards", e);
+                // Stop fetching here
+            }
         }
         return dashboards;
 
