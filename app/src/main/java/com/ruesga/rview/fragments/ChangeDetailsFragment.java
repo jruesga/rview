@@ -1918,6 +1918,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 .withFilterCIAccounts(mHideCIMessages)
                 .withReviewerStatus(supportsCC ? ReviewerStatus.REVIEWER : null)
                 .from(response.mChange);
+        mBinding.changeInfo.tagsLabels.setOnTagClickListener(this::performOpenHashtag);
         if (supportsCC) {
             mBinding.changeInfo.cc
                     .listenOn(mOnAccountChipClickedListener)
@@ -3083,6 +3084,12 @@ public class ChangeDetailsFragment extends Fragment implements
                 filter = new ChangeQuery().topic(((TextView) v).getText().toString());
                 break;
         }
+        ActivityHelper.openChangeListByFilterActivity(getActivity(), title, filter, false, false);
+    }
+
+    private void performOpenHashtag(Tag tag) {
+        String title = getString(R.string.change_details_tags);
+        ChangeQuery filter = new ChangeQuery().hashtag(String.valueOf(tag.toPlainTag()));
         ActivityHelper.openChangeListByFilterActivity(getActivity(), title, filter, false, false);
     }
 
