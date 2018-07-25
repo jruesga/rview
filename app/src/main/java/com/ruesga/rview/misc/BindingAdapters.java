@@ -229,7 +229,7 @@ public class BindingAdapters {
             t[i] = new Tag(TagEditTextView.TAG_MODE.HASH,
                     tags[i], ContextCompat.getColor(v.getContext(), R.color.noscore));
         }
-        v.setTags(t);
+        v.setTags(t, false);
     }
 
     public static boolean isEmpty(Collection<?> c) {

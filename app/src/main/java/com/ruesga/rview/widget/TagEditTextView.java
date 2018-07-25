@@ -276,9 +276,9 @@ public class TagEditTextView extends LinearLayout {
     };
 
     private static final Pattern HASH_TAG_PATTERN = Pattern.compile(
-            "(?<=^|(?<=[^a-zA-Z0-9-_\\\\.]))#([\\p{L}]+[\\p{L}0-9_]+)");
+            "(?<=^|(?<=[^a-zA-Z0-9-_\\\\.]))#([\\p{L}]+[\\p{L}0-9_\\-]+)");
     private static final Pattern USER_TAG_PATTERN = Pattern.compile(
-            "(?<=^|(?<=[^a-zA-Z0-9-_\\\\.]))@([\\p{L}]+[\\p{L}0-9_]+)");
+            "(?<=^|(?<=[^a-zA-Z0-9-_\\\\.]))@([\\p{L}]+[\\p{L}0-9_\\-]+)");
     private static final Pattern NON_UNICODE_CHAR_PATTERN = Pattern.compile("[^\\p{L}0-9_#@]");
 
     private static final String VALID_TAGS = "#@";
@@ -542,6 +542,10 @@ public class TagEditTextView extends LinearLayout {
     }
 
     public void setTags(Tag[] tags) {
+        setTags(tags, true);
+    }
+
+    public void setTags(Tag[] tags, boolean check) {
         // Delete any existent data
         try {
             mTagEdit.getEditableText().clearSpans();
@@ -562,7 +566,7 @@ public class TagEditTextView extends LinearLayout {
         for (Tag tag : tags) {
             Matcher hashTagMatcher = HASH_TAG_PATTERN.matcher(tag.mTag);
             Matcher userTagMatcher = USER_TAG_PATTERN.matcher(tag.mTag);
-            if (hashTagMatcher.matches() || (mSupportsUserTags && userTagMatcher.matches())) {
+            if (!check || hashTagMatcher.matches() || (mSupportsUserTags && userTagMatcher.matches())) {
                 mTagList.add(tag);
             }
         }
