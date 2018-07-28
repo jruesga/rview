@@ -26,9 +26,9 @@ ext {
         gson                        : '2.8.5',
         retrofit2                   : '2.4.0',
         okhttp3                     : '3.11.0',
-        okio                        : '1.14.1',
+        okio                        : '1.15.0',
         okhttp_digest               : 'f13c5b8f79',
-        rxjava                      : '2.1.16',
+        rxjava                      : '2.1.17',
         rxandroid                   : '2.0.2',
         rxloader2                   : '244a5fddb6',
         // Keep commons-io in 2.5. Prior android versions doesn't have fully support for Files api.
@@ -42,7 +42,7 @@ ext {
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.1.0',
         better_link_movement_method : '2.2.0',
-        aboutlibraries              : '6.1.0',
+        aboutlibraries              : '6.1.1',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.9.4',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
@@ -54,7 +54,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.19.1',
+        mockito                     : '2.20.1',
         powermock                   : '2.0.0-beta.5',
         robolectric                 : '3.8',
         base64                      : '2.3.9'
