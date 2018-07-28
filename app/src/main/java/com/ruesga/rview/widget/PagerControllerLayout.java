@@ -93,7 +93,9 @@ public class PagerControllerLayout extends FrameLayout {
     private DataSetObserver mObserver = new DataSetObserver() {
         @Override
         public void onChanged() {
-            pageSelected(mCurrentItem, true);
+            if (mCurrentItem != INVALID_PAGE) {
+                pageSelected(mCurrentItem, true);
+            }
         }
     };
 
@@ -165,7 +167,7 @@ public class PagerControllerLayout extends FrameLayout {
     }
 
     private void pageSelected(int position, boolean fromUser) {
-        if (mOnPageSelectionListener != null) {
+        if (mOnPageSelectionListener != null && position != INVALID_PAGE) {
             mOnPageSelectionListener.onPageSelected(position, fromUser);
         }
         if (mAdapter.getFragmentManager().isStateSaved()) {
