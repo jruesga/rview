@@ -159,7 +159,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
                     ? (Spannable) text : Spannable.Factory.getInstance().newSpannable(text);
             if (mRegEx != null) {
                 for (final RegExLink regEx : mRegEx) {
-                    if (regEx == null) {
+                    if (regEx == null || regEx.mLink != null || regEx.mPattern != null) {
                         continue;
                     }
 
