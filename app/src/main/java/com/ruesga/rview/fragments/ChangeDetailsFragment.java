@@ -1609,6 +1609,7 @@ public class ChangeDetailsFragment extends Fragment implements
         outState.putBoolean("hideTaggedMessages", mHideTaggedMessages);
         outState.putBoolean("hideCIMessages", mHideCIMessages);
         outState.putParcelableArrayList("attachments", mAttachments);
+        outState.putInt(Constants.EXTRA_EMPTY_STATE, mEmptyState.state);
     }
 
     @Override
@@ -1701,7 +1702,7 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         if (mFileAdapter == null) {
-            mAttachmentsSupport = new AttachmentsSupport(getContext());
+            mAttachmentsSupport = new AttachmentsSupport(getActivity());
 
             IntentFilter filter = new IntentFilter();
             filter.addAction(ATTACHMENT_PROVIDER_CHANGED_ACTION);
@@ -1718,6 +1719,10 @@ public class ChangeDetailsFragment extends Fragment implements
             mHideTaggedMessages = Preferences.isAccountToggleTaggedMessages(getContext(), mAccount);
             mHideCIMessages = Preferences.isAccountToggleCIAccountsMessages(getContext(), mAccount);
             if (savedInstanceState != null) {
+                mEmptyState.state = savedInstanceState.getInt(
+                        Constants.EXTRA_EMPTY_STATE, EmptyState.NORMAL_STATE);
+                mBinding.setEmpty(mEmptyState);
+
                 mHideTaggedMessages = savedInstanceState.getBoolean(
                         "hideTaggedMessages", mHideTaggedMessages);
                 mHideCIMessages = savedInstanceState.getBoolean(

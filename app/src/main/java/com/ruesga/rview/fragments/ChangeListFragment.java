@@ -46,6 +46,7 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.EmptyState;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
 import com.ruesga.rview.widget.DividerItemDecoration;
 import com.ruesga.rview.widget.EndlessRecyclerViewScrollListener;
@@ -368,6 +369,10 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
             // Configure the adapter
             mAdapter = new ChangesAdapter(this);
             if (savedState != null) {
+                mEmptyState.state = savedState.getInt(
+                        Constants.EXTRA_EMPTY_STATE, EmptyState.NORMAL_STATE);
+                mBinding.setEmpty(mEmptyState);
+
                 mAdapter.mChangeId = savedState.getInt(EXTRA_CHANGE_ID, NO_SELECTION);
                 if (mAdapter.mChangeId != NO_SELECTION) {
                     notifyItemRestored();
@@ -418,6 +423,7 @@ public abstract class ChangeListFragment extends Fragment implements SelectableF
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(EXTRA_CHANGE_ID, mAdapter != null ? mAdapter.mChangeId : NO_SELECTION);
+        outState.putInt(Constants.EXTRA_EMPTY_STATE, mEmptyState.state);
     }
 
     void setupLoaders(RxLoaderManager loaderManager) {

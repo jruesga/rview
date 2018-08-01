@@ -54,6 +54,7 @@ public class Constants {
     public static final String EXTRA_SIZE = "size";
     public static final String EXTRA_READ_ONLY = "read_only";
     public static final String EXTRA_DASHBOARD = "dashboard";
+    public static final String EXTRA_EMPTY_STATE = "empty_state";
 
     public static final String EXTRA_HAS_PARENT = "has_parent";
     public static final String EXTRA_HAS_FORCE_UP = "has_force_up";

@@ -50,6 +50,7 @@ import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.EmptyState;
+import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.providers.NotificationEntity;
 import com.ruesga.rview.widget.DividerItemDecoration;
 
@@ -262,14 +263,20 @@ public class NotificationsFragment extends Fragment {
         mBinding = DataBindingUtil.inflate(
                 inflater, R.layout.notifications_fragment, container, false);
         mBinding.setEmpty(mEmptyState);
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(savedInstanceState);
         return mBinding.getRoot();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(Constants.EXTRA_EMPTY_STATE, mEmptyState.state);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        startLoadersWithValidContext();
+        startLoadersWithValidContext(savedInstanceState);
     }
 
     @Override
@@ -283,7 +290,7 @@ public class NotificationsFragment extends Fragment {
         }
     }
 
-    private void startLoadersWithValidContext() {
+    private void startLoadersWithValidContext(Bundle savedState) {
         if (getActivity() == null) {
             return;
         }
@@ -293,12 +300,18 @@ public class NotificationsFragment extends Fragment {
             mBinding.list.setLayoutManager(new LinearLayoutManager(
                     getActivity(), LinearLayoutManager.VERTICAL, false));
             mBinding.list.addItemDecoration(new DividerItemDecoration(
-                    getContext(), LinearLayoutManager.VERTICAL));
+                    getActivity(), LinearLayoutManager.VERTICAL));
             mBinding.list.setAdapter(mAdapter);
 
             //noinspection ConstantConditions
             mAccount = ModelHelper.getAccountFromHash(
                     getContext(), getArguments().getString(EXTRA_ACCOUNT_HASH));
+
+            if (savedState != null) {
+                mEmptyState.state = savedState.getInt(
+                        Constants.EXTRA_EMPTY_STATE, EmptyState.NORMAL_STATE);
+                mBinding.setEmpty(mEmptyState);
+            }
 
             // Configure the refresh
             setupSwipeToRefresh();
