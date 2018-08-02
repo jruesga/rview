@@ -66,6 +66,7 @@
   {"name":"PureFusionOS", "url":"https://review.purefusionos.com/"},
   {"name":"R8", "url":"https://r8-review.googlesource.com/"},
   {"name":"ResurrectionRemix", "url":"https://gerrit.resurrectionremix.com/"},
+  {"name":"Ring", "url":"https://gerrit-ring.savoirfairelinux.com/", "ci_accounts": "^(Jenkins .*)$"},
   {"name":"RDK", "url":"https://code.rdkcentral.com/r/", "ci_accounts": "^(Jenkins|jenkins.*|protex_scan)$"},
   {"name":"RDO", "url":"https://review.rdoproject.org/r/", "ci_accounts": "^(Jenkins .*)$"},
   {"name":"Scilab", "url":"https://codereview.scilab.org/"},
