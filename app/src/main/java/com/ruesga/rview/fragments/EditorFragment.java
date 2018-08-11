@@ -1146,7 +1146,9 @@ public class EditorFragment extends Fragment
                 break;
         }
         writeFileOps();
-        mIsDirty = true;
+        if (!mode.equals(MODE.ADD)) {
+            mIsDirty = true;
+        }
 
         // Update file structures
         if (!TextUtils.isEmpty(oldValue)) {
