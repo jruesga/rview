@@ -431,10 +431,10 @@ class AceWebView extends WebView implements NestedScrollingChild {
     }
 
     private void showActionModeAtLastLocation() {
-        int left = mMetrics.widthPixels - getWidth();
-        int top = mMetrics.heightPixels - getHeight();
-        mSelectionHelper.show(this, left + mLastTouch[0] - mActionModeOffsetLeft,
-                top + mLastTouch[1]);
+        int[] xy = new int[2];
+        getLocationOnScreen(xy);
+        mSelectionHelper.show(this, xy[0] + mLastTouch[0] - mActionModeOffsetLeft,
+                xy[1] + mLastTouch[1]);
     }
 
     private void filterAceMessage(String msg) {
