@@ -876,6 +876,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
         @Override
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
         public void run() {
+            if (!ViewCompat.isAttachedToWindow(mTarget)) {
+                mBinding.searchView.setVisibility(mIn ? View.VISIBLE : View.INVISIBLE);
+                if (!mIn) {
+                    finish();
+                }
+                return;
+            }
+
             int cx = mParent.getMeasuredWidth();
             int cy = mParent.getMeasuredHeight() / 2;
             Animator anim = ViewAnimationUtils.createCircularReveal(
