@@ -311,8 +311,7 @@ class AceSelectionActionModeHelper {
         }
         if (option == OPTION_PASTE) {
             return mClipboard.hasPrimaryClip()
-                    && mClipboard.getPrimaryClipDescription().hasMimeType(
-                            ClipDescription.MIMETYPE_TEXT_PLAIN);
+                    && mClipboard.getPrimaryClipDescription().hasMimeType("text/*");
         }
         return true;
     }
