@@ -55,7 +55,7 @@ public class NewChangeDialogFragment extends FilterableDialogFragment {
         public String topic;
         public String subject;
         public boolean isPrivate;
-        public boolean isWorkInProgress;
+        public boolean isWorkInProgress = true;
     }
 
     public static NewChangeDialogFragment newInstance(int requestCode, View anchor) {
