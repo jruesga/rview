@@ -190,9 +190,15 @@ class AceWebView extends WebView implements NestedScrollingChild {
                     break;
                 case AceSelectionActionModeHelper.OPTION_PASTE:
                     // On old Android versions, paste doesn't work. Just use our own implementation.
-                    CharSequence text = mClipboard.getPrimaryClip().getItemAt(0).getText();
-                    final String s = new String(Base64.encode(
-                            text.toString().getBytes(), Base64.NO_WRAP));
+                    String text = "";
+                    if (mClipboard.hasPrimaryClip()
+                            && mClipboard.getPrimaryClip() != null
+                            && mClipboard.getPrimaryClip().getItemCount() > 0
+                            && mClipboard.getPrimaryClipDescription() != null
+                            && mClipboard.getPrimaryClipDescription().hasMimeType("text/*")) {
+                        text = mClipboard.getPrimaryClip().getItemAt(0).getText().toString();
+                    }
+                    final String s = new String(Base64.encode(text.getBytes(), Base64.NO_WRAP));
                     loadUrl("javascript: ace_paste('" + s + "');");
                     requestFocus();
                     mHasPaste = false;

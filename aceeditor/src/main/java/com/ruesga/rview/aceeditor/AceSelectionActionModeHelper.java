@@ -17,7 +17,6 @@ package com.ruesga.rview.aceeditor;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +26,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.Gravity;
@@ -311,7 +311,10 @@ class AceSelectionActionModeHelper {
         }
         if (option == OPTION_PASTE) {
             return mClipboard.hasPrimaryClip()
-                    && mClipboard.getPrimaryClipDescription().hasMimeType("text/*");
+                    && mClipboard.getPrimaryClip() != null
+                    && mClipboard.getPrimaryClipDescription() != null
+                    && mClipboard.getPrimaryClipDescription().hasMimeType("text/*")
+                    && !TextUtils.isEmpty(mClipboard.getPrimaryClip().getItemAt(0).getText());
         }
         return true;
     }
