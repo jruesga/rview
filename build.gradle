@@ -35,7 +35,7 @@ ext {
         commons_io                  : '2.5',
         antlrv3                     : '3.5.2',
         smoothprogressbar           : '1.1.0',
-        glide                       : '4.7.1',
+        glide                       : '4.8.0',
         prettytime                  : '4.0.2.Final',
         flexboxlayout               : '1.0.0',
         floatingsearchview          : '2d435bead5',
