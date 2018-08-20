@@ -64,6 +64,7 @@
   {"name":"OPNFV", "url":"https://gerrit.opnfv.org/gerrit/", "ci_accounts": "^(jenkins-ci)$"},
   {"name":"OSM", "url":"https://osm.etsi.org/gerrit/", "ci_accounts": "^(jenkins)$"},
   {"name":"oVirt", "url":"https://gerrit.ovirt.org/", "ci_accounts": "^(Jenkins.*|gerrit-hooks)$"},
+  {"name":"Pixel Experience", "url":"https://gerrit.pixelexperience.org/"},
   {"name":"PolarSys", "url":"https://git.polarsys.org/r/", "ci_accounts": "^(Hudson CI)$"},
   {"name":"PotatoProject", "url":"https://review.potatoproject.co/"},
   {"name":"PureFusionOS", "url":"https://review.purefusionos.com/"},
