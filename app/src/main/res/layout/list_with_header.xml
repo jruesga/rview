@@ -43,6 +43,8 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 android:background="@android:color/transparent"
                 android:orientation="horizontal">
 

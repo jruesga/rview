@@ -54,6 +54,8 @@
             android:maxLines="2"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
             app:emptyStatedDescription="@{model}"
             tools:ignore="Deprecated"/>
 
