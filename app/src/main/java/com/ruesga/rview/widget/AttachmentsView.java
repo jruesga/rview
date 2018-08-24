@@ -16,11 +16,6 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +30,11 @@ import com.ruesga.rview.databinding.AttachmentsViewBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.v7.widget.LinearLayoutManager.HORIZONTAL;
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class AttachmentsView extends FrameLayout {
 
@@ -149,7 +148,7 @@ public class AttachmentsView extends FrameLayout {
         AttachmentsViewBinding binding = DataBindingUtil.inflate(
                 layoutInflater, R.layout.attachments_view, this, false);
         mList = (RecyclerView) binding.getRoot();
-        mList.setLayoutManager(new LinearLayoutManager(context, HORIZONTAL, false));
+        mList.setLayoutManager(new LinearLayoutManager(context, RecyclerView.HORIZONTAL, false));
         mList.setAdapter(new AttachmentsAdapter(this));
         addView(binding.getRoot());
     }

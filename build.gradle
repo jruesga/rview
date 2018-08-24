@@ -16,12 +16,12 @@
 
 ext {
     libraries = [
-        // https://developer.android.com/topic/libraries/support-library/revisions.html
-        support                     : '27.1.1',
+        // https://developer.android.com/topic/libraries/support-library/androidx-rn
+        androidx                     : '1.0.0-rc01',
         // https://developers.google.com/android/guides/releases
         play_services_auth          : '16.0.0',
         // https://firebase.google.com/support/release-notes/android
-        firebase_core               : '16.0.1',
+        firebase_core               : '16.0.3',
         firebase_messaging          : '17.3.0',
         gson                        : '2.8.5',
         retrofit2                   : '2.4.0',
@@ -30,25 +30,25 @@ ext {
         okhttp_digest               : 'f13c5b8f79',
         rxjava                      : '2.2.0',
         rxandroid                   : '2.0.2',
-        rxloader2                   : '244a5fddb6',
+        rxloader2                   : 'edeebf0a1a',
         // Keep commons-io in 2.5. Prior android versions doesn't have fully support for Files api.
         commons_io                  : '2.5',
         antlrv3                     : '3.5.2',
         smoothprogressbar           : '1.1.0',
         glide                       : '4.8.0',
         prettytime                  : '4.0.2.Final',
-        flexboxlayout               : '1.0.0',
+        flexboxlayout               : '1.1.0-beta1',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.1.0',
         better_link_movement_method : '2.2.0',
         aboutlibraries              : '6.1.1',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
-        crashlytics                 : '2.9.4',
+        crashlytics                 : '2.9.5',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
-        crashlytics_core            : '2.6.3',
+        crashlytics_core            : '2.6.4',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/answers/maven-metadata.xml
-        crashlytics_answers         : '1.4.2'
+        crashlytics_answers         : '1.4.3'
     ]
 
     testLibraries = [
@@ -70,7 +70,7 @@ allprojects {
         }
         dependencies {
             // https://developer.android.com/studio/releases/gradle-plugin.html#revisions
-            classpath 'com.android.tools.build:gradle:3.2.0-beta05'
+            classpath 'com.android.tools.build:gradle:3.2.0-rc01'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
             classpath 'io.fabric.tools:gradle:1.25.4'

@@ -15,11 +15,11 @@
  */
 package com.ruesga.rview.attachments;
 
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
-import android.support.v4.app.FragmentManager;
-
 import java.util.List;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentManager;
 
 public interface AttachmentsProvider {
     Provider getType();

@@ -16,9 +16,10 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+
+import androidx.appcompat.widget.AppCompatTextView;
 
 // https://code.google.com/p/android/issues/detail?id=191430
 public class SelectableCompatTextView extends AppCompatTextView {

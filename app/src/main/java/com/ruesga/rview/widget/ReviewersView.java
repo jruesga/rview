@@ -16,7 +16,6 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -33,6 +32,8 @@ import com.ruesga.rview.widget.AccountChipView.OnAccountChipRemovedListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.core.view.ViewCompat;
 
 public class ReviewersView extends FlexboxLayout {
     private boolean mIsRemovableReviewers;

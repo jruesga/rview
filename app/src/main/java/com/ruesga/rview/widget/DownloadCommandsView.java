@@ -16,7 +16,6 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +28,8 @@ import com.ruesga.rview.gerrit.model.FetchInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.databinding.DataBindingUtil;
 
 public class DownloadCommandsView extends LinearLayout {
     private final List<DownloadCommandItemBinding> mBindings = new ArrayList<>();

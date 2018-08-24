@@ -15,9 +15,9 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.Nullable;
 
 public abstract class MessageInput {
     @Nullable @SerializedName("message") public String message;

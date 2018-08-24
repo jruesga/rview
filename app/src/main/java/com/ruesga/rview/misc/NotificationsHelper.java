@@ -24,10 +24,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.app.RemoteInput;
-import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -51,6 +47,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.Person;
+import androidx.core.app.RemoteInput;
+import androidx.core.content.ContextCompat;
 
 public class NotificationsHelper {
 
@@ -213,11 +215,13 @@ public class NotificationsHelper {
         NotificationEntity lastEntity = entities.get(entities.size() - 1);
         NotificationCompat.Builder builder =
                 createNotificationBuilder(ctx, account, lastEntity, feedback);
-        NotificationCompat.MessagingStyle style = new NotificationCompat.MessagingStyle("")
+        Person p = new Person.Builder().build();
+        NotificationCompat.MessagingStyle style = new NotificationCompat.MessagingStyle(p)
                 .setConversationTitle(lastEntity.mNotification.subject);
         for (NotificationEntity entity : entities) {
-            String author = getEventAuthor(ctx, entity);
-            style.addMessage(getContentMessage(ctx, entity, true, false), entity.mWhen, author);
+            final String author = getEventAuthor(ctx, entity);
+            style.addMessage(getContentMessage(ctx, entity, true, false), entity.mWhen,
+                    new Person.Builder().setName(author).build());
         }
         builder.setStyle(style)
                 .setNumber(entities.size())

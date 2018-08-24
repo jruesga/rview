@@ -15,15 +15,15 @@
  */
 package com.ruesga.rview.attachments.none;
 
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
-import android.support.v4.app.FragmentManager;
-
 import com.ruesga.rview.attachments.Attachment;
 import com.ruesga.rview.attachments.AttachmentsProvider;
 import com.ruesga.rview.attachments.Provider;
 
 import java.util.List;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentManager;
 
 public class NoneAttachmentsProvider implements AttachmentsProvider {
 

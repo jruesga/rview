@@ -20,7 +20,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Map;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#task-summary-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#thread-summary-info"
  */
 public class ThreadSummaryInfo {
     @SerializedName("cpus") public int cpus;

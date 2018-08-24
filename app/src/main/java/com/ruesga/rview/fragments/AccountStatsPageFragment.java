@@ -16,10 +16,7 @@
 package com.ruesga.rview.fragments;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Keep;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +31,8 @@ import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.EmailInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ActivityHelper;
-import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.ModelHelper;
+import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
@@ -44,6 +41,9 @@ import com.ruesga.rview.preferences.Preferences;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.Observable;
 import me.tatarka.rxloader2.safe.SafeObservable;
 

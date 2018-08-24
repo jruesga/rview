@@ -25,25 +25,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.OpenableColumns;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.ListPopupWindow;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -157,6 +143,20 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.ListPopupWindow;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.widget.NestedScrollView;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -1748,7 +1748,7 @@ public class ChangeDetailsFragment extends Fragment implements
             mFileAdapter = new FileAdapter(mEventHandlers,
                     Preferences.isAccountShortFilenames(getContext(), mAccount));
             mBinding.fileInfo.list.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.VERTICAL, false) {
+                    getActivity(), RecyclerView.VERTICAL, false) {
                 @Override
                 public boolean canScrollHorizontally() {
                     return false;
@@ -1770,10 +1770,10 @@ public class ChangeDetailsFragment extends Fragment implements
             int leftPadding = getResources().getDimensionPixelSize(
                     R.dimen.message_list_left_padding);
             DividerItemDecoration messageDivider = new DividerItemDecoration(
-                    getContext(), LinearLayoutManager.VERTICAL);
+                    getContext(), RecyclerView.VERTICAL);
             messageDivider.setMargins(leftPadding, 0);
             mBinding.messageInfo.list.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.VERTICAL, false) {
+                    getActivity(), RecyclerView.VERTICAL, false) {
                 @Override
                 public boolean canScrollHorizontally() {
                     return false;

@@ -16,8 +16,9 @@
 package com.ruesga.rview;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatDelegate;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 
 public abstract class AppCompatDelegateActivity extends ContextualCrashAnalyticsActivity {
 

@@ -16,8 +16,6 @@
 package com.ruesga.rview.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 
 import com.ruesga.rview.BaseActivity;
 import com.ruesga.rview.R;
@@ -25,6 +23,9 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.preferences.Constants;
 
 import java.util.ArrayList;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 public class StatsFragment extends PageableFragment {
 

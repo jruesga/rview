@@ -17,10 +17,11 @@
 package com.ruesga.rview.drawer;
 
 import android.content.Context;
-import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.view.menu.MenuItemImpl;
-import android.support.v7.view.menu.SubMenuBuilder;
 import android.view.SubMenu;
+
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuItemImpl;
+import androidx.appcompat.view.menu.SubMenuBuilder;
 
 /**
  * This is a {@link MenuBuilder} that returns an instance of {@link DrawerNavigationSubMenu} instead of

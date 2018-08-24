@@ -19,8 +19,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.customtabs.CustomTabsIntent;
 import android.util.TypedValue;
+
+import androidx.browser.customtabs.CustomTabsIntent;
 
 class AceActivityHelper {
     static void openUriInCustomTabs(Activity activity, Uri uri) {

@@ -18,8 +18,6 @@ package com.ruesga.rview.misc;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -66,6 +64,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 
 public class ModelHelper {
 

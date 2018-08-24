@@ -19,11 +19,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Keep;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,10 +35,16 @@ import com.ruesga.rview.preferences.Constants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import androidx.annotation.Keep;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.databinding.DataBindingUtil;
 
 public class ScoreLabelsView extends FlexboxLayout {
     @Keep
@@ -169,7 +171,7 @@ public class ScoreLabelsView extends FlexboxLayout {
             Matcher matcher = sShortLabelPattern.matcher(label);
             StringBuilder sb = new StringBuilder();
             while (matcher.find()) {
-                sb.append(matcher.group(0).toUpperCase().replaceAll("-", ""));
+                sb.append(matcher.group(0).toUpperCase(Locale.US).replaceAll("-", ""));
             }
             sShortLabelCache.put(label, sb.toString());
         }

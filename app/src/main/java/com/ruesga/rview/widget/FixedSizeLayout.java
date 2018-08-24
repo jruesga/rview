@@ -17,9 +17,10 @@ package com.ruesga.rview.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.annotation.StyleableRes;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+
+import androidx.annotation.StyleableRes;
 
 public class FixedSizeLayout extends FrameLayout {
 

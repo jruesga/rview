@@ -79,7 +79,7 @@
                     android:contentDescription="@null"/>
             </LinearLayout>
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardElevation="5dp">
@@ -88,7 +88,7 @@
                          android:id="@+id/page_content_layout"
                          app:workflow="@{workflow}"
                          app:handlers="@{handlers}"/>
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
         </LinearLayout>
     </FrameLayout>
 

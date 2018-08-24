@@ -14,17 +14,19 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/menu_mark_as_read"
         android:icon="@drawable/ic_done_all"
         android:title="@string/menu_mark_as_read"
-        app:showAsAction="ifRoom|withText"/>
+        app:showAsAction="ifRoom|withText"
+        tools:ignore="AppCompatResource"/>
     <item
         android:id="@+id/menu_delete_all"
         android:icon="@drawable/ic_menu_delete"
         android:title="@string/menu_delete_all"
-        app:showAsAction="ifRoom|withText"/>
+        app:showAsAction="ifRoom|withText"
+        tools:ignore="AppCompatResource"/>
 </menu>

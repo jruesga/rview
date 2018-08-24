@@ -16,15 +16,16 @@
 package com.ruesga.rview;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
 import com.ruesga.rview.fragments.ChangeListFragment;
 import com.ruesga.rview.fragments.EmptySelectionDetailsFragment;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.misc.ActivityHelper;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public abstract class ChangeListBaseActivity extends BaseActivity implements OnChangeItemListener {
 

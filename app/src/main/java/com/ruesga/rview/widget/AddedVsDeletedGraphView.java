@@ -17,7 +17,6 @@ package com.ruesga.rview.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.databinding.DataBindingUtil;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +26,8 @@ import android.widget.LinearLayout;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.AddedVsDeletedBinding;
 import com.ruesga.rview.fragments.ChangeDetailsFragment;
+
+import androidx.databinding.DataBindingUtil;
 
 public class AddedVsDeletedGraphView extends FrameLayout {
     private AddedVsDeletedBinding mBinding;

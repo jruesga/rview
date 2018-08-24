@@ -18,9 +18,11 @@ package com.ruesga.rview.text;
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.annotation.ColorInt;
 import android.text.Layout;
 import android.text.style.QuoteSpan;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 
 @SuppressLint("ParcelCreator")
 public class QuotedSpan extends QuoteSpan {
@@ -40,8 +42,9 @@ public class QuotedSpan extends QuoteSpan {
     }
 
     @Override
-    public void drawLeadingMargin(Canvas c, Paint p, int x, int dir, int top, int baseline,
-            int bottom, CharSequence text, int start, int end, boolean first, Layout layout) {
+    public void drawLeadingMargin(@NonNull Canvas c, @NonNull Paint p, int x, int dir,
+            int top, int baseline, int bottom, @NonNull CharSequence text, int start,
+            int end, boolean first, @NonNull Layout layout) {
         Paint.Style style = p.getStyle();
         int color = p.getColor();
 

@@ -20,7 +20,6 @@ def libraries = rootProject.ext.libraries
 def testLibraries = rootProject.ext.testLibraries
 
 dependencies {
-    api "com.android.support:support-annotations:${libraries.support}"
     api "com.google.code.gson:gson:${libraries.gson}"
     api("com.squareup.retrofit2:retrofit:${libraries.retrofit2}") {
         exclude group: 'io.reactivex', module: 'rxjava'

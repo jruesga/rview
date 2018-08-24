@@ -16,8 +16,6 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.support.annotation.Keep;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +23,9 @@ import android.widget.LinearLayout;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.AccountStateSuggestionItemBinding;
+
+import androidx.annotation.Keep;
+import androidx.databinding.DataBindingUtil;
 
 public class AccountStateSuggestionsView extends LinearLayout {
 

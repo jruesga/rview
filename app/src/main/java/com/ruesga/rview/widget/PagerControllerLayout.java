@@ -17,12 +17,6 @@ package com.ruesga.rview.widget;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.databinding.DataBindingUtil;
-import android.support.annotation.IdRes;
-import android.support.annotation.Keep;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +24,13 @@ import android.widget.FrameLayout;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.PagerControllerLayoutBinding;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.Keep;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 public class PagerControllerLayout extends FrameLayout {
 

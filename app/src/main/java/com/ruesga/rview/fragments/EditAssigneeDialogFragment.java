@@ -16,11 +16,7 @@
 package com.ruesga.rview.fragments;
 
 import android.app.Activity;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Keep;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -32,6 +28,11 @@ import com.ruesga.rview.adapters.AccountsAdapter;
 import com.ruesga.rview.databinding.EditAssigneeDialogBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.AndroidHelper;
+
+import androidx.annotation.Keep;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 
 public class EditAssigneeDialogFragment extends RevealDialogFragment {
 

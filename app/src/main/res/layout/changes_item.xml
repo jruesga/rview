@@ -61,7 +61,7 @@
                     android:onClick="@{handlers::onAvatarPressed}"
                     android:tag="@{model.owner}"
                     android:contentDescription="@null"/>
-                <android.support.v4.widget.Space
+                <androidx.legacy.widget.Space
                     android:layout_width="1dp"
                     android:layout_height="0dp"
                     android:layout_weight="1"/>

@@ -16,8 +16,6 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +27,9 @@ import com.ruesga.rview.databinding.LinkViewBinding;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 
 public class LinksView extends FlexboxLayout {
 

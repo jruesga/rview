@@ -16,13 +16,14 @@
 package com.ruesga.rview.wizard.misc;
 
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.databinding.BindingAdapter;
 
 public class BindingAdapters {
     @BindingAdapter("wizardBindEmpty")

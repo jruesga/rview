@@ -15,11 +15,6 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.databinding.DataBindingUtil;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +27,7 @@ import com.ruesga.rview.gerrit.filter.Option;
 import com.ruesga.rview.gerrit.model.DashboardInfo;
 import com.ruesga.rview.gerrit.model.ProjectInfo;
 import com.ruesga.rview.gerrit.model.ProjectType;
+import com.ruesga.rview.misc.AndroidHelper;
 import com.ruesga.rview.misc.DashboardHelper;
 import com.ruesga.rview.misc.FowlerNollVo;
 import com.ruesga.rview.misc.ModelHelper;
@@ -40,7 +36,14 @@ import com.ruesga.rview.preferences.Preferences;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class DashboardChooserDialogFragment
         extends ListDialogFragment<DashboardChooserDialogFragment.Item, DashboardInfo> {
@@ -225,12 +228,13 @@ public class DashboardChooserDialogFragment
             }
         }
 
+        Locale locale = AndroidHelper.getCurrentLocale(getActivity());
         List<Item> items = new ArrayList<>();
         boolean isEmptyFilter = newFilter.isEmpty();
-        String lowerCaseFilter = newFilter.toLowerCase();
+        String lowerCaseFilter = newFilter.toLowerCase(locale);
         for (Item item : mItems) {
             if (isEmptyFilter ||
-                    (item.title.toLowerCase().contains(lowerCaseFilter))) {
+                    (item.title.toLowerCase(locale).contains(lowerCaseFilter))) {
                 items.add(item);
             }
         }

@@ -31,18 +31,18 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <android.support.design.widget.CoordinatorLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/page_content_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.design.widget.AppBarLayout
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:elevation="0dp"
                 tools:ignore="UnusedAttribute">
 
-                <android.support.v7.widget.Toolbar
+                <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
@@ -59,7 +59,7 @@
                         android:layout_marginStart="32dp"
                         android:background="?attr/colorPrimaryDark"
                         android:visibility="@{(model.hasTabs || model.hasPages) ? View.VISIBLE : View.GONE}">
-                        <android.support.design.widget.TabLayout
+                        <com.google.android.material.tabs.TabLayout
                             android:id="@+id/tabs"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
@@ -76,10 +76,10 @@
                             android:visibility="@{model.hasPages ? View.VISIBLE : View.GONE}" />
                     </FrameLayout>
 
-                </android.support.v7.widget.Toolbar>
-            </android.support.design.widget.AppBarLayout>
+                </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.AppBarLayout>
 
-            <android.support.v4.widget.SlidingPaneLayout
+            <androidx.slidingpanelayout.widget.SlidingPaneLayout
                 android:id="@+id/mini_drawer_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -134,7 +134,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"/>
 
-                                <android.support.design.widget.FloatingActionButton
+                                <com.google.android.material.floatingactionbutton.FloatingActionButton
                                     android:id="@+id/fab"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -189,9 +189,9 @@
                         android:visibility="@{model.isInProgress ? View.VISIBLE : View.INVISIBLE}" />
                 </FrameLayout>
 
-            </android.support.v4.widget.SlidingPaneLayout>
+            </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 
-        </android.support.design.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.ruesga.rview.drawer.DrawerNavigationView
             android:id="@+id/drawer_options_view"

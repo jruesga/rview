@@ -20,24 +20,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Keep;
-import android.support.annotation.MenuRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SlidingPaneLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.drawer.DrawerNavigationView;
 import com.ruesga.rview.drawer.DrawerNavigationView.OnDrawerNavigationItemSelectedListener;
@@ -67,6 +51,22 @@ import com.ruesga.rview.wizards.AuthorizationAccountSetupActivity;
 import java.util.List;
 
 import javax.net.ssl.SSLException;
+
+import androidx.annotation.Keep;
+import androidx.annotation.MenuRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.slidingpanelayout.widget.SlidingPaneLayout;
+import androidx.viewpager.widget.ViewPager;
 
 public abstract class BaseActivity extends AppCompatDelegateActivity implements OnRefreshListener {
 
@@ -227,7 +227,7 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
                         new ScrollAwareFloatingActionButtonBehavior(BaseActivity.this, null);
 
                 @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                     if (mOnFabPressedListener != null) {
                         //noinspection ConstantConditions
                         mBehavior.onNestedScroll(
@@ -277,14 +277,14 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
             getDrawerLayout().addDrawerListener(drawerToggle);
             getDrawerLayout().setDrawerLockMode(
                     DrawerLayout.LOCK_MODE_UNLOCKED,
-                    Gravity.START);
+                    GravityCompat.START);
             drawerToggle.syncState();
         } else {
             final ViewGroup.LayoutParams params = getContentBinding().drawerLayout.getLayoutParams();
             if (!(params instanceof SlidingPaneLayout.LayoutParams)) {
                 getContentBinding().drawerLayout.setDrawerLockMode(
                         DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
-                        Gravity.START);
+                        GravityCompat.START);
             }
             if (mModel.hasForceSinglePanel) {
                 // Someones is requesting a single panel in a multipanel layout

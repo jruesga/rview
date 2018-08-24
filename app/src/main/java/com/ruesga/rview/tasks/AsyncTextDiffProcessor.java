@@ -18,8 +18,6 @@ package com.ruesga.rview.tasks;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -47,6 +45,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.util.Pair;
 
 public class AsyncTextDiffProcessor extends AsyncTask<Void, Void, List<DiffView.AbstractModel>> {
 

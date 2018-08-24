@@ -15,7 +15,7 @@
  */
 package com.ruesga.rview;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 public interface OnRefreshListener {
     void onRefreshStart(Fragment from);

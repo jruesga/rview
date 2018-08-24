@@ -15,11 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -33,6 +29,11 @@ import com.ruesga.rview.adapters.FilterableAdapter;
 import com.ruesga.rview.databinding.BranchChooserDialogBinding;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.widget.DelayedAutocompleteTextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 
 public class BranchChooserDialogFragment extends FilterableDialogFragment {
 

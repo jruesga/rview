@@ -15,9 +15,9 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.Nullable;
 
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#http-password-input"

@@ -16,7 +16,6 @@
 package com.ruesga.rview.gerrit.filter;
 
 public abstract class SimpleQuery extends Query {
-
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();

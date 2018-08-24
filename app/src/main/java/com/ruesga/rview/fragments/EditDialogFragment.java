@@ -16,12 +16,7 @@
 package com.ruesga.rview.fragments;
 
 import android.app.Activity;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Keep;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -34,6 +29,12 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.EditDialogBinding;
 
 import java.util.regex.Pattern;
+
+import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 
 public class EditDialogFragment extends RevealDialogFragment {
 

@@ -21,16 +21,17 @@ import android.app.Dialog;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateInterpolator;
 
 import com.ruesga.rview.misc.AndroidHelper;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.ViewCompat;
+import androidx.fragment.app.DialogFragment;
 
 // https://github.com/codepath/android_guides/wiki/Circular-Reveal-Animation
 public abstract class RevealDialogFragment extends DialogFragment {

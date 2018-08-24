@@ -18,9 +18,10 @@ package com.ruesga.rview.attachments;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Keep;
 
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.Keep;
 
 @Keep
 public class Attachment implements Parcelable {

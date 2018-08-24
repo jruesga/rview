@@ -14,11 +14,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <item
         android:title="@string/menu_options"
         android:icon="@drawable/ic_more_vertical"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        tools:ignore="AppCompatResource"/>
 </menu>

@@ -17,8 +17,9 @@
 package com.ruesga.rview.drawer;
 
 import android.content.Context;
-import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 // This class avoids random "DrawerLayout must be measured with MeasureSpec.EXACTLY." exceptions
 // in the support library

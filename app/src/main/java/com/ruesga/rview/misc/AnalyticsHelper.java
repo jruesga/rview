@@ -30,9 +30,7 @@ public class AnalyticsHelper {
                 return;
             }
             FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(context);
-            if (analytics != null) {
-                analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null);
-            }
+            analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
@@ -44,18 +42,16 @@ public class AnalyticsHelper {
                 return;
             }
             FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(context);
-            if (analytics != null) {
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "repository");
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME,
-                        account.getRepositoryDisplayName());
-                bundle.putString(FirebaseAnalytics.Param.GROUP_ID,
-                        UriHelper.anonymize(
-                                UriHelper.sanitizeEndpoint(account.mRepository.mUrl)));
-                bundle.putBoolean("authenticated", account.hasAuthenticatedAccessMode());
-                bundle.putBoolean("created", created);
-                analytics.logEvent(FirebaseAnalytics.Event.JOIN_GROUP, bundle);
-            }
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "repository");
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME,
+                    account.getRepositoryDisplayName());
+            bundle.putString(FirebaseAnalytics.Param.GROUP_ID,
+                    UriHelper.anonymize(
+                            UriHelper.sanitizeEndpoint(account.mRepository.mUrl)));
+            bundle.putBoolean("authenticated", account.hasAuthenticatedAccessMode());
+            bundle.putBoolean("created", created);
+            analytics.logEvent(FirebaseAnalytics.Event.JOIN_GROUP, bundle);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
@@ -67,17 +63,15 @@ public class AnalyticsHelper {
                 return;
             }
             FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(context);
-            if (analytics != null) {
-                Bundle bundle = new Bundle();
-                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "repository");
-                bundle.putString(FirebaseAnalytics.Param.ITEM_NAME,
-                        account.getRepositoryDisplayName());
-                bundle.putString(FirebaseAnalytics.Param.ITEM_ID,
-                        UriHelper.anonymize(
-                                UriHelper.sanitizeEndpoint(account.mRepository.mUrl)));
-                bundle.putBoolean("authenticated", account.hasAuthenticatedAccessMode());
-                analytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
-            }
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "repository");
+            bundle.putString(FirebaseAnalytics.Param.ITEM_NAME,
+                    account.getRepositoryDisplayName());
+            bundle.putString(FirebaseAnalytics.Param.ITEM_ID,
+                    UriHelper.anonymize(
+                            UriHelper.sanitizeEndpoint(account.mRepository.mUrl)));
+            bundle.putBoolean("authenticated", account.hasAuthenticatedAccessMode());
+            analytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }

@@ -20,9 +20,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.support.annotation.Keep;
-import android.support.annotation.StringRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +29,10 @@ import android.widget.FrameLayout;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.ToastBinding;
+
+import androidx.annotation.Keep;
+import androidx.annotation.StringRes;
+import androidx.databinding.DataBindingUtil;
 
 public class ToastView extends FrameLayout {
 

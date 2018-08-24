@@ -16,11 +16,12 @@
 package com.ruesga.rview.attachments.binding;
 
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
-import android.support.annotation.Keep;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.annotation.Keep;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingAdapter;
 
 @Keep
 @SuppressWarnings("unused")

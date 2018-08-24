@@ -17,7 +17,6 @@ package com.ruesga.rview.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Base64;
 
@@ -28,6 +27,8 @@ import com.ruesga.rview.gerrit.model.ServerVersion;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.UriHelper;
+
+import androidx.annotation.NonNull;
 
 public class Account implements Parcelable, Comparable<Account> {
     public static final int ANONYMOUS_ACCOUNT_ID = -1;

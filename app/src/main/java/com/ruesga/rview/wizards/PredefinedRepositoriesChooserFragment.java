@@ -16,8 +16,6 @@
 package com.ruesga.rview.wizards;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.misc.ModelHelper;
@@ -27,6 +25,8 @@ import com.ruesga.rview.wizard.choosers.ListChooserFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import io.reactivex.Observable;
 import me.tatarka.rxloader2.safe.SafeObservable;
 

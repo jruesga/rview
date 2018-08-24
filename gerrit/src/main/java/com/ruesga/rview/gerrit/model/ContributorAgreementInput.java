@@ -15,9 +15,9 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.NonNull;
 
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#contributor-agreement-input"

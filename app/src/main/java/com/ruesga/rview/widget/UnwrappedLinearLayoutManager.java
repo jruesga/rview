@@ -16,10 +16,11 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
 
@@ -66,7 +67,7 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     @Override
     public boolean canScrollHorizontally() {
         if (!mCanScrollHorizontally) {
-            if (getOrientation() == LinearLayoutManager.HORIZONTAL) {
+            if (getOrientation() == RecyclerView.HORIZONTAL) {
                 return super.canScrollHorizontally();
             }
 
@@ -89,7 +90,7 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     @Override
     public boolean canScrollVertically() {
         if (!mCanScrollVertically) {
-            if (getOrientation() == LinearLayoutManager.VERTICAL) {
+            if (getOrientation() == RecyclerView.VERTICAL) {
                 return super.canScrollVertically();
             }
 
@@ -112,7 +113,7 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     @Override
     public int scrollHorizontallyBy(int dx, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
-        if (getOrientation() == LinearLayoutManager.HORIZONTAL) {
+        if (getOrientation() == RecyclerView.HORIZONTAL) {
             return super.scrollHorizontallyBy(dx, recycler, state);
         }
 
@@ -156,7 +157,7 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
     @Override
     public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler,
             RecyclerView.State state) {
-        if (getOrientation() == LinearLayoutManager.VERTICAL) {
+        if (getOrientation() == RecyclerView.VERTICAL) {
             return super.scrollVerticallyBy(dy, recycler, state);
         }
 
@@ -250,7 +251,7 @@ public class UnwrappedLinearLayoutManager extends LinearLayoutManager {
         for (int i = start; i <= end; i++) {
             View v = findViewByPosition(i);
             if (v != null) {
-                if (orientation == LinearLayoutManager.VERTICAL) {
+                if (orientation == RecyclerView.VERTICAL) {
                     v.setLeft(mOffset);
                 } else {
                     v.setTop(mOffset);

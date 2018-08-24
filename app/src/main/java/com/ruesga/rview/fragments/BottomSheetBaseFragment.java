@@ -21,17 +21,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Handler;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -42,6 +33,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.BottomSheetBaseDialogBinding;
 import com.ruesga.rview.misc.ArgbEvaluator;
@@ -49,6 +42,14 @@ import com.ruesga.rview.misc.ViewHelper;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.Unregistrar;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.DataBindingUtil;
 
 public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment {
 
@@ -148,7 +149,7 @@ public abstract class BottomSheetBaseFragment extends BottomSheetDialogFragment 
         CoordinatorLayout.LayoutParams params =
                 (CoordinatorLayout.LayoutParams) ((View) root.getParent()).getLayoutParams();
         CoordinatorLayout.Behavior behavior = params.getBehavior();
-        if (behavior != null && behavior instanceof BottomSheetBehavior) {
+        if (behavior instanceof BottomSheetBehavior) {
             int peekHeight = getResources().getDimensionPixelSize(
                     R.dimen.bottom_sheet_peek_height);
             final BottomSheetBehavior bottomSheetBehavior = ((BottomSheetBehavior) behavior);

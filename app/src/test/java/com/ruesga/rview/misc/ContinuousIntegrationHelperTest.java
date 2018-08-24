@@ -15,8 +15,6 @@
  */
 package com.ruesga.rview.misc;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.reflect.TypeToken;
 import com.ruesga.rview.TestUtils;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
@@ -36,6 +34,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import androidx.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 

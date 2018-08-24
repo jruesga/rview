@@ -15,10 +15,12 @@
      limitations under the License.
  -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <item
         android:id="@+id/menu_filter_options"
         android:icon="@drawable/ic_more_horiz"
         android:title="@string/menu_filter_options"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        tools:ignore="AppCompatResource"/>
 </menu>

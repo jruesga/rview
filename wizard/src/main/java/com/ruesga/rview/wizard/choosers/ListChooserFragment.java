@@ -16,14 +16,8 @@
 package com.ruesga.rview.wizard.choosers;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -39,6 +33,12 @@ import com.ruesga.rview.wizard.databinding.ListChooserItemBinding;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -232,7 +232,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
         // Configure the adapter
         mAdapter = new ListAdapter(this);
         mBinding.list.setLayoutManager(new LinearLayoutManager(
-                getActivity(), LinearLayoutManager.VERTICAL, false));
+                getActivity(), RecyclerView.VERTICAL, false));
         mBinding.list.setAdapter(mAdapter);
 
         // Fetch or join current loader

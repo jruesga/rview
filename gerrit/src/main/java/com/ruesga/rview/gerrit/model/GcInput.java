@@ -15,9 +15,9 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.Nullable;
 
 public class GcInput {
     @Nullable @SerializedName("show_progress") public Boolean showProgress;

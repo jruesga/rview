@@ -18,8 +18,6 @@ package com.ruesga.rview.services;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -33,6 +31,8 @@ import com.ruesga.rview.preferences.Preferences;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 import me.tatarka.rxloader2.safe.Empty;
 import me.tatarka.rxloader2.safe.SafeObservable;
 

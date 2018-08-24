@@ -17,11 +17,12 @@
 package com.ruesga.rview.drawer;
 
 import android.content.Context;
-import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.view.menu.MenuView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class DrawerNavigationMenuView extends RecyclerView implements MenuView {
 
@@ -35,7 +36,7 @@ public class DrawerNavigationMenuView extends RecyclerView implements MenuView {
 
     public DrawerNavigationMenuView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        setLayoutManager(new LinearLayoutManager(context, RecyclerView.VERTICAL, false));
     }
 
     @Override

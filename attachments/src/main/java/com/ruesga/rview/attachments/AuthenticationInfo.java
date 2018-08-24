@@ -15,9 +15,9 @@
  */
 package com.ruesga.rview.attachments;
 
-import android.support.annotation.RestrictTo;
-
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.RestrictTo;
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class AuthenticationInfo {

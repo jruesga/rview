@@ -15,9 +15,9 @@
  */
 package com.ruesga.rview.attachments.gdrive.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.NonNull;
 
 public class PermissionMetadataInput {
     @NonNull @SerializedName("role") public RoleType role = RoleType.reader;

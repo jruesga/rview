@@ -17,7 +17,6 @@ package com.ruesga.rview.misc;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.RawRes;
 
 import com.ruesga.rview.TestUtils;
 import com.ruesga.rview.model.Repository;
@@ -38,6 +37,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RawRes;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -46,12 +48,13 @@ import static org.junit.Assert.fail;
 public class ModelHelperTest {
 
     private static class MockResources extends Resources {
-        public MockResources() {
+        MockResources() {
             //noinspection deprecation
             super(null, null, null);
         }
 
         @Override
+        @NonNull
         public InputStream openRawResource(@RawRes int id) throws NotFoundException {
             File res = new File(TestUtils.getRootDirectory(),
                     "app/src/main/res/raw/repositories.json");
@@ -76,7 +79,7 @@ public class ModelHelperTest {
         for (Repository repository : repositories) {
             assertTrue("Repository 'name' cannot be null, at index " + index,
                     repository.mName != null && repository.mName.trim().length() > 0);
-            assertNotNull("Repository 'url' cannot be null, at index " + index,
+            assertTrue("Repository 'url' cannot be null, at index " + index,
                     repository.mUrl != null && repository.mUrl.trim().length() > 0);
             try {
                 new URL(repository.mUrl);

@@ -15,9 +15,9 @@
  */
 package com.ruesga.rview.wizards;
 
-import android.support.annotation.StringRes;
-
 import com.ruesga.rview.R;
+
+import androidx.annotation.StringRes;
 
 public class AccountReadyPageFragment extends ConfirmationPageFragment {
 

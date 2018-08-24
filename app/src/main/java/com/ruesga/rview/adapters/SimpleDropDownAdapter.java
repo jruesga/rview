@@ -16,7 +16,6 @@
 package com.ruesga.rview.adapters;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -27,6 +26,8 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.DropdownItemBinding;
 
 import java.util.List;
+
+import androidx.databinding.DataBindingUtil;
 
 public class SimpleDropDownAdapter<T> extends BaseAdapter {
 

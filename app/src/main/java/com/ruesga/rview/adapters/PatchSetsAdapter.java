@@ -78,7 +78,7 @@ public class PatchSetsAdapter extends BaseAdapter {
             commit = revision.commit.commit;
         }
         binding.setIsSelected((commit == null && mCurrentRevision == null) ||
-                (commit != null && mCurrentRevision != null && commit.equals(mCurrentRevision)));
+                (commit != null && commit.equals(mCurrentRevision)));
         binding.executePendingBindings();
 
         return v;

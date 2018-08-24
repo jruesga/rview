@@ -18,7 +18,6 @@ package com.ruesga.rview.services;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.ruesga.rview.gerrit.GerritApi;
@@ -29,6 +28,8 @@ import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Preferences;
 
 import java.util.List;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class AccountStatusFetcherService extends IntentService {
 

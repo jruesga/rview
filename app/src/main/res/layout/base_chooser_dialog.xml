@@ -29,14 +29,14 @@
         android:paddingEnd="16dp"
         android:orientation="vertical">
 
-        <android.support.v7.widget.SwitchCompat
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/change_base"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/actions_change_base" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/base_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,6 +56,6 @@
                 android:inputType="textNoSuggestions">
                 <requestFocus />
             </com.ruesga.rview.widget.DelayedAutocompleteTextView>
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 </layout>

@@ -16,7 +16,6 @@
 package com.ruesga.rview.adapters;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +31,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.databinding.DataBindingUtil;
 
 public abstract class FilterableAdapter extends android.widget.BaseAdapter implements Filterable {
 

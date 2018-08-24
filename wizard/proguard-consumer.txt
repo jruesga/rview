@@ -1,10 +1,9 @@
--dontwarn android.support.v4.app.NotificationCompatBase
 -dontwarn rx.internal.util.unsafe.*
 -dontwarn java.lang.invoke**
 
 ##---------------Begin: proguard configuration for Datasbinding  ----------
--dontwarn android.databinding.**
--keep class android.databinding.** { *; }
+-dontwarn androidx.databinding.**
+-keep class androidx.databinding.** { *; }
 ##---------------End: proguard configuration for Datasbinding  ----------
 
 ##---------------Begin: proguard configuration for RxJava  ----------

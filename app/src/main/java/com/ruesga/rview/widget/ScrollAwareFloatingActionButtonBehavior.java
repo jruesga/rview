@@ -1,23 +1,27 @@
 package com.ruesga.rview.widget;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.FloatingActionButton.OnVisibilityChangedListener;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton.OnVisibilityChangedListener;
+
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 @Keep
 public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButton.Behavior {
 
     private OnVisibilityChangedListener mFabVisibilityListener = new OnVisibilityChangedListener() {
         @Override
+        @SuppressLint("RestrictedApi")
         public void onHidden(FloatingActionButton fab) {
             super.onHidden(fab);
             fab.setVisibility(View.INVISIBLE);
@@ -38,8 +42,8 @@ public class ScrollAwareFloatingActionButtonBehavior extends FloatingActionButto
     }
 
     @Override
-    public boolean layoutDependsOn(
-            CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+    public boolean layoutDependsOn(@NonNull CoordinatorLayout parent,
+            @NonNull FloatingActionButton child,@NonNull View dependency) {
         return dependency instanceof RecyclerView;
     }
 

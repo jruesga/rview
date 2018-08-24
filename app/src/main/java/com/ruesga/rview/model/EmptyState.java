@@ -15,8 +15,9 @@
  */
 package com.ruesga.rview.model;
 
-import android.support.annotation.Keep;
 import android.view.View;
+
+import androidx.annotation.Keep;
 
 @Keep
 public class EmptyState {

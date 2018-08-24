@@ -22,7 +22,6 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Base64;
@@ -40,6 +39,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
+
+import androidx.annotation.StringRes;
 
 public class AceEditorView extends FrameLayout {
 

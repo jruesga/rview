@@ -16,13 +16,7 @@
 package com.ruesga.rview.misc;
 
 import android.content.res.TypedArray;
-import android.databinding.BindingAdapter;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Keep;
-import android.support.design.widget.AppBarLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
@@ -31,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.Features;
@@ -39,6 +34,12 @@ import com.ruesga.rview.widget.TagEditTextView.Tag;
 
 import java.util.Collection;
 import java.util.Map;
+
+import androidx.annotation.Keep;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.databinding.BindingAdapter;
 
 @Keep
 @SuppressWarnings("unused")

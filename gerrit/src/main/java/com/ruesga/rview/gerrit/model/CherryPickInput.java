@@ -15,10 +15,10 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#cherrypick-input"

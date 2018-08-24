@@ -24,7 +24,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.v4.view.ViewCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -36,6 +35,8 @@ import com.ruesga.rview.gerrit.model.ChangeStatus;
 import com.ruesga.rview.model.Stats;
 
 import java.util.List;
+
+import androidx.core.view.ViewCompat;
 
 public class MergedStatusChart extends View {
 

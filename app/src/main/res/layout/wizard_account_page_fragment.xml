@@ -75,7 +75,7 @@
                             android:textColor="@color/wizard_text_secondary"
                             android:text="@string/account_wizard_account_page_authenticated_access"/>
 
-                        <android.support.v7.widget.SwitchCompat
+                        <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/access_mode_switcher"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                         android:text="@string/account_wizard_account_page_authenticated_access_hint"/>
                 </LinearLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/account_username"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -101,17 +101,17 @@
                     android:hint="@string/account_wizard_account_page_username"
                     app:errorTextAppearance="@style/AppTheme.WizardErrorTextAppearance"
                     app:errorEnabled="true">
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/account_username_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@={model.username}"
                         android:inputType="textNoSuggestions">
-                    </android.support.design.widget.TextInputEditText>
-                </android.support.design.widget.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputEditText>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/account_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -120,14 +120,14 @@
                     app:errorTextAppearance="@style/AppTheme.WizardErrorTextAppearance"
                     android:hint="@string/account_wizard_account_page_password"
                     app:errorEnabled="true">
-                    <android.support.design.widget.TextInputEditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/account_password_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
                         android:text="@={model.password}"
                         android:inputType="textPassword"/>
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 

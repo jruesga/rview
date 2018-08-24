@@ -15,9 +15,6 @@
  */
 package com.ruesga.rview.attachments.gdrive;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.ruesga.rview.attachments.gdrive.model.FileMetadata;
 import com.ruesga.rview.attachments.gdrive.model.FileMetadataInput;
 import com.ruesga.rview.attachments.gdrive.model.FileMetadataPageInfo;
@@ -26,6 +23,8 @@ import com.ruesga.rview.attachments.gdrive.model.PermissionMetadataInput;
 import com.ruesga.rview.attachments.gdrive.model.PermissionMetadataPageInfo;
 import com.ruesga.rview.attachments.gdrive.oauth.AccessToken;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;

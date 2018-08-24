@@ -15,14 +15,8 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Keep;
-import android.support.annotation.StringRes;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -34,6 +28,12 @@ import com.ruesga.rview.databinding.ListDialogBinding;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Keep;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -152,7 +152,7 @@ public abstract class ListDialogFragment<T, S> extends RevealDialogFragment {
         LayoutInflater inflater = LayoutInflater.from(builder.getContext());
         mBinding = DataBindingUtil.inflate(inflater, R.layout.list_dialog, null, true);
         mBinding.list.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
         mBinding.list.setAdapter(getAdapter());
         if (savedInstanceState != null) {
             mBinding.setFilter(savedInstanceState.getString("filter"));
@@ -162,7 +162,7 @@ public abstract class ListDialogFragment<T, S> extends RevealDialogFragment {
         mBinding.setHandlers(new EventHandlers(this));
 
         mBinding.list2.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
         builder.setTitle(getTitle())
                 .setView(mBinding.getRoot())

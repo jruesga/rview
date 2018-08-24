@@ -61,7 +61,7 @@
                 android:maxLines="1" />
         </LinearLayout>
 
-        <android.support.v4.widget.Space
+        <androidx.legacy.widget.Space
             android:layout_width="24dp"
             android:layout_height="wrap_content"/>
 

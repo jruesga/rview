@@ -43,7 +43,7 @@
         <variable name="serverInfo" type="com.ruesga.rview.gerrit.model.ServerInfo" />
     </data>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="@{safeUnbox(hasData) ? View.VISIBLE : View.GONE}"
@@ -668,5 +668,5 @@
             </LinearLayout>
 
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </layout>

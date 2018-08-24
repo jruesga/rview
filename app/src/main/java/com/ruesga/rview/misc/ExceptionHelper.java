@@ -16,7 +16,6 @@
 package com.ruesga.rview.misc;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 import android.util.Log;
 
 import com.ruesga.rview.R;
@@ -33,6 +32,8 @@ import java.net.PortUnreachableException;
 import java.net.SocketTimeoutException;
 import java.util.HashSet;
 import java.util.Set;
+
+import androidx.annotation.StringRes;
 
 public class ExceptionHelper {
     private static final Set<String> sPreviousAccountAuthenticationFailures = new HashSet<>();

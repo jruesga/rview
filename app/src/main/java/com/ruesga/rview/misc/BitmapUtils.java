@@ -31,7 +31,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.media.ExifInterface;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.Log;
@@ -44,6 +43,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import androidx.exifinterface.media.ExifInterface;
 
 public class BitmapUtils {
 

@@ -17,16 +17,10 @@ package com.ruesga.rview.widget;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -60,6 +54,13 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
+import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
@@ -292,7 +293,7 @@ public class DiffView extends FrameLayout {
         }
     }
 
-    @Keep
+    @androidx.annotation.Keep
     public static class ImageDiffModel {
         public Drawable left;
         public String sizeLeft;
@@ -957,7 +958,7 @@ public class DiffView extends FrameLayout {
     }
 
     private boolean isWrapMode() {
-        return mLayoutManager == null || !(mLayoutManager instanceof UnwrappedLinearLayoutManager);
+        return !(mLayoutManager instanceof UnwrappedLinearLayoutManager);
     }
 
     private void stopTasks() {

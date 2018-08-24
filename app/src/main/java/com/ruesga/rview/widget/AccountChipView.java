@@ -16,8 +16,6 @@
 package com.ruesga.rview.widget;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.support.annotation.Keep;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +25,9 @@ import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.AccountChipBinding;
 import com.ruesga.rview.gerrit.model.AccountInfo;
 import com.ruesga.rview.misc.RviewImageHelper;
+
+import androidx.annotation.Keep;
+import androidx.databinding.DataBindingUtil;
 
 public class AccountChipView extends FrameLayout {
 

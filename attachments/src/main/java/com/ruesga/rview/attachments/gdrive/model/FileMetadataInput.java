@@ -15,11 +15,11 @@
  */
 package com.ruesga.rview.attachments.gdrive.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Map;
+
+import androidx.annotation.NonNull;
 
 import static com.ruesga.rview.attachments.gdrive.model.Constants.ROOT_FOLDER;
 

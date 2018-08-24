@@ -18,7 +18,6 @@ package com.ruesga.rview.widget;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.VisibleForTesting;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -41,6 +40,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 public class RegExLinkifyTextView extends StyleableTextView {
@@ -207,7 +208,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
 
                         span.setSpan(new ClickableSpan() {
                             @Override
-                            public void onClick(View v) {
+                            public void onClick(@NonNull View v) {
                                 // Click on span doesn't provide sound feedback it the text view doesn't
                                 // handle a click event. Just perform a click effect.
                                 v.playSoundEffect(SoundEffectConstants.CLICK);

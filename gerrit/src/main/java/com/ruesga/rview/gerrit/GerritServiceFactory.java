@@ -24,7 +24,6 @@ import android.content.pm.Signature;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -37,6 +36,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.security.auth.x500.X500Principal;
+
+import androidx.annotation.NonNull;
 
 public class GerritServiceFactory {
 

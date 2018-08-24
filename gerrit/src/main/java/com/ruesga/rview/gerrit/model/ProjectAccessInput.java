@@ -15,12 +15,12 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#project-access-input"

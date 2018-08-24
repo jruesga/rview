@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
@@ -39,6 +38,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
 
 import static com.ruesga.rview.preferences.Constants.DEFAULT_ANONYMOUS_HOME;
 import static com.ruesga.rview.preferences.Constants.DEFAULT_AUTHENTICATED_HOME;

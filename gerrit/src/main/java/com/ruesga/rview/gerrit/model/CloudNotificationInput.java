@@ -15,9 +15,9 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.NonNull;
 
 /**
  * @link "https://github.com/jruesga/gerrit-cloud-notifications-plugin/blob/master/src/main/resources/Documentation/fcm.md#CloudNotificationInput"

@@ -15,11 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +23,11 @@ import android.view.ViewGroup;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.EmptyStateBinding;
 import com.ruesga.rview.model.EmptyState;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
 
 public class EmptySelectionDetailsFragment extends Fragment {
 

@@ -16,12 +16,7 @@
 package com.ruesga.rview;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +31,12 @@ import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class ChangeListByFilterActivity extends ChangeListBaseActivity implements
         EditDialogFragment.OnEditChanged {

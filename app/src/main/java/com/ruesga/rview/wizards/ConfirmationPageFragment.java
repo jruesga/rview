@@ -16,12 +16,7 @@
 package com.ruesga.rview.wizards;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.text.Html;
 import android.text.Spanned;
 import android.view.LayoutInflater;
@@ -31,6 +26,12 @@ import android.view.ViewGroup;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.WizardConfirmationPageFragmentBinding;
 import com.ruesga.rview.wizard.WizardPageFragment;
+
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.databinding.DataBindingUtil;
 
 public class ConfirmationPageFragment extends WizardPageFragment {
 

@@ -16,7 +16,6 @@
 package com.ruesga.rview.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.Nullable;
 
 public class FollowingChangeListFragment extends ChangeListByFilterFragment {
 

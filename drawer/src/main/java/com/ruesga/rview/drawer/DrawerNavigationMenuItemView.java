@@ -23,18 +23,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
-import android.support.design.internal.ForegroundLinearLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityEventCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
-import android.support.v4.widget.TextViewCompat;
-import android.support.v7.view.menu.MenuItemImpl;
-import android.support.v7.view.menu.MenuView;
-import android.support.v7.widget.TooltipCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -44,6 +32,20 @@ import android.view.ViewStub;
 import android.widget.CheckedTextView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+
+import com.google.android.material.internal.ForegroundLinearLayout;
+
+import androidx.appcompat.view.menu.MenuItemImpl;
+import androidx.appcompat.view.menu.MenuView;
+import androidx.appcompat.widget.TooltipCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityEventCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.widget.TextViewCompat;
 
 @SuppressWarnings({"deprecation", "unused", "RestrictedApi"})
 public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
@@ -192,7 +194,7 @@ public class DrawerNavigationMenuItemView extends ForegroundLinearLayout
     private StateListDrawable createDefaultBackground() {
         TypedValue value = new TypedValue();
         if (getContext().getTheme().resolveAttribute(
-                android.support.v7.appcompat.R.attr.colorControlHighlight, value, true)) {
+                androidx.appcompat.R.attr.colorControlHighlight, value, true)) {
             StateListDrawable drawable = new StateListDrawable();
             drawable.addState(CHECKED_STATE_SET, new ColorDrawable(value.data));
             drawable.addState(EMPTY_STATE_SET, new ColorDrawable(Color.TRANSPARENT));

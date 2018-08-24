@@ -31,7 +31,7 @@
         android:visibility="@{safeUnbox(mode) == DiffView.IMAGE_MODE ? View.VISIBLE : View.GONE}"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
@@ -49,9 +49,9 @@
                 app:dimensions="@{imageDiffModel.dimensionsLeft}"
                 app:side="@{context.getString(com.ruesga.rview.R.string.options_base_left)}"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
@@ -69,7 +69,7 @@
                 app:dimensions="@{imageDiffModel.dimensionsRight}"
                 app:side="@{context.getString(com.ruesga.rview.R.string.options_base_right)}"/>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 

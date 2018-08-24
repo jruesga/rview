@@ -27,11 +27,6 @@ import android.net.http.SslError;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.view.NestedScrollingChild;
-import android.support.v4.view.NestedScrollingChildHelper;
-import android.support.v4.view.ViewCompat;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -63,6 +58,13 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.view.NestedScrollingChildHelper;
+import androidx.core.view.ViewCompat;
+
 /**
  * This is a {@link WebView} subclass to deal with IME issues with the Ace Code Editor library. See
  * bellow for a detailed of bug threads describing the problem. Currently version is mostly working
@@ -70,7 +72,7 @@ import android.webkit.WebViewClient;
  * the described bug. This implementation disables the IME input method of the {@link WebView}.
  * <p>
  * It also provides a @{link NestedScrollingChild} implementation to deal with
- * {@link android.support.design.widget.CoordinatorLayout}.
+ * {@link CoordinatorLayout}.
  * <p>
  * It also provides a fake implementation of {@link ActionMode} to deal with the wrong
  * selection mode of the Ace component. For now, in only provides support for KITKAT and up,

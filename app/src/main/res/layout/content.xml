@@ -31,18 +31,18 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <android.support.design.widget.CoordinatorLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/page_content_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.design.widget.AppBarLayout
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
                 tools:ignore="UnusedAttribute">
 
-                <android.support.v7.widget.Toolbar
+                <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
@@ -60,7 +60,7 @@
                     android:background="?attr/colorPrimaryDark"
                     android:visibility="@{(model.hasTabs || model.hasPages) ? View.VISIBLE : View.GONE}"
                     app:layout_collapseMode="pin">
-                    <android.support.design.widget.TabLayout
+                    <com.google.android.material.tabs.TabLayout
                         android:id="@+id/tabs"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -76,7 +76,7 @@
                         android:visibility="@{model.hasPages ? View.VISIBLE : View.GONE}" />
                 </FrameLayout>
 
-            </android.support.design.widget.AppBarLayout>
+            </com.google.android.material.appbar.AppBarLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -106,7 +106,7 @@
                     android:visibility="@{model.isInProgress ? View.VISIBLE : View.INVISIBLE}" />
             </FrameLayout>
 
-            <android.support.design.widget.FloatingActionButton
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -118,7 +118,7 @@
                 app:layout_behavior="com.ruesga.rview.widget.ScrollAwareFloatingActionButtonBehavior"
                 app:srcCompat="@drawable/ic_add"/>
 
-        </android.support.design.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.ruesga.rview.drawer.DrawerNavigationView
             android:id="@+id/drawer_navigation_view"

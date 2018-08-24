@@ -20,13 +20,14 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.v4.view.AbsSavedState;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.ruesga.rview.R;
+
+import androidx.annotation.NonNull;
+import androidx.customview.view.AbsSavedState;
 
 public class ExpandableViewLayout extends FrameLayout {
 

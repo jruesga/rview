@@ -15,12 +15,7 @@
  */
 package com.ruesga.rview;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -29,6 +24,12 @@ import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.EditorFragment;
 import com.ruesga.rview.fragments.KeyEventBindable;
 import com.ruesga.rview.preferences.Constants;
+
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class EditorActivity extends BaseActivity {
 
@@ -149,7 +150,7 @@ public class EditorActivity extends BaseActivity {
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-            if (fragment != null && fragment instanceof KeyEventBindable) {
+            if (fragment instanceof KeyEventBindable) {
                 if (((KeyEventBindable) fragment).onKeyDown(event.getKeyCode(), event)) {
                     return true;
                 }
@@ -161,7 +162,7 @@ public class EditorActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keycode, KeyEvent e) {
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-        if (fragment != null && fragment instanceof KeyEventBindable) {
+        if (fragment instanceof KeyEventBindable) {
             if (((KeyEventBindable) fragment).onKeyDown(keycode, e)) {
                 return true;
             }
@@ -172,7 +173,7 @@ public class EditorActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
-        if (fragment != null && fragment instanceof KeyEventBindable) {
+        if (fragment instanceof KeyEventBindable) {
             if (((KeyEventBindable) fragment).onKeyDown(KeyEvent.KEYCODE_BACK, null)) {
                 return;
             }

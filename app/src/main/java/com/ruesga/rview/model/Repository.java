@@ -17,10 +17,11 @@ package com.ruesga.rview.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
+
+import androidx.annotation.NonNull;
 
 public class Repository implements Parcelable, Comparable<Repository> {
     @SerializedName("name") public String mName;

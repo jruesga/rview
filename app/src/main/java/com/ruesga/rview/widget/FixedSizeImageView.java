@@ -19,8 +19,9 @@ package com.ruesga.rview.widget;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
+
+import androidx.appcompat.widget.AppCompatImageView;
 
 /**
  * A subclass of ImageView that assumes to be fixed size

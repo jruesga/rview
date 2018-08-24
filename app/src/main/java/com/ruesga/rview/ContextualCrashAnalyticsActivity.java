@@ -16,9 +16,6 @@
 package com.ruesga.rview;
 
 import android.os.Bundle;
-import android.support.annotation.Keep;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import com.crashlytics.android.Crashlytics;
@@ -28,6 +25,10 @@ import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.preferences.Preferences;
+
+import androidx.annotation.Keep;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity {
 

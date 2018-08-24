@@ -16,7 +16,6 @@
 package com.ruesga.rview.adapters;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
@@ -39,6 +38,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.databinding.DataBindingUtil;
 
 public class AccountsAdapter extends BaseAdapter implements Filterable {
 

@@ -20,11 +20,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -52,6 +47,11 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
@@ -110,11 +110,6 @@ public final class RviewImageHelper extends AppGlideModule {
         return dw;
     }
 
-    public static void bindImage(Context ctx, ImageView view, Drawable placeholder, Uri url) {
-        Rect rect = new Rect(0, 0, view.getLayoutParams().width, view.getLayoutParams().height);
-        bindImage(ctx, view, placeholder, url, rect);
-    }
-
     public static void bindImage(
             Context ctx, ImageView view, Drawable placeholder, Uri url, Rect rect) {
         view.setImageDrawable(placeholder);
@@ -145,7 +140,7 @@ public final class RviewImageHelper extends AppGlideModule {
         loadWithFallbackUrls(context, item, placeholder, avatarUrls, size, size, animate);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "deprecation"})
     private static void loadWithFallbackUrls(final Context context, final Object into,
             final Drawable placeholder, final List<String> urls, int width, int height,
             boolean animate) {

@@ -19,8 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.v4.app.JobIntentService;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,6 +29,9 @@ import com.ruesga.rview.attachments.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 
 public class AttachmentsContentUploadService extends JobIntentService {
 

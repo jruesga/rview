@@ -15,9 +15,7 @@
  */
 package com.ruesga.rview.fragments;
 
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,6 +39,8 @@ import com.ruesga.rview.preferences.Constants;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import io.reactivex.Observable;
 import me.tatarka.rxloader2.safe.SafeObservable;
 

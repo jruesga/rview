@@ -15,12 +15,12 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import android.support.annotation.NonNull;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#delete-tags-input"

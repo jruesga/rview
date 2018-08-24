@@ -16,14 +16,7 @@
 package com.ruesga.rview.wizards;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Keep;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Spannable;
@@ -36,6 +29,7 @@ import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.ruesga.rview.R;
 import com.ruesga.rview.databinding.WizardAccountPageFragmentBinding;
 import com.ruesga.rview.exceptions.NoActivityAttachedException;
@@ -63,6 +57,12 @@ import com.ruesga.rview.wizard.validators.Validator;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.databinding.DataBindingUtil;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 import static com.ruesga.rview.misc.ExceptionHelper.isException;
@@ -514,7 +514,7 @@ public class AccountPageFragment extends WizardPageFragment {
         if (pos >= 0) {
             span.setSpan(new ClickableSpan() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(@NonNull View v) {
                     // Click on span doesn't provide sound feedback it the text view doesn't
                     // handle a click event. Just perform a click effect.
                     v.playSoundEffect(SoundEffectConstants.CLICK);
@@ -528,7 +528,7 @@ public class AccountPageFragment extends WizardPageFragment {
         if (pos >= 0) {
             span.setSpan(new ClickableSpan() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(@NonNull View v) {
                     // Click on span doesn't provide sound feedback it the text view doesn't
                     // handle a click event. Just perform a click effect.
                     v.playSoundEffect(SoundEffectConstants.CLICK);

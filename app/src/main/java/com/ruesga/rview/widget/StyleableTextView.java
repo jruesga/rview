@@ -6,11 +6,12 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
-import android.support.v7.text.AllCapsTransformationMethod;
 import android.util.AttributeSet;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.misc.TypefaceCache;
+
+import androidx.appcompat.text.AllCapsTransformationMethod;
 
 public class StyleableTextView extends SelectableCompatTextView {
     private static final int[] TEXT_APPEARANCE_ATTRS = new int[] {

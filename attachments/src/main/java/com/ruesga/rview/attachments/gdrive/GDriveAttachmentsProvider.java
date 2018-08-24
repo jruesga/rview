@@ -18,9 +18,6 @@ package com.ruesga.rview.attachments.gdrive;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
-import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -49,6 +46,9 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentManager;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 

@@ -17,7 +17,6 @@ package com.ruesga.rview.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -25,6 +24,8 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.misc.SerializationManager;
 
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
 
 public class CustomFilter implements Parcelable, Comparable<CustomFilter> {
     @SerializedName("id") public String mId;
