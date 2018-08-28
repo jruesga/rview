@@ -16,11 +16,9 @@
 
 ext {
     libraries = [
-        // https://developer.android.com/topic/libraries/support-library/androidx-rn
         androidx                    : '1.0.0-rc02',
-        // https://developers.google.com/android/guides/releases
+        material                    : '1.0.0-rc01',
         play_services_auth          : '16.0.0',
-        // https://firebase.google.com/support/release-notes/android
         firebase_core               : '16.0.3',
         firebase_messaging          : '17.3.0',
         gson                        : '2.8.5',
@@ -43,11 +41,8 @@ ext {
         keyboardvisibilityevent     : '2.1.0',
         better_link_movement_method : '2.2.0',
         aboutlibraries              : '6.2.0-rc01',
-        // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.9.5',
-        // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
         crashlytics_core            : '2.6.4',
-        // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/answers/maven-metadata.xml
         crashlytics_answers         : '1.4.3'
     ]
 
@@ -69,7 +64,6 @@ allprojects {
             maven { url 'https://maven.fabric.io/public' }
         }
         dependencies {
-            // https://developer.android.com/studio/releases/gradle-plugin.html#revisions
             classpath 'com.android.tools.build:gradle:3.2.0-rc02'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml

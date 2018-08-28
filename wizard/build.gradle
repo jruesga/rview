@@ -22,7 +22,7 @@ dependencies {
     api "androidx.appcompat:appcompat:${libraries.androidx}"
     api "androidx.cardview:cardview:${libraries.androidx}"
     api "androidx.legacy:legacy-support-v4:${libraries.androidx}"
-    api "com.google.android.material:material:${libraries.androidx}"
+    api "com.google.android.material:material:${libraries.material}"
     api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     api "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     api "com.github.jruesga:rxloader:${libraries.rxloader2}"

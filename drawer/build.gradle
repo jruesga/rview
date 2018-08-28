@@ -21,7 +21,7 @@ def libraries = rootProject.ext.libraries
 dependencies {
     api "androidx.appcompat:appcompat:${libraries.androidx}"
     api "androidx.legacy:legacy-support-v4:${libraries.androidx}"
-    api "com.google.android.material:material:${libraries.androidx}"
+    api "com.google.android.material:material:${libraries.material}"
 }
 
 

@@ -19,7 +19,7 @@ apply plugin: 'com.android.library'
 def libraries = rootProject.ext.libraries
 
 dependencies {
-    api "com.google.android.material:material:${libraries.androidx}"
+    api "com.google.android.material:material:${libraries.material}"
     api "com.google.code.gson:gson:${libraries.gson}"
     api("com.squareup.retrofit2:retrofit:${libraries.retrofit2}") {
         exclude group: 'io.reactivex', module: 'rxjava'
