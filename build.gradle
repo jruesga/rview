@@ -17,7 +17,7 @@
 ext {
     libraries = [
         // https://developer.android.com/topic/libraries/support-library/androidx-rn
-        androidx                     : '1.0.0-rc01',
+        androidx                    : '1.0.0-rc02',
         // https://developers.google.com/android/guides/releases
         play_services_auth          : '16.0.0',
         // https://firebase.google.com/support/release-notes/android
@@ -28,8 +28,8 @@ ext {
         okhttp3                     : '3.11.0',
         okio                        : '1.15.0',
         okhttp_digest               : 'f13c5b8f79',
-        rxjava                      : '2.2.0',
-        rxandroid                   : '2.0.2',
+        rxjava                      : '2.2.1',
+        rxandroid                   : '2.1.0',
         rxloader2                   : 'edeebf0a1a',
         // Keep commons-io in 2.5. Prior android versions doesn't have fully support for Files api.
         commons_io                  : '2.5',
@@ -42,7 +42,7 @@ ext {
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.1.0',
         better_link_movement_method : '2.2.0',
-        aboutlibraries              : '6.1.1',
+        aboutlibraries              : '6.2.0-rc01',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics/maven-metadata.xml
         crashlytics                 : '2.9.5',
         // https://s3.amazonaws.com/fabric-artifacts/public/com/crashlytics/sdk/android/crashlytics-core/maven-metadata.xml
@@ -70,7 +70,7 @@ allprojects {
         }
         dependencies {
             // https://developer.android.com/studio/releases/gradle-plugin.html#revisions
-            classpath 'com.android.tools.build:gradle:3.2.0-rc01'
+            classpath 'com.android.tools.build:gradle:3.2.0-rc02'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
             classpath 'io.fabric.tools:gradle:1.25.4'
