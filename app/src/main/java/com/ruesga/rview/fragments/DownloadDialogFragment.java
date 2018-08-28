@@ -436,7 +436,7 @@ public class DownloadDialogFragment extends RevealDialogFragment {
         //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
-                getContext(), mDownloadTypes, mModel.downloadType);
+                getContext(), mDownloadTypes, mDownloadTypes, mModel.downloadType);
         popupWindow.setAnchorView(anchor);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());

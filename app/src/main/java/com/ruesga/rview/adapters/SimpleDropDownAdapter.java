@@ -33,22 +33,26 @@ public class SimpleDropDownAdapter<T> extends BaseAdapter {
 
     private Context mContext;
     private List<String> mValues;
+    private List<String> mLabels;
     private int[] mIcons;
     private T[] mIds;
     private String mValue;
 
-    public SimpleDropDownAdapter(Context context, List<String> values, String value) {
-        this(context, values, null, value);
-    }
-
-    public SimpleDropDownAdapter(Context context, List<String> values, int[] icons, String value) {
-        this(context, values, icons, null, value);
+    public SimpleDropDownAdapter(Context context, List<String> values,
+            List<String> labels, String value) {
+        this(context, values, labels, null, value);
     }
 
     public SimpleDropDownAdapter(Context context, List<String> values,
+            List<String> labels, int[] icons, String value) {
+        this(context, values, labels, icons, null, value);
+    }
+
+    public SimpleDropDownAdapter(Context context, List<String> values, List<String> labels,
             int[] icons, T[] ids, String value) {
         mContext = context;
         mValues = values;
+        mLabels = labels;
         mIcons = icons;
         mValue = value;
         mIds = ids;
@@ -83,16 +87,17 @@ public class SimpleDropDownAdapter<T> extends BaseAdapter {
             v.setTag(binding);
         }
 
-        String s = mValues.get(position);
+        String value= mValues.get(position);
+        String label = mLabels.get(position);
         Integer icon = null;
         if (mIcons != null) {
             icon = mIcons[position];
         }
         DropdownItemBinding binding = (DropdownItemBinding) v.getTag();
-        binding.setText(s);
+        binding.setText(label);
         binding.setIcon(icon);
         binding.setMaxLines(1);
-        binding.setIsSelected(s.equals(mValue));
+        binding.setIsSelected(value.equals(mValue));
         binding.executePendingBindings();
 
         return v;

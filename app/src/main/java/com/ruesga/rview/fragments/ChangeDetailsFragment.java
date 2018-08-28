@@ -3054,7 +3054,7 @@ public class ChangeDetailsFragment extends Fragment implements
             ids.add(R.id.mark_reviewed);
         }
 
-        return new SimpleDropDownAdapter<>(getContext(), options, null,
+        return new SimpleDropDownAdapter<>(getContext(), options, options, null,
                 ids.toArray(new Integer[0]), null);
     }
 

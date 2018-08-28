@@ -780,18 +780,20 @@ public class EditorFragment extends Fragment
         // Filter out current ops
         int count = mFileInfo.size();
         final List<String> files = new ArrayList<>(count);
+        final List<String> names = new ArrayList<>(count);
         int[] icons = new int[count];
         for (int i = 0; i < count; i++) {
             final String file = mFiles.get(i);
             final FileInfo fileInfo = mFileInfo.get(file);
-            files.add(new File(file).getName());
+            files.add(file);
+            names.add(new File(file).getName());
             icons[i] = ModelHelper.toFileStatusDrawable(fileInfo.status);
         }
 
         //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
-                getContext(), files, icons, mFile == null ? null : new File(mFile).getName());
+                getContext(), files, names, icons, mFile);
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());

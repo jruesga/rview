@@ -467,7 +467,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 Arrays.asList(getResources().getStringArray(R.array.search_options_labels)));
         String value = values.get(mCurrentOption);
         SimpleDropDownAdapter<Integer> adapter =
-                new SimpleDropDownAdapter<>(this, values, mIcons, value);
+                new SimpleDropDownAdapter<>(this, values, values, mIcons, value);
         popupWindow.setAnchorView(mBinding.anchor);
         popupWindow.setDropDownGravity(GravityCompat.END);
         popupWindow.setAdapter(adapter);

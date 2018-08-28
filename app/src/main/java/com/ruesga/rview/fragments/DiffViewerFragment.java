@@ -716,18 +716,20 @@ public class DiffViewerFragment extends Fragment
         // Filter out current ops
         int count = mFilesInfo.size();
         final List<String> files = new ArrayList<>(count);
+        final List<String> names = new ArrayList<>(count);
         int[] icons = new int[count];
         for (int i = 0; i < count; i++) {
             final String file = mFiles.get(i);
             final FileInfo fileInfo = mFilesInfo.get(file);
-            files.add(new File(file).getName());
+            files.add(file);
+            names.add(new File(file).getName());
             icons[i] = ModelHelper.toFileStatusDrawable(fileInfo.status);
         }
 
         //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
-                getContext(), files, icons, new File(mFile).getName());
+                getContext(), files, names, icons, mFile);
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());
@@ -776,7 +778,7 @@ public class DiffViewerFragment extends Fragment
         //noinspection ConstantConditions
         final ListPopupWindow popupWindow = new ListPopupWindow(getContext());
         SimpleDropDownAdapter<Integer> adapter = new SimpleDropDownAdapter<>(
-                getContext(), revisions, value);
+                getContext(), revisions, revisions, value);
         popupWindow.setAnchorView(v);
         popupWindow.setAdapter(adapter);
         popupWindow.setContentWidth(adapter.measureContentWidth());
