@@ -215,7 +215,7 @@ public class NotificationsHelper {
         NotificationEntity lastEntity = entities.get(entities.size() - 1);
         NotificationCompat.Builder builder =
                 createNotificationBuilder(ctx, account, lastEntity, feedback);
-        Person p = new Person.Builder().build();
+        Person p = new Person.Builder().setName(account.getAccountDisplayName()).build();
         NotificationCompat.MessagingStyle style = new NotificationCompat.MessagingStyle(p)
                 .setConversationTitle(lastEntity.mNotification.subject);
         for (NotificationEntity entity : entities) {
