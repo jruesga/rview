@@ -63,6 +63,7 @@
                             android:id="@+id/tabs"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
+                            android:background="?attr/colorPrimaryDark"
                             android:visibility="@{model.hasTabs ? View.VISIBLE : View.GONE}"
                             app:tabTextColor="@color/tab_text"
                             app:tabSelectedTextColor="@color/tab_selected_text"
