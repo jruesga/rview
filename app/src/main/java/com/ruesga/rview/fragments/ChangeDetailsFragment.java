@@ -396,7 +396,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
         public void onMessageAvatarPressed(View v) {
             int position = (int) v.getTag();
-            AccountInfo account = mFragment.mResponse.mChange.messages[position].author;
+            AccountInfo account = mFragment.mMessageAdapter.getMessageInfo(position).author;
             onAccountChipPressed(account, null);
         }
 
@@ -706,7 +706,11 @@ public class ChangeDetailsFragment extends Fragment implements
         }
 
         String getMessage(int position) {
-            return mMessages[position].message;
+            return getMessageInfo(position).message;
+        }
+
+        ChangeMessageInfo getMessageInfo(int position) {
+            return mMessages[position];
         }
 
         @NonNull
