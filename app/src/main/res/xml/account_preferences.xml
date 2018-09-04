@@ -14,7 +14,8 @@
      See the License for the specific language governing permissions and
      limitations under the License.
  -->
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
         android:key="account_display_category"
@@ -22,14 +23,16 @@
 
         <ListPreference
             android:key="account_home_page"
-            android:title="@string/account_settings_home_page" />
+            android:title="@string/account_settings_home_page"
+            app:iconSpaceReserved="false" />
 
         <ListPreference
             android:key="account_fetched_items"
             android:title="@string/account_settings_fetched_items"
             android:summary="%s"
             android:entryValues="@array/account_fetched_items_values"
-            android:defaultValue="25" />
+            android:defaultValue="25"
+            app:iconSpaceReserved="false" />
 
         <ListPreference
             android:key="account_display_format"
@@ -37,22 +40,26 @@
             android:summary="%s"
             android:entries="@array/account_display_format_labels"
             android:entryValues="@array/account_display_format_values"
-            android:defaultValue="name" />
+            android:defaultValue="name"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="account_animated_avatars"
             android:title="@string/account_settings_animated_avatars"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="account_display_statuses"
             android:title="@string/account_settings_display_account_statuses"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="account_highlight_unreviewed"
             android:title="@string/account_settings_highlight_unreviewed"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -64,7 +71,8 @@
             android:title="@string/account_settings_dashboard_outgoing_sort"
             android:summaryOn="@string/account_settings_dashboard_outgoing_sort_on"
             android:summaryOff="@string/account_settings_dashboard_outgoing_sort_off"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -74,7 +82,8 @@
         <SwitchPreference
             android:key="account_messages_folded"
             android:title="@string/account_settings_messages_folded"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
 
         <ListPreference
             android:key="account_messages_highlight_scored"
@@ -82,26 +91,30 @@
             android:summary="%s"
             android:entries="@array/highlight_scored_messages_labels"
             android:entryValues="@array/highlight_scored_messages_values"
-            android:defaultValue="2" />
+            android:defaultValue="2"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="account_inline_comment_in_messages"
             android:title="@string/account_settings_inline_comment_in_messages"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="account_toggle_tagged_messages"
             android:title="@string/account_settings_toggle_tagged_messages_title"
             android:summaryOn="@string/account_settings_toggle_tagged_messages_summary_on"
             android:summaryOff="@string/account_settings_toggle_tagged_messages_summary_off"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="account_toggle_ci_messages"
             android:title="@string/account_settings_toggle_ci_messages_title"
             android:summaryOn="@string/account_settings_toggle_ci_messages_summary_on"
             android:summaryOff="@string/account_settings_toggle_ci_messages_summary_off"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -113,7 +126,8 @@
             android:title="@string/account_settings_account_short_filenames"
             android:summaryOn="@string/account_settings_account_short_filenames_on"
             android:summaryOff="@string/account_settings_account_short_filenames_off"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -123,7 +137,8 @@
         <SwitchPreference
             android:key="account_attachments_image_optimizations"
             android:title="@string/account_settings_attachments_optimize"
-            android:defaultValue="false" />
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
 
         <ListPreference
             android:dependency="account_attachments_image_optimizations"
@@ -132,7 +147,8 @@
             android:summary="%s"
             android:entries="@array/compression_image_formats"
             android:entryValues="@array/compression_image_formats"
-            android:defaultValue="JPEG" />
+            android:defaultValue="JPEG"
+            app:iconSpaceReserved="false" />
 
         <!--suppress AndroidElementNotAllowed -->
         <SeekBarPreference
@@ -140,7 +156,8 @@
             android:key="account_attachments_image_optimizations_quality"
             android:title="@string/account_settings_attachments_optimize_quality"
             android:max="10"
-            android:defaultValue="5" />
+            android:defaultValue="5"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -150,7 +167,8 @@
         <SwitchPreference
             android:key="account_ci_show"
             android:title="@string/account_settings_ci_category_show"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -159,7 +177,8 @@
 
         <Preference
             android:key="account_search_clear"
-            android:title="@string/account_settings_search_clear"/>
+            android:title="@string/account_settings_search_clear"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -168,13 +187,15 @@
 
         <Preference
             android:key="account_notifications_advise"
-            android:summary="@string/account_settings_notifications_advise"/>
+            android:summary="@string/account_settings_notifications_advise"
+            app:iconSpaceReserved="false"/>
 
         <SwitchPreference
             android:key="account_notifications"
             android:title="@string/account_settings_notifications_title"
             android:defaultValue="false"
-            android:enabled="false" />
+            android:enabled="false"
+            app:iconSpaceReserved="false" />
 
         <MultiSelectListPreference
             android:key="account_notifications_events"
@@ -183,7 +204,8 @@
             android:entryValues="@array/notifications_events_values"
             android:defaultValue="@array/notifications_events_defaults"
             android:dependency="account_notifications"
-            android:enabled="false" />
+            android:enabled="false"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
@@ -194,11 +216,13 @@
         <SwitchPreference
             android:key="account_handle_links"
             android:title="@string/account_settings_handle_links"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="account_use_custom_tabs"
             android:title="@string/account_settings_use_custom_tabs"
-            android:defaultValue="true" />
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -34,7 +34,7 @@
     </style>
 
     <style name="AppTheme.Settings" parent="AppTheme">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="preferenceTheme">@style/AppThemePreferences</item>
     </style>
 
     <style name="AppTheme.DrawerMenu" parent="AppTheme">
@@ -44,6 +44,14 @@
     <style name="AppTheme.WizardErrorTextAppearance" parent="@android:style/TextAppearance">
         <item name="android:textSize">10sp</item>
         <item name="android:textColor">@color/accent</item>
+    </style>
+
+    <style name="AppThemePreferences" parent="@style/PreferenceThemeOverlay.v14.Material">
+        <item name="preferenceCategoryStyle">@style/AppThemePreferenceCategory</item>
+    </style>
+
+    <style name="AppThemePreferenceCategory" parent="@style/Preference.Category.Material">
+        <item name="android:layout">@layout/settings_preference_category</item>
     </style>
 
     <style name="HeaderLabel">
