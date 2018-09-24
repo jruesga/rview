@@ -40,6 +40,7 @@
   {"name":"GZOSP", "url":"https://review.gzospgzr.com/"},
   {"name":"GWT", "url":"https://gwt-review.googlesource.com/", "ci_accounts": "^(.* Jenkins)$"},
   {"name":"halogenOS", "url":"https://review.halogenos.org/"},
+  {"name":"Hyperledger", "url":"https://gerrit.hyperledger.org/r/", "ci_accounts": "^(Hyperledger Jobbuilder)$"},
   {"name":"Intel HPDD", "url":"https://review.whamcloud.com/", "ci_accounts": "^(Jenkins|HPDD Checkpatch|Misc Code Checks Robot.*|.* Buildbot|Autotest|Maloo)$"},
   {"name":"InvictrixRom", "url":"http://review.invictrixrom.com/"},
   {"name":"IoTivity", "url":"https://gerrit.iotivity.org/gerrit/", "ci_accounts": "^(.* Jenkins)$"},
