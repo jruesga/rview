@@ -34,6 +34,7 @@ public class ChangeQueryTest {
         testInvalidParseQuery("AND");
         testInvalidParseQuery("AND status:open");
         testInvalidParseQuery("status:open2");
+        testInvalidParseQuery("status:abandoned AND label:\"Code-Review=--2\"");
 
         testParseQuery("status:open",
                 new ChangeQuery().status(StatusType.OPEN));

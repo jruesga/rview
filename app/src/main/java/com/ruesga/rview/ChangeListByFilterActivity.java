@@ -18,6 +18,7 @@ package com.ruesga.rview;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +28,7 @@ import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.fragments.ChangeListByFilterFragment;
 import com.ruesga.rview.fragments.EditDialogFragment;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
+import com.ruesga.rview.gerrit.filter.antlr.QueryParseException;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.CustomFilter;
 import com.ruesga.rview.preferences.Constants;
@@ -40,6 +42,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 public class ChangeListByFilterActivity extends ChangeListBaseActivity implements
         EditDialogFragment.OnEditChanged {
+
+    private static final String TAG = "ChangeListByFilterAct";
 
     private int mSelectedChangeId = INVALID_ITEM;
 
@@ -66,7 +70,11 @@ public class ChangeListByFilterActivity extends ChangeListBaseActivity implement
             finish();
             return;
         }
-        mQuery = ChangeQuery.parse(filter);
+        try {
+            mQuery = ChangeQuery.parse(filter);
+        } catch (QueryParseException ex) {
+            Log.w(TAG, "Failed to parse query", ex);
+        }
         if (mQuery == null) {
             finish();
             return;
