@@ -16,15 +16,15 @@
 
 ext {
     libraries = [
-        androidx                    : '1.0.0-rc02',
-        material                    : '1.0.0-rc02',
+        androidx                    : '1.0.0',
+        material                    : '1.0.0',
         play_services_auth          : '16.0.0',
         firebase_core               : '16.0.3',
         firebase_messaging          : '17.3.2',
         gson                        : '2.8.5',
         retrofit2                   : '2.4.0',
         okhttp3                     : '3.11.0',
-        okio                        : '2.0.0',
+        okio                        : '2.1.0',
         okhttp_digest               : 'f13c5b8f79',
         rxjava                      : '2.2.2',
         rxandroid                   : '2.1.0',
@@ -35,12 +35,12 @@ ext {
         smoothprogressbar           : '1.1.0',
         glide                       : '4.8.0',
         prettytime                  : '4.0.2.Final',
-        flexboxlayout               : '1.1.0-beta1',
+        flexboxlayout               : '1.1.0',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.1.0',
         better_link_movement_method : '2.2.0',
-        aboutlibraries              : '6.2.0-rc02',
+        aboutlibraries              : '6.2.0',
         crashlytics                 : '2.9.5',
         crashlytics_core            : '2.6.4',
         crashlytics_answers         : '1.4.3'
@@ -64,10 +64,10 @@ allprojects {
             maven { url 'https://maven.fabric.io/public' }
         }
         dependencies {
-            classpath 'com.android.tools.build:gradle:3.2.0-rc03'
+            classpath 'com.android.tools.build:gradle:3.2.0'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.25.4'
+            classpath 'io.fabric.tools:gradle:1.26.0'
         }
     }
 
@@ -102,7 +102,7 @@ subprojects {
             android {
                 compileSdkVersion 28
                 // https://developer.android.com/studio/releases/build-tools.html
-                buildToolsVersion '28.0.2'
+                buildToolsVersion '28.0.3'
 
                 defaultConfig {
                     minSdkVersion 16
