@@ -47,8 +47,8 @@ dependencies {
     implementation "me.saket:better-link-movement-method:${libraries.better_link_movement_method}"
 
     // NOTE: Required for libraries generating old source (Glide, ...). Remove when no were required anymore
-    implementation 'com.android.support:support-annotations:27.1.1'
-    annotationProcessor 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    annotationProcessor 'com.android.support:support-annotations:28.0.0'
 }
 
 android {
