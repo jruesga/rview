@@ -74,7 +74,7 @@ public class AndroidHelper {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     }
 
-    public static boolean isApiNougatOrGreater() {
+    public static boolean isOreoOrGreater() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
 

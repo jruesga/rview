@@ -513,7 +513,7 @@ public class NotificationsHelper {
 
     @TargetApi(Build.VERSION_CODES.O)
     public static void createNotificationChannel(Context context, Account account) {
-        if (AndroidHelper.isApiNougatOrGreater()) {
+        if (AndroidHelper.isOreoOrGreater()) {
             final String defaultChannelName = context.getString(
                     R.string.notifications_default_channel_name,
                     account.getRepositoryDisplayName(), account.getAccountDisplayName());
@@ -536,7 +536,7 @@ public class NotificationsHelper {
 
     @TargetApi(Build.VERSION_CODES.O)
     public static void deleteNotificationChannel(Context context, Account account) {
-        if (AndroidHelper.isApiNougatOrGreater()) {
+        if (AndroidHelper.isOreoOrGreater()) {
             final NotificationManager nm =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             nm.deleteNotificationChannelGroup(account.getAccountHash());
