@@ -18,9 +18,9 @@ ext {
     libraries = [
         androidx                    : '1.0.0',
         material                    : '1.0.0',
-        play_services_auth          : '16.0.0',
-        firebase_core               : '16.0.3',
-        firebase_messaging          : '17.3.2',
+        play_services_auth          : '16.0.1',
+        firebase_core               : '16.0.4',
+        firebase_messaging          : '17.3.3',
         gson                        : '2.8.5',
         retrofit2                   : '2.4.0',
         okhttp3                     : '3.11.0',
@@ -49,7 +49,7 @@ ext {
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.22.0',
+        mockito                     : '2.23.0',
         powermock                   : '2.0.0-beta.5',
         robolectric                 : '3.8',
         base64                      : '2.3.9'
@@ -65,9 +65,9 @@ allprojects {
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:3.2.0'
-            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
+            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.4'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.26.0'
+            classpath 'io.fabric.tools:gradle:1.26.1'
         }
     }
 
