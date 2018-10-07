@@ -76,7 +76,7 @@
   {"name":"OPNFV", "url":"https://gerrit.opnfv.org/gerrit/", "ci_accounts": "^(jenkins-ci)$"},
   {"name":"OSEHRA", "url":"http://review.code.osehra.org/", "ci_accounts": "^(OSEHR Agent)$"},
   {"name":"OSM", "url":"https://osm.etsi.org/gerrit/", "ci_accounts": "^(jenkins)$"},
-  {"name":"OSMOCOM", "url":"https://gerrit.osmocom.org/>", "ci_accounts": "^(Jenkins.*)$"},
+  {"name":"OSMOCOM", "url":"https://gerrit.osmocom.org/", "ci_accounts": "^(Jenkins.*)$"},
   {"name":"oVirt", "url":"https://gerrit.ovirt.org/", "ci_accounts": "^(Jenkins.*|gerrit-hooks)$"},
   {"name":"Pixel Experience", "url":"https://gerrit.pixelexperience.org/"},
   {"name":"PolarSys", "url":"https://git.polarsys.org/r/", "ci_accounts": "^(Hudson CI)$"},
