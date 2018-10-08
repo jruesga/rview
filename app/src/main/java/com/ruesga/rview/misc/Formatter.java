@@ -916,18 +916,19 @@ public class Formatter {
         // Extract every review punctuation
         String firstLine = StringHelper.firstLine(message.message);
         int review = 0;
-        boolean isPatchSetLine = StringHelper.PATCHSET_LINE_PATTERN.matcher(firstLine).matches();
-        if (isPatchSetLine) {
-            Matcher m = StringHelper.VOTE_PATTERN.matcher(firstLine);
+        boolean isPatchSetLine = PATCHSET_LINE_PATTERN.matcher(firstLine).matches();
+        if (isPatchSetLine && !firstLine.contains(".")) {
+            int start = firstLine.indexOf(": ") + 1;
+            Matcher m = VOTE_PATTERN.matcher(firstLine);
             while (m.find()) {
-                String vote = null;
-                if (m.group(3) != null) {
-                    int value = StringHelper.parseNumberWithSign(m.group(3)).intValue();
+                if (m.group(3) != null && m.start() == start) {
+                    int value = parseNumberWithSign(m.group(3)).intValue();
                     if (Math.abs(value) > Math.abs(review)) {
                         review = value;
                     } else if (Math.abs(value) == Math.abs(review) && value < 0) {
                         review = value;
                     }
+                    start = m.end();
                 }
             }
         }
@@ -1040,21 +1041,26 @@ public class Formatter {
         final int noscore = ContextCompat.getColor(context, R.color.noscore);
 
         boolean isPatchSetLine = StringHelper.PATCHSET_LINE_PATTERN.matcher(userMessage).matches();
-        if (isPatchSetLine) {
+        if (isPatchSetLine && !userMessage.contains(".")) {
             Matcher m = StringHelper.VOTE_PATTERN.matcher(userMessage);
             while (m.find()) {
-                int color = 0;
-                if (m.group(3) != null) {
-                    // Vote added
-                    color = StringHelper.parseNumberWithSign(m.group(3)).intValue() > 0
-                            ? approved : rejected;
-                } else if (m.group(4) != null) {
-                    // Vote removed
-                    color = noscore;
-                }
+                int start = firstLine.indexOf(": ") + 1;
+                if (m.start() == start)
+                {
+                    int color = 0;
+                    if (m.group(3) != null) {
+                        // Vote added
+                        color = StringHelper.parseNumberWithSign(m.group(3)).intValue() > 0
+                                ? approved : rejected;
+                    } else if (m.group(4) != null) {
+                        // Vote removed
+                        color = noscore;
+                    }
 
-                final TagSpan span = new TagSpan(context, color, Color.WHITE);
-                spannable.setSpan(span, m.start(2), m.end(2), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    final TagSpan span = new TagSpan(context, color, Color.WHITE);
+                    spannable.setSpan(span, m.start(2), m.end(2), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+                start = m.end();
             }
         }
     }
