@@ -91,6 +91,7 @@
   {"name":"SIL LSDev", "url":"https://gerrit.lsdev.sil.org/", "ci_accounts": "^(Jenkins.*)$"},
   {"name":"Skia", "url":"https://skia-review.googlesource.com/", "ci_accounts": "^(Skia Commit-Bot)$", "ci_status_mode": "cq", "ci_status_url": "https://cr-buildbucket.appspot.com/_ah/api/buildbucket/v1/search?max_builds=500&fields=builds(status,result,tags,url)&tag=buildset:patch/gerrit/skia-review.googlesource.com/{change}/{revision}"},
   {"name":"SlimRoms", "url":"https://review.slimroms.org/"},
+  {"name":"StatiXOS", "url":"https://review.statixos.me/"},
   {"name":"SQLAlchemy", "url":"https://gerrit.sqlalchemy.org/", "ci_accounts": "^(.*Gerrit Bot)$"},
   {"name":"Substratum", "url":"https://substratum.review/"},
   {"name":"SWGEMU", "url":"https://review.swgemu.com/", "ci_accounts": "^(jenkins.*)$"},
