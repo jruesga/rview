@@ -916,13 +916,13 @@ public class Formatter {
         // Extract every review punctuation
         String firstLine = StringHelper.firstLine(message.message);
         int review = 0;
-        boolean isPatchSetLine = PATCHSET_LINE_PATTERN.matcher(firstLine).matches();
+        boolean isPatchSetLine = StringHelper.PATCHSET_LINE_PATTERN.matcher(firstLine).matches();
         if (isPatchSetLine && !firstLine.contains(".")) {
             int start = firstLine.indexOf(": ") + 1;
-            Matcher m = VOTE_PATTERN.matcher(firstLine);
+            Matcher m = StringHelper.VOTE_PATTERN.matcher(firstLine);
             while (m.find()) {
                 if (m.group(3) != null && m.start() == start) {
-                    int value = parseNumberWithSign(m.group(3)).intValue();
+                    int value = StringHelper.parseNumberWithSign(m.group(3)).intValue();
                     if (Math.abs(value) > Math.abs(review)) {
                         review = value;
                     } else if (Math.abs(value) == Math.abs(review) && value < 0) {
@@ -1044,7 +1044,7 @@ public class Formatter {
         if (isPatchSetLine && !userMessage.contains(".")) {
             Matcher m = StringHelper.VOTE_PATTERN.matcher(userMessage);
             while (m.find()) {
-                int start = firstLine.indexOf(": ") + 1;
+                int start = userMessage.indexOf(": ") + 1;
                 if (m.start() == start)
                 {
                     int color = 0;
