@@ -88,7 +88,7 @@ public class CacheCleanerReceiver extends BroadcastReceiver {
         long due = c.getTimeInMillis();
 
         Intent i = new Intent(context, CacheCleanerReceiver.class);
-        i.setAction(NotificationReceiver.ACTION_NOTIFICATION_DISMISSED);
+        i.setAction(CacheCleanerReceiver.ACTION_CLEAN_CACHE);
         PendingIntent pi = PendingIntent.getBroadcast(
                 context, 1000, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
