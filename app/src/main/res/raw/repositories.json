@@ -51,6 +51,7 @@
   {"name":"InvictrixRom", "url":"http://review.invictrixrom.com/"},
   {"name":"IoTivity", "url":"https://gerrit.iotivity.org/gerrit/", "ci_accounts": "^(.* Jenkins)$"},
   {"name":"Joyent", "url":"https://cr.joyent.us/", "ci_accounts": "^(Joyent Automation)$"},
+  {"name":"KDE", "url":"https://gerrit.vesnicky.cesnet.cz/r/", "ci_accounts": "^(.*Zuul.*)$"},
   {"name":"Kitware", "url":"http://review.source.kitware.com/", "ci_accounts": "^(Kitware Build Robot)$"},
   {"name":"KorAP", "url":"https://korap.ids-mannheim.de/gerrit/"},
   {"name":"LibreOffice", "url":"https://gerrit.libreoffice.org/", "ci_accounts": "^(Jenkins)$"},
