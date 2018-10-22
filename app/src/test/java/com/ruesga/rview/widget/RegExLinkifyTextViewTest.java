@@ -45,12 +45,12 @@ public class RegExLinkifyTextViewTest {
         List<RegExLink> links = RegExLinkifyTextView.createRepositoryRegExpLinks(repository);
         assertEquals(4, links.size());
         assertNull(replaceLink(links.get(0),
-                "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
+                "aaa https://test.com/#/c/project/abc_cba-123/+/129166/ aa"));
         assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
                 replaceLink(links.get(1),
-                        "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
+                        "aaa https://test.com/#/c/project/abc_cba-123/+/129166/ aa"));
         assertNull(replaceLink(links.get(2),
-                "aaa https://test.com/#/c/project/abc/+/129166/ aa"));
+                "aaa https://test.com/#/c/project/abc_cba-123/+/129166/ aa"));
         assertEquals("https://test.com/dashboard/?title=aa&mine=status:open",
                 replaceLink(links.get(3),
                         "aaa https://test.com/dashboard/?title=aa&mine=status:open aa"));
