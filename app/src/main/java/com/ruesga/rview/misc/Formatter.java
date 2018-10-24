@@ -1043,10 +1043,9 @@ public class Formatter {
         boolean isPatchSetLine = StringHelper.PATCHSET_LINE_PATTERN.matcher(userMessage).matches();
         if (isPatchSetLine && !userMessage.contains(".")) {
             Matcher m = StringHelper.VOTE_PATTERN.matcher(userMessage);
+            int start = userMessage.indexOf(": ") + 1;
             while (m.find()) {
-                int start = userMessage.indexOf(": ") + 1;
-                if (m.start() == start)
-                {
+                if (m.start() == start) {
                     int color = 0;
                     if (m.group(3) != null) {
                         // Vote added
