@@ -97,6 +97,7 @@
   {"name":"SQLAlchemy", "url":"https://gerrit.sqlalchemy.org/", "ci_accounts": "^(.*Gerrit Bot)$"},
   {"name":"Substratum", "url":"https://substratum.review/"},
   {"name":"SWGEMU", "url":"https://review.swgemu.com/", "ci_accounts": "^(jenkins.*)$"},
+  {"name":"Syberia OS", "url":"http://gerrit.syberiaos.com/"},
   {"name":"TeamForge CollabNet", "url":"https://forge.collab.net/gerrit/"},
   {"name":"TensorFlow", "url":"https://tensorflow-review.googlesource.com/"},
   {"name":"Tuleap", "url":"https://gerrit.tuleap.net/", "ci_accounts": "^(Jenkins.*)$"},
