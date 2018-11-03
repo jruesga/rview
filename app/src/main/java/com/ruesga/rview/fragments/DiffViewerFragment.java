@@ -603,6 +603,17 @@ public class DiffViewerFragment extends Fragment
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        // Ensure that we use the right account when navigate to other activities
+        // from this one, in case we returned from other account
+        if (mAccount != null && getActivity() != null) {
+            Preferences.setAccount(getActivity(), mAccount);
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
