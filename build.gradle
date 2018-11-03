@@ -19,7 +19,7 @@ ext {
         androidx                    : '1.0.0',
         material                    : '1.0.0',
         play_services_auth          : '16.0.1',
-        firebase_core               : '16.0.4',
+        firebase_core               : '16.0.5',
         firebase_messaging          : '17.3.4',
         gson                        : '2.8.5',
         retrofit2                   : '2.4.0',
@@ -51,7 +51,7 @@ ext {
         hamcrest                    : '1.4-atlassian-1',
         mockito                     : '2.23.0',
         powermock                   : '2.0.0-RC.1',
-        robolectric                 : '4.0',
+        robolectric                 : '4.0.1',
         base64                      : '2.3.9'
     ]
 }
