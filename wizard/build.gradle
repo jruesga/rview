@@ -19,9 +19,9 @@ apply plugin: 'com.android.library'
 def libraries = rootProject.ext.libraries
 
 dependencies {
-    api "androidx.appcompat:appcompat:${libraries.androidx}"
-    api "androidx.cardview:cardview:${libraries.androidx}"
-    api "androidx.legacy:legacy-support-v4:${libraries.androidx}"
+    api "androidx.appcompat:appcompat:${libraries.androidx_appcompat}"
+    api "androidx.cardview:cardview:${libraries.androidx_cardview}"
+    api "androidx.legacy:legacy-support-v4:${libraries.androidx_legacy}"
     api "com.google.android.material:material:${libraries.material}"
     api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     api "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"

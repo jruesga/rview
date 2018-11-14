@@ -19,8 +19,8 @@ apply plugin: 'com.android.library'
 def libraries = rootProject.ext.libraries
 
 dependencies {
-    api "androidx.appcompat:appcompat:${libraries.androidx}"
-    api "androidx.legacy:legacy-support-v4:${libraries.androidx}"
+    api "androidx.appcompat:appcompat:${libraries.androidx_appcompat}"
+    api "androidx.legacy:legacy-support-v4:${libraries.androidx_legacy}"
     api "com.google.android.material:material:${libraries.material}"
 }
 

@@ -16,7 +16,11 @@
 
 ext {
     libraries = [
-        androidx                    : '1.0.0',
+        androidx_appcompat          : '1.0.2',
+        androidx_browser            : '1.0.0',
+        androidx_cardview           : '1.0.0',
+        androidx_exifinterface      : '1.0.0',
+        androidx_legacy             : '1.0.0',
         material                    : '1.0.0',
         play_services_auth          : '16.0.1',
         firebase_core               : '16.0.5',
@@ -41,9 +45,9 @@ ext {
         keyboardvisibilityevent     : '2.1.0',
         better_link_movement_method : '2.2.0',
         aboutlibraries              : '6.2.0',
-        crashlytics                 : '2.9.5',
-        crashlytics_core            : '2.6.4',
-        crashlytics_answers         : '1.4.3'
+        crashlytics                 : '2.9.6',
+        crashlytics_core            : '2.6.5',
+        crashlytics_answers         : '1.4.4'
     ]
 
     testLibraries = [
