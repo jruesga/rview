@@ -19,6 +19,7 @@ import android.content.Context;
 import android.widget.EditText;
 
 import com.ruesga.rview.wizard.R;
+import com.ruesga.rview.wizard.misc.WebPatterns;
 
 public class WebUrlValidator implements Validator<EditText> {
 
@@ -31,7 +32,7 @@ public class WebUrlValidator implements Validator<EditText> {
     @Override
     public boolean validate(EditText v) {
         final CharSequence s = v.getText();
-        return android.util.Patterns.WEB_URL.matcher(s).matches();
+        return WebPatterns.WEB_URL.matcher(s).matches();
     }
 
     @Override
