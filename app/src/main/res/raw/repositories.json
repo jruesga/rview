@@ -60,6 +60,7 @@
   {"name":"LinuxFoundation Infra", "url":"https://gerrit.linuxfoundation.org/infra/", "ci_accounts": "^(Jenkins CI)$"},
   {"name":"Mahara", "url":"https://reviews.mahara.org/", "ci_accounts": "^(Mahara Bot)$"},
   {"name":"MediaWiki", "url":"https://gerrit.wikimedia.org/r/", "ci_accounts": "^(jenkins-bot)$"},
+  {"name":"Mirantis", "url":"https://gerrit.mcp.mirantis.com/", "ci_accounts": "^(mcp-jenkins)$"},
   {"name":"MoKee", "url":"https://mokeedev.review/"},
   {"name":"msm7x30", "url":"https://review.msm7x30.org/"},
   {"name":"Named Data", "url":"https://gerrit.named-data.net/", "ci_accounts": "^(jenkins|ndn-cxx-code-style)$"},
