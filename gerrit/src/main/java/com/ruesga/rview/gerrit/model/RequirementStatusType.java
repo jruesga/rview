@@ -15,12 +15,6 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.Since;
-
-public enum ChangeOptions {
-    LABELS, DETAILED_LABELS, CURRENT_REVISION, ALL_REVISIONS, DOWNLOAD_COMMANDS, CURRENT_COMMIT,
-    ALL_COMMITS, CURRENT_FILES, ALL_FILES, DETAILED_ACCOUNTS, @Since(2.13) REVIEWER_UPDATES,
-    MESSAGES, CURRENT_ACTIONS, CHANGE_ACTIONS, REVIEWED, @Since(2.16) SKIP_MERGEABLE,
-    WEB_LINKS, CHECK, @Since(2.12) COMMIT_FOOTERS, @Since(2.12) PUSH_CERTIFICATES,
-    @Since(2.15) TRACKING_IDS
+public enum RequirementStatusType {
+    OK, NOT_READY, RULE_ERROR
 }

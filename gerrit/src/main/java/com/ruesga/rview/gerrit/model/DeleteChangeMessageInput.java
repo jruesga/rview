@@ -15,12 +15,14 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.Since;
+import com.google.gson.annotations.SerializedName;
 
-public enum ChangeOptions {
-    LABELS, DETAILED_LABELS, CURRENT_REVISION, ALL_REVISIONS, DOWNLOAD_COMMANDS, CURRENT_COMMIT,
-    ALL_COMMITS, CURRENT_FILES, ALL_FILES, DETAILED_ACCOUNTS, @Since(2.13) REVIEWER_UPDATES,
-    MESSAGES, CURRENT_ACTIONS, CHANGE_ACTIONS, REVIEWED, @Since(2.16) SKIP_MERGEABLE,
-    WEB_LINKS, CHECK, @Since(2.12) COMMIT_FOOTERS, @Since(2.12) PUSH_CERTIFICATES,
-    @Since(2.15) TRACKING_IDS
+import androidx.annotation.Nullable;
+
+/**
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-change-message-input"
+ */
+public class DeleteChangeMessageInput {
+    @Nullable @SerializedName("reason") public String reason;
 }
+

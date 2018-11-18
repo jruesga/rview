@@ -1194,6 +1194,24 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<List<ChangeMessageInfo>> getChangeMessages(@NonNull String changeId) {
+        return withVersionRequestCheck(mService.getChangeMessages(changeId));
+    }
+
+    @Override
+    public Observable<ChangeMessageInfo> getChangeMessage(
+            @NonNull String changeId, @NonNull String messageId) {
+        return withVersionRequestCheck(mService.getChangeMessage(changeId, messageId));
+    }
+
+    @Override
+    public Observable<ChangeMessageInfo> deleteChangeMessage(
+            @NonNull String changeId, @NonNull String messageId,
+            @NonNull DeleteChangeMessageInput input) {
+        return withVersionRequestCheck(mService.deleteChangeMessage(changeId, messageId, input));
+    }
+
+    @Override
     public Observable<EditInfo> getChangeEdit(@NonNull String changeId,
             @Nullable Option list, @Nullable String base, @Nullable Option downloadCommands) {
         return withVersionRequestCheck(mService.getChangeEdit(
@@ -1610,7 +1628,7 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<ChangeInfo> cherryPickChangeRevision(@NonNull String changeId,
+    public Observable<CherryPickChangeInfo> cherryPickChangeRevision(@NonNull String changeId,
             @NonNull String revisionId, @NonNull CherryPickInput input) {
         return withVersionRequestCheck(
                 mService.cherryPickChangeRevision(changeId, revisionId, input));

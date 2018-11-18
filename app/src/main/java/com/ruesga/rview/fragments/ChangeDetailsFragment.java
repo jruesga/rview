@@ -74,6 +74,7 @@ import com.ruesga.rview.gerrit.model.ChangeInput;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
 import com.ruesga.rview.gerrit.model.ChangeOptions;
 import com.ruesga.rview.gerrit.model.ChangeStatus;
+import com.ruesga.rview.gerrit.model.CherryPickChangeInfo;
 import com.ruesga.rview.gerrit.model.CherryPickInput;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.ConfigInfo;
@@ -1374,7 +1375,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 return;
             }
 
-            if (value instanceof ChangeInfo) {
+            if (value instanceof ChangeInfo || value instanceof CherryPickChangeInfo) {
                 // Move to the new change
                 ActivityHelper.openChangeDetails(getContext(), (ChangeInfo) value, false, false);
                 return;
@@ -3286,7 +3287,7 @@ public class ChangeDetailsFragment extends Fragment implements
         return api.createChange(change).blockingFirst();
     }
 
-    private ChangeInfo performCherryPickChange(GerritApi api, String branch, String msg) {
+    private CherryPickChangeInfo performCherryPickChange(GerritApi api, String branch, String msg) {
         String changeId = String.valueOf(mResponse.mChange.legacyChangeId);
         CherryPickInput input = new CherryPickInput();
         input.destination = branch;

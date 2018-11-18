@@ -826,6 +826,31 @@ interface GerritRestApi {
             @NonNull @Body HashtagsInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-change-messages"
+     */
+    @GET("changes/{change-id}/messages")
+    Observable<List<ChangeMessageInfo>> getChangeMessages(
+            @NonNull @Path("change-id") String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-message"
+     */
+    @GET("changes/{change-id}/messages/{change-message-id}")
+    Observable<ChangeMessageInfo> getChangeMessage(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("change-message-id") String messageId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-change-message"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("changes/{change-id}/messages/{change-message-id}")
+    Observable<ChangeMessageInfo> deleteChangeMessage(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Path("change-message-id") String messageId,
+            @NonNull @Body DeleteChangeMessageInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-edit-detail"
      */
     @GET("changes/{change-id}/edit")
@@ -1342,7 +1367,7 @@ interface GerritRestApi {
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("changes/{change-id}/revisions/{revision-id}/cherrypick")
-    Observable<ChangeInfo> cherryPickChangeRevision(
+    Observable<CherryPickChangeInfo> cherryPickChangeRevision(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId,
             @NonNull @Body CherryPickInput input);

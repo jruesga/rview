@@ -770,6 +770,25 @@ public interface GerritApi {
             @NonNull HashtagsInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-change-messages"
+     */
+    Observable<List<ChangeMessageInfo>> getChangeMessages(@NonNull String changeId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change-message"
+     */
+    Observable<ChangeMessageInfo> getChangeMessage(
+            @NonNull String changeId, @NonNull String messageId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#delete-change-message"
+     */
+    Observable<ChangeMessageInfo> deleteChangeMessage(
+            @NonNull String changeId,
+            @NonNull String messageId,
+            @NonNull DeleteChangeMessageInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-edit-detail"
      */
     Observable<EditInfo> getChangeEdit(
@@ -1212,7 +1231,7 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#cherry-pick"
      */
-    Observable<ChangeInfo> cherryPickChangeRevision(
+    Observable<CherryPickChangeInfo> cherryPickChangeRevision(
             @NonNull String changeId,
             @NonNull String revisionId,
             @NonNull CherryPickInput input);
