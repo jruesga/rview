@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jorge Ruesga
+ * Copyright (C) 2016 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
+import com.ruesga.rview.gerrit.filter.ChangeQuery;
+
+import androidx.annotation.Nullable;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#consistency-check-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#delete-draft-comments-input"
  */
-public class ConsistencyCheckInfo {
-    @SerializedName("check_accounts_result") public CheckAccountsResultInfo checkAccountsResult;
-    @SerializedName("check_account_external_ids_result") public CheckAccountExternalIdsResultInfo checkAccountExternalIdsResult;
-    @SerializedName("check_groups_result") public CheckGroupsResultInfo checkGroupsResult;
+public class DeleteDraftCommentsInput {
+    @Nullable @SerializedName("query") public ChangeQuery query;
 }
+

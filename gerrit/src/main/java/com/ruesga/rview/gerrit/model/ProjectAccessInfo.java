@@ -30,5 +30,9 @@ public class ProjectAccessInfo {
     @SerializedName("owner_of") public String[] ownerOf;
     @SerializedName("can_upload") public boolean canUpload;
     @SerializedName("can_add") public boolean canAdd;
+    @SerializedName("can_add_tags") public boolean canAddTags;
     @SerializedName("config_visible") public boolean configVisible;
+    @SerializedName("grups") public Map<String, GroupInfo> groups;
+    @SerializedName("configWebLinks") public String[] configWebLinks;
+
 }

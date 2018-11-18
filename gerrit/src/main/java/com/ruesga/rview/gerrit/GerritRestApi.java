@@ -58,7 +58,6 @@ interface GerritRestApi {
             @NonNull @Query("project") String[] names);
 
 
-
     // ===============================
     // Gerrit accounts endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html"
@@ -429,6 +428,39 @@ interface GerritRestApi {
             @NonNull @Body List<String> externalIds);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
+     */
+    @GET("accounts/{account-id}/agreements")
+    Observable<List<ContributorAgreementInfo>> getContributorAgreements(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/agreements")
+    Observable<String> signContributorAgreement(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body ContributorAgreementInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#index-account"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/index")
+    Observable<Void> indexAccount(
+            @NonNull @Path("account-id") String accountId);
+
+    /**
+     * @link "https:/gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#_delete_draft_comments"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("accounts/{account-id}/drafts:delete")
+    Observable<List<DeletedDraftCommentInfo>> deleteAccountDraftComments(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body DeleteDraftCommentsInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-changes-with-default-star"
      */
     @GET("accounts/{account-id}/starred.changes")
@@ -475,31 +507,6 @@ interface GerritRestApi {
             @NonNull @Path("account-id") String accountId,
             @NonNull @Path("change-id") String changeId,
             @NonNull @Body StarInput input);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
-     */
-    @GET("accounts/{account-id}/agreements")
-    Observable<List<ContributorAgreementInfo>> getContributorAgreements(
-            @NonNull @Path("account-id") String accountId);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
-     */
-    @Headers({"Content-Type: application/json; charset=UTF-8"})
-    @PUT("accounts/{account-id}/agreements")
-    Observable<String> signContributorAgreement(
-            @NonNull @Path("account-id") String accountId,
-            @NonNull @Body ContributorAgreementInput input);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#index-account"
-     */
-    @Headers({"Content-Type: application/json; charset=UTF-8"})
-    @POST("accounts/{account-id}/index")
-    Observable<Void> indexAccount(
-            @NonNull @Path("account-id") String accountId);
-
 
 
     // ===============================
@@ -1369,7 +1376,6 @@ interface GerritRestApi {
             @NonNull @Body DeleteVoteInput input);
 
 
-
     // ===============================
     // Gerrit configuration endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html"
@@ -1393,6 +1399,13 @@ interface GerritRestApi {
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("config/server/check.consistency'")
     Observable<ConsistencyCheckInfo> checkConsistency(@NonNull @Body ConsistencyCheckInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#reload-config"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("config/server/reload'")
+    Observable<ConfigUpdateInfo> reloadServerConfig();
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#email-confirmation-input"
@@ -1491,6 +1504,19 @@ interface GerritRestApi {
     Observable<DiffPreferencesInfo> setServerDefaultDiffPreferences(
             @NonNull @Body DiffPreferencesInput input);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#get-edit-preferences"
+     */
+    @GET("config/server/preferences.edit")
+    Observable<EditPreferencesInfo> getServerDefaultEditPreferences();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#set-edit-preferences"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("config/server/preferences.edit")
+    Observable<EditPreferencesInfo> setServerDefaultEditPreferences(
+            @NonNull @Body EditPreferencesInput input);
 
 
     // ===============================
@@ -1531,6 +1557,7 @@ interface GerritRestApi {
             @NonNull @Query("query2") GroupQuery query,
             @Nullable @Query("limit") Integer count,
             @Nullable @Query("start") Integer start,
+            @Nullable @Query("ownedBy") String ownedBy,
             @Nullable @Query("o") List<GroupOptions> options);
 
     /**
@@ -1732,7 +1759,6 @@ interface GerritRestApi {
             @NonNull @Body SubgroupInput input);
 
 
-
     // ===============================
     // Gerrit plugins endpoints
     // @link "https://gerrit-review.googlesource.com/Documentation/rest-api-plugins.html"
@@ -1782,7 +1808,6 @@ interface GerritRestApi {
      */
     @POST("plugins/{plugin-id}/gerrit~reload")
     Observable<PluginInfo> reloadPlugin(@NonNull @Path("plugin-id") String pluginId);
-
 
 
     // ===============================
@@ -2158,7 +2183,6 @@ interface GerritRestApi {
     @Headers({"X-Gerrit-Unauthenticated: true"})
     @GET("Documentation/")
     Observable<List<DocResult>> findDocumentation(@NonNull @Query("q") String keyword);
-
 
 
     // ===============================

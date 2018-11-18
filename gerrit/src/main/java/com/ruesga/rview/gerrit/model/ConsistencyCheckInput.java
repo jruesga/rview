@@ -25,5 +25,7 @@ import androidx.annotation.Nullable;
 public class ConsistencyCheckInput {
     @Nullable @SerializedName("check_accounts") public CheckAccountsInput checkAccounts;
     @Nullable @SerializedName("check_account_external_ids") public CheckAccountExternalIdsInput checkAccountExternalIds;
+    @Nullable @SerializedName("check_groups") public CheckGroupsInput checkGroups;
+
 }
 

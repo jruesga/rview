@@ -18,10 +18,8 @@ package com.ruesga.rview.gerrit.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#consistency-check-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#check-groups-result-info"
  */
-public class ConsistencyCheckInfo {
-    @SerializedName("check_accounts_result") public CheckAccountsResultInfo checkAccountsResult;
-    @SerializedName("check_account_external_ids_result") public CheckAccountExternalIdsResultInfo checkAccountExternalIdsResult;
-    @SerializedName("check_groups_result") public CheckGroupsResultInfo checkGroupsResult;
+public class CheckGroupsResultInfo {
+    @SerializedName("problems") public ConsistencyProblemInfo[] problems;
 }

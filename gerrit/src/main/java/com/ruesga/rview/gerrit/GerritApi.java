@@ -40,7 +40,7 @@ public interface GerritApi {
     /**
      * The current supported Gerrit api version.
      */
-    double API_VERSION = 2.15;
+    double API_VERSION = 2.16;
 
     /**
      * The current minimum supported Gerrit api version.
@@ -447,6 +447,31 @@ public interface GerritApi {
             @NonNull List<String> externalIds);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
+     */
+    Observable<List<ContributorAgreementInfo>> getContributorAgreements(
+            @NonNull String accountId);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
+     */
+    Observable<String> signContributorAgreement(
+            @NonNull String accountId,
+            @NonNull ContributorAgreementInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#index-account"
+     */
+    Observable<Void> indexAccount(
+            @NonNull String accountId);
+
+    /**
+     * @link "https:/gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#_delete_draft_comments"
+     */
+    Observable<List<DeletedDraftCommentInfo>> deleteAccountDraftComments(
+            @NonNull String accountId, @NonNull DeleteDraftCommentsInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-changes-with-default-star"
      */
     Observable<List<ChangeInfo>> getDefaultStarredChanges(
@@ -486,25 +511,6 @@ public interface GerritApi {
             @NonNull String accountId,
             @NonNull String changeId,
             @NonNull StarInput input);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
-     */
-    Observable<List<ContributorAgreementInfo>> getContributorAgreements(
-            @NonNull String accountId);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#list-contributor-agreements"
-     */
-    Observable<String> signContributorAgreement(
-            @NonNull String accountId,
-            @NonNull ContributorAgreementInput input);
-
-    /**
-     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#index-account"
-     */
-    Observable<Void> indexAccount(
-            @NonNull String accountId);
 
 
 
@@ -1259,6 +1265,11 @@ public interface GerritApi {
     Observable<ConsistencyCheckInfo> checkConsistency(@NonNull ConsistencyCheckInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#reload-config"
+     */
+    Observable<ConfigUpdateInfo> reloadServerConfig();
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#email-confirmation-input"
      */
     Observable<Void> confirmEmail(@NonNull EmailConfirmationInput input);
@@ -1336,6 +1347,17 @@ public interface GerritApi {
     Observable<DiffPreferencesInfo> setServerDefaultDiffPreferences(
             @NonNull DiffPreferencesInput input);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#get-edit-preferences"
+     */
+    Observable<EditPreferencesInfo> getServerDefaultEditPreferences();
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#set-edit-preferences"
+     */
+    Observable<EditPreferencesInfo> setServerDefaultEditPreferences(
+            @NonNull EditPreferencesInput input);
+
 
 
     // ===============================
@@ -1373,6 +1395,7 @@ public interface GerritApi {
             @NonNull GroupQuery query,
             @Nullable Integer count,
             @Nullable Integer start,
+            @Nullable String ownedBy,
             @Nullable List<GroupOptions> options);
 
     /**

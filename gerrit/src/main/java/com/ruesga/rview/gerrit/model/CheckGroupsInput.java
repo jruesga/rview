@@ -17,11 +17,11 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import androidx.annotation.Nullable;
+
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#consistency-check-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#check-groups-input"
  */
-public class ConsistencyCheckInfo {
-    @SerializedName("check_accounts_result") public CheckAccountsResultInfo checkAccountsResult;
-    @SerializedName("check_account_external_ids_result") public CheckAccountExternalIdsResultInfo checkAccountExternalIdsResult;
-    @SerializedName("check_groups_result") public CheckGroupsResultInfo checkGroupsResult;
+public class CheckGroupsInput {
 }
+

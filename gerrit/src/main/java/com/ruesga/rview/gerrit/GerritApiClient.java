@@ -277,13 +277,13 @@ class GerritApiClient implements GerritApi {
         return response;
     }
 
-    private boolean login(Interceptor.Chain chain, Authorization auth) throws IOException {
+    private boolean login(Interceptor.Chain chain, Authorization auth) {
         // Clear all cookies before try to login
         mCookieManager.clear();
         return basicAuthLogin(chain) || formAuthLogin(chain, auth);
     }
 
-    private boolean basicAuthLogin(Interceptor.Chain chain) throws IOException {
+    private boolean basicAuthLogin(Interceptor.Chain chain) {
         try {
             Request original = chain.request();
             Request.Builder requestBuilder =
@@ -305,7 +305,7 @@ class GerritApiClient implements GerritApi {
         return false;
     }
 
-    private boolean formAuthLogin(Interceptor.Chain chain, Authorization auth) throws IOException {
+    private boolean formAuthLogin(Interceptor.Chain chain, Authorization auth) {
         try {
             RequestBody requestBody = new FormBody.Builder()
                     .add("username", auth.mUsername)
@@ -439,7 +439,6 @@ class GerritApiClient implements GerritApi {
         }
         return filter;
     }
-
 
     // ===============================
     // Mediator methods
@@ -873,6 +872,29 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<List<ContributorAgreementInfo>> getContributorAgreements(
+            @NonNull String accountId) {
+        return withVersionRequestCheck(mService.getContributorAgreements(accountId));
+    }
+
+    @Override
+    public Observable<String> signContributorAgreement(
+            @NonNull String accountId, @NonNull ContributorAgreementInput input) {
+        return withVersionRequestCheck(mService.signContributorAgreement(accountId, input));
+    }
+
+    @Override
+    public Observable<Void> indexAccount(@NonNull String accountId) {
+        return withVersionRequestCheck(withEmptyObservable(mService.indexAccount(accountId)));
+    }
+
+    @Override
+    public Observable<List<DeletedDraftCommentInfo>> deleteAccountDraftComments(
+            @NonNull String accountId, @NonNull DeleteDraftCommentsInput input) {
+        return withVersionRequestCheck(mService.deleteAccountDraftComments(accountId, input));
+    }
+
+    @Override
     public Observable<List<ChangeInfo>> getDefaultStarredChanges(@NonNull String accountId) {
         return withVersionRequestCheck(mService.getDefaultStarredChanges(accountId));
     }
@@ -908,23 +930,6 @@ class GerritApiClient implements GerritApi {
     public Observable<List<String>> updateStarLabelsFromChange(@NonNull String accountId,
             @NonNull String changeId, @NonNull StarInput input) {
         return withVersionRequestCheck(mService.updateStarLabelsFromChange(accountId, changeId, input));
-    }
-
-    @Override
-    public Observable<List<ContributorAgreementInfo>> getContributorAgreements(
-            @NonNull String accountId) {
-        return withVersionRequestCheck(mService.getContributorAgreements(accountId));
-    }
-
-    @Override
-    public Observable<String> signContributorAgreement(
-            @NonNull String accountId, @NonNull ContributorAgreementInput input) {
-        return withVersionRequestCheck(mService.signContributorAgreement(accountId, input));
-    }
-
-    @Override
-    public Observable<Void> indexAccount(@NonNull String accountId) {
-        return withVersionRequestCheck(withEmptyObservable(mService.indexAccount(accountId)));
     }
 
 
@@ -1657,6 +1662,11 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<ConfigUpdateInfo> reloadServerConfig() {
+        return withVersionRequestCheck(mService.reloadServerConfig());
+    }
+
+    @Override
     public Observable<Void> confirmEmail(@NonNull EmailConfirmationInput input) {
         return withVersionRequestCheck(
                 withEmptyObservable(
@@ -1741,6 +1751,17 @@ class GerritApiClient implements GerritApi {
         return withVersionRequestCheck(mService.setServerDefaultDiffPreferences(input));
     }
 
+    @Override
+    public Observable<EditPreferencesInfo> getServerDefaultEditPreferences() {
+        return withVersionRequestCheck(mService.getServerDefaultEditPreferences());
+    }
+
+    @Override
+    public Observable<EditPreferencesInfo> setServerDefaultEditPreferences(
+            @NonNull EditPreferencesInput input) {
+        return withVersionRequestCheck(mService.setServerDefaultEditPreferences(input));
+    }
+
 
 
     // ===============================
@@ -1771,9 +1792,10 @@ class GerritApiClient implements GerritApi {
     @Override
     public Observable<List<GroupInfo>> getGroups(
             @NonNull GroupQuery query, @Nullable Integer count, @Nullable Integer start,
-            @Nullable List<GroupOptions> options) {
+            @Nullable String ownedBy, @Nullable List<GroupOptions> options) {
         return withVersionRequestCheck(SafeObservable.fromNullCallable(
-                () -> mService.getGroups(query, count, start, filterByVersion(options))
+                () -> mService.getGroups(
+                            query, count, start, resolve(ownedBy, 2.16d), filterByVersion(options))
                         .blockingFirst()));
     }
 

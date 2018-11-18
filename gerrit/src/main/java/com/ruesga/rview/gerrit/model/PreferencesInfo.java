@@ -42,5 +42,6 @@ public class PreferencesInfo {
     @SerializedName("url_aliases") public Map<String, String> urlAliases;
     @SerializedName("email_strategy") public EmailStrategy emailStrategy;
     @SerializedName("default_base_for_merges") public DefaultBaseForMergesStrategy defaultBaseForMerges;
-    @SerializedName("publish_comments_on_push") public Boolean publishCommentsOnPush;
+    @SerializedName("publish_comments_on_push") public boolean publishCommentsOnPush;
+    @SerializedName("work_in_progress_by_default") public boolean workInProgressByDefault;
 }
