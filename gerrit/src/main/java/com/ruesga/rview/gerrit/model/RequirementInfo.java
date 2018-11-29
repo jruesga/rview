@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#requirement"
  */
-public class RequirementInfo extends ChangeInfo {
+public class RequirementInfo {
     @SerializedName("status") public RequirementStatusType status;
     @SerializedName("fallbackText") public String fallbackText;
     @SerializedName("type") public String type;
