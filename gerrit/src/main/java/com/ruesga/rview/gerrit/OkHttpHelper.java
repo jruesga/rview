@@ -23,14 +23,15 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 
 public class OkHttpHelper {
@@ -70,7 +71,7 @@ public class OkHttpHelper {
             return configureSocket(socket);
         }
 
-        private Socket configureSocket(Socket socket) throws IOException {
+        private Socket configureSocket(Socket socket) {
             try {
                 TrafficStats.setThreadStatsTag(
                         Math.max(1, Math.min(0xFFFFFEFF, Thread.currentThread().hashCode())));
@@ -86,12 +87,12 @@ public class OkHttpHelper {
     private static final X509TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
         @Override
         public void checkClientTrusted(
-                X509Certificate[] x509Certificates, String authType) throws CertificateException {
+                X509Certificate[] x509Certificates, String authType) {
         }
 
         @Override
         public void checkServerTrusted(
-                X509Certificate[] x509Certificates, String authType) throws CertificateException {
+                X509Certificate[] x509Certificates, String authType) {
         }
 
         @Override
@@ -107,7 +108,9 @@ public class OkHttpHelper {
         if (sDelegatingSocketFactory == null) {
             sDelegatingSocketFactory = new DelegatingSocketFactory(SocketFactory.getDefault());
         }
-        return new OkHttpClient.Builder().socketFactory(sDelegatingSocketFactory);
+        return new OkHttpClient.Builder()
+                .connectionSpecs(Collections.singletonList(ConnectionSpec.RESTRICTED_TLS))
+                .socketFactory(sDelegatingSocketFactory);
     }
 
     @SuppressLint("BadHostnameVerifier")
@@ -120,6 +123,7 @@ public class OkHttpHelper {
                 sSSLSocketFactory = sslContext.getSocketFactory();
             }
 
+            builder.connectionSpecs(Collections.singletonList(ConnectionSpec.MODERN_TLS));
             builder.sslSocketFactory(sSSLSocketFactory, TRUST_ALL_CERTS);
             builder.hostnameVerifier((hostname, session) -> hostname != null);
         } catch (NoSuchAlgorithmException | KeyManagementException e) {

@@ -20,9 +20,11 @@ import android.net.TrafficStats;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Collections;
 
 import javax.net.SocketFactory;
 
+import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 
 public class OkHttpHelper {
@@ -62,7 +64,7 @@ public class OkHttpHelper {
             return configureSocket(socket);
         }
 
-        private Socket configureSocket(Socket socket) throws IOException {
+        private Socket configureSocket(Socket socket) {
             try {
                 TrafficStats.setThreadStatsTag(
                         Math.max(1, Math.min(0xFFFFFEFF, Thread.currentThread().hashCode())));
@@ -80,7 +82,9 @@ public class OkHttpHelper {
         if (sDelegatingSocketFactory == null) {
             sDelegatingSocketFactory = new DelegatingSocketFactory(SocketFactory.getDefault());
         }
-        return new OkHttpClient.Builder().socketFactory(sDelegatingSocketFactory);
+        return new OkHttpClient.Builder()
+                .connectionSpecs(Collections.singletonList(ConnectionSpec.RESTRICTED_TLS))
+                .socketFactory(sDelegatingSocketFactory);
     }
 
 }
