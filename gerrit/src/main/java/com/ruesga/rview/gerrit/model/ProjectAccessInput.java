@@ -17,7 +17,6 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
@@ -26,8 +25,8 @@ import androidx.annotation.Nullable;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#project-access-input"
  */
 public class ProjectAccessInput {
-    @Nullable @SerializedName("remove") public List<Map<String, AccessSectionInfo>> remove;
-    @Nullable @SerializedName("add") public List<Map<String, AccessSectionInfo>> add;
+    @Nullable @SerializedName("remove") public Map<String, AccessSectionInfo> remove;
+    @Nullable @SerializedName("add") public Map<String, AccessSectionInfo> add;
     @Nullable @SerializedName("message") public String message;
     @Nullable @SerializedName("parent") public String parent;
 }
