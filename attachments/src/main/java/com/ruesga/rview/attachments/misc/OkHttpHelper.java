@@ -16,11 +16,13 @@
 package com.ruesga.rview.attachments.misc;
 
 import android.net.TrafficStats;
+import android.os.Build;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Collections;
+import java.util.List;
 
 import javax.net.SocketFactory;
 
@@ -83,8 +85,18 @@ public class OkHttpHelper {
             sDelegatingSocketFactory = new DelegatingSocketFactory(SocketFactory.getDefault());
         }
         return new OkHttpClient.Builder()
-                .connectionSpecs(Collections.singletonList(ConnectionSpec.RESTRICTED_TLS))
+                .connectionSpecs(createConnectionSpecs())
                 .socketFactory(sDelegatingSocketFactory);
     }
 
+    private static List<ConnectionSpec> createConnectionSpecs() {
+        ConnectionSpec.Builder spec = new ConnectionSpec.Builder(ConnectionSpec.RESTRICTED_TLS);
+        if (Build.VERSION.RELEASE.equals("7.0")) {
+            // There is a bug in Android 7.0 (https://issuetracker.google.com/issues/37122132)
+            // that only supports the prime256v1 elliptic curve. So in just release the
+            // cipher requirements if we are in that case.
+            spec.allEnabledCipherSuites();
+        }
+        return Collections.singletonList(spec.build());
+    }
 }

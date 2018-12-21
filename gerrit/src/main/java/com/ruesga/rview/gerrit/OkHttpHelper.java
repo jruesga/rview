@@ -17,6 +17,7 @@ package com.ruesga.rview.gerrit;
 
 import android.annotation.SuppressLint;
 import android.net.TrafficStats;
+import android.os.Build;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -25,6 +26,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
+import java.util.List;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -109,7 +111,7 @@ public class OkHttpHelper {
             sDelegatingSocketFactory = new DelegatingSocketFactory(SocketFactory.getDefault());
         }
         return new OkHttpClient.Builder()
-                .connectionSpecs(Collections.singletonList(ConnectionSpec.RESTRICTED_TLS))
+                .connectionSpecs(createConnectionSpecs(ConnectionSpec.RESTRICTED_TLS, false))
                 .socketFactory(sDelegatingSocketFactory);
     }
 
@@ -123,13 +125,25 @@ public class OkHttpHelper {
                 sSSLSocketFactory = sslContext.getSocketFactory();
             }
 
-            builder.connectionSpecs(Collections.singletonList(ConnectionSpec.MODERN_TLS));
+            builder.connectionSpecs(createConnectionSpecs(ConnectionSpec.MODERN_TLS, true));
             builder.sslSocketFactory(sSSLSocketFactory, TRUST_ALL_CERTS);
             builder.hostnameVerifier((hostname, session) -> hostname != null);
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             // Ignore
         }
         return builder;
+    }
+
+    private static List<ConnectionSpec> createConnectionSpecs(ConnectionSpec tlsSpec,
+            boolean forceAllCipherSuites) {
+        ConnectionSpec.Builder spec = new ConnectionSpec.Builder(tlsSpec);
+        if (Build.VERSION.RELEASE.equals("7.0") || forceAllCipherSuites) {
+            // There is a bug in Android 7.0 (https://issuetracker.google.com/issues/37122132)
+            // that only supports the prime256v1 elliptic curve. So in just release the
+            // cipher requirements if we are in that case.
+            spec.allEnabledCipherSuites();
+        }
+        return Collections.singletonList(spec.build());
     }
 
 }
