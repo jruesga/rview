@@ -105,6 +105,7 @@
     <string name="exception_data_not_available">Data is not available yet</string>
     <string name="exception_no_network_available">No network connectivity detected</string>
     <string name="exception_server_cannot_be_reached">Server instance cannot be reached</string>
+    <string name="exception_server_ssl_issue">Server reports some SSL issue</string>
     <string name="exception_unsupported_guess_mode">Server instance doesn\'t support guest accounts</string>
     <string name="exception_invalid_user_password">Invalid user or password</string>
     <string name="exception_invalid_request">Invalid request</string>

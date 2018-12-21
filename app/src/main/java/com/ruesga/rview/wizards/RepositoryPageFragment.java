@@ -63,6 +63,7 @@ import androidx.databinding.DataBindingUtil;
 import me.saket.bettermovementmethod.BetterLinkMovementMethod;
 
 import static com.ruesga.rview.misc.ExceptionHelper.isException;
+import static com.ruesga.rview.misc.ExceptionHelper.isSSLException;
 import static com.ruesga.rview.misc.ExceptionHelper.isServerUnavailableException;
 
 public class RepositoryPageFragment extends WizardPageFragment {
@@ -325,6 +326,10 @@ public class RepositoryPageFragment extends WizardPageFragment {
                     //noinspection ConstantConditions
                     ((WizardActivity) getActivity()).showMessage(context.getString(
                             R.string.exception_server_cannot_be_reached));
+                } else if (isSSLException(cause)) {
+                    //noinspection ConstantConditions
+                    ((WizardActivity) getActivity()).showMessage(context.getString(
+                            R.string.exception_server_ssl_issue));
                 } else {
                     // Just ignore it if we don't have a valid context
                     if (!(cause instanceof NoActivityAttachedException)) {

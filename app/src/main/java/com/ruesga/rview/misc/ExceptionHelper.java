@@ -48,6 +48,14 @@ public class ExceptionHelper {
         return cause.getCause() != null && isException(cause.getCause(), c);
     }
 
+    @SuppressWarnings("SimplifiableIfStatement")
+    public static <T extends Throwable> boolean isExceptionPkg(Throwable cause, String pkg) {
+        if (cause.getClass().getName().startsWith(pkg)) {
+            return true;
+        }
+        return cause.getCause() != null && isExceptionPkg(cause.getCause(), pkg);
+    }
+
     public static <T extends Throwable> Throwable getCause(Throwable cause, Class<T> c) {
         if (c.isInstance(cause)) {
             return cause;
@@ -162,6 +170,10 @@ public class ExceptionHelper {
                 || isException(cause, NoRouteToHostException.class)
                 || isException(cause, PortUnreachableException.class)
                 || isException(cause, SocketTimeoutException.class));
+    }
+
+    public static boolean isSSLException(Throwable cause) {
+        return isExceptionPkg(cause, "javax.net.ssl");
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "ConstantConditions", "deprecation"})
