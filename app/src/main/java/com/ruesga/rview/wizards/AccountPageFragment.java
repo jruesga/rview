@@ -476,8 +476,14 @@ public class AccountPageFragment extends WizardPageFragment {
                                     R.string.exception_invalid_endpoint));
                         } else {
                             Log.e(TAG, "Invalid user or password", cause);
-                            mBinding.accountUsername.setError(context.getString(
-                                    R.string.exception_invalid_user_password));
+                            if (!mModel.authenticatedAccess) {
+                                //noinspection ConstantConditions
+                                ((WizardActivity) getActivity()).showMessage(context.getString(
+                                        R.string.exception_server_connection_issue));
+                            } else {
+                                mBinding.accountUsername.setError(context.getString(
+                                        R.string.exception_invalid_user_password));
+                            }
                         }
                     }
                 }
