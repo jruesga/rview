@@ -25,6 +25,9 @@ import com.ruesga.rview.gerrit.model.ServerVersion;
 import net.iharder.Base64;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,6 +37,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(RobolectricTestRunner.class)
+@Config(sdk=Config.NEWEST_SDK, manifest = Config.NONE)
 public class GerritApiClientTest {
 
     private static final String ENDPOINT = "https://gerrit-review.googlesource.com/";
