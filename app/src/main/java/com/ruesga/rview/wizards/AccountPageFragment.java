@@ -461,6 +461,7 @@ public class AccountPageFragment extends WizardPageFragment {
                         //noinspection ConstantConditions
                         ((WizardActivity) getActivity()).showMessage(context.getString(
                                 R.string.exception_server_ssl_issue));
+                        Log.e(TAG, "Server reports some SSL issue", cause);
                     } else {
                         if (!mModel.authenticatedAccess &&
                                 ExceptionHelper.isAuthenticationException(cause)) {

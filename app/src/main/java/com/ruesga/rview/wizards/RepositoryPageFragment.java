@@ -330,6 +330,7 @@ public class RepositoryPageFragment extends WizardPageFragment {
                     //noinspection ConstantConditions
                     ((WizardActivity) getActivity()).showMessage(context.getString(
                             R.string.exception_server_ssl_issue));
+                    Log.e(TAG, "Server reports some SSL issue", cause);
                 } else {
                     // Just ignore it if we don't have a valid context
                     if (!(cause instanceof NoActivityAttachedException)) {
