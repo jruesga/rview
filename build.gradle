@@ -129,6 +129,8 @@ subprojects {
                     exclude 'META-INF/rxjava.properties'
                 }
 
+                testOptions.unitTests.includeAndroidResources = true
+
                 testOptions {
                     unitTests.all {
                         testLogging {
