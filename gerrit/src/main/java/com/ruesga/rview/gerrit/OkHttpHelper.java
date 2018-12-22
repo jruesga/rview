@@ -144,7 +144,7 @@ public class OkHttpHelper {
             // cipher requirements if we are in that case.
             spec.allEnabledCipherSuites();
         }
-        return Arrays.asList(ConnectionSpec.CLEARTEXT, spec.build());
+        return Arrays.asList(spec.build(), ConnectionSpec.CLEARTEXT);
     }
 
 }
