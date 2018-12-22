@@ -25,6 +25,7 @@ import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -134,16 +135,16 @@ public class OkHttpHelper {
         return builder;
     }
 
-    private static List<ConnectionSpec> createConnectionSpecs(ConnectionSpec tlsSpec,
+    private static List<ConnectionSpec> createConnectionSpecs(ConnectionSpec specs,
             boolean forceAllCipherSuites) {
-        ConnectionSpec.Builder spec = new ConnectionSpec.Builder(tlsSpec);
+        ConnectionSpec.Builder spec = new ConnectionSpec.Builder(specs);
         if (Build.VERSION.RELEASE.equals("7.0") || forceAllCipherSuites) {
             // There is a bug in Android 7.0 (https://issuetracker.google.com/issues/37122132)
             // that only supports the prime256v1 elliptic curve. So in just release the
             // cipher requirements if we are in that case.
             spec.allEnabledCipherSuites();
         }
-        return Collections.singletonList(spec.build());
+        return Arrays.asList(ConnectionSpec.CLEARTEXT, spec.build());
     }
 
 }
