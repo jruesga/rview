@@ -70,6 +70,7 @@
   {"name":"Onap", "url":"https://gerrit.onap.org/r/", "ci_accounts": "^(ONAP Jobbuilder)$"},
   {"name":"ONOS", "url":"https://gerrit.onosproject.org/", "ci_accounts": "^(Jenkins)$"},
   {"name":"OpenBMC", "url":"https://gerrit.openbmc-project.xyz/", "ci_accounts": "^(Jenkins)$"},
+  {"name":"OpenOCD", "url":"http://openocd.zylin.com/", "ci_accounts": "^(jenkins)$"},
   {"name":"OpenContrail", "url":"https://review.opencontrail.org/", "ci_accounts": "^(Zuul.*|Contrail Windows CI|opencontrail-admin)$"},
   {"name":"OpenCord", "url":"https://gerrit.opencord.org/", "ci_accounts": "^(Jenkins .*)$"},
   {"name":"OpenDaylight", "url":"https://git.opendaylight.org/gerrit/", "ci_accounts": "^(jenkins-releng)$"},
