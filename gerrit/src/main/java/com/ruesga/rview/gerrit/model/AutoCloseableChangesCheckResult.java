@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,12 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#tag-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#auto_closeable_changes_check_result"
  */
-public class TagInfo {
-    @SerializedName("ref") public String ref;
-    @SerializedName("revision") public String revision;
-    @SerializedName("object") public String object;
-    @SerializedName("message") public String message;
-    @SerializedName("tagger") public GitPersonalInfo tagger;
-    @SerializedName("created") public Date created;
-    @SerializedName("can_delete") public boolean canDelete;
-    @SerializedName("web_links") public WebLinkInfo[] webLinks;
+public class AutoCloseableChangesCheckResult {
+    @SerializedName("auto_closeable_changes") public Map<String, List<ChangeInfo>> autoCloseableChanges;
 }
-

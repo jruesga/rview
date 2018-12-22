@@ -41,5 +41,6 @@ public class ConfigInfo {
     @SerializedName("theme") public ThemeInfo theme;
     @SerializedName("plugin_config") public Map<String, ConfigParameterInfo> pluginConfig;
     @SerializedName("actions") public Map<String, ActionInfo> actions;
+    @SerializedName("reject_empty_commit") public InheritBooleanInfo rejectEmptyCommit;
 }
 

@@ -31,6 +31,7 @@ import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.GroupQuery;
 import com.ruesga.rview.gerrit.filter.Option;
+import com.ruesga.rview.gerrit.filter.ProjectQuery;
 import com.ruesga.rview.gerrit.model.*;
 
 import java.io.IOException;
@@ -2027,10 +2028,23 @@ class GerritApiClient implements GerritApi {
     public Observable<Map<String, ProjectInfo>> getProjects(@Nullable Integer count,
         @Nullable Integer start, @Nullable String prefix, @Nullable String regexp,
         @Nullable String match, @Nullable Option showDescription, @Nullable Option showTree,
-        @Nullable String branch, @Nullable ProjectType type, @Nullable String group) {
+        @Nullable String branch, @Nullable ProjectType type, @Nullable String group,
+        @Nullable ProjectStatus state) {
         return withVersionRequestCheck(
                 mService.getProjects(count, start, prefix, regexp, match,
-                        showDescription, showTree, branch, type, group));
+                        showDescription, showTree, branch, type, group, state));
+    }
+
+    @Override
+    public Observable<List<ProjectInfo>> queryProjects(
+        @NonNull ProjectQuery query, @Nullable Integer count, @Nullable Integer start,
+        @Nullable String prefix, @Nullable String regexp, @Nullable String match,
+        @Nullable Option showDescription, @Nullable Option showTree,
+        @Nullable String branch, @Nullable ProjectType type, @Nullable String group,
+        @Nullable ProjectStatus state) {
+        return withVersionRequestCheck(
+                mService.queryProjects(query, count, start, prefix, regexp, match,
+                        showDescription, showTree, branch, type, group, state));
     }
 
     @Override
@@ -2132,6 +2146,25 @@ class GerritApiClient implements GerritApi {
     public Observable<AccessCheckInfo> checkProjectAccessRights(
             @NonNull String projectName, @NonNull AccessCheckInput input) {
         return withVersionRequestCheck(mService.checkProjectAccessRights(projectName, input));
+    }
+
+    @Override
+    public Observable<Void> indexProject(
+            @NonNull String projectName, @NonNull IndexProjectInput input) {
+        return withVersionRequestCheck(
+                withEmptyObservable(mService.indexProject(projectName, input)));
+    }
+
+    @Override
+    public Observable<Void> indexProjectChanges(@NonNull String projectName) {
+        return withVersionRequestCheck(
+                withEmptyObservable(mService.indexProjectChanges(projectName)));
+    }
+
+    @Override
+    public Observable<CheckProjectResultInfo> checkProjectConsistency(
+            @NonNull String projectName, @NonNull CheckProjectInput input) {
+        return withVersionRequestCheck(mService.checkProjectConsistency(projectName, input));
     }
 
     @Override
@@ -2255,10 +2288,17 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<ChangeInfo> cherryPickProjectCommit(
+    public Observable<CherryPickChangeInfo> cherryPickProjectCommit(
             @NonNull String projectName, @NonNull String commitId, @NonNull CherryPickInput input) {
         return withVersionRequestCheck(
                 mService.cherryPickProjectCommit(projectName, commitId, input));
+    }
+
+    @Override
+    public Observable<Map<String, FileInfo>> listProjectCommitFiles(
+            @NonNull String projectName, @NonNull String commitId) {
+        return withVersionRequestCheck(
+                mService.listProjectCommitFiles(projectName, commitId));
     }
 
     @Override

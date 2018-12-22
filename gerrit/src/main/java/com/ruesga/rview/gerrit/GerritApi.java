@@ -21,6 +21,7 @@ import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.GroupQuery;
 import com.ruesga.rview.gerrit.filter.Option;
+import com.ruesga.rview.gerrit.filter.ProjectQuery;
 import com.ruesga.rview.gerrit.model.*;
 
 import java.util.List;
@@ -1644,7 +1645,25 @@ public interface GerritApi {
             @Nullable Option showTree,
             @Nullable String branch,
             @Nullable ProjectType type,
-            @Nullable String group);
+            @Nullable String group,
+            @Nullable ProjectStatus state);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#query-projects"
+     */
+    Observable<List<ProjectInfo>> queryProjects(
+            @NonNull ProjectQuery query,
+            @Nullable Integer count,
+            @Nullable Integer start,
+            @Nullable String prefix,
+            @Nullable String regexp,
+            @Nullable String match,
+            @Nullable Option showDescription,
+            @Nullable Option showTree,
+            @Nullable String branch,
+            @Nullable ProjectType type,
+            @Nullable String group,
+            @Nullable ProjectStatus state);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-project"
@@ -1757,6 +1776,26 @@ public interface GerritApi {
     Observable<AccessCheckInfo> checkProjectAccessRights(
             @NonNull String projectName,
             @NonNull AccessCheckInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#index"
+     */
+    Observable<Void> indexProject(
+            @NonNull String projectName,
+            @NonNull IndexProjectInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#index.changes"
+     */
+    Observable<Void> indexProjectChanges(
+            @NonNull String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#check"
+     */
+    Observable<CheckProjectResultInfo> checkProjectConsistency(
+            @NonNull String projectName,
+            @NonNull CheckProjectInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-branches"
@@ -1891,10 +1930,17 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#cherry-pick-commit"
      */
-    Observable<ChangeInfo> cherryPickProjectCommit(
+    Observable<CherryPickChangeInfo> cherryPickProjectCommit(
             @NonNull String projectName,
             @NonNull String commitId,
             @NonNull CherryPickInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-files"
+     */
+    Observable<Map<String, FileInfo>> listProjectCommitFiles(
+            @NonNull String projectName,
+            @NonNull String commitId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-dashboards"

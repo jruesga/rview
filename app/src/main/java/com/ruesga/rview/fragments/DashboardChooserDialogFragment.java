@@ -219,7 +219,7 @@ public class DashboardChooserDialogFragment
             // Fetch projects
             final GerritApi api = ModelHelper.getGerritApi(getContext());
             Map<String, ProjectInfo> projects = api.getProjects(null, null, null, null, null,
-                    Option.INSTANCE, null, null, ProjectType.ALL, null).blockingFirst();
+                    Option.INSTANCE, null, null, ProjectType.ALL, null, null).blockingFirst();
             for (Map.Entry<String, ProjectInfo> entries : projects.entrySet()) {
                 ProjectInfo project = entries.getValue();
                 project.id = entries.getKey();

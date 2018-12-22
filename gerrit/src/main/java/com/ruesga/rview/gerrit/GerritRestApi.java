@@ -19,6 +19,7 @@ import com.ruesga.rview.gerrit.filter.AccountQuery;
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.GroupQuery;
 import com.ruesga.rview.gerrit.filter.Option;
+import com.ruesga.rview.gerrit.filter.ProjectQuery;
 import com.ruesga.rview.gerrit.model.*;
 
 import java.util.List;
@@ -1854,7 +1855,26 @@ interface GerritRestApi {
             @Nullable @Query("t") Option showTree,
             @Nullable @Query("b") String branch,
             @Nullable @Query("type") ProjectType type,
-            @Nullable @Query("has-acl-for") String group);
+            @Nullable @Query("has-acl-for") String group,
+            @Nullable @Query("s") ProjectStatus state);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#query-projects"
+     */
+    @GET("projects/")
+    Observable<List<ProjectInfo>> queryProjects(
+            @NonNull @Query("query") ProjectQuery query,
+            @Nullable @Query("n") Integer count,
+            @Nullable @Query("S") Integer start,
+            @Nullable @Query("p") String prefix,
+            @Nullable @Query("r") String regexp,
+            @Nullable @Query("m") String match,
+            @Nullable @Query("d") Option showDescription,
+            @Nullable @Query("t") Option showTree,
+            @Nullable @Query("b") String branch,
+            @Nullable @Query("type") ProjectType type,
+            @Nullable @Query("has-acl-for") String group,
+            @Nullable @Query("s") ProjectStatus state);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#get-project"
@@ -1995,6 +2015,32 @@ interface GerritRestApi {
     Observable<AccessCheckInfo> checkProjectAccessRights(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Body AccessCheckInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#index"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/index")
+    Observable<Void> indexProject(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body IndexProjectInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#index.changes"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/index.changes")
+    Observable<Void> indexProjectChanges(
+            @NonNull @Path("project-name") String projectName);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#check"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("projects/{project-name}/check")
+    Observable<CheckProjectResultInfo> checkProjectConsistency(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Body CheckProjectInput input);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-branches"
@@ -2158,10 +2204,18 @@ interface GerritRestApi {
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("projects/{project-name}/commits/{commit-id}/cherrypick")
-    Observable<ChangeInfo> cherryPickProjectCommit(
+    Observable<CherryPickChangeInfo> cherryPickProjectCommit(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Path("commit-id") String commitId,
             @NonNull @Body CherryPickInput input);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-files"
+     */
+    @GET("projects/{project-name}/commits/{commit-id}/files")
+    Observable<Map<String, FileInfo>> listProjectCommitFiles(
+            @NonNull @Path("project-name") String projectName,
+            @NonNull @Path("commit-id") String commitId);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#list-dashboards"

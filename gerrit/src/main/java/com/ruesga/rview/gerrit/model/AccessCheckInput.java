@@ -26,5 +26,6 @@ import androidx.annotation.Nullable;
 public class AccessCheckInput {
     @NonNull @SerializedName("account") public String account = "";
     @Nullable @SerializedName("ref") public String ref;
+    @Nullable @SerializedName("permission") public String permission;
 }
 

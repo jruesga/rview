@@ -654,7 +654,8 @@ public class SearchActivity extends AppCompatDelegateActivity {
                     result.mPartial = partial;
                     result.mProjects = new ArrayList<>(
                             api.getProjects(MAX_SUGGESTIONS, null, null, null, filter,
-                                null, null, null, ProjectType.ALL, null).blockingFirst().keySet());
+                                null, null, null, ProjectType.ALL, null, null)
+                                    .blockingFirst().keySet());
                     return result;
                 })
                 .subscribeOn(Schedulers.io())

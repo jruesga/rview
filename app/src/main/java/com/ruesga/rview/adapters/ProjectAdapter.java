@@ -46,7 +46,7 @@ public class ProjectAdapter extends FilterableAdapter {
         String filter = constraint.toString();
         final GerritApi api = ModelHelper.getGerritApi(getContext());
         Set<String> projects = api.getProjects(MAX_SUGGESTIONS, null, null, null, filter,
-                null, null, null, ProjectType.ALL, null).blockingFirst().keySet();
+                null, null, null, ProjectType.ALL, null, null).blockingFirst().keySet();
         List<CharSequence> results = new ArrayList<>(projects.size());
         for (String project : projects) {
             if (mProjectId == null || !mProjectId.equals(project)) {

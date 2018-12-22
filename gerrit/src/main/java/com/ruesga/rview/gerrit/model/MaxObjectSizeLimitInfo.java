@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 public class MaxObjectSizeLimitInfo {
     @Nullable @SerializedName("value") public String value;
     @Nullable @SerializedName("configured_value") public String configuredValue;
+    @Nullable @SerializedName("summary") public String summary;
     @Nullable @SerializedName("inherited_value") public String inheritedValue;
 }
 

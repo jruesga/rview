@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#project-input"
  */
 public class ProjectInput {
+    @Nullable @SerializedName("name") public String name;
     @Nullable @SerializedName("parent") public String parent;
     @Nullable @SerializedName("description") public String description;
     @Nullable @SerializedName("permissions_only") public Boolean permissionsOnly;
@@ -37,7 +38,10 @@ public class ProjectInput {
     @Nullable @SerializedName("create_new_change_for_all_not_in_target") public UseStatus createNewChangeForAllNotInTarget;
     @Nullable @SerializedName("use_content_merge") public UseStatus useContentMerge;
     @Nullable @SerializedName("require_change_id") public UseStatus requireChangeId;
+    @Nullable @SerializedName("enable_signed_push") public UseStatus enableSignedPush;
+    @Nullable @SerializedName("require_signed_push") public UseStatus requireSignedPush;
     @Nullable @SerializedName("max_object_size_limit") public SizeLimitInfo maxObjectSizeLimit;
     @Nullable @SerializedName("plugin_config_values") public Map<String, Map<String, String>> pluginConfigValues;
+    @Nullable @SerializedName("reject_empty_commit") public UseStatus rejectEmptyCommit;
 }
 
