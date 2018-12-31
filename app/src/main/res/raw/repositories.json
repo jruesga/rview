@@ -83,6 +83,7 @@
   {"name":"OSMOCOM", "url":"https://gerrit.osmocom.org/", "ci_accounts": "^(Jenkins.*)$"},
   {"name":"oVirt", "url":"https://gerrit.ovirt.org/", "ci_accounts": "^(Jenkins.*|gerrit-hooks)$"},
   {"name":"Pixel Experience", "url":"https://gerrit.pixelexperience.org/"},
+  {"name":"PixysOS", "url":"http://gerrit.pixysos.org/"},  
   {"name":"PolarSys", "url":"https://git.polarsys.org/r/", "ci_accounts": "^(Hudson CI)$"},
   {"name":"PotatoProject", "url":"https://review.potatoproject.co/"},
   {"name":"PureFusionOS", "url":"https://review.purefusionos.com/"},
