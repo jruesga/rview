@@ -188,7 +188,7 @@ def addActivityAliases(manifest) {
 def registerAddActivityAliases(task, build) {
     def buildName = build.name.toString()
     def manifestFull = new File(
-            (project.path + "/build/intermediates/merged_manifests/${buildName}/process${buildName.capitalize()}Manifest/merged/AndroidManifest.xml")
+            (project.path + "/build/intermediates/merged_manifests/${buildName}/AndroidManifest.xml")
             .replace(":", ""))
 
     def addActivityAliasesTaskName = "addActivityAliases${buildName.capitalize()}"
