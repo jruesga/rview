@@ -710,11 +710,10 @@ public class SearchActivity extends AppCompatDelegateActivity {
             return;
         }
         char c = filter.charAt(pos);
-        if (!Character.isLetter(c) && !Character.isDigit(c)) {
+        if (!Character.isLetter(c) && !Character.isDigit(c) && currentFilter.equals("-")) {
             clearSuggestions();
             return;
         }
-
 
         // Extract the token
         pos = currentFilter.indexOf(":");
@@ -805,6 +804,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 (maxVersion == null || (serverVersion != null
                         && maxVersion >= serverVersion.getVersion()))) {
                 mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":");
+                mSuggestions.add("-" + ChangeQuery.FIELDS_NAMES[i] + ":");
                 if (ChangeQuery.SUGGEST_TYPES[i] != null && ChangeQuery.SUGGEST_TYPES[i].isEnum()) {
                     for (Object o : ChangeQuery.SUGGEST_TYPES[i].getEnumConstants()) {
                         try {
@@ -829,6 +829,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
                         String val = String.valueOf(o).toLowerCase(Locale.US);
                         mSuggestions.add(ChangeQuery.FIELDS_NAMES[i] + ":" + val + " ");
+                        mSuggestions.add("-" + ChangeQuery.FIELDS_NAMES[i] + ":" + val + " ");
                     }
                 }
             }
