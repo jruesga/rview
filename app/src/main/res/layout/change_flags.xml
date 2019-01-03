@@ -21,21 +21,15 @@
 
     <data>
         <import type="android.view.View" />
-        <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
         <import type="com.ruesga.rview.gerrit.model.Features" />
         <import type="com.ruesga.rview.misc.ModelHelper" />
 
-        <!--suppress AndroidDomInspection -->
-        <variable name="actions" type="java.util.Map&lt;String, com.ruesga.rview.gerrit.model.ActionInfo&gt;" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
-        <variable name="handlers" type="com.ruesga.rview.fragments.ChangeDetailsFragment.EventHandlers" />
     </data>
 
     <com.google.android.flexbox.FlexboxLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/label_min_width"
-        android:layout_marginStart="@dimen/label_min_width"
         android:orientation="horizontal"
         app:bindToFeature="@{Features.CHANGE_FLAGS}"
         app:bindToBoolean="@{Boolean.TRUE}"
@@ -47,7 +41,6 @@
             android:id="@+id/flag_private"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:visibility="@{safeUnbox(model.isPrivate) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal">
             <ImageView
@@ -75,7 +68,6 @@
             android:id="@+id/flag_wip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:visibility="@{safeUnbox(model.isWorkInProgress) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal">
             <ImageView
@@ -103,7 +95,6 @@
             android:id="@+id/flag_reviewed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:visibility="@{safeUnbox(model.reviewed) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal">
             <ImageView
@@ -131,7 +122,6 @@
             android:id="@+id/flag_ignored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dp"
             android:visibility="@{model.stars != null &amp;&amp; java.util.Arrays.asList(model.stars).contains(ModelHelper.ACTION_IGNORE) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal">
             <ImageView
