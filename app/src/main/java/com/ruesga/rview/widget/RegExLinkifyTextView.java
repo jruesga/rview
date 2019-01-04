@@ -179,7 +179,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
                         if (group == null || start == -1 || end == -1) {
                             return;
                         }
-                        if (group.endsWith(".") || group.endsWith(")") || group.endsWith("]")) {
+                        if (StringHelper.endsWithPunctuationMark(group)) {
                             group = group.substring(0, group.length() - 1);
                             end--;
                         }
@@ -264,7 +264,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
         for(int i = 0; i < count; i++) {
             String group = groups.get(i);
             if (i == (count - 1)) {
-                if (group.endsWith(".") || group.endsWith(")") || group.endsWith("]")) {
+                if (StringHelper.endsWithPunctuationMark(group)) {
                     group = group.substring(0, group.length() - 1);
                 }
             }

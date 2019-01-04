@@ -524,4 +524,12 @@ public class StringHelper {
         }
         return message.replaceAll("\r\n", " ").replaceAll("\r", " ").replaceAll("\n", " ");
     }
+
+    public static boolean endsWithPunctuationMark(String s) {
+        return s.endsWith(".")
+                || s.endsWith(",")
+                || s.endsWith(";")
+                || s.endsWith(")")
+                || s.endsWith("]");
+    }
 }

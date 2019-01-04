@@ -39,6 +39,9 @@ public class RegExLinkifyTextViewTest {
         assertEquals("http://test.com/a/",
                 replaceLink(RegExLinkifyTextView.WEB_LINK_REGEX,
                         "text http://test.com/a/. test"));
+        assertEquals("https://r8-review.googlesource.com/c/r8/+/32540",
+                replaceLink(RegExLinkifyTextView.WEB_LINK_REGEX,
+                        "After https://r8-review.googlesource.com/c/r8/+/32540, D8/R8 will not"));
 
 
         Repository repository = new Repository("test.com", "http://test.com/", false);
@@ -49,6 +52,9 @@ public class RegExLinkifyTextViewTest {
         assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
                 replaceLink(links.get(1),
                         "aaa https://test.com/#/c/project/abc_cba-123/+/129166/ aa"));
+        assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/32540",
+                replaceLink(links.get(1),
+                        "aaa https://test.com/c/r8/+/32540, aa"));
         assertNull(replaceLink(links.get(2),
                 "aaa https://test.com/#/c/project/abc_cba-123/+/129166/ aa"));
         assertEquals("https://test.com/dashboard/?title=aa&mine=status:open",

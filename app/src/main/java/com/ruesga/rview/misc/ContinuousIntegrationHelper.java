@@ -345,7 +345,7 @@ public class ContinuousIntegrationHelper {
         if (url == null) {
             return null;
         }
-        if (url.endsWith("/.") || url.endsWith(")") || url.endsWith("]")) {
+        if (StringHelper.endsWithPunctuationMark(url)) {
             url = url.substring(0, url.length() - 1);
         }
         return url;
