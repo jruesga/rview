@@ -529,6 +529,7 @@ public class StringHelper {
         return s.endsWith(".")
                 || s.endsWith(",")
                 || s.endsWith(";")
+                || s.endsWith(":")
                 || s.endsWith(")")
                 || s.endsWith("]");
     }
