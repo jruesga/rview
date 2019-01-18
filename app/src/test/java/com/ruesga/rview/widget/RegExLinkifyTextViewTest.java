@@ -42,6 +42,14 @@ public class RegExLinkifyTextViewTest {
         assertEquals("https://r8-review.googlesource.com/c/r8/+/32540",
                 replaceLink(RegExLinkifyTextView.WEB_LINK_REGEX,
                         "After https://r8-review.googlesource.com/c/r8/+/32540, D8/R8 will not"));
+        assertEquals("https://android-review.googlesource.com/q/topic:%22loop-opt-4.9%22+(status:open%20OR%20status:merged)",
+                replaceLink(RegExLinkifyTextView.WEB_LINK_REGEX,
+                        "This is correct. If this change isn't appropriate for stable this is ready to go in. But..\n" +
+                        "\n" +
+                        "And, this has the below dependencies which are not in stable tree. https://android-review.googlesource.com/q/topic:%22loop-opt-4.9%22+(status:open%20OR%20status:merged)\n" +
+                        "\n" +
+                        "Can you explain how these are \"dependencies\"? This isn't explained by the changelog, which makes it out to be a pre-existing/historical loop driver bug. Even if the code needs to be adjusted to apply to older LTS kernels that's OK, and we should do that, right?"));
+
 
 
         Repository repository = new Repository("test.com", "http://test.com/", false);
