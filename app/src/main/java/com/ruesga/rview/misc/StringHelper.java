@@ -530,7 +530,7 @@ public class StringHelper {
                 || s.endsWith(",")
                 || s.endsWith(";")
                 || s.endsWith(":")
-                || s.endsWith(")")
-                || s.endsWith("]");
+                || (s.endsWith(")") && !s.contains("("))
+                || (s.endsWith("]") && !s.contains("["));
     }
 }
