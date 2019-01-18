@@ -23,6 +23,7 @@ import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.SoundEffectConstants;
 import android.view.View;
 
@@ -35,8 +36,10 @@ import com.ruesga.rview.preferences.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -159,6 +162,7 @@ public class RegExLinkifyTextView extends StyleableTextView {
             Spannable span = text instanceof Spannable
                     ? (Spannable) text : Spannable.Factory.getInstance().newSpannable(text);
             if (mRegEx != null) {
+                Set<Integer> links = new HashSet<>();
                 for (final RegExLink regEx : mRegEx) {
                     if (regEx == null || regEx.mLink == null || regEx.mPattern == null) {
                         continue;
@@ -166,6 +170,11 @@ public class RegExLinkifyTextView extends StyleableTextView {
 
                     final Matcher matcher = regEx.mPattern.matcher(text);
                     while (matcher.find()) {
+                        if (links.contains(matcher.start())) {
+                            continue;
+                        }
+                        links.add(matcher.start());
+
                         final String link = replaceLink(regEx, matcher);
                         if (link == null) {
                             return;
