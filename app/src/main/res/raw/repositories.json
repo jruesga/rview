@@ -109,5 +109,6 @@
   {"name":"TWRP", "url":"https://gerrit.twrp.me/"},
   {"name":"Unlegacy Android", "url":"https://gerrit.unlegacy-android.org/"},
   {"name":"UsFirst Collabnet", "url":"https://usfirst.collab.net/gerrit/", "ci_accounts": "^(Jenkins.*)$"},
-  {"name":"Wireshark", "url":"https://code.wireshark.org/review/", "ci_accounts": "^(.* Buildbot)$"}
+  {"name":"Wireshark", "url":"https://code.wireshark.org/review/", "ci_accounts": "^(.* Buildbot)$"},
+  {"name":"XenonHD", "url":"https://gerrit.xenonhd.com/"}
 ]
