@@ -8,7 +8,7 @@
   {"name":"AOSIP", "url":"https://review.aosiprom.com/"},
   {"name":"AOSP", "url":"https://android-review.googlesource.com/", "ci_accounts": "^(Deckard Autoverifier|Treehugger Robot)$"},
   {"name":"AOSPA", "url":"https://gerrit.aospa.co/"},
-  {"name":"AOSPC", "url":"https://gerrit.cypheros.co/"},
+  {"name":"AOSCP", "url":"https://gerrit.cypheros.co/"},
   {"name":"AOSPExtended", "url":"http://gerrit.aospextended.com/"},
   {"name":"ArrowOS", "url":"https://review.arrowos.net/"},
   {"name":"Asterisk", "url":"https://gerrit.asterisk.org/", "ci_accounts": "^(Zuul The Gatekeeper|Jenkins2)$"},
