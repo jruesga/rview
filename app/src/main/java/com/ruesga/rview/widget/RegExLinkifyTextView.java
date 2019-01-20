@@ -23,7 +23,6 @@ import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.SparseIntArray;
 import android.view.SoundEffectConstants;
 import android.view.View;
 
