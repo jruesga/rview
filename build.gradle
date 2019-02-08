@@ -23,14 +23,14 @@ ext {
         androidx_legacy             : '1.0.0',
         material                    : '1.0.0',
         play_services_auth          : '16.0.1',
-        firebase_core               : '16.0.6',
+        firebase_core               : '16.0.7',
         firebase_messaging          : '17.3.4',
         gson                        : '2.8.5',
         retrofit2                   : '2.5.0',
-        okhttp3                     : '3.12.1',
-        okio                        : '2.2.0',
+        okhttp3                     : '3.13.1',
+        okio                        : '2.2.2',
         okhttp_digest               : 'f13c5b8f79',
-        rxjava                      : '2.2.5',
+        rxjava                      : '2.2.6',
         rxandroid                   : '2.1.0',
         rxloader2                   : 'edeebf0a1a',
         // Keep commons-io in 2.5. Prior android versions doesn't have fully support for Files api.
@@ -42,18 +42,18 @@ ext {
         flexboxlayout               : '1.1.0',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '3511e13649',
-        keyboardvisibilityevent     : '2.2.0',
+        keyboardvisibilityevent     : '2.2.1',
         better_link_movement_method : '2.2.0',
-        aboutlibraries              : '6.2.0',
-        crashlytics                 : '2.9.8',
-        crashlytics_core            : '2.6.7',
-        crashlytics_answers         : '1.4.6'
+        aboutlibraries              : '6.2.2',
+        crashlytics                 : '2.9.9',
+        crashlytics_core            : '2.6.8',
+        crashlytics_answers         : '1.4.7'
     ]
 
     testLibraries = [
         junit                       : '4.12',
         hamcrest                    : '1.4-atlassian-1',
-        mockito                     : '2.23.4',
+        mockito                     : '2.24.0',
         powermock                   : '2.0.0',
         robolectric                 : '4.1',
         base64                      : '2.3.9'
@@ -68,10 +68,10 @@ allprojects {
             maven { url 'https://maven.fabric.io/public' }
         }
         dependencies {
-            classpath 'com.android.tools.build:gradle:3.3.0'
-            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.5'
+            classpath 'com.android.tools.build:gradle:3.3.1'
+            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.6'
             // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.27.0'
+            classpath 'io.fabric.tools:gradle:1.27.1'
         }
     }
 
