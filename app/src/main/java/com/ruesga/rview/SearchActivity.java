@@ -312,13 +312,14 @@ public class SearchActivity extends AppCompatDelegateActivity {
                 }
 
                 // Directly complete the search
-                performSearch(s.mSuggestionText, s.mSuggestionData);
+                mHandler.postDelayed(() -> performSearch(
+                        s.mSuggestionText, s.mSuggestionData), 100L);
                 return false;
             }
 
             @Override
             public void onSearchAction(String currentQuery) {
-                performSearch(currentQuery, null);
+                mHandler.postDelayed(() -> performSearch(currentQuery, null), 100L);
             }
         });
         mBinding.searchView.setOnQueryChangeListener((oldFilter, newFilter) -> {
@@ -482,7 +483,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
             mHandler.removeMessages(FETCH_SUGGESTIONS_MESSAGE);
             mHandler.removeMessages(SHOW_HISTORY_MESSAGE);
-            final Message msg = Message.obtain(mHandler, SHOW_HISTORY_MESSAGE);
+            Message msg = Message.obtain(mHandler, SHOW_HISTORY_MESSAGE);
             mHandler.sendMessageDelayed(msg, 500L);
         });
         popupWindow.setModal(true);
@@ -538,8 +539,9 @@ public class SearchActivity extends AppCompatDelegateActivity {
     }
 
     private void performSearch(String query, String data) {
+        clearSuggestions();
+
         if (TextUtils.isEmpty(query)) {
-            clearSuggestions();
             return;
         }
 
