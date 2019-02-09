@@ -24,6 +24,7 @@ import com.ruesga.rview.wizard.choosers.ListChooserFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -66,8 +67,9 @@ public class PredefinedRepositoriesChooserFragment extends ListChooserFragment {
         List<Repository> repositories = ModelHelper.getPredefinedRepositories(getContext());
         ArrayList<ItemModel> itemModels = new ArrayList<>(repositories.size());
         for (Repository repo : repositories) {
-            String filter = getFilter();
-            if (!repo.mName.contains(filter) && !repo.mUrl.contains(filter)) {
+            String filter = getFilter().toLowerCase(Locale.US);
+            if (!repo.mName.toLowerCase(Locale.US).contains(filter)
+                    && !repo.mUrl.toLowerCase(Locale.US).contains(filter)) {
                 continue;
             }
 
