@@ -98,9 +98,10 @@ public class ChangeQueryTest {
 
 
         testParseQuery("(is:open label:Verified=+1 -age:1month) AND NOT (is:open reviewerin:Tuleap-Integrators -age:1month label:Verified=+1 -is:draft)",
-                new ChangeQuery().is(IsType.OPEN)
-                        .and(new ChangeQuery().label("Verified", 1))
-                        .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.MONTHS, 1)))
+                new ChangeQuery().wrap(new ChangeQuery()
+                            .is(IsType.OPEN)
+                            .and(new ChangeQuery().label("Verified", 1))
+                            .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.MONTHS, 1))))
                         .and(new ChangeQuery().negate(
                                 new ChangeQuery().is(IsType.OPEN)
                                         .and(new ChangeQuery().reviewerIn("Tuleap-Integrators"))
@@ -108,6 +109,17 @@ public class ChangeQueryTest {
                                         .and(new ChangeQuery().label("Verified", 1))
                                         .and(new ChangeQuery().negate(new ChangeQuery().is(IsType.DRAFT)))
                         )));
+
+        testParseQuery("(reviewer:self OR owner:self) AND (status:merged -(age:1w))",
+                new ChangeQuery().wrap(new ChangeQuery().reviewerSelf().or(new ChangeQuery().ownerSelf()))
+                    .and(new ChangeQuery().status(StatusType.MERGED)
+                    .negate(new ChangeQuery().age(TimeUnit.WEEKS, 1))));
+
+        testParseQuery("(reviewer:self AND owner:self) AND (status:merged OR -(age:1w) OR age:1y)",
+                new ChangeQuery().wrap(new ChangeQuery().reviewerSelf().and(new ChangeQuery().ownerSelf()))
+                        .and(new ChangeQuery().status(StatusType.MERGED).or(
+                                new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.WEEKS, 1)))
+                                .or(new ChangeQuery().age(TimeUnit.YEARS, 1))));
     }
 
     private void testParseQuery(String expression, ChangeQuery expectedResult) {
