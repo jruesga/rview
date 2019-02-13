@@ -20,6 +20,15 @@ import java.util.ArrayList;
 public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
 
     @SuppressWarnings("unchecked")
+    public T wrap(T query) {
+        if (query.queries().size() == 0) {
+            throw new IllegalArgumentException("Empty query");
+        }
+        add("(" + query + ")");
+        return (T)this;
+    }
+
+    @SuppressWarnings("unchecked")
     public T and(T query) {
         if (queries().size() == 0) {
             throw new IllegalArgumentException("Can't use operator here");
@@ -31,7 +40,7 @@ public abstract class ComplexQuery<T extends ComplexQuery> extends Query {
         if (size > 1) {
             add("AND (" + query + ")");
         } else {
-            add("AND " + query);
+            add(String.valueOf(query));
         }
         return (T)this;
     }
