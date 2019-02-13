@@ -97,17 +97,21 @@ public class ChangeQueryTest {
                                 .and(new ChangeQuery().branch("test2"))));
 
 
-        testParseQuery("(is:open label:Verified=+1 -age:1month) AND NOT (is:open reviewerin:Tuleap-Integrators -age:1month label:Verified=+1 -is:draft)",
+        ChangeQuery complexQuery = new ChangeQuery();
+        complexQuery.add("(" +
                 new ChangeQuery().is(IsType.OPEN)
                         .and(new ChangeQuery().label("Verified", 1))
                         .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.MONTHS, 1)))
-                        .and(new ChangeQuery().negate(
-                                new ChangeQuery().is(IsType.OPEN)
-                                        .and(new ChangeQuery().reviewerIn("Tuleap-Integrators"))
-                                        .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.MONTHS, 1)))
-                                        .and(new ChangeQuery().label("Verified", 1))
-                                        .and(new ChangeQuery().negate(new ChangeQuery().is(IsType.DRAFT)))
-                        )));
+                + ")");
+        complexQuery.and(new ChangeQuery().negate(
+                new ChangeQuery().is(IsType.OPEN)
+                        .and(new ChangeQuery().reviewerIn("Tuleap-Integrators"))
+                        .and(new ChangeQuery().negate(new ChangeQuery().age(TimeUnit.MONTHS, 1)))
+                        .and(new ChangeQuery().label("Verified", 1))
+                        .and(new ChangeQuery().negate(new ChangeQuery().is(IsType.DRAFT)))
+        ));
+        testParseQuery("(is:open label:Verified=+1 -age:1month) AND NOT (is:open reviewerin:Tuleap-Integrators -age:1month label:Verified=+1 -is:draft)",
+                complexQuery);
     }
 
     private void testParseQuery(String expression, ChangeQuery expectedResult) {
