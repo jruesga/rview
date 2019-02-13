@@ -16,5 +16,5 @@
 package com.ruesga.rview.gerrit.filter;
 
 public enum StatusType {
-    OPEN, PENDING, REVIEWED, CLOSED, MERGED, ABANDONED
+    OPEN, PENDING, REVIEWED, CLOSED, MERGED, ABANDONED, DRAFT
 }
