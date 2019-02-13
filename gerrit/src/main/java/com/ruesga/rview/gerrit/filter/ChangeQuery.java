@@ -421,7 +421,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
                         case QueryLexer.OR:
                             ChangeQuery q = toChangeQuery(tree.getChild(0));
                             if (query.queries().isEmpty()) {
-                                query = q;
+                                query.add("(" + q + ")");
                             } else if (childType == QueryLexer.AND) {
                                 query.and(q);
                             } else {
