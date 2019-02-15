@@ -1507,6 +1507,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private EmptyEventHandlers mEmptyHandlers;
     private String mCurrentRevision;
     private String mDiffAgainstRevision;
+    private String mMessageId;
     private DataResponse mResponse;
     private final List<RevisionInfo> mAllRevisions = new ArrayList<>();
     private final List<RevisionInfo> mAllRevisionsWithBase = new ArrayList<>();
@@ -1540,15 +1541,17 @@ public class ChangeDetailsFragment extends Fragment implements
     private boolean mIsInlineCommentsInMessages;
 
     public static ChangeDetailsFragment newInstance(int changeId) {
-        return newInstance(changeId, null, null);
+        return newInstance(changeId, null, null, null);
     }
 
-    public static ChangeDetailsFragment newInstance(int changeId, String revision, String base) {
+    public static ChangeDetailsFragment newInstance(int changeId, String revision,
+            String base, String messageId) {
         ChangeDetailsFragment fragment = new ChangeDetailsFragment();
         Bundle arguments = new Bundle();
         arguments.putInt(Constants.EXTRA_LEGACY_CHANGE_ID, changeId);
         arguments.putString(Constants.EXTRA_REVISION, revision);
         arguments.putString(Constants.EXTRA_BASE, base);
+        arguments.putString(Constants.EXTRA_MESSAGE, messageId);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -1562,6 +1565,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 Constants.EXTRA_LEGACY_CHANGE_ID, Constants.INVALID_CHANGE_ID);
         mCurrentRevision = getArguments().getString(Constants.EXTRA_REVISION);
         mDiffAgainstRevision = getArguments().getString(Constants.EXTRA_BASE);
+        mMessageId = getArguments().getString(Constants.EXTRA_MESSAGE);
         mEmptyHandlers = new EmptyEventHandlers(this);
 
         if (savedInstanceState != null) {

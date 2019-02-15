@@ -69,11 +69,13 @@ public class ChangeDetailsActivity extends BaseActivity {
         private ChangeQuery mFilter;
         private String[] mRevAndBase;
         private String mFile;
+        private String mMessageId;
     }
     private static class ChangeDetailsResponse {
         private ChangeInfo mChange;
         private String[] mRevAndBase;
         private String mFile;
+        private String mMessageId;
     }
 
     private final RxLoaderObserver<ChangeDetailsResponse> mChangeObserver
@@ -101,7 +103,8 @@ public class ChangeDetailsActivity extends BaseActivity {
 
                 if (TextUtils.isEmpty(result.mFile)) {
                     // Open the details view
-                    performShowChange(null, legacyChangeId, changeId, revisionId, baseRevisionId);
+                    performShowChange(null, legacyChangeId, changeId, revisionId,
+                            baseRevisionId, result.mMessageId);
                 } else {
                     // Directly open the diff view
                     performShowDiffFile(change, base, revisionId, result.mFile);
@@ -162,7 +165,7 @@ public class ChangeDetailsActivity extends BaseActivity {
             // Check scheme
             Uri data = getIntent().getData();
             String scheme = data.getScheme();
-            if (!scheme.equals(getPackageName())) {
+            if (!getPackageName().equals(scheme)) {
                 notifyInvalidArgsAndFinish();
                 return;
             }
@@ -170,6 +173,7 @@ public class ChangeDetailsActivity extends BaseActivity {
             // Retrieve the host and the request id
             String host = data.getHost();
             String query = StringHelper.getSafeLastPathSegment(data);
+            String url = data.toString();
             if (TextUtils.isEmpty(query)) {
                 notifyInvalidArgsAndFinish();
                 return;
@@ -196,7 +200,8 @@ public class ChangeDetailsActivity extends BaseActivity {
                     filter = new ChangeQuery().change(q[0]);
                     String file = rebuildFileInfo(q);
                     String[] revAndBase = extractRevisionAndBase(q);
-                    performGatherChangeId(filter, revAndBase, file);
+                    String messageId = extractMessageId(url);
+                    performGatherChangeId(filter, revAndBase, file, messageId);
                     break;
 
                 case Constants.CUSTOM_URI_COMMIT:
@@ -235,26 +240,28 @@ public class ChangeDetailsActivity extends BaseActivity {
                 return;
             }
             String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
-            performShowChange(savedInstanceState, legacyChangeId, changeId, null, null);
+            performShowChange(savedInstanceState, legacyChangeId, changeId, null, null, null);
         }
     }
 
     private void performGatherChangeId(ChangeQuery filter) {
-        performGatherChangeId(filter, null, null);
+        performGatherChangeId(filter, null, null, null);
     }
 
-    private void performGatherChangeId(ChangeQuery filter, String[] revAndBase, String file) {
+    private void performGatherChangeId(ChangeQuery filter, String[] revAndBase, String file,
+            String messageId) {
         ChangeDetailsRequest request = new ChangeDetailsRequest();
         request.mFilter = filter;
         request.mRevAndBase = revAndBase;
         request.mFile = file;
+        request.mMessageId = messageId;
 
         RxLoaderManager loaderManager = RxLoaderManagerCompat.get(this);
         loaderManager.create("fetch", this::fetchChangeId, mChangeObserver).start(request);
     }
 
     private void performShowChange(Bundle savedInstanceState, int legacyChangeId,
-            String changeId, String currentRevision, String base) {
+            String changeId, String currentRevision, String base, String messageId) {
         if (hasStateSaved()) {
             return;
         }
@@ -270,7 +277,7 @@ public class ChangeDetailsActivity extends BaseActivity {
         if (savedInstanceState != null) {
             fragment = getSupportFragmentManager().getFragment(savedInstanceState, FRAGMENT_TAG);
         } else {
-            fragment = ChangeDetailsFragment.newInstance(legacyChangeId, currentRevision, base);
+            fragment = ChangeDetailsFragment.newInstance(legacyChangeId, currentRevision, base, messageId);
         }
         tx.replace(R.id.content, fragment, FRAGMENT_TAG).commit();
 
@@ -306,6 +313,7 @@ public class ChangeDetailsActivity extends BaseActivity {
                     result.mChange = changes.get(0);
                     result.mRevAndBase = request.mRevAndBase;
                     result.mFile = request.mFile;
+                    result.mMessageId = request.mMessageId;
                     return result;
                 }
                 return null;
@@ -353,6 +361,14 @@ public class ChangeDetailsActivity extends BaseActivity {
             }
         }
         return ret;
+    }
+
+    private String extractMessageId(String url) {
+        if (url.matches(".*#message-[0-9a-f]{8,40}")) {
+            int idx = url.indexOf("#message-");
+            return url.substring(idx + 9);
+        }
+        return null;
     }
 
     private String rebuildFileInfo(String[] tokens) {
