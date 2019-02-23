@@ -929,6 +929,8 @@ public class Formatter {
                         review = value;
                     }
                     start = m.end();
+                } else if (m.group(4) != null) {
+                    start = m.end();
                 }
             }
         }
