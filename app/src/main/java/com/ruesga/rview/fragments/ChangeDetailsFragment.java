@@ -26,6 +26,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -645,6 +646,11 @@ public class ChangeDetailsFragment extends Fragment implements
         private boolean[] mFolded;
         private final boolean mIsAuthenticated;
         private final boolean mIsFolded;
+        private final OnMessageViewCreatedListener mCallback;
+
+        public interface OnMessageViewCreatedListener {
+            void onViewCreated(View v, ChangeMessageInfo message);
+        }
 
         private boolean mIsHideTaggedMessages;
         private Repository mRepository;
@@ -659,11 +665,12 @@ public class ChangeDetailsFragment extends Fragment implements
                 = (account, tag) -> mEventHandlers.onAccountChipPressed(account, tag);
 
         MessageAdapter(ChangeDetailsFragment fragment, EventHandlers handlers,
-                boolean isAuthenticated, boolean isFolded) {
+                boolean isAuthenticated, boolean isFolded, OnMessageViewCreatedListener cb) {
             final Resources res = fragment.getResources();
             mEventHandlers = handlers;
             mIsAuthenticated = isAuthenticated;
             mIsFolded = isFolded;
+            mCallback = cb;
 
             mBuildBotSystemAccount = new AccountInfo();
             mBuildBotSystemAccount.name = res.getString(R.string.account_build_bot_system_name);
@@ -754,6 +761,10 @@ public class ChangeDetailsFragment extends Fragment implements
             holder.mBinding.setAttachments(attachments);
             holder.mBinding.setHandlers(mEventHandlers);
             holder.mBinding.setFoldHandlers(mIsFolded ? mEventHandlers : null);
+
+            if (mCallback != null) {
+                mCallback.onViewCreated(holder.mBinding.getRoot(), message);
+            }
         }
 
         private ChangeMessageInfo[] filterTaggedMessages(ChangeMessageInfo[] messages) {
@@ -1779,9 +1790,21 @@ public class ChangeDetailsFragment extends Fragment implements
             mBinding.fileInfo.list.setNestedScrollingEnabled(true);
             mBinding.fileInfo.list.setAdapter(mFileAdapter);
 
-
+            MessageAdapter.OnMessageViewCreatedListener cb = null;
+            if (mMessageId != null) {
+                cb = (v, message) -> {
+                    if (mMessageId != null && mMessageId.equals(message.id)) {
+                        mBinding.nestedScroll.post(() -> {
+                            Rect r = new Rect();
+                            v.getLocalVisibleRect(r);
+                            mBinding.nestedScroll.smoothScrollTo(0, r.top);
+                        });
+                        mMessageId = null;
+                    }
+                };
+            }
             mMessageAdapter = new MessageAdapter(this, mEventHandlers,
-                    mModel.isAuthenticated, isMessagesFolded);
+                    mModel.isAuthenticated, isMessagesFolded, cb);
             mMessageAdapter.updateHideTaggedMessages(mHideTaggedMessages);
             mMessageAdapter.updateHideCIMessages(repo);
             int leftPadding = getResources().getDimensionPixelSize(
