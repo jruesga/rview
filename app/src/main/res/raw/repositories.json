@@ -40,6 +40,7 @@
   {"name":"Ganeti", "url":"https://ganeti-review.googlesource.com/"},
   {"name":"Gerrit", "url":"https://gerrit-review.googlesource.com/", "ci_accounts": "^(GerritForge CI|Diffy Cuckoo.*)$"},
   {"name":"GerritHub", "url":"https://review.gerrithub.io/"},
+  {"name":"GlusterFS", "url":"https://review.gluster.org/", "ci_accounts": "^(Gluster Build System.*)$"},
   {"name":"Golang", "url":"https://go-review.googlesource.com/", "ci_accounts": "^(Gobot Gobot)$"},
   {"name":"GROMACS", "url":"https://gerrit.gromacs.org/", "ci_accounts": "^(Jenkins)$"},
   {"name":"gVisor", "url":"https://gvisor-review.googlesource.com/", "ci_accounts": "^(kokoro)$"},
