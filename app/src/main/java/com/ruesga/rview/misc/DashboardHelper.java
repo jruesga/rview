@@ -17,6 +17,7 @@ package com.ruesga.rview.misc;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.model.DashboardInfo;
@@ -54,7 +55,7 @@ public class DashboardHelper {
             }
 
             section.query = Uri.decode(uri.getQueryParameter(name));
-            if (section.name.isEmpty() || section.query.isEmpty()) {
+            if (TextUtils.isEmpty(section.name) || TextUtils.isEmpty(section.query)) {
                 continue;
             }
             if (foreach != null && !foreach.trim().isEmpty()) {
