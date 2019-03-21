@@ -27,7 +27,7 @@ ext {
         firebase_messaging          : '17.4.0',
         gson                        : '2.8.5',
         retrofit2                   : '2.5.0',
-        okhttp3                     : '3.13.1',
+        okhttp3                     : '3.12.2',
         okio                        : '2.2.2',
         okhttp_digest               : 'f13c5b8f79',
         rxjava                      : '2.2.7',
