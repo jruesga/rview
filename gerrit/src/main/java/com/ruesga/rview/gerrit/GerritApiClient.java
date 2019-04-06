@@ -1667,7 +1667,13 @@ class GerritApiClient implements GerritApi {
 
     @Override
     public Observable<ServerVersion> getServerVersion() {
-        return andCacheVersion(mService.getServerVersion());
+        return andCacheVersion(SafeObservable.fromNullCallable(() -> {
+            ServerVersion version = mService.getServerVersion().blockingFirst();
+            if (version != null && version.isDevelopmentVersion()) {
+                return version.createDevelepmentVersion();
+            }
+            return version;
+        }));
     }
 
     @Override

@@ -15,6 +15,8 @@
  */
 package com.ruesga.rview.gerrit.model;
 
+import com.ruesga.rview.gerrit.GerritApi;
+
 import java.util.Locale;
 
 /**
@@ -31,19 +33,27 @@ public class ServerVersion {
             build = version.substring(version.indexOf("-") + 1);
             v = version.substring(0, version.indexOf("-")).split("\\.");
         }
-        if (v.length > 0) {
-            major = readSafeValue(v[0]);
-        }
         if (v.length > 1) {
+            major = readSafeValue(v[0]);
             minor = readSafeValue(v[1]);
         }
         if (v.length > 2) {
             build = v[2];
+        } else {
+            build = version;
         }
     }
 
     public double getVersion() {
         return Double.parseDouble(String.format(Locale.getDefault(), "%d.%d", major, minor));
+    }
+
+    public boolean isDevelopmentVersion() {
+        return major == 0 && minor == 0;
+    }
+
+    public ServerVersion createDevelepmentVersion() {
+        return new ServerVersion(GerritApi.API_VERSION + "." + build);
     }
 
     private static int readSafeValue(String v) {
