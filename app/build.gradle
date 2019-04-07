@@ -53,8 +53,8 @@ dependencies {
 
 android {
     defaultConfig {
-        versionCode 64
-        versionName '2.3.19'
+        versionCode 65
+        versionName '2.3.20'
         vectorDrawables.useSupportLibrary = true
 
         applicationId 'com.ruesga.rview'
