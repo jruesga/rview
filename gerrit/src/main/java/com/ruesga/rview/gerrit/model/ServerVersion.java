@@ -49,7 +49,7 @@ public class ServerVersion {
     }
 
     public boolean isDevelopmentVersion() {
-        return major == 0 && minor == 0;
+        return major == 0 && minor == 0 && !build.isEmpty();
     }
 
     public ServerVersion createDevelopmentVersion() {
