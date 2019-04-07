@@ -52,7 +52,7 @@ public class ServerVersion {
         return major == 0 && minor == 0;
     }
 
-    public ServerVersion createDevelepmentVersion() {
+    public ServerVersion createDevelopmentVersion() {
         return new ServerVersion(GerritApi.API_VERSION + "." + build);
     }
 
