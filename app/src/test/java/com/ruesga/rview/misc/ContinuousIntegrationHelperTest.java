@@ -80,8 +80,8 @@ public class ContinuousIntegrationHelperTest {
                 cis.get(6).mUrl);
         assertEquals(ContinuousIntegrationInfo.BuildStatus.FAILURE, cis.get(6).mStatus);
 
-        // OpenStack
-        cis = extractContinuousIntegrationInfo("OpenStack", null);
+        // OpenDev (formerly OpenStack)
+        cis = extractContinuousIntegrationInfo("OpenDev", null);
         assertEquals(36, cis.size());
         assertEquals("dsvm-tempest-zadara-driver", cis.get(1).mName);
         assertEquals("http://openstack-ci-logs.zadarastorage.com/85/499285/1/check/dsvm-tempest-zadara-driver/a1691cd",
