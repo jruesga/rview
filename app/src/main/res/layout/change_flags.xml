@@ -41,6 +41,8 @@
             android:id="@+id/flag_private"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
             android:visibility="@{safeUnbox(model.isPrivate) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal">
             <ImageView
@@ -95,6 +97,8 @@
             android:id="@+id/flag_reviewed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
             android:visibility="@{safeUnbox(model.reviewed) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal">
             <ImageView
