@@ -22,6 +22,7 @@
     <data>
         <import type="android.view.View" />
         <import type="com.ruesga.rview.gerrit.model.Features" />
+        <import type="com.ruesga.rview.misc.BindingAdapters" />
         <import type="com.ruesga.rview.misc.ModelHelper" />
 
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
@@ -126,7 +127,7 @@
             android:id="@+id/flag_ignored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{model.stars != null &amp;&amp; java.util.Arrays.asList(model.stars).contains(ModelHelper.ACTION_IGNORE) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{BindingAdapters.contains(model.stars, ModelHelper.ACTION_IGNORE) ? View.VISIBLE : View.GONE}"
             android:orientation="horizontal">
             <ImageView
                 android:layout_width="16dp"

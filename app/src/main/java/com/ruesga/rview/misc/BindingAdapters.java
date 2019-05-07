@@ -32,6 +32,7 @@ import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.widget.TagEditTextView;
 import com.ruesga.rview.widget.TagEditTextView.Tag;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -109,7 +110,6 @@ public class BindingAdapters {
     }
 
     @BindingAdapter("bindHtml")
-    @SuppressWarnings("deprecation")
     public static void bindHtml(TextView v, String text) {
         if (TextUtils.isEmpty(text)) {
             v.setText(null);
@@ -235,5 +235,9 @@ public class BindingAdapters {
 
     public static boolean isEmpty(Collection<?> c) {
         return c == null || c.isEmpty();
+    }
+
+    public static boolean contains(Object[] v, Object o) {
+        return v != null && Arrays.asList(v).contains(o);
     }
 }

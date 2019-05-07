@@ -23,6 +23,7 @@
         <import type="android.view.View" />
         <import type="com.ruesga.rview.gerrit.model.ChangeStatus" />
         <import type="com.ruesga.rview.fragments.TrendingChangeListFragment" />
+        <import type="com.ruesga.rview.misc.BindingAdapters" />
         <import type="com.ruesga.rview.misc.ModelHelper" />
 
         <variable name="model" type="com.ruesga.rview.gerrit.model.ChangeInfo" />
@@ -250,7 +251,7 @@
                     android:layout_below="@id/size_block"
                     android:orientation="horizontal"
                     layout="@layout/change_flags"
-                    android:visibility="@{(safeUnbox(model.isPrivate) || safeUnbox(model.isWorkInProgress) || safeUnbox(model.reviewed) || (model.stars != null &amp;&amp; java.util.Arrays.asList(model.stars).contains(ModelHelper.ACTION_IGNORE))) ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{(safeUnbox(model.isPrivate) || safeUnbox(model.isWorkInProgress) || safeUnbox(model.reviewed) || BindingAdapters.contains(model.stars, ModelHelper.ACTION_IGNORE)) ? View.VISIBLE : View.GONE}"
                     app:model="@{model}" />
                 <LinearLayout
                     android:id="@+id/mergeable_block"
