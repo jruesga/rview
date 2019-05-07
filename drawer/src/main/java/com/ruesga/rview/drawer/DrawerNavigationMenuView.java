@@ -24,6 +24,7 @@ import androidx.appcompat.view.menu.MenuView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+@SuppressWarnings({"RestrictedApi"})
 public class DrawerNavigationMenuView extends RecyclerView implements MenuView {
 
     public DrawerNavigationMenuView(Context context) {
