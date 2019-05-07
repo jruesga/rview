@@ -20,7 +20,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="java.lang.String" />
         <import type="android.view.View" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.AccountDetailInfo" />
         <variable name="follow" type="java.lang.Boolean" />

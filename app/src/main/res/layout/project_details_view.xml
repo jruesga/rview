@@ -19,7 +19,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="java.lang.String" />
         <variable name="model" type="com.ruesga.rview.gerrit.model.ProjectInfo" />
     </data>
 
