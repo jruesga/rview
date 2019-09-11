@@ -66,6 +66,7 @@
   {"name":"MoKee", "url":"https://mokeedev.review/"},
   {"name":"msm7x30", "url":"https://review.msm7x30.org/"},
   {"name":"Named Data", "url":"https://gerrit.named-data.net/", "ci_accounts": "^(jenkins|ndn-cxx-code-style)$"},
+  {"name":"Nordix", "url":"https://gerrit.nordix.org/", "ci_accounts": "^(Nordix Infra)$"},
   {"name":"OMAPzoom", "url":"http://review.omapzoom.org/", "ci_accounts": "^(jenkins.*)$"},
   {"name":"OmniROM", "url":"https://gerrit.omnirom.org/"},
   {"name":"Onap", "url":"https://gerrit.onap.org/r/", "ci_accounts": "^(ONAP Jobbuilder)$"},
