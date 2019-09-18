@@ -30,6 +30,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ruesga.rview.BuildConfig;
+
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -40,7 +42,7 @@ public class RviewProvider extends ContentProvider {
 
     private static final boolean DEBUG = false;
 
-    public static final String AUTHORITY = "com.ruesga.rview";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID;
 
     private DatabaseHelper mOpenHelper;
 

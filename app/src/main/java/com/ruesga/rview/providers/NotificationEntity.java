@@ -27,13 +27,12 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import com.ruesga.rview.BuildConfig;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.model.Notification;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.ruesga.rview.providers.RviewProvider.AUTHORITY;
 
 public class NotificationEntity implements BaseColumns, Parcelable {
 
@@ -41,7 +40,7 @@ public class NotificationEntity implements BaseColumns, Parcelable {
 
     private static final long MAX_NOTIFICATION_TIME_TO_LIVE = DateUtils.DAY_IN_MILLIS * 15L;
 
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + TABLE_NAME);
+    public static final Uri CONTENT_URI = Uri.parse("content://" + BuildConfig.APPLICATION_ID + "/" + TABLE_NAME);
 
     static final String GROUP_ID = "group_id";
     static final String ACCOUNT_ID = "account_id";

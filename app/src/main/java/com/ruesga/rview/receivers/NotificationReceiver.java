@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ruesga.rview.BuildConfig;
 import com.ruesga.rview.R;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.DraftActionType;
@@ -46,9 +47,9 @@ public class NotificationReceiver extends BroadcastReceiver {
     private static final String TAG = "NotificationReceiver";
 
     public static final String ACTION_NOTIFICATION_DISMISSED
-            = "com.ruesga.rview.action.NOTIFICATION_DISMISSED";
+            = BuildConfig.APPLICATION_ID + ".action.NOTIFICATION_DISMISSED";
     public static final String ACTION_NOTIFICATION_REPLY
-            = "com.ruesga.rview.action.NOTIFICATION_REPLY";
+            = BuildConfig.APPLICATION_ID + ".action.NOTIFICATION_REPLY";
 
     @Override
     @SuppressWarnings("IfCanBeSwitch")

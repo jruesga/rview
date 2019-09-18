@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.ruesga.rview.BuildConfig;
 import com.ruesga.rview.misc.CacheHelper;
 
 import java.io.File;
@@ -32,7 +33,7 @@ public class CacheCleanerReceiver extends BroadcastReceiver {
 
     private static final String TAG = "CacheCleanerReceiver";
 
-    public static final String ACTION_CLEAN_CACHE = "com.ruesga.rview.action.CLEAN_CACHE";
+    public static final String ACTION_CLEAN_CACHE = BuildConfig.APPLICATION_ID + ".action.CLEAN_CACHE";
 
     @Override
     public void onReceive(Context context, Intent intent) {

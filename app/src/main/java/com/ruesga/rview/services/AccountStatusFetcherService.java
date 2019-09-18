@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.ruesga.rview.BuildConfig;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ExceptionHelper;
@@ -36,7 +37,7 @@ public class AccountStatusFetcherService extends IntentService {
     private static final String TAG = "AccountStatusFetcher";
 
     public static final String ACCOUNT_STATUS_FETCHER_ACTION =
-            "com.ruesga.rview.actions.ACCOUNT_STATUS_FETCHER";
+            BuildConfig.APPLICATION_ID + ".actions.ACCOUNT_STATUS_FETCHER";
     public static final String EXTRA_ACCOUNT = "account";
 
     public AccountStatusFetcherService() {

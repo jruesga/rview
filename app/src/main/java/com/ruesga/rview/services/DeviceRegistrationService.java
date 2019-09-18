@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.ruesga.rview.BuildConfig;
 import com.ruesga.rview.gerrit.GerritApi;
 import com.ruesga.rview.gerrit.model.CloudNotificationInput;
 import com.ruesga.rview.gerrit.model.CloudNotificationResponseMode;
@@ -40,7 +41,7 @@ public class DeviceRegistrationService extends JobIntentService {
 
     private static final String TAG = "DeviceRegisterService";
 
-    public static final String REGISTER_DEVICE_ACTION = "com.ruesga.rview.actions.REGISTER_DEVICE";
+    public static final String REGISTER_DEVICE_ACTION = BuildConfig.APPLICATION_ID + ".actions.REGISTER_DEVICE";
     public static final String EXTRA_ACCOUNT = "account";
 
     private static final String TOKEN_SCOPE = "FCM";
