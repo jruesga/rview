@@ -98,6 +98,8 @@ android {
         debug {
             debuggable true
 
+            applicationIdSuffix ".debug"
+
             ext.enableCrashlytics = false
 
             minifyEnabled true

@@ -19,14 +19,14 @@
     package="com.ruesga.rview">
 
     <permission
-        android:name="com.ruesga.rview.permissions.PRIVATE_ACCESS"
+        android:name="${applicationId}.permissions.PRIVATE_ACCESS"
         android:protectionLevel="signature"/>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.ruesga.rview.permissions.PRIVATE_ACCESS" />
+    <uses-permission android:name="${applicationId}.permissions.PRIVATE_ACCESS" />
 
     <application
         android:name=".RviewApplication"
@@ -67,9 +67,9 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="com.ruesga.rview" android:host="change" />
-                <data android:scheme="com.ruesga.rview" android:host="commit" />
-                <data android:scheme="com.ruesga.rview" android:host="changeid" />
+                <data android:scheme="${applicationId}" android:host="change" />
+                <data android:scheme="${applicationId}" android:host="commit" />
+                <data android:scheme="${applicationId}" android:host="changeid" />
             </intent-filter>
         </activity-alias>
 
@@ -156,7 +156,7 @@
 
         <provider
             android:name=".providers.RviewProvider"
-            android:authorities="com.ruesga.rview"
+            android:authorities="${applicationId}"
             android:exported="false"/>
 
         <service
@@ -186,35 +186,35 @@
 
         <receiver
             android:name=".receivers.NotificationReceiver"
-            android:permission="com.ruesga.rview.permissions.PRIVATE_ACCESS">
+            android:permission="${applicationId}.permissions.PRIVATE_ACCESS">
             <intent-filter>
                 <action android:name="android.intent.action.LOCALE_CHANGED" />
-                <action android:name="com.ruesga.rview.action.NOTIFICATION_DISMISSED" />
-                <action android:name="com.ruesga.rview.action.NOTIFICATION_REPLY" />
+                <action android:name="${applicationId}.action.NOTIFICATION_DISMISSED" />
+                <action android:name="${applicationId}.action.NOTIFICATION_REPLY" />
             </intent-filter>
         </receiver>
 
         <receiver
             android:name=".receivers.CacheCleanerReceiver"
-            android:permission="com.ruesga.rview.permissions.PRIVATE_ACCESS">
+            android:permission="${applicationId}.permissions.PRIVATE_ACCESS">
             <intent-filter>
-                <action android:name="com.ruesga.rview.action.CLEAN_CACHE" />
+                <action android:name="${applicationId}.action.CLEAN_CACHE" />
             </intent-filter>
         </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.ruesga.rview.content"
+            android:authorities="${applicationId}.content"
             android:grantUriPermissions="true"
             android:exported="false"
-            android:writePermission="com.ruesga.rview.permissions.PRIVATE_ACCESS">
+            android:writePermission="${applicationId}.permissions.PRIVATE_ACCESS">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/content_paths" />
         </provider>
 
         <!-- Disable auto-manage gson services -->
-        <provider android:authorities="com.ruesga.rview.firebaseinitprovider"
+        <provider android:authorities="${applicationId}.firebaseinitprovider"
             android:name="com.google.firebase.provider.FirebaseInitProvider"
             android:exported="false"
             tools:node="remove"/>
