@@ -390,6 +390,7 @@ public class SearchActivity extends AppCompatDelegateActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ActivityHelper.LIST_RESULT_CODE && resultCode == RESULT_OK) {
             // Directly finish this activity. The search data was used
             finish();
