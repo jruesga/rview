@@ -28,7 +28,7 @@ ext {
         gson                        : '2.8.5',
         retrofit2                   : '2.6.1',
         // Keep okHttp in 3.12.x, since 3.13+ requires Android 5
-        okhttp3                     : '3.12.4',
+        okhttp3                     : '3.12.5',
         okio                        : '2.4.0',
         okhttp_digest               : 'f13c5b8f79',
         rxjava                      : '2.2.12',
