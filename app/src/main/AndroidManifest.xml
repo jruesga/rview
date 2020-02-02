@@ -36,7 +36,7 @@
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme"
-        android:allowBackup="false"
+        android:allowBackup="true"
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
 
         <!-- https://android-developers.googleblog.com/2017/03/update-your-app-to-take-advantage-of.html -->
