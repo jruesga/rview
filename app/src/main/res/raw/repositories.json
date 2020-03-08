@@ -5,7 +5,7 @@
   {"name":"AllSeenAlliance", "url":"https://git.allseenalliance.org/gerrit/", "ci_accounts": "^(.* jenkins)$"},
   {"name":"AOKP", "url":"http://gerrit.aokp.co/"},
   {"name":"AOMedia", "url":"https://aomedia-review.googlesource.com/", "ci_accounts": "^(AOMedia.*)$"},
-  {"name":"AOSIP", "url":"https://review.aosiprom.com/"},
+  {"name":"AOSIP", "url":"https://review.aosip.dev/"},
   {"name":"AOSP", "url":"https://android-review.googlesource.com/", "ci_accounts": "^(Deckard Autoverifier|Treehugger Robot)$"},
   {"name":"AOSPA", "url":"https://gerrit.aospa.co/"},
   {"name":"AOSCP", "url":"https://gerrit.cypheros.co/"},
