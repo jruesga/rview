@@ -179,7 +179,6 @@ public class ActivityHelper {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @SuppressWarnings("deprecation")
     public static void open(Context ctx, String action, Uri uri, String mimeType) {
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -203,7 +202,6 @@ public class ActivityHelper {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @SuppressWarnings("deprecation")
     public static void share(Context ctx, String action, String title, String text) {
         try {
             Intent intent = new Intent(Intent.ACTION_SEND);
@@ -224,30 +222,40 @@ public class ActivityHelper {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void downloadUri(
-            Context context, Uri uri, String fileName, @Nullable String mimeType) {
+    public static void downloadUri(Context context, Uri uri, String fileName,
+            @Nullable String mimeType) throws IOException {
         // Create the destination location
-        File destination = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS);
+        File destination = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        if (destination == null) {
+            throw new IOException("Extaernal directory not available");
+        }
         destination.mkdirs();
         Uri destinationUri = Uri.fromFile(new File(destination, fileName));
 
         // Use the download manager to perform the download
         DownloadManager downloadManager =
                 (DownloadManager) context.getSystemService(Activity.DOWNLOAD_SERVICE);
-        Request request = new Request(uri)
-                .setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setDestinationUri(destinationUri);
-        if (mimeType != null) {
-            request.setMimeType(mimeType);
+        if (downloadManager != null) {
+            Request request = new Request(uri)
+                    .setNotificationVisibility(Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    .setDestinationUri(destinationUri);
+            if (mimeType != null) {
+                request.setMimeType(mimeType);
+            }
+            //noinspection deprecation
+            request.allowScanningByMediaScanner();
+            downloadManager.enqueue(request);
         }
-        request.allowScanningByMediaScanner();
-        downloadManager.enqueue(request);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void downloadLocalFile(Context context, File src, String name) throws IOException {
-        File downloadFolder = Environment.getExternalStoragePublicDirectory(
+        File downloadFolder = context.getExternalFilesDir(
                 Environment.DIRECTORY_DOWNLOADS);
+        if (downloadFolder == null) {
+            throw new IOException("Extaernal directory not available");
+        }
+        downloadFolder.mkdirs();
         File dst = new File(downloadFolder, name);
         FileUtils.copyFile(src, dst);
         String mimeType = StringHelper.getMimeType(dst);
@@ -285,7 +293,6 @@ public class ActivityHelper {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @SuppressWarnings("deprecation")
     public static void openChangeDetailsByUri(
             Context context, Uri uri, boolean hasParent, boolean hasForceUp) {
         Intent intent = new Intent(context, ChangeDetailsActivity.class);

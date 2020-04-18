@@ -15,6 +15,8 @@
  */
 package com.ruesga.rview.gerrit;
 
+import android.os.Build;
+
 import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.filter.StatusType;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
@@ -38,7 +40,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk=Config.NEWEST_SDK, manifest = Config.NONE)
+// Roboelectric requires Java 9 in Android 29. Stick with Android 28 for now.
+@Config(sdk=Build.VERSION_CODES.P, manifest = Config.NONE)
 public class GerritApiClientTest {
 
     private static final String ENDPOINT = "https://gerrit-review.googlesource.com/";

@@ -16,6 +16,7 @@
 package com.ruesga.rview.fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -25,10 +26,19 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListPopupWindow;
 import android.widget.Toast;
+
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.net.ConnectivityManagerCompat;
+import androidx.databinding.DataBindingUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -46,19 +56,13 @@ import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.preferences.Constants;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import androidx.annotation.Keep;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.core.net.ConnectivityManagerCompat;
-import androidx.databinding.DataBindingUtil;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -113,7 +117,13 @@ public class DownloadDialogFragment extends RevealDialogFragment {
         @Override
         public void onNext(Download download) {
             mDownloadLoader.clear();
-            download(download);
+            try {
+                download(download);
+            } catch (IOException ex) {
+                final String msg = getString(R.string.download_commands_dialog_failed_message);
+                Log.e(TAG, msg, ex);
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
@@ -254,6 +264,7 @@ public class DownloadDialogFragment extends RevealDialogFragment {
                 .setPositiveButton(R.string.action_close, null);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void performDownloadPatchFile(PatchFileFormat format) {
         if (format.equals(PatchFileFormat.BASE64)) {
             performRequestDownload(REQUEST_DOWNLOAD_PATCH_FILE_BASE64_PERMISSION);
@@ -262,6 +273,7 @@ public class DownloadDialogFragment extends RevealDialogFragment {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void performDownloadArchive(DownloadFormat format) {
         if (format.equals(DownloadFormat.TGZ)) {
             performRequestDownload(REQUEST_DOWNLOAD_ARCHIVE_TGZ_PERMISSION);
@@ -274,7 +286,8 @@ public class DownloadDialogFragment extends RevealDialogFragment {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"ConstantConditions", "deprecation"})
+    @SuppressLint("Deprecated")
     private Observable<Request> doRequestDownload(Integer requestCode) {
         return SafeObservable.fromNullCallable(() -> {
                 if (getActivity() != null) {
@@ -301,7 +314,6 @@ public class DownloadDialogFragment extends RevealDialogFragment {
             .observeOn(AndroidSchedulers.mainThread());
     }
 
-    @SuppressWarnings("ConstantConditions")
     private Observable<Download> doDownload(Integer requestCode) {
         return SafeObservable.fromNullCallable(() -> createDownload(requestCode))
                 .subscribeOn(Schedulers.io())
@@ -419,14 +431,14 @@ public class DownloadDialogFragment extends RevealDialogFragment {
         throw new IllegalArgumentException("Invalid request code: " + requestCode);
     }
 
-    private void download(Download download) {
+    private void download(Download download) throws IOException {
         // Check we still in a valid context
         if (getActivity() == null) {
             return;
         }
 
         // Do not pass mimetype. Let the download manager resolve it
-        ActivityHelper.downloadUri(getContext(), download.mUri, download.mFileName, null);
+        ActivityHelper.downloadUri(requireContext(), download.mUri, download.mFileName, null);
 
         // Close the dialog
         dismiss();
@@ -464,11 +476,17 @@ public class DownloadDialogFragment extends RevealDialogFragment {
         // Copy to clipboard
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(
                 Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(label, command);
-        clipboard.setPrimaryClip(clip);
+        if (clipboard != null) {
+            ClipData clip = ClipData.newPlainText(label, command);
+            clipboard.setPrimaryClip(clip);
 
-        // Show a confirmation message
-        final String msg = getString(R.string.download_commands_dialog_copy_message, label);
-        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+            // Show a confirmation message
+            final String msg = getString(R.string.download_commands_dialog_copy_message, label);
+            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        } else {
+            // Show a failed message
+            final String msg = getString(R.string.download_commands_dialog_copy_message_failed, label);
+            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        }
     }
 }

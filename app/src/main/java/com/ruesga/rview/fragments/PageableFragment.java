@@ -35,13 +35,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class PageableFragment extends Fragment {
 
     public class PageFragmentAdapter extends FragmentPagerAdapter {
         private final SparseArray<WeakReference<Fragment>> mFragments = new SparseArray<>();
 
         PageFragmentAdapter(FragmentManager fm) {
-            super(fm);
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @NonNull
@@ -58,6 +60,7 @@ public abstract class PageableFragment extends Fragment {
             mFragments.remove(position);
         }
 
+        @NotNull
         @Override
         public Fragment getItem(int position) {
             return getFragment(position);
@@ -95,6 +98,7 @@ public abstract class PageableFragment extends Fragment {
         return true;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public CharSequence getPage(int position) {
         return getPages()[position];
     }
@@ -128,10 +132,12 @@ public abstract class PageableFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings("unused")
     public void invalidateAdapter() {
         mAdapter.notifyDataSetChanged();
     }
 
+    @SuppressWarnings("unused")
     public void navigateToItem(int page, boolean smooth) {
         mBinding.viewPager.setCurrentItem(page, smooth);
     }

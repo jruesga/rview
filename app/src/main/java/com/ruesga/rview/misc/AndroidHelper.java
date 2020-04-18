@@ -192,13 +192,16 @@ public class AndroidHelper {
     }
 
     @TargetApi(Build.VERSION_CODES.P)
+    @SuppressWarnings("deprecation")
+    @SuppressLint("Deprecated")
     public static boolean isRoaming(ConnectivityManager cm) {
         if (isApi28OrGreater()) {
             NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
-            return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING);
+            return capabilities != null &&
+                    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_ROAMING);
         }
 
         NetworkInfo ni = cm.getActiveNetworkInfo();
-        return ni.isRoaming();
+        return ni != null && ni.isRoaming();
     }
 }

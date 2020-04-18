@@ -229,9 +229,9 @@ public abstract class BaseActivity extends AppCompatDelegateActivity implements 
                 @Override
                 public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                     if (mOnFabPressedListener != null) {
-                        //noinspection ConstantConditions
-                        mBehavior.onNestedScroll(
-                                null, getContentBinding().fab, view, dx, dy, 0, 0, -1);
+                        int[] consumed = new int[2];
+                        mBehavior.onNestedScroll(getContentBinding().pageContentLayout,
+                                getContentBinding().fab, view, dx, dy, 0, 0, -1, consumed);
                     }
                 }
             });

@@ -445,6 +445,8 @@
     <string name="download_commands_dialog_archive_tbz2">tbz2</string>
     <string name="download_commands_dialog_archive_txz">txz</string>
     <string name="download_commands_dialog_copy_message">Download <xliff:g id="type" example="Format Patch">%1$s</xliff:g> command copied to clipboard</string>
+    <string name="download_commands_dialog_copy_message_failed">Download <xliff:g id="type" example="Format Patch">%1$s</xliff:g> command failed to be copied to clipboard</string>
+    <string name="download_commands_dialog_failed_message">Download failed</string>
 
     <!-- File details dialog -->
     <string name="file_details_dialog_title">File details</string>

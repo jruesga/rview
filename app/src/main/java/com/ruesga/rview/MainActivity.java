@@ -34,9 +34,7 @@ import android.view.SubMenu;
 import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
-import com.mikepenz.aboutlibraries.util.Colors;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
 import com.ruesga.rview.drawer.DrawerNavigationMenu;
@@ -598,16 +596,11 @@ public class MainActivity extends ChangeListBaseActivity implements Reloadable {
                 String[] libraries = getResources().getStringArray(R.array.libraries_ids);
                 LibsBuilder builder = new LibsBuilder()
                         .withAboutAppName(getString(R.string.app_name))
-                        .withActivityColor(
-                                new Colors(
-                                    ContextCompat.getColor(this, R.color.primaryDark),
-                                    ContextCompat.getColor(this, R.color.primaryDark)))
                         .withAboutIconShown(true)
                         .withActivityTitle(getString(R.string.menu_about))
                         .withAboutVersionShown(true)
                         .withLibraries(libraries)
-                        .withFields(R.string.class.getFields())
-                        .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR);
+                        .withFields(R.string.class.getFields());
                 builder.start(this);
                 break;
             default:

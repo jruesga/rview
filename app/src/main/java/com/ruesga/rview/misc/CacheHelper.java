@@ -272,6 +272,7 @@ public class CacheHelper {
         return getAttachmentFile(context, attachment).exists();
     }
 
+    @SuppressWarnings("deprecation")
     @SuppressLint("Deprecated")
     public static void downloadAttachmentFile(Context context, Attachment attachment)
             throws IOException {

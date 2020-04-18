@@ -15,6 +15,8 @@
  */
 package com.ruesga.rview.misc;
 
+import android.os.Build;
+
 import com.ruesga.rview.gerrit.model.DashboardInfo;
 
 import org.junit.Assert;
@@ -24,7 +26,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk=Config.NEWEST_SDK, manifest = Config.NONE)
+// Roboelectric requires Java 9 in Android 29. Stick with Android 28 for now.
+@Config(sdk= Build.VERSION_CODES.P, manifest = Config.NONE)
 public class DashboardHelperTest {
     @Test
     public void testCreateDashboardFromUri() {

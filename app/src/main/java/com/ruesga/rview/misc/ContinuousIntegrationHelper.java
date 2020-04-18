@@ -54,6 +54,7 @@ public class ContinuousIntegrationHelper {
         if (!TextUtils.isEmpty(repository.mCiStatusMode)
                 && !TextUtils.isEmpty(repository.mCiStatusUrl)) {
             // Check status mode
+            //noinspection SwitchStatementWithTooFewBranches
             switch (repository.mCiStatusMode) {
                 case "cq":
                     // BuildBot CQ status type
@@ -70,6 +71,7 @@ public class ContinuousIntegrationHelper {
 
         // NOTE: Do not fix "Redundant character escape" lint warning. Remove trailing '\'
         // will cause an PatternSyntaxException
+        @SuppressWarnings("RegExpRedundantEscape")
         String url = repository.mCiStatusUrl
                 .replaceFirst("\\{change\\}", changeId)
                 .replaceFirst("\\{revision\\}", String.valueOf(revisionNumber));
@@ -81,7 +83,7 @@ public class ContinuousIntegrationHelper {
             Response response = okhttp.newCall(request).execute();
             try {
                 String json = response.body().string();
-                JsonObject root = new JsonParser().parse(json).getAsJsonObject();
+                JsonObject root = JsonParser.parseString(json).getAsJsonObject();
                 if (!root.has("builds")) {
                     return statuses;
                 }
@@ -331,9 +333,7 @@ public class ContinuousIntegrationHelper {
                 }
             }
 
-            if (bestPart != null) {
-                return bestPart;
-            }
+            return bestPart;
         }
 
         // Can't find a valid job name
@@ -342,9 +342,6 @@ public class ContinuousIntegrationHelper {
 
     private static String extractUrl(Matcher m) {
         String url = m.group();
-        if (url == null) {
-            return null;
-        }
         if (StringHelper.endsWithPunctuationMark(url)) {
             url = url.substring(0, url.length() - 1);
         }
