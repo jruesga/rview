@@ -131,7 +131,7 @@ android {
 
                 resValue "string", "google_app_id", firebaseProps["fcmAppId"]
                 resValue "string", "fcm_api_key", firebaseProps["apiKey"]
-                resValue "bool", "fcm_enable_crashlytics", "true"
+                resValue "bool", "fcm_enable_analytics", "true"
                 resValue "string", "com.crashlytics.android.build_id", firebaseProps["crashlyticsBuildId"]
                 resValue "bool", "fcm_enable_crashlytics", "true"
             } else {
