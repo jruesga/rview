@@ -166,7 +166,7 @@ def addActivityAliases(manifest) {
         activityAlias +=
             "<activity-alias android:name=\".${name}ExternalUrlHandlerActivity\"\n" +
             "    android:theme=\"@style/AppTheme.NoStatusBarColor\"\n" +
-            "    android:targetActivity=\".UrlHandlerProxyActivity\"\n" +
+            "    android:targetActivity=\"com.ruesga.rview.UrlHandlerProxyActivity\"\n" +
             "    android:excludeFromRecents=\"true\"\n" +
             "    android:taskAffinity=\"\"\n" +
             "    android:enabled=\"false\">\n" +
