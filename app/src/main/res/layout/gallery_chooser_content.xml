@@ -61,6 +61,7 @@
                 android:layout_marginTop="8dp"
                 android:maxWidth="200dp"
                 android:text="@{message}"
+                android:gravity="center_horizontal"
                 android:textAlignment="center"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="?android:attr/textColorPrimary"

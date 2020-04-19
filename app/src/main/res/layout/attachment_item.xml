@@ -71,6 +71,7 @@
             android:maxWidth="96dp"
             android:maxLines="1"
             android:ellipsize="end"
+            android:gravity="center_horizontal"
             android:textAlignment="center"
             android:text="@{model.mName}"
             android:textAppearance="@style/TextAppearance.AbsolutelySmall"
