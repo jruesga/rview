@@ -21,10 +21,10 @@
 ##---------------End: proguard configuration for Datasbinding  ----------
 
 
-##---------------Begin: proguard configuration for Crashlytics  ----------
--keep class com.crashlytics.** { *; }
+##---------------Begin: proguard configuration for Firebase  ----------
+-keep class com.google.firebase.** { *; }
 -keep class com.google.android.gms.measurement.** { *; }
-##---------------End: proguard configuration for Crashlytics  ----------
+##---------------End: proguard configuration for Firebase  ----------
 
 
 ##---------------Begin: proguard configuration for RxJava  ----------

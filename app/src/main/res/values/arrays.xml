@@ -402,7 +402,6 @@
     </string-array>
 
     <string-array name="libraries_ids" translatable="false">
-        <item>crashlytics</item>
         <item>support_v4</item>
         <item>appcompat_v7</item>
         <item>cardview_v7</item>

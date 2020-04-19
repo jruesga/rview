@@ -29,11 +29,9 @@ dependencies {
     implementation "androidx.legacy:legacy-preference-v14:${libraries.androidx_legacy}"
     implementation "androidx.browser:browser:${libraries.androidx_browser}"
     implementation "androidx.exifinterface:exifinterface:${libraries.androidx_exifinterface}"
-    implementation("com.crashlytics.sdk.android:crashlytics:${libraries.crashlytics}@aar") { transitive = true }
-    implementation("com.crashlytics.sdk.android:crashlytics-core:${libraries.crashlytics_core}@aar") { transitive = true }
-    implementation("com.crashlytics.sdk.android:answers:${libraries.crashlytics_answers}@aar") { transitive = true }
     implementation "com.google.firebase:firebase-core:${libraries.firebase_core}"
     implementation "com.google.firebase:firebase-messaging:${libraries.firebase_messaging}"
+    implementation "com.google.firebase:firebase-crashlytics:${libraries.firebase_crashlytics}"
     implementation "commons-io:commons-io:${libraries.commons_io}"
     implementation "com.github.bumptech.glide:glide:${libraries.glide}"
     annotationProcessor "com.github.bumptech.glide:compiler:${libraries.glide}"
@@ -106,7 +104,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), file('proguard-project.txt'), file('proguard-project-debug.txt')
 
             resValue "string", "fcm_api_key", "<empty>"
-            resValue "bool", "fcm_disable_analytics", "true"
+            resValue "bool", "fcm_enable_analytics", "false"
+            resValue "string", "com.crashlytics.android.build_id", "<empty>"
+            resValue "bool", "fcm_enable_crashlytics", "false"
 
             return void
         }
@@ -121,10 +121,6 @@ android {
             //noinspection GroovyAssignabilityCheck
             signingConfig signingConfigs.release
 
-            // IMP! Enable your Crashlytics api key in a file called fabric.properties in the
-            // project directory and add the value apiKey=<your key> to that file
-            ext.enableCrashlytics = project.file('fabric.properties').exists()
-
             // IMP! Enable your Firebase api key in a file called fabric.properties in the
             // project directory and add the value apiKey=<your key> to that file
             if (project.file('firebase.properties').exists()) {
@@ -133,11 +129,17 @@ android {
 
                 resValue "string", "google_app_id", firebaseProps["fcmAppId"]
                 resValue "string", "fcm_api_key", firebaseProps["apiKey"]
-                resValue "bool", "fcm_disable_analytics", "false"
+                resValue "bool", "fcm_enable_crashlytics", "true"
+                resValue "string", "com.crashlytics.android.build_id", firebaseProps["crashlyticsBuildId"]
+                resValue "bool", "fcm_enable_crashlytics", "true"
             } else {
                 resValue "string", "fcm_api_key", "<empty>"
-                resValue "bool", "fcm_disable_analytics", "true"
+                resValue "bool", "fcm_enable_analytics", "false"
+                resValue "string", "com.crashlytics.android.build_id", "<empty>"
+                resValue "bool", "fcm_enable_crashlytics", "false"
             }
+
+            resValue "string", "com.crashlytics.android.build_id", "8338a10fdb364c518bf381bc1884f3c5"
 
             return void
         }
@@ -212,5 +214,4 @@ tasks.whenTaskAdded { task ->
     }
 }
 
-apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'

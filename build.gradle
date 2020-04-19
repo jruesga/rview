@@ -25,6 +25,7 @@ ext {
         play_services_auth          : '18.0.0',
         firebase_core               : '17.3.0',
         firebase_messaging          : '20.1.5',
+        firebase_crashlytics        : '17.0.0-beta04',
         gson                        : '2.8.6',
         retrofit2                   : '2.8.1',
         // Keep okHttp in 3.12.x, since 3.13+ requires Android 5
@@ -45,10 +46,7 @@ ext {
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.3.0',
         better_link_movement_method : '2.2.0',
-        aboutlibraries              : '8.0.1',
-        crashlytics                 : '2.10.1',
-        crashlytics_core            : '2.7.0',
-        crashlytics_answers         : '1.4.7'
+        aboutlibraries              : '8.0.1'
     ]
 
     testLibraries = [
@@ -66,13 +64,10 @@ allprojects {
         repositories {
             google()
             jcenter()
-            maven { url 'https://maven.fabric.io/public' }
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:3.6.3'
             classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:1.0.0'
-            // https://s3.amazonaws.com/fabric-artifacts/public/io/fabric/tools/gradle/maven-metadata.xml
-            classpath 'io.fabric.tools:gradle:1.31.2'
         }
     }
 
@@ -80,7 +75,6 @@ allprojects {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
-        maven { url 'https://maven.fabric.io/public' }
     }
 
     gradle.projectsEvaluated {

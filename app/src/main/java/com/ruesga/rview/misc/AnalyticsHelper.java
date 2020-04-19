@@ -78,6 +78,6 @@ public class AnalyticsHelper {
     }
 
     private static boolean checkIsAnalyticsEnabled(Context context) {
-        return !context.getResources().getBoolean(R.bool.fcm_disable_analytics);
+        return context.getResources().getBoolean(R.bool.fcm_enable_analytics);
     }
 }

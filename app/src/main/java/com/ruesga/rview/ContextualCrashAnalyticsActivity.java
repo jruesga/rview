@@ -18,7 +18,7 @@ package com.ruesga.rview;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.crashlytics.android.Crashlytics;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.UriHelper;
@@ -67,6 +67,7 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
     }
 
     @Override
+    @SuppressWarnings("NullableProblems")
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("contextual_crash_analytics",
@@ -120,7 +121,7 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
             } else {
                 String changeId = getIntent().getStringExtra(Constants.EXTRA_CHANGE_ID);
                 if (!TextUtils.isEmpty(changeId)) {
-                    setAnalyticsChangeId(String.valueOf(changeId));
+                    setAnalyticsChangeId(changeId);
                 }
             }
         } catch (Throwable ex) {
@@ -131,11 +132,11 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
         try {
             String revisionId = getIntent().getStringExtra(Constants.EXTRA_REVISION_ID);
             if (!TextUtils.isEmpty(revisionId)) {
-                setAnalyticsRevisionId(String.valueOf(revisionId));
+                setAnalyticsRevisionId(revisionId);
             } else {
                 revisionId = getIntent().getStringExtra(Constants.EXTRA_REVISION);
                 if (!TextUtils.isEmpty(revisionId)) {
-                    setAnalyticsRevisionId(String.valueOf(revisionId));
+                    setAnalyticsRevisionId(revisionId);
                 }
             }
         } catch (Throwable ex) {
@@ -146,7 +147,7 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
         try {
             String fileId = getIntent().getStringExtra(Constants.EXTRA_FILE);
             if (!TextUtils.isEmpty(fileId)) {
-                setAnalyticsFileId(String.valueOf(fileId));
+                setAnalyticsFileId(fileId);
             }
         } catch (Throwable ex) {
             // Don't fail because analytics
@@ -156,7 +157,7 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
         try {
             String base = getIntent().getStringExtra(Constants.EXTRA_BASE);
             if (!TextUtils.isEmpty(base)) {
-                setAnalyticsBase(String.valueOf(base));
+                setAnalyticsBase(base);
             }
         } catch (Throwable ex) {
             // Don't fail because analytics
@@ -166,23 +167,24 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
         try {
             String filter = getIntent().getStringExtra(Constants.EXTRA_FILTER);
             if (!TextUtils.isEmpty(filter)) {
-                setAnalyticsFilter(String.valueOf(filter));
+                setAnalyticsFilter(filter);
             }
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void setAnalyticsEnvironment() {
         try {
-            if (!checkCraAvailability()) {
+            if (!isCrashlyticsEnabled()) {
                 return;
             }
-            Crashlytics.setBool("is_tablet", getResources().getBoolean(R.bool.config_is_tablet));
+            instance().setCustomKey("is_tablet", getResources().getBoolean(R.bool.config_is_tablet));
             if (getIntent() != null) {
-                Crashlytics.setString("intent_action", getIntent().getAction());
-                Crashlytics.setString("intent_type", getIntent().getType());
-                Crashlytics.setString("intent_data", getIntent().getDataString());
+                instance().setCustomKey("intent_action", getIntent().getAction());
+                instance().setCustomKey("intent_type", getIntent().getType());
+                instance().setCustomKey("intent_data", getIntent().getDataString());
             }
         } catch (Throwable ex) {
             // Don't fail because analytics
@@ -203,13 +205,13 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
 
     private void setAnalyticsAccount(String repository, String authenticated) {
         try {
-            if (!checkCraAvailability()) {
+            if (!isCrashlyticsEnabled()) {
                 return;
             }
             mCrashContext.repository = repository;
             mCrashContext.authenticated = authenticated;
-            Crashlytics.setString("repository", repository);
-            Crashlytics.setString("authenticated", authenticated);
+            instance().setCustomKey("repository", repository);
+            instance().setCustomKey("authenticated", authenticated);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
@@ -217,11 +219,11 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
 
     public void setAnalyticsChangeId(String changeId) {
         try {
-            if (!checkCraAvailability()) {
+            if (!isCrashlyticsEnabled()) {
                 return;
             }
             mCrashContext.changeId = changeId;
-            Crashlytics.setString("changeId", changeId);
+            instance().setCustomKey("changeId", changeId);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
@@ -229,11 +231,11 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
 
     public void setAnalyticsRevisionId(String revisionId) {
         try {
-            if (!checkCraAvailability()) {
+            if (!isCrashlyticsEnabled()) {
                 return;
             }
             mCrashContext.revisionId = revisionId;
-            Crashlytics.setString("revisionId", revisionId);
+            instance().setCustomKey("revisionId", revisionId);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
@@ -241,11 +243,11 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
 
     public void setAnalyticsFileId(String fileId) {
         try {
-            if (!checkCraAvailability()) {
+            if (!isCrashlyticsEnabled()) {
                 return;
             }
             mCrashContext.fileId = fileId;
-            Crashlytics.setString("fileId", fileId);
+            instance().setCustomKey("fileId", fileId);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
@@ -253,11 +255,11 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
 
     public void setAnalyticsBase(String base) {
         try {
-            if (!checkCraAvailability()) {
+            if (!isCrashlyticsEnabled()) {
                 return;
             }
             mCrashContext.base = base;
-            Crashlytics.setString("base", base);
+            instance().setCustomKey("base", base);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
@@ -265,18 +267,27 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
 
     public void setAnalyticsFilter(String filter) {
         try {
-            if (!checkCraAvailability()) {
+            if (!isCrashlyticsEnabled()) {
                 return;
             }
             mCrashContext.filter = filter;
-            Crashlytics.setString("filter", filter);
+            instance().setCustomKey("filter", filter);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
     }
 
-    private boolean checkCraAvailability() {
-        return !BuildConfig.DEBUG && Crashlytics.getInstance() != null;
-
+    @SuppressWarnings({"ConstantConditions", "BooleanMethodIsAlwaysInverted"})
+    private boolean isCrashlyticsEnabled() {
+        try {
+            return getResources().getBoolean(R.bool.fcm_enable_crashlytics)
+                    && FirebaseCrashlytics.getInstance() != null;
+        } catch (RuntimeException ex) {
+            return false;
+        }
+    }
+    
+    private FirebaseCrashlytics instance() {
+        return FirebaseCrashlytics.getInstance();
     }
 }

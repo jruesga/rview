@@ -42,7 +42,7 @@
         <!-- https://android-developers.googleblog.com/2017/03/update-your-app-to-take-advantage-of.html -->
         <meta-data android:name="android.max_aspect" android:value="2.1" />
 
-        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="@bool/fcm_disable_analytics" />
+        <meta-data android:name="firebase_analytics_collection_enabled" android:value="@bool/fcm_enable_analytics" />
 
         <activity
             android:name=".MainActivity"

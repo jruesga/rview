@@ -20,11 +20,9 @@ import android.content.Intent;
 import android.os.StrictMode;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.ruesga.rview.attachments.AttachmentsProviderFactory;
 import com.ruesga.rview.misc.AnalyticsHelper;
 import com.ruesga.rview.misc.Formatter;
@@ -37,9 +35,6 @@ import com.ruesga.rview.receivers.CacheCleanerReceiver;
 import com.ruesga.rview.services.DeviceRegistrationService;
 
 import java.util.List;
-
-import io.fabric.sdk.android.Fabric;
-import io.fabric.sdk.android.Kit;
 
 public class RviewApplication extends Application {
 
@@ -61,22 +56,6 @@ public class RviewApplication extends Application {
                     .build());
         }
 
-        // Install a hook to Crashlytics and Answers (only in production releases)
-        if (!BuildConfig.DEBUG) {
-            try {
-                CrashlyticsCore core = new CrashlyticsCore.Builder().build();
-                Crashlytics crashlytics = new Crashlytics.Builder().core(core).build();
-                Answers answers = new Answers();
-                final Fabric fabric = new Fabric.Builder(this)
-                        .kits(new Kit[]{crashlytics, answers})
-                        .build();
-                Fabric.with(fabric);
-            } catch (Throwable ex) {
-                // Ignore any fabric exception by miss-configuration
-                Log.e(TAG, "Cannot configure Fabric", ex);
-            }
-        }
-
         // Configure Firebase (just an empty stub to set empty sender ids). Senders
         // ids will be fetched from the Gerrit server instances.
         try {
@@ -88,6 +67,14 @@ public class RviewApplication extends Application {
                     .build();
             FirebaseApp.initializeApp(getApplicationContext(), options);
             AnalyticsHelper.appStarted(getApplicationContext());
+
+            // Configure Firebase Crashlytics
+            boolean enableCrashlytics = getResources().getBoolean(R.bool.fcm_enable_crashlytics);
+            FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+            crashlytics.setCrashlyticsCollectionEnabled(enableCrashlytics);
+            if (!enableCrashlytics) {
+                crashlytics.deleteUnsentReports();
+            }
         } catch (Throwable ex) {
             // Ignore any firebase exception by miss-configuration
             Log.e(TAG, "Cannot configure Firebase", ex);
