@@ -41,8 +41,8 @@ public class DeviceRegistrationService extends JobIntentService {
 
     private static final String TAG = "DeviceRegisterService";
 
-    public static final String REGISTER_DEVICE_ACTION = BuildConfig.APPLICATION_ID + ".actions.REGISTER_DEVICE";
-    public static final String EXTRA_ACCOUNT = "account";
+    private static final String REGISTER_DEVICE_ACTION = BuildConfig.APPLICATION_ID + ".actions.REGISTER_DEVICE";
+    private static final String EXTRA_ACCOUNT = "account";
 
     private static final String TOKEN_SCOPE = "FCM";
 
@@ -52,7 +52,12 @@ public class DeviceRegistrationService extends JobIntentService {
         super();
     }
 
-    public static void enqueueWork(Context context, Intent work) {
+    public static void register(Context context, Account account) {
+        Intent work = new Intent();
+        work.setAction(REGISTER_DEVICE_ACTION);
+        if (account != null) {
+            work.putExtra(DeviceRegistrationService.EXTRA_ACCOUNT, account.getAccountHash());
+        }
         enqueueWork(context, DeviceRegistrationService.class, JOB_ID, work);
     }
 

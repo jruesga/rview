@@ -15,6 +15,7 @@
  */
 
 apply plugin: 'com.android.library'
+apply from: "${rootDir}/flavors.gradle"
 
 def libraries = rootProject.ext.libraries
 
@@ -32,7 +33,7 @@ dependencies {
     api "io.reactivex.rxjava2:rxjava:${libraries.rxjava}"
     api "io.reactivex.rxjava2:rxandroid:${libraries.rxandroid}"
     api "com.github.jruesga:rxloader:${libraries.rxloader2}"
-    api "com.google.android.gms:play-services-auth:${libraries.play_services_auth}"
+    gmsApi "com.google.android.gms:play-services-auth:${libraries.play_services_auth}"
 }
 
 android {

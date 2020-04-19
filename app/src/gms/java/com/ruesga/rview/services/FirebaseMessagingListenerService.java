@@ -15,7 +15,6 @@
  */
 package com.ruesga.rview.services;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -31,8 +30,6 @@ public class FirebaseMessagingListenerService extends FirebaseMessagingService {
         }
 
         // Register all accounts
-        Intent intent = new Intent();
-        intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
-        DeviceRegistrationService.enqueueWork(this, intent);
+        DeviceRegistrationService.register(this, null);
     }
 }

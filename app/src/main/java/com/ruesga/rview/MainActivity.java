@@ -35,6 +35,7 @@ import android.view.View;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.ruesga.rview.analytics.AnalyticsManagerImpl;
 import com.ruesga.rview.databinding.ContentBinding;
 import com.ruesga.rview.databinding.NavigationHeaderBinding;
 import com.ruesga.rview.drawer.DrawerNavigationMenu;
@@ -53,7 +54,6 @@ import com.ruesga.rview.gerrit.filter.ChangeQuery;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.misc.ActivityHelper;
-import com.ruesga.rview.misc.AnalyticsHelper;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.EmojiHelper;
 import com.ruesga.rview.misc.Formatter;
@@ -77,7 +77,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -271,7 +270,7 @@ public class MainActivity extends ChangeListBaseActivity implements Reloadable {
                 mAccountStatusChangedReceiver, filter);
         if (mAccount != null) {
             fetchAccountStatus(mAccount);
-            AnalyticsHelper.accountSelected(this, mAccount);
+            AnalyticsManagerImpl.instance().accountSelected(this, mAccount);
         }
 
         mHeaderDrawerBinding.setModel(mModel);
@@ -380,7 +379,7 @@ public class MainActivity extends ChangeListBaseActivity implements Reloadable {
                     CacheHelper.createAccountCacheDir(this, mAccount);
                     setupAccountUrlHandlingStatus(mAccount, true);
                     NotificationsHelper.createNotificationChannel(this, mAccount);
-                    AnalyticsHelper.accountEvent(this, mAccount, true);
+                    AnalyticsManagerImpl.instance().accountEvent(this, mAccount, true);
                 } else {
                     showWarning(R.string.account_exists);
                 }
@@ -488,7 +487,8 @@ public class MainActivity extends ChangeListBaseActivity implements Reloadable {
     private void performUpdateNavigationDrawer(boolean show) {
         final boolean auth = mAccount != null && mAccount.hasAuthenticatedAccessMode();
         final boolean supportNotifications = mAccount != null && mAccount.hasNotificationsSupport()
-                && Preferences.isAccountNotificationsEnabled(this, mAccount);
+                && Preferences.isAccountNotificationsEnabled(this, mAccount)
+                && getResources().getBoolean(R.bool.has_notifications_support);
         final Menu menu = mBinding.drawerNavigationView.getMenu();
         menu.setGroupVisible(R.id.category_all, !show);
         menu.setGroupVisible(R.id.category_other_changes, !show);
@@ -762,7 +762,7 @@ public class MainActivity extends ChangeListBaseActivity implements Reloadable {
         Preferences.setAccount(this, mAccount);
         Formatter.refreshCachedPreferences(this);
         fetchAccountStatus(mAccount);
-        AnalyticsHelper.accountSelected(this, mAccount);
+        AnalyticsManagerImpl.instance().accountSelected(this, mAccount);
 
         // Refresh the ui
         updateCurrentAccountDrawerInfo();
@@ -797,11 +797,11 @@ public class MainActivity extends ChangeListBaseActivity implements Reloadable {
                 boolean currentAccount = mAccount != null &&
                         mAccount.getAccountHash().equals(acct.getAccountHash());
                 if (currentAccount) {
-                    AnalyticsHelper.accountEvent(this, mAccount, false);
+                    AnalyticsManagerImpl.instance().accountEvent(this, mAccount, false);
                     performDeleteAccount(mAccount, true);
                     internalPerformShowAccount(false);
                 } else {
-                    AnalyticsHelper.accountEvent(this, acct, false);
+                    AnalyticsManagerImpl.instance().accountEvent(this, acct, false);
                     performDeleteAccount(acct, false);
                 }
 

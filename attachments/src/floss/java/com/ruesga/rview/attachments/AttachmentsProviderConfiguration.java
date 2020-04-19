@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2020 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview;
+package com.ruesga.rview.attachments;
 
-import android.os.Bundle;
+import android.content.Context;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
+import com.ruesga.rview.attachments.none.NoneAttachmentsProvider;
 
-import com.ruesga.rview.analytics.ContextualCrashReportingActivity;
+import java.util.Map;
+import java.util.TreeMap;
 
-public abstract class AppCompatDelegateActivity extends ContextualCrashReportingActivity {
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+public class AttachmentsProviderConfiguration {
+    public static Map<Provider, AttachmentsProvider> availableProviders(Context context) {
+        Map<Provider, AttachmentsProvider> providers = new TreeMap<>();
+        providers.put(Provider.NONE, new NoneAttachmentsProvider());
+        return  providers;
     }
 }

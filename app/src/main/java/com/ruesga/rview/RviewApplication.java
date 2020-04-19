@@ -16,15 +16,10 @@
 package com.ruesga.rview;
 
 import android.app.Application;
-import android.content.Intent;
 import android.os.StrictMode;
-import android.util.Log;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.ruesga.rview.analytics.AnalyticsFlavor;
 import com.ruesga.rview.attachments.AttachmentsProviderFactory;
-import com.ruesga.rview.misc.AnalyticsHelper;
 import com.ruesga.rview.misc.Formatter;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.NotificationsHelper;
@@ -37,9 +32,6 @@ import com.ruesga.rview.services.DeviceRegistrationService;
 import java.util.List;
 
 public class RviewApplication extends Application {
-
-    private static final String TAG = "RviewApplication";
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -56,29 +48,8 @@ public class RviewApplication extends Application {
                     .build());
         }
 
-        // Configure Firebase (just an empty stub to set empty sender ids). Senders
-        // ids will be fetched from the Gerrit server instances.
-        try {
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setProjectId(getString(R.string.fcm_project_id))
-                    .setApplicationId(getString(R.string.fcm_app_id))
-                    .setGcmSenderId(getString(R.string.fcm_sender_id))
-                    .setApiKey(getString(R.string.fcm_api_key))
-                    .build();
-            FirebaseApp.initializeApp(getApplicationContext(), options);
-            AnalyticsHelper.appStarted(getApplicationContext());
-
-            // Configure Firebase Crashlytics
-            boolean enableCrashlytics = getResources().getBoolean(R.bool.fcm_enable_crashlytics);
-            FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
-            crashlytics.setCrashlyticsCollectionEnabled(enableCrashlytics);
-            if (!enableCrashlytics) {
-                crashlytics.deleteUnsentReports();
-            }
-        } catch (Throwable ex) {
-            // Ignore any firebase exception by miss-configuration
-            Log.e(TAG, "Cannot configure Firebase", ex);
-        }
+        // Setup analytics based on product flavor
+        AnalyticsFlavor.setup(this);
 
         // Initialize application resources
         Formatter.refreshCachedPreferences(getApplicationContext());
@@ -90,9 +61,7 @@ public class RviewApplication extends Application {
         NotificationsHelper.recreateNotifications(getApplicationContext());
 
         // Register devices for push notifications
-        Intent intent = new Intent();
-        intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
-        DeviceRegistrationService.enqueueWork(this, intent);
+        DeviceRegistrationService.register(this, null);
 
         // Schedule a cache clean
         CacheCleanerReceiver.cleanCache(getApplicationContext(), true);

@@ -29,7 +29,7 @@
     <uses-permission android:name="${applicationId}.permissions.PRIVATE_ACCESS" />
 
     <application
-        android:name=".RviewApplication"
+        android:name="com.ruesga.rview.RviewApplication"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:supportsRtl="true"
@@ -45,7 +45,7 @@
         <meta-data android:name="firebase_analytics_collection_enabled" android:value="@bool/fcm_enable_analytics" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.ruesga.rview.MainActivity"
             android:theme="@style/AppTheme.NoStatusBarColor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -55,14 +55,14 @@
         </activity>
 
         <activity
-            android:name=".ChangeDetailsActivity"
+            android:name="com.ruesga.rview.ChangeDetailsActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:parentActivityName=".MainActivity"
             android:exported="false" />
         <activity-alias
             android:name=".InternalUrlHandlerActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
-            android:targetActivity=".ChangeDetailsActivity">
+            android:targetActivity="com.ruesga.rview.ChangeDetailsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -74,14 +74,14 @@
         </activity-alias>
 
         <activity
-            android:name=".UrlHandlerProxyActivity"
+            android:name="com.ruesga.rview.UrlHandlerProxyActivity"
             android:theme="@style/AppTheme.Translucent"
             android:excludeFromRecents="true"
             android:taskAffinity=""
             android:exported="false" />
-        <activity-alias android:name=".GerritGenericUrlHandlerActivity"
+        <activity-alias android:name="com.ruesga.rview.GerritGenericUrlHandlerActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
-            android:targetActivity=".UrlHandlerProxyActivity"
+            android:targetActivity="com.ruesga.rview.UrlHandlerProxyActivity"
             android:excludeFromRecents="true"
             android:taskAffinity=""
             android:enabled="true">
@@ -96,26 +96,26 @@
         <!-- URL-ACTIVITY-HANDLERS -->
 
         <activity
-            android:name=".TabFragmentActivity"
+            android:name="com.ruesga.rview.TabFragmentActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.ruesga.rview.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".DiffViewerActivity"
+            android:name="com.ruesga.rview.DiffViewerActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
-            android:parentActivityName=".ChangeDetailsActivity"
+            android:parentActivityName="com.ruesga.rview.ChangeDetailsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ChangeListByFilterActivity"
+            android:name="com.ruesga.rview.ChangeListByFilterActivity"
             android:theme="@style/AppTheme.NoStatusBarColor"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.ruesga.rview.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".EditorActivity"
-            android:parentActivityName=".MainActivity"
+            android:name="com.ruesga.rview.EditorActivity"
+            android:parentActivityName="com.ruesga.rview.ChangeDetailsActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
@@ -124,68 +124,47 @@
         </activity>
 
         <activity
-            android:name=".SearchActivity"
+            android:name="com.ruesga.rview.SearchActivity"
             android:theme="@style/AppTheme.Translucent"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.ruesga.rview.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:excludeFromRecents="true"
             android:exported="false" />
 
         <activity
-            android:name=".NotificationsActivity"
-            android:parentActivityName=".MainActivity"
+            android:name="com.ruesga.rview.NotificationsActivity"
+            android:parentActivityName="com.ruesga.rview.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".AccountSettingsActivity"
+            android:name="com.ruesga.rview.AccountSettingsActivity"
             android:theme="@style/AppTheme.Settings"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.ruesga.rview.MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".wizards.SetupAccountActivity"
+            android:name="com.ruesga.rview.wizards.SetupAccountActivity"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:exported="false" />
 
         <activity
-            android:name=".wizards.AuthorizationAccountSetupActivity"
+            android:name="com.ruesga.rview.wizards.AuthorizationAccountSetupActivity"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.NoStatusBarColor"
             android:exported="false" />
 
         <provider
-            android:name=".providers.RviewProvider"
+            android:name="com.ruesga.rview.providers.RviewProvider"
             android:authorities="${applicationId}"
             android:exported="false"/>
 
         <service
-            android:name=".services.DeviceRegistrationService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true" />
-
-        <service
-            android:name=".services.AccountStatusFetcherService"
+            android:name="com.ruesga.rview.services.AccountStatusFetcherService"
             android:exported="false" />
 
-        <service
-            android:name=".services.NotificationService"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-
-        <service
-            android:name=".services.FirebaseMessagingListenerService"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
-
         <receiver
-            android:name=".receivers.NotificationReceiver"
+            android:name="com.ruesga.rview.receivers.NotificationReceiver"
             android:permission="${applicationId}.permissions.PRIVATE_ACCESS">
             <intent-filter>
                 <action android:name="android.intent.action.LOCALE_CHANGED" />
@@ -195,7 +174,7 @@
         </receiver>
 
         <receiver
-            android:name=".receivers.CacheCleanerReceiver"
+            android:name="com.ruesga.rview.receivers.CacheCleanerReceiver"
             android:permission="${applicationId}.permissions.PRIVATE_ACCESS">
             <intent-filter>
                 <action android:name="${applicationId}.action.CLEAN_CACHE" />
@@ -212,36 +191,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/content_paths" />
         </provider>
-
-        <!-- Disable auto-manage gson services -->
-        <provider android:authorities="${applicationId}.firebaseinitprovider"
-            android:name="com.google.firebase.provider.FirebaseInitProvider"
-            android:exported="false"
-            tools:node="remove"/>
-        <!-- Firebase AppMeasurement. Needed to avoid crashes from Google Test Labs devices -->
-        <receiver
-            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
-            android:enabled="true"
-            android:exported="false" >
-        </receiver>
-        <receiver
-            android:name="com.google.android.gms.measurement.AppMeasurementInstallReferrerReceiver"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.INSTALL_PACKAGES" >
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
-        <service
-            android:name="com.google.android.gms.measurement.AppMeasurementService"
-            android:enabled="true"
-            android:exported="false" />
-        <service
-            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
 
     </application>
 

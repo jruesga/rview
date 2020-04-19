@@ -15,6 +15,7 @@
  */
 
 apply plugin: 'com.android.application'
+apply from: "${rootDir}/flavors.gradle"
 
 import groovy.json.JsonSlurper
 
@@ -29,9 +30,9 @@ dependencies {
     implementation "androidx.legacy:legacy-preference-v14:${libraries.androidx_legacy}"
     implementation "androidx.browser:browser:${libraries.androidx_browser}"
     implementation "androidx.exifinterface:exifinterface:${libraries.androidx_exifinterface}"
-    implementation "com.google.firebase:firebase-core:${libraries.firebase_core}"
-    implementation "com.google.firebase:firebase-messaging:${libraries.firebase_messaging}"
-    implementation "com.google.firebase:firebase-crashlytics:${libraries.firebase_crashlytics}"
+    gmsImplementation "com.google.firebase:firebase-core:${libraries.firebase_core}"
+    gmsImplementation "com.google.firebase:firebase-messaging:${libraries.firebase_messaging}"
+    gmsImplementation "com.google.firebase:firebase-crashlytics:${libraries.firebase_crashlytics}"
     implementation "commons-io:commons-io:${libraries.commons_io}"
     implementation "com.github.bumptech.glide:glide:${libraries.glide}"
     annotationProcessor "com.github.bumptech.glide:compiler:${libraries.glide}"
@@ -149,7 +150,7 @@ android {
 
 def addActivityAliases(manifest) {
     if (!manifest.exists()) {
-        return
+        throw new groovy.util.ResourceException("Cannot replace activity aliases. Manifest doesn't exists: $manifest")
     }
 
     def repositories = new File(
@@ -186,31 +187,36 @@ def addActivityAliases(manifest) {
     manifest.text += text
 }
 
-def registerAddActivityAliases(task, build) {
+def registerAddActivityAliases(task, flavor, build) {
+    def flavorName = flavor.name.toString()
     def buildName = build.name.toString()
     def manifestFull = new File(
-            (project.path + "/build/intermediates/merged_manifests/${buildName}/AndroidManifest.xml")
+            (project.path + "/build/intermediates/merged_manifests/${flavorName}${buildName.capitalize()}/AndroidManifest.xml")
             .replace(":", ""))
 
-    def addActivityAliasesTaskName = "addActivityAliases${buildName.capitalize()}"
+    def addActivityAliasesTaskName = "addActivityAliases${flavorName.capitalize()}${buildName.capitalize()}"
     project.task(addActivityAliasesTaskName).doLast({
-        description = 'Include extra activity-alias to final AndroidManifest.xml'
+        description = "Include extra activity-alias to final AndroidManifest.xml [${flavorName} / ${buildName}]"
         addActivityAliases(manifestFull)
     })
 
     task.dependsOn(addActivityAliasesTaskName)
-    def processTask = "process${buildName.capitalize()}Manifest"
+    def processTask = "process${flavorName.capitalize()}${buildName.capitalize()}Manifest"
     project.(addActivityAliasesTaskName.toString()).dependsOn(processTask)
 }
 
 tasks.whenTaskAdded { task ->
-    project.("android").buildTypes.all { build ->
-        def buildName = build.name.capitalize().toString()
-        def compileTask = "process${buildName}Resources".toString()
-        if (compileTask == task.name) {
-            registerAddActivityAliases(task, build)
+    project.("android").productFlavors.all { flavor ->
+        def flavorName = flavor.name.capitalize().toString()
+        project.("android").buildTypes.all { build ->
+            def buildName = build.name.capitalize().toString()
+            def compileTask = "process${flavorName}${buildName}Resources".toString()
+            if (compileTask == task.name) {
+                registerAddActivityAliases(task, flavor, build)
+            }
         }
     }
+
 }
 
 apply plugin: 'com.getkeepsafe.dexcount'

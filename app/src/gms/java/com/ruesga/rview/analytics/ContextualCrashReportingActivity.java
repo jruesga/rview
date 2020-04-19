@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Jorge Ruesga
+ * Copyright (C) 2020 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview;
+package com.ruesga.rview.analytics;
 
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.ruesga.rview.R;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.UriHelper;
@@ -30,10 +31,11 @@ import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity {
+public abstract class ContextualCrashReportingActivity
+        extends AppCompatActivity implements CrashReporting {
 
     @Keep
-    private static class ContextualCrashAnalytics {
+    private static class ContextualCrashReporting {
         String repository;
         String authenticated;
         String changeId;
@@ -43,19 +45,19 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
         String filter;
     }
 
-    private ContextualCrashAnalytics mCrashContext;
+    private ContextualCrashReporting mContextualCrashReporting;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         clearAnalyticsContext();
         if (savedInstanceState != null) {
-            mCrashContext = SerializationManager.getInstance().fromJson(
+            mContextualCrashReporting = SerializationManager.getInstance().fromJson(
                     savedInstanceState.getString("contextual_crash_analytics"),
-                    ContextualCrashAnalytics.class);
+                    ContextualCrashReporting.class);
             putAnalyticsContext();
         } else {
-            mCrashContext = new ContextualCrashAnalytics();
+            mContextualCrashReporting = new ContextualCrashReporting();
             resolveAnalyticsContext();
         }
     }
@@ -71,7 +73,7 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("contextual_crash_analytics",
-                SerializationManager.getInstance().toJson(mCrashContext));
+                SerializationManager.getInstance().toJson(mContextualCrashReporting));
     }
 
     private void clearAnalyticsContext() {
@@ -85,12 +87,14 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
 
     private void putAnalyticsContext() {
         setAnalyticsEnvironment();
-        setAnalyticsAccount(mCrashContext.repository, mCrashContext.authenticated);
-        setAnalyticsChangeId(mCrashContext.changeId);
-        setAnalyticsRevisionId(mCrashContext.revisionId);
-        setAnalyticsFileId(mCrashContext.fileId);
-        setAnalyticsBase(mCrashContext.base);
-        setAnalyticsFilter(mCrashContext.filter);
+        setAnalyticsAccount(
+                mContextualCrashReporting.repository,
+                mContextualCrashReporting.authenticated);
+        setAnalyticsChangeId(mContextualCrashReporting.changeId);
+        setAnalyticsRevisionId(mContextualCrashReporting.revisionId);
+        setAnalyticsFileId(mContextualCrashReporting.fileId);
+        setAnalyticsBase(mContextualCrashReporting.base);
+        setAnalyticsFilter(mContextualCrashReporting.filter);
     }
 
     private void resolveAnalyticsContext() {
@@ -191,6 +195,7 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
         }
     }
 
+    @Override
     public void setAnalyticsAccount(Account account) {
         try {
             String repository = account == null ? null : UriHelper.anonymize(
@@ -208,8 +213,8 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
             if (!isCrashlyticsEnabled()) {
                 return;
             }
-            mCrashContext.repository = repository;
-            mCrashContext.authenticated = authenticated;
+            mContextualCrashReporting.repository = repository;
+            mContextualCrashReporting.authenticated = authenticated;
             instance().setCustomKey("repository", repository);
             instance().setCustomKey("authenticated", authenticated);
         } catch (Throwable ex) {
@@ -217,60 +222,65 @@ public abstract class ContextualCrashAnalyticsActivity extends AppCompatActivity
         }
     }
 
+    @Override
     public void setAnalyticsChangeId(String changeId) {
         try {
             if (!isCrashlyticsEnabled()) {
                 return;
             }
-            mCrashContext.changeId = changeId;
+            mContextualCrashReporting.changeId = changeId;
             instance().setCustomKey("changeId", changeId);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
     }
 
+    @Override
     public void setAnalyticsRevisionId(String revisionId) {
         try {
             if (!isCrashlyticsEnabled()) {
                 return;
             }
-            mCrashContext.revisionId = revisionId;
+            mContextualCrashReporting.revisionId = revisionId;
             instance().setCustomKey("revisionId", revisionId);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
     }
 
+    @Override
     public void setAnalyticsFileId(String fileId) {
         try {
             if (!isCrashlyticsEnabled()) {
                 return;
             }
-            mCrashContext.fileId = fileId;
+            mContextualCrashReporting.fileId = fileId;
             instance().setCustomKey("fileId", fileId);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
     }
 
+    @Override
     public void setAnalyticsBase(String base) {
         try {
             if (!isCrashlyticsEnabled()) {
                 return;
             }
-            mCrashContext.base = base;
+            mContextualCrashReporting.base = base;
             instance().setCustomKey("base", base);
         } catch (Throwable ex) {
             // Don't fail because analytics
         }
     }
 
+    @Override
     public void setAnalyticsFilter(String filter) {
         try {
             if (!isCrashlyticsEnabled()) {
                 return;
             }
-            mCrashContext.filter = filter;
+            mContextualCrashReporting.filter = filter;
             instance().setCustomKey("filter", filter);
         } catch (Throwable ex) {
             // Don't fail because analytics

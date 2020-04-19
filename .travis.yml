@@ -22,7 +22,7 @@ env:
   - ANDROID_HOME=$HOME/android-sdk
 
 script:
-  - ./gradlew --no-daemon --parallel clean lintDebug testDebug
+  - ./gradlew --no-daemon --parallel clean lintGmsDebug testGmsDebug lintFlossDebug testFlossDebug
 
 notifications:
   email:

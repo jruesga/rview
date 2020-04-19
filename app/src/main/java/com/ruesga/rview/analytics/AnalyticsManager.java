@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2020 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview;
+package com.ruesga.rview.analytics;
 
-import android.os.Bundle;
+import android.content.Context;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
+import com.ruesga.rview.model.Account;
 
-import com.ruesga.rview.analytics.ContextualCrashReportingActivity;
+public interface AnalyticsManager {
 
-public abstract class AppCompatDelegateActivity extends ContextualCrashReportingActivity {
+    void appStarted(Context context);
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-    }
+    void accountEvent(Context context, Account account, boolean created);
+
+    void accountSelected(Context context, Account account);
 }

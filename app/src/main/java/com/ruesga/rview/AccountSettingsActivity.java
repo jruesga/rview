@@ -83,10 +83,7 @@ public class AccountSettingsActivity extends AppCompatDelegateActivity {
         if (account != null && account.hasAuthenticatedAccessMode()
                 && account.hasNotificationsSupport()) {
             // Register device
-            Intent intent = new Intent();
-            intent.setAction(DeviceRegistrationService.REGISTER_DEVICE_ACTION);
-            intent.putExtra(DeviceRegistrationService.EXTRA_ACCOUNT, account.getAccountHash());
-            DeviceRegistrationService.enqueueWork(this, intent);
+            DeviceRegistrationService.register(this, account);
         }
     }
 

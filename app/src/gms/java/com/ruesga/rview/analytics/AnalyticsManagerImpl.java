@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2020 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ruesga.rview.misc;
+package com.ruesga.rview.analytics;
 
 import android.content.Context;
 import android.os.Bundle;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.ruesga.rview.R;
+import com.ruesga.rview.misc.UriHelper;
 import com.ruesga.rview.model.Account;
 
-public class AnalyticsHelper {
+public class AnalyticsManagerImpl implements AnalyticsManager {
 
-    public static void appStarted(Context context) {
+    private final static AnalyticsManager INSTANCE = new AnalyticsManagerImpl();
+
+    public static AnalyticsManager instance() {
+        return INSTANCE;
+    }
+
+    @Override
+    public void appStarted(Context context) {
         try {
             if (!checkIsAnalyticsEnabled(context)) {
                 return;
@@ -36,7 +44,8 @@ public class AnalyticsHelper {
         }
     }
 
-    public static void accountEvent(Context context, Account account, boolean created) {
+    @Override
+    public void accountEvent(Context context, Account account, boolean created) {
         try {
             if (!checkIsAnalyticsEnabled(context)) {
                 return;
@@ -57,7 +66,8 @@ public class AnalyticsHelper {
         }
     }
 
-    public static void accountSelected(Context context, Account account) {
+    @Override
+    public void accountSelected(Context context, Account account) {
         try {
             if (!checkIsAnalyticsEnabled(context)) {
                 return;
@@ -77,6 +87,7 @@ public class AnalyticsHelper {
         }
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean checkIsAnalyticsEnabled(Context context) {
         return context.getResources().getBoolean(R.bool.fcm_enable_analytics);
     }

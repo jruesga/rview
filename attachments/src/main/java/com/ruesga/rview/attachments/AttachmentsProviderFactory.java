@@ -17,8 +17,6 @@ package com.ruesga.rview.attachments;
 
 import android.content.Context;
 
-import com.ruesga.rview.attachments.gdrive.GDriveAttachmentsProvider;
-import com.ruesga.rview.attachments.none.NoneAttachmentsProvider;
 import com.ruesga.rview.attachments.preferences.Preferences;
 
 import java.util.ArrayList;
@@ -32,8 +30,7 @@ public class AttachmentsProviderFactory {
     private static final Map<Provider, AttachmentsProvider> sProviders = new TreeMap<>();
 
     public static void initialize(Context context) {
-        sProviders.put(Provider.NONE, new NoneAttachmentsProvider());
-        sProviders.put(Provider.GDRIVE, new GDriveAttachmentsProvider(context));
+        sProviders.putAll(AttachmentsProviderConfiguration.availableProviders(context));
     }
 
     public static List<AttachmentsProvider> getAllAvailableAttachmentProviders() {
