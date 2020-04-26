@@ -2019,8 +2019,20 @@ interface GerritRestApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#check-access"
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @GET("projects/{project-name}/check.access")
+    Observable<AccessCheckInfo> getCheckProjectAccessRights(
+            @NonNull @Path("project-name") String projectName,
+            @Nullable @Query("account") String account,
+            @Nullable @Query("ref") String ref);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#check-access-post"
+     */
+    @Deprecated
+    @SuppressWarnings("deprecation")
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
     @POST("projects/{project-name}/check.access")
-    Observable<AccessCheckInfo> checkProjectAccessRights(
+    Observable<AccessCheckInfo> postCheckProjectAccessRights(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Body AccessCheckInput input);
 

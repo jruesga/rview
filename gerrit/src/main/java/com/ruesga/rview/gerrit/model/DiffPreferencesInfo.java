@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class DiffPreferencesInfo {
     @SerializedName("context") public int context;
-    @SerializedName("theme") public int theme;
+    @Deprecated @SerializedName("theme") public int theme;
     @SerializedName("expand_all_comments") public boolean expandAllComments;
     @SerializedName("ignore_whitespace") public IgnoreWhiteSpaceStrategy ignoreWhitespace;
     @SerializedName("intraline_difference") public boolean intralineDifference;

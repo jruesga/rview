@@ -17,8 +17,6 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#server-info"
  */
@@ -27,14 +25,14 @@ public class ServerInfo {
     @SerializedName("auth") public AuthInfo auth;
     @SerializedName("change") public ChangeConfigInfo change;
     @SerializedName("download") public DownloadInfo download;
-    @SerializedName("messages") public List<MessageOfTheDayInfo> messages;
+    @Deprecated @SerializedName("messages") public MessageOfTheDayInfo[] messages;
     @SerializedName("gerrit") public GerritInfo gerrit;
     @SerializedName("note_db_enabled") public boolean noteDbEnabled;
     @SerializedName("plugin") public PluginConfigInfo plugin;
     @SerializedName("receive") public ReceiveInfo receive;
     @SerializedName("sshd") public SshdInfo sshd;
     @SerializedName("suggest") public SuggestInfo suggest;
-    @SerializedName("url_aliases") public String[] urlAliases;
+    @Deprecated @SerializedName("url_aliases") public String[] urlAliases;
     @SerializedName("user") public UserConfigInfo user;
     @SerializedName("default_theme") public String defaultTheme;
 }

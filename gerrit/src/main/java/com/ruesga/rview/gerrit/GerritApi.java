@@ -41,7 +41,7 @@ public interface GerritApi {
     /**
      * The current supported Gerrit api version.
      */
-    double API_VERSION = 2.16;
+    double API_VERSION = 3.0;
 
     /**
      * The current minimum supported Gerrit api version.

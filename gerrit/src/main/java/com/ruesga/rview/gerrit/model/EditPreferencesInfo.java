@@ -21,8 +21,8 @@ import com.google.gson.annotations.SerializedName;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#edit-preferences-info"
  */
 public class EditPreferencesInfo {
-    @SerializedName("theme") public String theme;
-    @SerializedName("key_map_type") public KeyMapType keyMapType;
+    @Deprecated @SerializedName("theme") public String theme;
+    @Deprecated @SerializedName("key_map_type") public KeyMapType keyMapType;
     @SerializedName("tab_size") public int tabSize;
     @SerializedName("line_length") public int lineLength;
     @SerializedName("indent_unit") public int indentUnit;

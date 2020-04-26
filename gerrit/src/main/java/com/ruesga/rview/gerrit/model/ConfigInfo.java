@@ -38,7 +38,7 @@ public class ConfigInfo {
     @SerializedName("match_author_to_committer_date") public InheritBooleanInfo matchAuthorToCommitterDate;
     @SerializedName("state") public StateType state;
     @SerializedName("commentlinks") public Map<String, CommentLinkInfo> commentLinks;
-    @SerializedName("theme") public ThemeInfo theme;
+    @Deprecated @SerializedName("theme") public ThemeInfo theme;
     @SerializedName("plugin_config") public Map<String, ConfigParameterInfo> pluginConfig;
     @SerializedName("actions") public Map<String, ActionInfo> actions;
     @SerializedName("reject_empty_commit") public InheritBooleanInfo rejectEmptyCommit;

@@ -22,6 +22,7 @@ import java.util.Date;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#message-of-the-day-info"
  */
+@Deprecated
 public class MessageOfTheDayInfo {
     @SerializedName("id") public String id;
     @SerializedName("redisplay") public Date redisplay;

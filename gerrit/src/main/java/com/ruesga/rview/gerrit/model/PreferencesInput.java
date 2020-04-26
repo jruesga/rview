@@ -29,7 +29,7 @@ public class PreferencesInput {
     @Nullable @SerializedName("show_site_header") public Boolean showSiteHeader;
     @Nullable @SerializedName("use_flash_clipboard") public Boolean useFlashClipboard;
     @Nullable @SerializedName("download_scheme") public String downloadScheme;
-    @Nullable @SerializedName("download_command") public String downloadCommand;
+    @Deprecated @Nullable @SerializedName("download_command") public String downloadCommand;
     @Nullable @SerializedName("copy_self_on_email") public Boolean copySelfOnEmail;
     @Nullable @SerializedName("date_format") public DateFormat dateFormat;
     @Nullable @SerializedName("time_format") public TimeFormat timeFormat;
@@ -41,7 +41,7 @@ public class PreferencesInput {
     @Nullable @SerializedName("review_category_strategy") public CategoryStrategy reviewCategoryStrategy;
     @Nullable @SerializedName("my") public TopMenuItemInfo[] my;
     @Nullable @SerializedName("diff_view") public DiffViewType diffView;
-    @Nullable @SerializedName("url_aliases") public Map<String, String> urlAliases;
+    @Deprecated @Nullable @SerializedName("url_aliases") public Map<String, String> urlAliases;
     @Nullable @SerializedName("email_strategy") public EmailStrategy emailStrategy;
 }
 

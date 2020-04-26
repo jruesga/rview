@@ -20,6 +20,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#theme-info"
  */
+@Deprecated
 public class ThemeInfo {
     @SerializedName("css") public String css;
     @SerializedName("header") public String header;

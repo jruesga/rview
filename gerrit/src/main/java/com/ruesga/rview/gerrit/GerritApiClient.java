@@ -2153,9 +2153,13 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Observable<AccessCheckInfo> checkProjectAccessRights(
             @NonNull String projectName, @NonNull AccessCheckInput input) {
-        return withVersionRequestCheck(mService.checkProjectAccessRights(projectName, input));
+        return withVersionRequestCheck(
+                mServerVersion.getVersion() >= 3.0d
+                    ? mService.getCheckProjectAccessRights(projectName, input.account, input.ref)
+                    : mService.postCheckProjectAccessRights(projectName, input));
     }
 
     @Override

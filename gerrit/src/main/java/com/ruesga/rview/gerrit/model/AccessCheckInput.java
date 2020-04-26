@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#access-check-input"
  */
+@Deprecated
 public class AccessCheckInput {
     @NonNull @SerializedName("account") public String account = "";
     @Nullable @SerializedName("ref") public String ref;

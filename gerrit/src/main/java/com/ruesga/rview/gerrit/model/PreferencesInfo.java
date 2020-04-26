@@ -27,7 +27,7 @@ public class PreferencesInfo {
     @SerializedName("show_site_header") public boolean showSiteHeader;
     @SerializedName("use_flash_clipboard") public boolean useFlashClipboard;
     @SerializedName("download_scheme") public String downloadScheme;
-    @SerializedName("download_command") public String downloadCommand;
+    @Deprecated @SerializedName("download_command") public String downloadCommand;
     @SerializedName("copy_self_on_email") public Boolean copySelfOnEmail;
     @SerializedName("date_format") public DateFormat dateFormat;
     @SerializedName("time_format") public TimeFormat timeFormat;
@@ -39,7 +39,7 @@ public class PreferencesInfo {
     @SerializedName("review_category_strategy") public CategoryStrategy reviewCategoryStrategy;
     @SerializedName("my") public TopMenuItemInfo[] my;
     @SerializedName("diff_view") public DiffViewType diffView;
-    @SerializedName("url_aliases") public Map<String, String> urlAliases;
+    @Deprecated @SerializedName("url_aliases") public Map<String, String> urlAliases;
     @SerializedName("email_strategy") public EmailStrategy emailStrategy;
     @SerializedName("default_base_for_merges") public DefaultBaseForMergesStrategy defaultBaseForMerges;
     @SerializedName("publish_comments_on_push") public boolean publishCommentsOnPush;

@@ -17,15 +17,12 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import androidx.annotation.NonNull;
 
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#index-changes-input"
  */
 public class IndexChangesInput {
-    @NonNull @SerializedName("changes") public List<String> changes = new ArrayList<>();
+    @NonNull @SerializedName("changes") public String[] changes = new String[0];
 }
 

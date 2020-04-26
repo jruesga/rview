@@ -23,8 +23,8 @@ import androidx.annotation.Nullable;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#edit-preferences-info"
  */
 public class EditPreferencesInput {
-    @Nullable @SerializedName("theme") public String theme;
-    @Nullable @SerializedName("key_map_type") public KeyMapType keyMapType;
+    @Deprecated @Nullable @SerializedName("theme") public String theme;
+    @Deprecated @Nullable @SerializedName("key_map_type") public KeyMapType keyMapType;
     @Nullable @SerializedName("tab_size") public Integer tabSize;
     @Nullable @SerializedName("line_length") public Integer lineLength;
     @Nullable @SerializedName("indent_unit") public Integer indentUnit;

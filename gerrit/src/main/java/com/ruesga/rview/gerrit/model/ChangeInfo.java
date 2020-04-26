@@ -45,6 +45,7 @@ public class ChangeInfo {
     @SerializedName("submittable") public boolean submittable;
     @SerializedName("insertions") public int insertions;
     @SerializedName("deletions") public int deletions;
+    @SerializedName("total_comment_count") public int totalCommentCount;
     @SerializedName("unresolved_comment_count") public int unresolvedCommentCount;
     @SerializedName("_number") public int legacyChangeId;
     @SerializedName("owner") public AccountInfo owner;
