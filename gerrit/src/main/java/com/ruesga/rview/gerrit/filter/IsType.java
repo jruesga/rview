@@ -21,5 +21,6 @@ import com.ruesga.rview.gerrit.annotations.Until;
 public enum IsType {
     STARRED, WATCHED, REVIEWED, OWNER, REVIEWER, OPEN, PENDING, @Until(2.15) DRAFT,
     CLOSED, MERGED, ABANDONED, MERGEABLE, VISIBLE, @Since(2.14) ASSIGNED, @Since(2.14) UNASSIGNED,
-    @Since(2.14) SUBMITTABLE, @Since(2.15) IGNORED, @Since(2.15) PRIVATE, @Since(2.15) WIP
+    @Since(2.14) SUBMITTABLE, @Since(2.15) IGNORED, @Since(2.15) PRIVATE, @Since(2.15) WIP,
+    @Since(3.1) NEW
 }

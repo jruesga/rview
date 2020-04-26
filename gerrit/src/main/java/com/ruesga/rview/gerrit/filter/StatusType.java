@@ -18,5 +18,5 @@ package com.ruesga.rview.gerrit.filter;
 import com.ruesga.rview.gerrit.annotations.Until;
 
 public enum StatusType {
-    OPEN, PENDING, REVIEWED, CLOSED, MERGED, ABANDONED, @Until(2.15) DRAFT
+    OPEN, PENDING, REVIEWED, CLOSED, MERGED, ABANDONED, @Until(2.15) DRAFT, @Until(3.0) NEW
 }

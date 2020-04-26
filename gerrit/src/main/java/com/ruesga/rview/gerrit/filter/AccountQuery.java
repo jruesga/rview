@@ -25,6 +25,11 @@ public class AccountQuery extends SimpleQuery {
         return this;
     }
 
+    public AccountQuery cansee(String change) {
+        add("cansee:" + sanitizeValue(change));
+        return this;
+    }
+
     public AccountQuery email(String email) {
         add("email:" + sanitizeValue(email));
         return this;
