@@ -35,8 +35,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import org.jetbrains.annotations.NotNull;
-
 public abstract class PageableFragment extends Fragment {
 
     public class PageFragmentAdapter extends FragmentPagerAdapter {
@@ -60,7 +58,6 @@ public abstract class PageableFragment extends Fragment {
             mFragments.remove(position);
         }
 
-        @NotNull
         @Override
         public Fragment getItem(int position) {
             return getFragment(position);

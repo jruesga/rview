@@ -17,8 +17,6 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.Since;
 
-import org.jetbrains.annotations.NotNull;
-
 public enum ChangeOptions {
     LABELS, DETAILED_LABELS, CURRENT_REVISION, ALL_REVISIONS, DOWNLOAD_COMMANDS, CURRENT_COMMIT,
     ALL_COMMITS, CURRENT_FILES, ALL_FILES, DETAILED_ACCOUNTS, @Since(2.13) REVIEWER_UPDATES,
@@ -35,7 +33,6 @@ public enum ChangeOptions {
         this.name = name;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return name != null ? name : super.toString();
