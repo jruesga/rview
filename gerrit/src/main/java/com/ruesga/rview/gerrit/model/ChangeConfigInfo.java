@@ -30,4 +30,5 @@ public class ChangeConfigInfo {
     @SerializedName("reply_tooltip") public String replyTooltip;
     @SerializedName("update_delay") public int updateDelay;
     @SerializedName("submit_whole_topic") public boolean submit_whole_topic;
+    @SerializedName("exclude_mergeable_in_change_info") public boolean excludeMergeableInChangeInfo;
 }

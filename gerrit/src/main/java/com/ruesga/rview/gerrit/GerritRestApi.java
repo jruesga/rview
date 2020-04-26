@@ -965,12 +965,24 @@ interface GerritRestApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#suggest-reviewers"
      */
+    @SuppressWarnings("deprecation")
     @GET("changes/{change-id}/suggest_reviewers")
     Observable<List<SuggestedReviewerInfo>> getChangeSuggestedReviewers(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Query("q") String query,
             @Nullable @Query("n") Integer count,
             @Nullable @Query("e") ExcludeGroupsFromSuggestedReviewers excludeGroups);
+
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#suggest-reviewers"
+     */
+    @GET("changes/{change-id}/suggest_reviewers")
+    Observable<List<SuggestedReviewerInfo>> getChangeSuggestedReviewers(
+            @NonNull @Path("change-id") String changeId,
+            @NonNull @Query("q") String query,
+            @Nullable @Query("n") Integer count,
+            @Nullable @Query("exclude-groups") Option excludeGroups,
+            @Nullable @Query("reviewer-state") SuggestedReviewersState reviewersState);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-reviewer"
@@ -2254,10 +2266,12 @@ interface GerritRestApi {
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-dashboard"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#create-dashboard"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#update-dashboard"
      */
     @Headers({"Content-Type: application/json; charset=UTF-8"})
     @PUT("projects/{project-name}/dashboards/{dashboard-id}")
-    Observable<DashboardInfo> setProjectDashboard(
+    Observable<DashboardInfo> createOrUpdateProjectDashboard(
             @NonNull @Path("project-name") String projectName,
             @NonNull @Path("dashboard-id") String dashboardId,
             @NonNull @Body DashboardInput input);

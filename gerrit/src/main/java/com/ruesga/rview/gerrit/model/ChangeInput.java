@@ -20,6 +20,8 @@ import com.google.gson.annotations.SerializedName;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Map;
+
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#change-input"
  */
@@ -35,6 +37,6 @@ public class ChangeInput {
     @Nullable @SerializedName("new_branch") public Boolean newBranch;
     @Nullable @SerializedName("merge") public MergeInput merge;
     @Nullable @SerializedName("notify") public NotifyType notify;
-    @Nullable @SerializedName("notify_details") public NotifyInfo notifyDetails;
+    @Nullable @SerializedName("notify_details") public Map<RecipientType, NotifyType> notifyDetails;
 }
 

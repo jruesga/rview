@@ -41,7 +41,7 @@ public interface GerritApi {
     /**
      * The current supported Gerrit api version.
      */
-    double API_VERSION = 3.0;
+    double API_VERSION = 3.1;
 
     /**
      * The current minimum supported Gerrit api version.
@@ -888,7 +888,8 @@ public interface GerritApi {
             @NonNull String changeId,
             @NonNull String query,
             @Nullable Integer count,
-            @Nullable ExcludeGroupsFromSuggestedReviewers excludeGroups);
+            @Nullable Option excludeGroups,
+            @Nullable SuggestedReviewersState reviewersState);
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-reviewer"
@@ -1963,8 +1964,10 @@ public interface GerritApi {
 
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#set-dashboard"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#create-dashboard"
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-projects.html#update-dashboard"
      */
-    Observable<DashboardInfo> setProjectDashboard(
+    Observable<DashboardInfo> createOrUpdateProjectDashboard(
             @NonNull String projectName,
             @NonNull String dashboardId,
             @NonNull DashboardInput input);

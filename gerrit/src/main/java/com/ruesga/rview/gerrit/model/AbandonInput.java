@@ -19,10 +19,13 @@ import com.google.gson.annotations.SerializedName;
 
 import androidx.annotation.Nullable;
 
+import java.util.Map;
+
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#abandon-input"
  */
 public class AbandonInput extends MessageInput {
     @Nullable @SerializedName("notify") public NotifyType notify;
+    @Nullable @SerializedName("notify_details") public Map<RecipientType, NotifyType> notifyDetails;
 }
 

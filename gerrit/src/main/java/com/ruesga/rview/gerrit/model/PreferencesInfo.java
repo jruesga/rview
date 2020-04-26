@@ -24,8 +24,9 @@ import java.util.Map;
  */
 public class PreferencesInfo {
     @SerializedName("changes_per_page") public int changesPerPage;
-    @SerializedName("show_site_header") public boolean showSiteHeader;
-    @SerializedName("use_flash_clipboard") public boolean useFlashClipboard;
+    @SerializedName("expand_inline_diffs") public boolean expandInlineDiffs;
+    @Deprecated @SerializedName("show_site_header") public boolean showSiteHeader;
+    @Deprecated @SerializedName("use_flash_clipboard") public boolean useFlashClipboard;
     @SerializedName("download_scheme") public String downloadScheme;
     @Deprecated @SerializedName("download_command") public String downloadCommand;
     @SerializedName("copy_self_on_email") public Boolean copySelfOnEmail;
@@ -36,7 +37,7 @@ public class PreferencesInfo {
     @SerializedName("legacycid_in_change_table") public boolean legacycidInChangeTable;
     @SerializedName("mute_common_path_prefixes") public boolean muteCommonPathPrefixes;
     @SerializedName("signed_off_by") public boolean signedOffBy;
-    @SerializedName("review_category_strategy") public CategoryStrategy reviewCategoryStrategy;
+    @Deprecated @SerializedName("review_category_strategy") public CategoryStrategy reviewCategoryStrategy;
     @SerializedName("my") public TopMenuItemInfo[] my;
     @SerializedName("diff_view") public DiffViewType diffView;
     @Deprecated @SerializedName("url_aliases") public Map<String, String> urlAliases;

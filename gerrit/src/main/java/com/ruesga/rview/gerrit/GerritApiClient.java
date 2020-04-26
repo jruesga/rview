@@ -1308,13 +1308,19 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Observable<List<SuggestedReviewerInfo>> getChangeSuggestedReviewers(
             @NonNull String changeId, @NonNull String query, @Nullable Integer count,
-            @Nullable ExcludeGroupsFromSuggestedReviewers excludeGroups) {
-        return withVersionRequestCheck(SafeObservable.fromNullCallable(() -> {
-            ExcludeGroupsFromSuggestedReviewers e = resolve(excludeGroups, 2.15d);
-            return mService.getChangeSuggestedReviewers(changeId, query, count, e).blockingFirst();
-        }));
+            @Nullable Option excludeGroups, @Nullable SuggestedReviewersState reviewersState) {
+        return withVersionRequestCheck(
+            mServerVersion.getVersion() >= 3.1d
+                    ? mService.getChangeSuggestedReviewers(
+                            changeId, query, count, excludeGroups, reviewersState)
+                    : mService.getChangeSuggestedReviewers(
+                            changeId, query, count, resolve(
+                                    excludeGroups != null
+                                            ? ExcludeGroupsFromSuggestedReviewers.INSTANCE
+                                            : null, 2.15d)));
     }
 
     @Override
@@ -2327,10 +2333,10 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<DashboardInfo> setProjectDashboard(@NonNull String projectName,
+    public Observable<DashboardInfo> createOrUpdateProjectDashboard(@NonNull String projectName,
             @NonNull String dashboardId, @NonNull DashboardInput input) {
         return withVersionRequestCheck(
-                mService.setProjectDashboard(projectName, dashboardId, input));
+                mService.createOrUpdateProjectDashboard(projectName, dashboardId, input));
     }
 
     @Override

@@ -28,5 +28,6 @@ public class AccountInfo {
     @SerializedName("secondary_emails") public String[] secondaryEmails;
     @SerializedName("avatars") public AvatarInfo[] avatars;
     @SerializedName("status") public String status;
+    @SerializedName("inactive") public boolean inactive;
 }
 

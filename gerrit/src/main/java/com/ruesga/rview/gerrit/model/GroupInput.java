@@ -23,8 +23,11 @@ import androidx.annotation.Nullable;
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-groups.html#group-input"
  */
 public class GroupInput {
+    @Nullable @SerializedName("name") public String name;
+    @Nullable @SerializedName("uuid") public String uuid;
     @Nullable @SerializedName("description") public String description;
     @Nullable @SerializedName("visible_to_all") public Boolean visibleToAll;
     @Nullable @SerializedName("owner_id") public String ownerId;
+    @Nullable @SerializedName("members") public String[] members;
 }
 

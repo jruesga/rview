@@ -20,6 +20,8 @@ import com.google.gson.annotations.SerializedName;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Map;
+
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#cherrypick-input"
  */
@@ -29,7 +31,7 @@ public class CherryPickInput {
     @Nullable @SerializedName("base") public String base;
     @Nullable @SerializedName("parent") public String parent;
     @Nullable @SerializedName("notify") public NotifyType notify;
-    @Nullable @SerializedName("notify_details") public NotifyInfo notifyDetails;
+    @Nullable @SerializedName("notify_details") public Map<RecipientType, NotifyType> notifyDetails;
     @Nullable @SerializedName("keep_reviewers") public Boolean keepReviewers;
 }
 

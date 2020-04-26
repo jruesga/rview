@@ -26,8 +26,8 @@ import androidx.annotation.Nullable;
  */
 public class PreferencesInput {
     @Nullable @SerializedName("changes_per_page") public Integer changesPerPage;
-    @Nullable @SerializedName("show_site_header") public Boolean showSiteHeader;
-    @Nullable @SerializedName("use_flash_clipboard") public Boolean useFlashClipboard;
+    @Deprecated @Nullable @SerializedName("show_site_header") public Boolean showSiteHeader;
+    @Deprecated @Nullable @SerializedName("use_flash_clipboard") public Boolean useFlashClipboard;
     @Nullable @SerializedName("download_scheme") public String downloadScheme;
     @Deprecated @Nullable @SerializedName("download_command") public String downloadCommand;
     @Nullable @SerializedName("copy_self_on_email") public Boolean copySelfOnEmail;
@@ -38,7 +38,7 @@ public class PreferencesInput {
     @Nullable @SerializedName("legacycid_in_change_table") public Boolean legacycidInChangeTable;
     @Nullable @SerializedName("mute_common_path_prefixes") public Boolean muteCommonPathPrefixes;
     @Nullable @SerializedName("signed_off_by") public Boolean signedOffBy;
-    @Nullable @SerializedName("review_category_strategy") public CategoryStrategy reviewCategoryStrategy;
+    @Deprecated @Nullable @SerializedName("review_category_strategy") public CategoryStrategy reviewCategoryStrategy;
     @Nullable @SerializedName("my") public TopMenuItemInfo[] my;
     @Nullable @SerializedName("diff_view") public DiffViewType diffView;
     @Deprecated @Nullable @SerializedName("url_aliases") public Map<String, String> urlAliases;

@@ -35,8 +35,13 @@ public class RevisionInfo {
     @SerializedName("files") public Map<String, FileInfo> files;
     @SerializedName("actions") public Map<String, ActionInfo> actions;
     @SerializedName("reviewed") public boolean reviewed;
-    @SerializedName("messageWithFooter") public String messageWithFooter;
+    @SerializedName("messageWithFooter") private String messageWithFooter;
+    @SerializedName("commitWithFooters") private String commitWithFooters;
     @SerializedName("push_certificate") public PushCertificateInfo pushCertificate;
     @SerializedName("description") public String description;
+
+    public String commitWithFooters() {
+        return commitWithFooters != null ? commitWithFooters : messageWithFooter;
+    }
 }
 

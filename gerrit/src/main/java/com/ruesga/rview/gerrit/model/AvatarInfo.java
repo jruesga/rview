@@ -19,6 +19,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class AvatarInfo {
     @SerializedName("url") public String url;
+    @SerializedName("width") public int width;
     @SerializedName("height") public int height;
 }
 

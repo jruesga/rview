@@ -18,6 +18,8 @@ package com.ruesga.rview.gerrit.model;
 /**
  * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#suggest-reviewers"
  */
+@Deprecated
+@SuppressWarnings("deprecation")
 public final class ExcludeGroupsFromSuggestedReviewers {
     public static final ExcludeGroupsFromSuggestedReviewers INSTANCE
             = new ExcludeGroupsFromSuggestedReviewers();

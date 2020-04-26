@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Jorge Ruesga
+ * Copyright (C) 2017 Jorge Ruesga
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,17 @@
  */
 package com.ruesga.rview.gerrit.model;
 
-import com.google.gson.annotations.SerializedName;
-
-import androidx.annotation.Nullable;
-
-import java.util.Map;
-
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#revert-input"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#suggest-reviewers"
  */
-public class RevertInput extends MessageInput {
-    @Nullable @SerializedName("notify") public NotifyType notify;
-    @Nullable @SerializedName("notify_details") public Map<RecipientType, NotifyType> notifyDetails;
-    @Nullable @SerializedName("topic") public String topic;
-}
+public final class SuggestedReviewersState {
+    public static final SuggestedReviewersState INSTANCE = new SuggestedReviewersState();
 
+    private SuggestedReviewersState() {
+    }
+
+    @Override
+    public final String toString() {
+        return "CC";
+    }
+}

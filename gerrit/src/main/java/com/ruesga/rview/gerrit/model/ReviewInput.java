@@ -33,6 +33,7 @@ public class ReviewInput {
     @Nullable @SerializedName("strict_labels") public Boolean strictLabels;
     @Nullable @SerializedName("drafts") public DraftActionType drafts;
     @Nullable @SerializedName("notify") public NotifyType notify;
+    @Nullable @SerializedName("notify_details") public Map<RecipientType, NotifyType> notifyDetails;
     @Nullable @SerializedName("omit_duplicate_comments") public Boolean omitDuplicateComments;
     @Nullable @SerializedName("on_behalf_of") public Boolean onBehalfOf;
     @Nullable @SerializedName("reviewers") public List<ReviewerInput> reviewers;
