@@ -91,7 +91,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
             2.15d, null, null, null, null, null,
-            null
+            null, null, null, null, null
     };
 
     public ChangeQuery age(TimeUnit unit, int value) {
