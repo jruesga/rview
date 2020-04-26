@@ -17,17 +17,15 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#edit-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#index-changes-input"
  */
-public class EditInfo {
-    @SerializedName("commit") public CommentInfo commit;
-    @SerializedName("base_patch_set_number") public int basePatchSetNumber;
-    @SerializedName("base_revision") public String baseRevision;
-    @SerializedName("ref") public String ref;
-    @SerializedName("fetch") public Map<String, FetchInfo> fetch;
-    @SerializedName("files") public Map<String, FileInfo> files;
+public class IndexChangesInput {
+    @NonNull @SerializedName("changes") public List<String> changes = new ArrayList<>();
 }
 

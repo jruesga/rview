@@ -1544,6 +1544,14 @@ interface GerritRestApi {
     Observable<EditPreferencesInfo> setServerDefaultEditPreferences(
             @NonNull @Body EditPreferencesInput input);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#index.changes"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @POST("/config/server/index.changes")
+    Observable<ResponseBody> indexChanges(
+            @NonNull @Body IndexChangesInput input);
+
 
     // ===============================
     // Gerrit groups endpoints

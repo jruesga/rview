@@ -1378,6 +1378,12 @@ public interface GerritApi {
     Observable<EditPreferencesInfo> setServerDefaultEditPreferences(
             @NonNull EditPreferencesInput input);
 
+    /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#index.changes"
+     */
+    Observable<ResponseBody> indexChanges(
+            @NonNull IndexChangesInput input);
+
 
 
     // ===============================

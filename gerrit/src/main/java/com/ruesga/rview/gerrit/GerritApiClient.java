@@ -400,7 +400,6 @@ class GerritApiClient implements GerritApi {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private <T> List<T> filterByVersion(List<T> o) {
         if (mServerVersion == null) {
             mServerVersion = getServerVersion().blockingFirst();
@@ -408,7 +407,6 @@ class GerritApiClient implements GerritApi {
         return filterByVersion(o, mServerVersion);
     }
 
-    @SuppressWarnings("unchecked")
     private <T> List<T> filterByVersion(List<T> o, ServerVersion serverVersion) {
         if (o == null) {
             return null;
@@ -1785,6 +1783,12 @@ class GerritApiClient implements GerritApi {
     public Observable<EditPreferencesInfo> setServerDefaultEditPreferences(
             @NonNull EditPreferencesInput input) {
         return withVersionRequestCheck(mService.setServerDefaultEditPreferences(input));
+    }
+
+    @Override
+    public Observable<ResponseBody> indexChanges(
+            @NonNull IndexChangesInput input) {
+        return withVersionRequestCheck(mService.indexChanges(input));
     }
 
 

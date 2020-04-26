@@ -17,17 +17,14 @@ package com.ruesga.rview.gerrit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Map;
+import java.util.Date;
 
 /**
- * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#edit-info"
+ * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-config.html#message-of-the-day-info"
  */
-public class EditInfo {
-    @SerializedName("commit") public CommentInfo commit;
-    @SerializedName("base_patch_set_number") public int basePatchSetNumber;
-    @SerializedName("base_revision") public String baseRevision;
-    @SerializedName("ref") public String ref;
-    @SerializedName("fetch") public Map<String, FetchInfo> fetch;
-    @SerializedName("files") public Map<String, FileInfo> files;
+public class MessageOfTheDayInfo {
+    @SerializedName("id") public String id;
+    @SerializedName("redisplay") public Date redisplay;
+    @SerializedName("html") public String html;
 }
 
