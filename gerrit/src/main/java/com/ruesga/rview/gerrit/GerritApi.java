@@ -1134,7 +1134,7 @@ public interface GerritApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-robot-comments"
      */
-    Observable<List<RobotCommentInfo>> getChangeRevisionRobotComments(
+    Observable<Map<String, List<RobotCommentInfo>>> getChangeRevisionRobotComments(
             @NonNull String changeId,
             @NonNull String revisionId);
 

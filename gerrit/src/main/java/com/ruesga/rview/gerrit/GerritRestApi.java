@@ -1266,7 +1266,7 @@ interface GerritRestApi {
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#list-robot-comments"
      */
     @GET("changes/{change-id}/revisions/{revision-id}/robotcomments/")
-    Observable<List<RobotCommentInfo>> getChangeRevisionRobotComments(
+    Observable<Map<String, List<RobotCommentInfo>>> getChangeRevisionRobotComments(
             @NonNull @Path("change-id") String changeId,
             @NonNull @Path("revision-id") String revisionId);
 

@@ -1528,7 +1528,7 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
-    public Observable<List<RobotCommentInfo>> getChangeRevisionRobotComments(
+    public Observable<Map<String, List<RobotCommentInfo>>> getChangeRevisionRobotComments(
             @NonNull String changeId, @NonNull String revisionId) {
         return withVersionRequestCheck(
                 mService.getChangeRevisionRobotComments(changeId, revisionId));
