@@ -46,6 +46,7 @@ import com.ruesga.rview.gerrit.model.DiffContentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileStatus;
+import com.ruesga.rview.gerrit.model.RobotCommentInfo;
 import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.WhitespaceType;
 import com.ruesga.rview.misc.CacheHelper;
@@ -552,8 +553,8 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                 withCached(
                         SafeObservable.fromNullCallable(() -> {
                             if (!isBinary && mBase != null) {
-                                return api.getChangeRevisionComments(
-                                        String.valueOf(mChange.legacyChangeId), baseRevision)
+                                return fetchAndMergeAllChangeRevisionComments(
+                                        api, String.valueOf(mChange.legacyChangeId), baseRevision)
                                         .blockingFirst();
                             }
                             return new HashMap<>();
@@ -563,8 +564,8 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                 withCached(
                         SafeObservable.fromNullCallable(() -> {
                             if (!isBinary) {
-                                return api.getChangeRevisionComments(
-                                        String.valueOf(mChange.legacyChangeId), mRevisionId)
+                                return fetchAndMergeAllChangeRevisionComments(
+                                        api, String.valueOf(mChange.legacyChangeId), mRevisionId)
                                         .blockingFirst();
                             }
                             return new HashMap<>();
@@ -1239,5 +1240,23 @@ public class FileDiffViewerFragment extends Fragment implements EditDialogFragme
                 mBinding.diff.refresh();
             }
         }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private Observable<Map<String, List<CommentInfo>>> fetchAndMergeAllChangeRevisionComments(
+            GerritApi api, String changeId, String revId) {
+        return SafeObservable.fromNullCallable(() -> {
+            Map<String, List<CommentInfo>> comments =
+                    api.getChangeRevisionComments(changeId, revId).blockingFirst();
+
+            // Fetch robot comments if the Gerrit server supports them (2.14 and up)
+            if (mAccount.mServerVersion.getVersion() >= 2.14d) {
+                Map<String, List<RobotCommentInfo>> robotComments =
+                        api.getChangeRevisionRobotComments(changeId, revId).blockingFirst();
+                ModelHelper.mergeCommentsAndRobotComments(comments, robotComments);
+            }
+
+            return comments;
+        });
     }
 }

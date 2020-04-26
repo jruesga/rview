@@ -34,6 +34,7 @@ import com.ruesga.rview.gerrit.model.AddReviewerResultInfo;
 import com.ruesga.rview.gerrit.model.ApprovalInfo;
 import com.ruesga.rview.gerrit.model.ChangeInfo;
 import com.ruesga.rview.gerrit.model.ChangeMessageInfo;
+import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.LabelInfo;
@@ -42,6 +43,7 @@ import com.ruesga.rview.gerrit.model.ReviewerInfo;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.ReviewerUpdateInfo;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
+import com.ruesga.rview.gerrit.model.RobotCommentInfo;
 import com.ruesga.rview.model.Account;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
@@ -766,5 +768,35 @@ public class ModelHelper {
             }
         }
         return ru;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public static void mergeCommentsAndRobotComments(
+            Map<String, List<CommentInfo>> comments,
+            Map<String, List<RobotCommentInfo>> robotComments) {
+        for (Map.Entry<String, List<RobotCommentInfo>> entry : robotComments.entrySet()) {
+            String file = entry.getKey();
+            if (comments.containsKey(file)) {
+                List<CommentInfo> allFileComments = comments.get(file);
+                for (RobotCommentInfo robotComment : entry.getValue()) {
+                    boolean added = false;
+                    int size = allFileComments.size();
+                    for (int i = 0; i < size; i++) {
+                        CommentInfo comment = allFileComments.get(i);
+                        if (robotComment.updated.compareTo(comment.updated) < 0) {
+                            allFileComments.add(i, robotComment);
+                            added = true;
+                            break;
+                        }
+                    }
+                    if (!added) {
+                        allFileComments.add(robotComment);
+                    }
+                }
+            } else {
+                // This file is new add all the robot comments
+                comments.put(file, new ArrayList<>(entry.getValue()));
+            }
+        }
     }
 }

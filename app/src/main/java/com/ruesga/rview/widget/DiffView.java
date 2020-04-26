@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.widget;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -42,6 +43,7 @@ import com.ruesga.rview.databinding.DiffViewBinding;
 import com.ruesga.rview.gerrit.model.BlameInfo;
 import com.ruesga.rview.gerrit.model.CommentInfo;
 import com.ruesga.rview.gerrit.model.DiffInfo;
+import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.SerializationManager;
 import com.ruesga.rview.misc.TypefaceCache;
 import com.ruesga.rview.preferences.Constants;
@@ -167,6 +169,11 @@ public class DiffView extends FrameLayout {
         public void onSkipLineDownPressed(View v) {
             int position = (int) v.getTag();
             mView.onSkipDownLinePressed(position);
+        }
+
+        public void onRobotDetailPressed(View v) {
+            String url = (String) v.getTag();
+            ActivityHelper.openUriInCustomTabs((Activity) v.getContext(), url);
         }
     }
 

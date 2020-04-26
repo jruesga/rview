@@ -560,6 +560,7 @@
     <string name="account_details">Account</string>
     <string name="account_details_id">Account Id.</string>
     <string name="account_details_username">Username</string>
+    <string name="account_details_display_name">Display Name</string>
     <string name="account_details_name">Name</string>
     <string name="account_details_emails">Emails</string>
     <string name="account_details_registered_on">Registered</string>

@@ -98,6 +98,7 @@ import com.ruesga.rview.gerrit.model.ReviewerInput;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.ReviewerUpdateInfo;
 import com.ruesga.rview.gerrit.model.RevisionInfo;
+import com.ruesga.rview.gerrit.model.RobotCommentInfo;
 import com.ruesga.rview.gerrit.model.SideType;
 import com.ruesga.rview.gerrit.model.SubmitInput;
 import com.ruesga.rview.gerrit.model.SubmitType;
@@ -172,6 +173,7 @@ import me.tatarka.rxloader2.safe.Empty;
 import me.tatarka.rxloader2.safe.SafeObservable;
 
 import static com.ruesga.rview.attachments.preferences.Constants.ATTACHMENT_PROVIDER_CHANGED_ACTION;
+import static com.ruesga.rview.misc.ModelHelper.mergeCommentsAndRobotComments;
 import static com.ruesga.rview.misc.ModelHelper.resolvedExtendedReviewerUpdateState;
 
 public class ChangeDetailsFragment extends Fragment implements
@@ -2074,11 +2076,11 @@ public class ChangeDetailsFragment extends Fragment implements
                         api.getChangeRevisionFiles(
                                 changeId, revId, mDiffAgainstRevision, null),
                         api.getChangeRevisionSubmitType(changeId, revId),
-                        api.getChangeRevisionComments(changeId, revId),
+                        fetchAndMergeAllChangeRevisionComments(api, changeId, revId),
                         SafeObservable.fromNullCallable(() -> {
                             if (mDiffAgainstRevision != null) {
-                                return api.getChangeRevisionComments(
-                                        changeId, mDiffAgainstRevision).blockingFirst();
+                                return fetchAndMergeAllChangeRevisionComments(
+                                        api, changeId, mDiffAgainstRevision).blockingFirst();
                             }
                             return new HashMap<>();
                         }),
@@ -3413,19 +3415,22 @@ public class ChangeDetailsFragment extends Fragment implements
             response.mUnresolvedComments.clear();
             for (int rev : revisionsWithComments) {
                 try {
-                    updateRevisionComments(response,
-                            api.getChangeRevisionComments(
-                                    String.valueOf(response.mChange.legacyChangeId),
-                                    String.valueOf(rev)).blockingFirst(), false);
+                    Map<String, List<CommentInfo>> messages =
+                            fetchAndMergeAllChangeRevisionComments(
+                                api,
+                                String.valueOf(response.mChange.legacyChangeId),
+                                String.valueOf(rev)
+                            ).blockingFirst();
+                    updateRevisionComments(response, messages, false);
                 } catch (Exception ex) {
                     Log.e(TAG, "Can't match comments for messages.", ex);
                 }
             }
         } else {
             // Perform a single fetch of comments and drafts
-            updateRevisionComments(response,
-                    api.getChangeComments(
-                        String.valueOf(response.mChange.legacyChangeId)).blockingFirst(), false);
+            Map<String, List<CommentInfo>> messages = fetchAndMergeAllChangeComments(api,
+                    String.valueOf(response.mChange.legacyChangeId)).blockingFirst();
+            updateRevisionComments(response, messages, false);
             if (mAccount.hasAuthenticatedAccessMode()) {
                 updateRevisionComments(response,
                         api.getChangeDraftComments(
@@ -3898,5 +3903,38 @@ public class ChangeDetailsFragment extends Fragment implements
             }
         }
         return false;
+    }
+
+    private Observable<Map<String, List<CommentInfo>>> fetchAndMergeAllChangeComments(
+            GerritApi api, String changeId) {
+        return SafeObservable.fromNullCallable(() -> {
+            Map<String, List<CommentInfo>> comments =
+                    api.getChangeComments(changeId).blockingFirst();
+
+            // Fetch robot comments if the Gerrit server supports them (2.14 and up)
+            if (mAccount.mServerVersion.getVersion() >= 2.14d) {
+                Map<String, List<RobotCommentInfo>> robotComments =
+                        api.getChangeRobotComments(changeId).blockingFirst();
+                mergeCommentsAndRobotComments(comments, robotComments);
+            }
+            return comments;
+        });
+    }
+
+
+    private Observable<Map<String, List<CommentInfo>>> fetchAndMergeAllChangeRevisionComments(
+            GerritApi api, String changeId, String revId) {
+        return SafeObservable.fromNullCallable(() -> {
+            Map<String, List<CommentInfo>> comments =
+                    api.getChangeRevisionComments(changeId, revId).blockingFirst();
+
+            // Fetch robot comments if the Gerrit server supports them (2.14 and up)
+            if (mAccount.mServerVersion.getVersion() >= 2.14d) {
+                Map<String, List<RobotCommentInfo>> robotComments =
+                        api.getChangeRevisionRobotComments(changeId, revId).blockingFirst();
+                mergeCommentsAndRobotComments(comments, robotComments);
+            }
+            return comments;
+        });
     }
 }

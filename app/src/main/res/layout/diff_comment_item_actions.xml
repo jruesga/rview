@@ -20,6 +20,7 @@
 
     <data>
         <import type="android.view.View" />
+        <import type="com.ruesga.rview.gerrit.model.RobotCommentInfo" />
         <import type="com.ruesga.rview.gerrit.model.Features" />
         <variable name="canEdit" type="java.lang.Boolean" />
         <variable name="isDraft" type="java.lang.Boolean" />
@@ -31,108 +32,135 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:visibility="@{!safeUnbox(canEdit) ? View.GONE : View.VISIBLE}">
-        <ImageView
-            android:id="@+id/reply"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            app:srcCompat="@drawable/ic_reply"
-            android:tint="?attr/colorAccent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
-            android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
-            android:onClick="@{handlers::onReplyPressed}"
-            tools:ignore="ContentDescription"/>
-        <ImageView
-            android:id="@+id/quote"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            app:srcCompat="@drawable/ic_quote"
-            android:tint="?attr/colorAccent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
-            android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
-            android:onClick="@{handlers::onQuotePressed}"
-            tools:ignore="ContentDescription"/>
-        <ImageView
-            android:id="@+id/done"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
-            app:srcCompat="@drawable/ic_done"
-            android:tint="?attr/colorAccent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
-            android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
-            android:onClick="@{handlers::onDonePressed}"
-            tools:ignore="ContentDescription"/>
-        <ImageView
-            android:id="@+id/ack"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
-            app:srcCompat="@drawable/ic_thumb_up"
-            android:tint="?attr/colorAccent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
-            android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
-            android:onClick="@{handlers::onAckPressed}"
-            tools:ignore="ContentDescription"/>
-        <ImageView
-            android:id="@+id/edit"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
-            app:srcCompat="@drawable/ic_edit"
-            android:tint="?attr/colorAccent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{safeUnbox(isDraft) ? View.VISIBLE : View.GONE}"
-            android:tag='@{model.patchSet + "/" + model.id + "/" + safeUnbox(model.unresolved) + "/" + (model.inReplyTo == null ? "" : model.inReplyTo) + "/" + model.line}'
-            android:onClick="@{handlers::onEditPressed}"
-            tools:ignore="ContentDescription"/>
-        <ImageView
-            android:id="@+id/delete"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="3dp"
-            android:layout_marginEnd="3dp"
-            android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
-            app:srcCompat="@drawable/ic_delete"
-            android:tint="?attr/colorAccent"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:visibility="@{safeUnbox(isDraft) ? View.VISIBLE : View.GONE}"
-            android:onClick="@{handlers::onDeletePressed}"
-            android:tag='@{model.patchSet + "/" + model.id}'
-            tools:ignore="ContentDescription"/>
-        <Switch
-            android:id="@+id/unresolved"
+        android:orientation="horizontal">
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:bindToFeature="@{Features.UNRESOLVED_COMMENTS}"
-            app:bindToBoolean="@{safeUnbox(isDraft)}"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="?android:attr/textColorSecondary"
-            android:textSize="14sp"
-            android:scaleX="0.80"
-            android:scaleY="0.80"
-            android:text="@string/draft_resolved"
-            android:onClick="@{handlers::onResolvedPressed}"
-            android:tag='@{model.patchSet + "/" + model.id + "/" + safeUnbox(model.unresolved) + "/" + (model.inReplyTo == null ? "" : model.inReplyTo) + "/" + model.line}'
-            android:checked="@={!model.unresolved}"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="@{safeUnbox(model instanceof RobotCommentInfo) ? View.VISIBLE : View.GONE}">
+            <ImageView
+                android:id="@+id/robot_details"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                app:srcCompat="@drawable/ic_robot_details"
+                android:tint="?attr/colorAccent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tag='@{safeUnbox(model instanceof RobotCommentInfo) ? ((RobotCommentInfo)model).url : null}'
+                android:onClick="@{handlers::onRobotDetailPressed}"
+                tools:ignore="ContentDescription"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="@{(safeUnbox(model instanceof RobotCommentInfo) || !safeUnbox(canEdit)) ? View.GONE : View.VISIBLE}">
+            <ImageView
+                android:id="@+id/reply"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                app:srcCompat="@drawable/ic_reply"
+                android:tint="?attr/colorAccent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
+                android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
+                android:onClick="@{handlers::onReplyPressed}"
+                tools:ignore="ContentDescription"/>
+            <ImageView
+                android:id="@+id/quote"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                app:srcCompat="@drawable/ic_quote"
+                android:tint="?attr/colorAccent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
+                android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
+                android:onClick="@{handlers::onQuotePressed}"
+                tools:ignore="ContentDescription"/>
+            <ImageView
+                android:id="@+id/done"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                app:srcCompat="@drawable/ic_done"
+                android:tint="?attr/colorAccent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
+                android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
+                android:onClick="@{handlers::onDonePressed}"
+                tools:ignore="ContentDescription"/>
+            <ImageView
+                android:id="@+id/ack"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                app:srcCompat="@drawable/ic_thumb_up"
+                android:tint="?attr/colorAccent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="@{safeUnbox(isDraft) ? View.GONE : View.VISIBLE}"
+                android:tag='@{model.patchSet + "/" + model.id + "/" + model.line}'
+                android:onClick="@{handlers::onAckPressed}"
+                tools:ignore="ContentDescription"/>
+            <ImageView
+                android:id="@+id/edit"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                app:srcCompat="@drawable/ic_edit"
+                android:tint="?attr/colorAccent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="@{safeUnbox(isDraft) ? View.VISIBLE : View.GONE}"
+                android:tag='@{model.patchSet + "/" + model.id + "/" + safeUnbox(model.unresolved) + "/" + (model.inReplyTo == null ? "" : model.inReplyTo) + "/" + model.line}'
+                android:onClick="@{handlers::onEditPressed}"
+                tools:ignore="ContentDescription"/>
+            <ImageView
+                android:id="@+id/delete"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                app:srcCompat="@drawable/ic_delete"
+                android:tint="?attr/colorAccent"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="@{safeUnbox(isDraft) ? View.VISIBLE : View.GONE}"
+                android:onClick="@{handlers::onDeletePressed}"
+                android:tag='@{model.patchSet + "/" + model.id}'
+                tools:ignore="ContentDescription"/>
+            <Switch
+                android:id="@+id/unresolved"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:bindToFeature="@{Features.UNRESOLVED_COMMENTS}"
+                app:bindToBoolean="@{safeUnbox(isDraft)}"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="14sp"
+                android:scaleX="0.80"
+                android:scaleY="0.80"
+                android:text="@string/draft_resolved"
+                android:onClick="@{handlers::onResolvedPressed}"
+                android:tag='@{model.patchSet + "/" + model.id + "/" + safeUnbox(model.unresolved) + "/" + (model.inReplyTo == null ? "" : model.inReplyTo) + "/" + model.line}'
+                android:checked="@={!model.unresolved}"/>
+        </LinearLayout>
     </LinearLayout>
-
 </layout>
