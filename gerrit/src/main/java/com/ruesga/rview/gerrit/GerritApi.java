@@ -222,6 +222,13 @@ public interface GerritApi {
             @NonNull UsernameInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-display-name"
+     */
+    Observable<String> setAccountDisplayName(
+            @NonNull String accountId,
+            @NonNull DisplayNameInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-active"
      */
     Observable<String> isAccountActive(@NonNull String accountId);

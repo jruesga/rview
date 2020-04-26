@@ -316,6 +316,7 @@
     <string name="account_settings_display_format_name">Name</string>
     <string name="account_settings_display_format_email">Email</string>
     <string name="account_settings_display_format_username">Username</string>
+    <string name="account_settings_display_format_displayname">Display Name</string>
     <string name="account_settings_animated_avatars">Display animated avatars</string>
     <string name="account_settings_display_account_statuses">Display account statuses</string>
     <string name="account_settings_highlight_unreviewed">Highlight unreviewed changes</string>

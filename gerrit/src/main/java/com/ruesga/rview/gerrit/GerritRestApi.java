@@ -156,6 +156,15 @@ interface GerritRestApi {
             @NonNull @Body UsernameInput input);
 
     /**
+     * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#set-display-name"
+     */
+    @Headers({"Content-Type: application/json; charset=UTF-8"})
+    @PUT("accounts/{account-id}/displayname")
+    Observable<String> setAccountDisplayName(
+            @NonNull @Path("account-id") String accountId,
+            @NonNull @Body DisplayNameInput input);
+
+    /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-active"
      */
     @GET("accounts/{account-id}/active")

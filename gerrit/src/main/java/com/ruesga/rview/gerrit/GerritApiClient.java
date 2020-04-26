@@ -651,6 +651,12 @@ class GerritApiClient implements GerritApi {
     }
 
     @Override
+    public Observable<String> setAccountDisplayName(
+            @NonNull String accountId, @NonNull DisplayNameInput input) {
+        return withVersionRequestCheck(mService.setAccountDisplayName(accountId, input));
+    }
+
+    @Override
     public Observable<String> isAccountActive(@NonNull String accountId) {
         return withVersionRequestCheck(
                 withEmptyObservable(

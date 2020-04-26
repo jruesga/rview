@@ -166,6 +166,12 @@ public class Formatter {
             case Constants.ACCOUNT_DISPLAY_FORMAT_USERNAME:
                 accountDisplayName = accountInfo.username;
                 break;
+            case Constants.ACCOUNT_DISPLAY_FORMAT_DISPLAY_NAME:
+                accountDisplayName = accountInfo.displayName;
+                break;
+        }
+        if (TextUtils.isEmpty(accountDisplayName)) {
+            accountDisplayName = accountInfo.displayName;
         }
         if (TextUtils.isEmpty(accountDisplayName)) {
             accountDisplayName = accountInfo.username;

@@ -157,11 +157,13 @@
         <item>@string/account_settings_display_format_name</item>
         <item>@string/account_settings_display_format_email</item>
         <item>@string/account_settings_display_format_username</item>
+        <item>@string/account_settings_display_format_displayname</item>
     </string-array>
     <string-array name="account_display_format_values" translatable="false">
         <item>name</item>
         <item>email</item>
         <item>username</item>
+        <item>displayname</item>
     </string-array>
 
     <string-array name="related_changes_labels" translatable="false">

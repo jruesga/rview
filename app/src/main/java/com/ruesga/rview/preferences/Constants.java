@@ -68,6 +68,7 @@ public class Constants {
     public static final String ACCOUNT_DISPLAY_FORMAT_NAME = "name";
     public static final String ACCOUNT_DISPLAY_FORMAT_EMAIL = "email";
     public static final String ACCOUNT_DISPLAY_FORMAT_USERNAME = "username";
+    public static final String ACCOUNT_DISPLAY_FORMAT_DISPLAY_NAME = "displayname";
 
     public static final String COMMIT_MESSAGE = "/COMMIT_MSG";
 
