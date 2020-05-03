@@ -1,0 +1,26 @@
+name: Android CI Workflow
+
+on:
+  pull_request:
+    branches:
+      - '*'
+  push:
+    branches:
+      - '*'
+
+jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v1
+
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Run Lint checks and tests
+        run: ./gradlew --no-daemon --parallel clean lintGmsDebug testGmsDebug lintFlossDebug testFlossDebug
+
