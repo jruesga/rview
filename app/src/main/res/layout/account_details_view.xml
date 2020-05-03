@@ -235,6 +235,29 @@
                     android:textColor="?android:attr/textColorSecondary"
                     android:textSize="12sp" />
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:orientation="horizontal">
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="@dimen/label_min_width"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account_details_active"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textSize="12sp" />
+                <com.ruesga.rview.widget.StyleableTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginLeft="5dp"
+                    app:bindBoolean="@{!safeUnbox(model.inactive)}"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </layout>

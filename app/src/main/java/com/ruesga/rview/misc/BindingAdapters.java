@@ -120,6 +120,13 @@ public class BindingAdapters {
         v.setText(Html.fromHtml(text));
     }
 
+    @BindingAdapter("bindBoolean")
+    public static void bindBoolean(TextView view, Boolean value) {
+        view.setText((value != null && value)
+                ? view.getContext().getString(R.string.action_yes)
+                : view.getContext().getString(R.string.action_no));
+    }
+
     @BindingAdapter("bindNull")
     public static void bindNull(View v, Object o) {
         v.setVisibility(o == null ? View.GONE : View.VISIBLE);
