@@ -23,7 +23,6 @@ build/
 local.properties
 release.properties
 app/firebase.properties
-app/fabric.properties
 attachments/auth.properties
 
 # Thumbnail db
