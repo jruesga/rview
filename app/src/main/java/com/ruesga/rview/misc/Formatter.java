@@ -690,11 +690,14 @@ public class Formatter {
 
         StringBuilder emails = new StringBuilder(account.email);
         if (account.secondaryEmails != null) {
+            emails.append(" <b>")
+                    .append(v.getContext().getString(R.string.account_details_emails_preferred))
+                    .append("</b>");
             for (String email : account.secondaryEmails) {
-                emails.append("\n").append(email);
+                emails.append("<br/>").append(email);
             }
         }
-        v.setText(emails.toString());
+        v.setText(Html.fromHtml(emails.toString()));
     }
 
     @BindingAdapter("projectStatus")
