@@ -23,9 +23,9 @@ ext {
         androidx_legacy             : '1.0.0',
         material                    : '1.1.0',
         play_services_auth          : '18.0.0',
-        firebase_core               : '17.3.0',
-        firebase_messaging          : '20.1.5',
-        firebase_crashlytics        : '17.0.0-beta04',
+        firebase_core               : '17.4.1',
+        firebase_messaging          : '20.1.7',
+        firebase_crashlytics        : '17.0.0',
         gson                        : '2.8.6',
         retrofit2                   : '2.8.1',
         // Keep okHttp in 3.12.x, since 3.13+ requires Android 5
@@ -40,18 +40,18 @@ ext {
         antlrv3                     : '3.5.2',
         smoothprogressbar           : '1.1.0',
         glide                       : '4.11.0',
-        prettytime                  : '4.0.4.Final',
+        prettytime                  : '4.0.5.Final',
         flexboxlayout               : '2.0.1',
         floatingsearchview          : '2d435bead5',
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.3.0',
         better_link_movement_method : '2.2.0',
-        aboutlibraries              : '8.0.1'
+        aboutlibraries              : '8.1.2'
     ]
 
     testLibraries = [
         junit                       : '4.12',
-        hamcrest                    : '2.1',
+        hamcrest                    : '2.2',
         mockito                     : '3.3.3',
         powermock                   : '2.0.7',
         robolectric                 : '4.3.1',
@@ -67,7 +67,7 @@ allprojects {
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:3.6.3'
-            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:1.0.0'
+            classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:1.0.2'
         }
     }
 
