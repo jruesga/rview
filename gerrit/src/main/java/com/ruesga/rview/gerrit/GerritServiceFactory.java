@@ -46,6 +46,8 @@ public class GerritServiceFactory {
 
         private static final X500Principal DEBUG_DN =
                 new X500Principal("CN=Android Debug,O=Android,C=US");
+        private static final X500Principal DEBUG_DN_INVERSE =
+                new X500Principal("C=US,O=Android,CN=Android Debug");
 
         private Context mApplicationContext;
         private final boolean mDebuggable;
@@ -74,7 +76,8 @@ public class GerritServiceFactory {
                     ByteArrayInputStream stream =
                             new ByteArrayInputStream(signature.toByteArray());
                     X509Certificate cert = (X509Certificate) cf.generateCertificate(stream);
-                    boolean debuggable = cert.getSubjectX500Principal().equals(DEBUG_DN);
+                    boolean debuggable = cert.getSubjectX500Principal().getName().equals(DEBUG_DN.getName())
+                            || cert.getSubjectX500Principal().getName().equals(DEBUG_DN_INVERSE.getName());
                     if (debuggable) {
                         return true;
                     }
