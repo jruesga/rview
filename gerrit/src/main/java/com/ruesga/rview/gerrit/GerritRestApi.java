@@ -86,7 +86,7 @@ interface GerritRestApi {
     /**
      * @link "https://gerrit-review.googlesource.com/Documentation/rest-api-accounts.html#get-account"
      */
-    @GET("accounts/{account-id}")
+    @GET("accounts/{account-id}/")
     Observable<AccountInfo> getAccount(@NonNull @Path("account-id") String accountId);
 
     /**
