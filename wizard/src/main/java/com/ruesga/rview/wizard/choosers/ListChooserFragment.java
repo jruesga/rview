@@ -179,7 +179,7 @@ public abstract class ListChooserFragment extends WizardChooserFragment {
                     mBinding.setModel(mModel);
                     //noinspection ConstantConditions
                     ((WizardActivity)getActivity()).showMessage(
-                            getString(R.string.chooser_failed_to_fetch_data));
+                            getActivity().getString(R.string.chooser_failed_to_fetch_data));
                 }
             };
 
