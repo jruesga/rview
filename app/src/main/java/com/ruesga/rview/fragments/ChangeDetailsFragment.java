@@ -30,6 +30,7 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Log;
@@ -110,7 +111,6 @@ import com.ruesga.rview.misc.BitmapUtils;
 import com.ruesga.rview.misc.CacheHelper;
 import com.ruesga.rview.misc.ContinuousIntegrationHelper;
 import com.ruesga.rview.misc.ExceptionHelper;
-import com.ruesga.rview.misc.FileHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.RviewImageHelper;
 import com.ruesga.rview.misc.SerializationManager;
@@ -1547,6 +1547,8 @@ public class ChangeDetailsFragment extends Fragment implements
     private RxLoader1<Attachment, Attachment> mAttachmentDownloadLoader;
     private int mLegacyChangeId;
 
+    private Uri mCameraPictureUri = null;
+
     private Map<String, Integer> savedReview;
 
     private Account mAccount;
@@ -1696,15 +1698,16 @@ public class ChangeDetailsFragment extends Fragment implements
                 forceRefresh();
             }
         } else if (requestCode == REQUEST_ATTACHMENT_CAMERA && resultCode == Activity.RESULT_OK) {
-            //noinspection ConstantConditions
-            File image = FileHelper.getMostRecentFile(getContext().getFilesDir());
-            if (image != null) {
+            if (mCameraPictureUri != null) {
+                //noinspection ConstantConditions
+                File imageFile = new File(mCameraPictureUri.getPath());
                 Attachment attachment = new Attachment();
-                attachment.mLocalUri = Uri.fromFile(image);
-                attachment.mName = StringHelper.getFileNameWithoutExtension(image);
-                attachment.mSize = image.length();
-                attachment.mMimeType = StringHelper.getMimeType(image);
+                attachment.mLocalUri = mCameraPictureUri;
+                attachment.mName = StringHelper.getFileNameWithoutExtension(imageFile);
+                attachment.mSize = imageFile.length();
+                attachment.mMimeType = StringHelper.getMimeType(imageFile);
                 addPendingAttachments(attachment);
+                mCameraPictureUri = null;
             }
         } else if (requestCode == REQUEST_ATTACHMENT_FILE && resultCode == Activity.RESULT_OK) {
             if (data.getData() != null) {
@@ -2891,6 +2894,7 @@ public class ChangeDetailsFragment extends Fragment implements
                             R.string.change_attachments_camera_capture_failure);
                     return;
                 }
+                mCameraPictureUri = i.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
                 startActivityForResult(i, REQUEST_ATTACHMENT_CAMERA);
                 break;
 
