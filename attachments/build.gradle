@@ -40,19 +40,29 @@ android {
     defaultConfig {
         consumerProguardFiles file('proguard-consumer.txt')
         vectorDrawables.useSupportLibrary = true
+        return void
+    }
 
-        if (project.file('auth.properties').exists()) {
-            Properties authProps = new Properties()
-            authProps.load(new FileInputStream(project.file('auth.properties')))
+    flavorDimensions("privacy")
+    productFlavors {
+        gms {
+            dimension "privacy"
+            if (project.file('auth.properties').exists()) {
+                Properties authProps = new Properties()
+                authProps.load(new FileInputStream(project.file('auth.properties')))
 
-            resValue "string", "gdrive.client_id", authProps["gdrive.client_id"]
-            resValue "string", "gdrive.client_secret", authProps["gdrive.client_secret"]
-        } else {
+                resValue "string", "gdrive.client_id", authProps["gdrive.client_id"]
+                resValue "string", "gdrive.client_secret", authProps["gdrive.client_secret"]
+            } else {
+                resValue "string", "gdrive.client_id", ""
+                resValue "string", "gdrive.client_secret", ""
+            }
+        }
+        floss {
+            dimension "privacy"
             resValue "string", "gdrive.client_id", ""
             resValue "string", "gdrive.client_secret", ""
         }
-
-        return void
     }
 
     dataBinding {
