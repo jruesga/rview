@@ -35,4 +35,6 @@
     <item name="mark_reviewed" type="id"/>
     <item name="mark_wip" type="id"/>
     <item name="ignore" type="id"/>
+
+    <item name="avatar_key_id" type="id"/>
 </resources>

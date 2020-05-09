@@ -128,7 +128,8 @@ public final class RviewImageHelper extends AppGlideModule {
         final Account acct = Preferences.getAccount(context);
         final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
         boolean animate = Preferences.isAccountAnimatedAvatars(context, acct);
-        loadWithFallbackUrls(context, view, placeholder, avatarUrls, 0, 0, animate);
+        view.setTag(R.id.avatar_key_id, account.accountId);
+        loadWithFallbackUrls(context, account.accountId, view, placeholder, avatarUrls, 0, 0, animate);
     }
 
     public static void bindAvatar(Context context, Account acct,
@@ -137,18 +138,18 @@ public final class RviewImageHelper extends AppGlideModule {
                 com.ruesga.rview.drawer.R.dimen.drawer_navigation_icon_size);
         boolean animate = Preferences.isAccountAnimatedAvatars(context, acct);
         final List<String> avatarUrls = ModelHelper.getAvatarUrl(context, acct, account);
-        loadWithFallbackUrls(context, item, placeholder, avatarUrls, size, size, animate);
+        loadWithFallbackUrls(context, account.accountId, item, placeholder, avatarUrls, size, size, animate);
     }
 
     @SuppressWarnings({"unchecked", "deprecation"})
-    private static void loadWithFallbackUrls(final Context context, final Object into,
+    private static void loadWithFallbackUrls(final Context context, int accountId, final Object into,
             final Drawable placeholder, final List<String> urls, int width, int height,
             boolean animate) {
         final String nextUrl;
         synchronized (urls) {
             nextUrl = urls.isEmpty() ? null : urls.get(0);
         }
-        drawInto(into, placeholder, animate);
+        drawInto(into, accountId, placeholder, animate);
         if (nextUrl != null) {
             final Target target = new SimpleTarget<Drawable>() {
                 @Override
@@ -158,7 +159,7 @@ public final class RviewImageHelper extends AppGlideModule {
                         urls.clear();
                         urls.add(nextUrl);
                     }
-                    drawInto(into, resource, animate);
+                    drawInto(into, accountId, resource, animate);
                 }
 
                 @Override
@@ -167,7 +168,8 @@ public final class RviewImageHelper extends AppGlideModule {
                     synchronized (urls) {
                         urls.remove(nextUrl);
                     }
-                    loadWithFallbackUrls(context, into, placeholder, urls, width, height, animate);
+                    loadWithFallbackUrls(context, accountId, into, placeholder,
+                            urls, width, height, animate);
                 }
             };
 
@@ -184,8 +186,12 @@ public final class RviewImageHelper extends AppGlideModule {
         }
     }
 
-    private static void drawInto(Object into, Drawable dw, boolean animate) {
+    private static void drawInto(Object into, int accountId, Drawable dw, boolean animate) {
         if (into instanceof ImageView) {
+            int newAccountId = (int)((ImageView) into).getTag(R.id.avatar_key_id);
+            if (accountId != newAccountId) {
+                return;
+            }
             ((ImageView) into).setImageDrawable(dw);
         } else if (into instanceof MenuItem) {
             ((MenuItem) into).setIcon(dw);
