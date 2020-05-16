@@ -593,6 +593,10 @@ public class MainActivity extends ChangeListBaseActivity implements Reloadable {
                 final String link = getString(R.string.link_privacy);
                 ActivityHelper.openUriInCustomTabs(this, link);
                 break;
+            case R.id.menu_source_code:
+                final String repository = getString(R.string.link_source_code);
+                ActivityHelper.openUriInCustomTabs(this, repository);
+                break;
             case R.id.menu_about:
                 String[] libraries = getResources().getStringArray(R.array.libraries_ids);
                 LibsBuilder builder = new LibsBuilder()

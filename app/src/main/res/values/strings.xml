@@ -93,6 +93,7 @@
     <string name="menu_info_category">Information</string>
     <string name="menu_share">Share</string>
     <string name="menu_privacy">Privacy policy</string>
+    <string name="menu_source_code">Source code</string>
     <string name="menu_about">About</string>
     <string name="menu_delete_all">Delete all</string>
     <string name="menu_mark_as_read">Mark as read</string>
@@ -636,6 +637,7 @@
     <string name="link_play_store" translatable="false">https://play.google.com/store/apps/details?id=<xliff:g id="package_name" example="com.ruesga.rview">%1$s</xliff:g></string>
     <string name="link_privacy" translatable="false">https://github.com/jruesga/rview/blob/master/Privacy.md</string>
     <string name="link_cloud_notifications_plugin">https://gerrit.googlesource.com/plugins/cloud-notifications</string>
+    <string name="link_source_code" translatable="false">https://github.com/jruesga/rview</string>
 
     <!-- Account status dialog -->
     <string name="account_status_dialog_title">Account status</string>

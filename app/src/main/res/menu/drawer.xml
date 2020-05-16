@@ -179,6 +179,10 @@
                     android:icon="@drawable/ic_privacy"
                     android:title="@string/menu_privacy"/>
                 <item
+                    android:id="@+id/menu_source_code"
+                    android:icon="@drawable/ic_code"
+                    android:title="@string/menu_source_code"/>
+                <item
                     android:id="@+id/menu_about"
                     android:icon="@drawable/ic_info_outline"
                     android:title="@string/menu_about"/>
