@@ -45,6 +45,7 @@ dependencies {
     }
     implementation "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:${libraries.keyboardvisibilityevent}"
     implementation ("com.mikepenz:aboutlibraries:${libraries.aboutlibraries}@aar") { transitive = true }
+    implementation "com.mikepenz:aboutlibraries-definitions:${libraries.aboutlibraries_definitions}"
     implementation "me.saket:better-link-movement-method:${libraries.better_link_movement_method}"
 
     // NOTE: Required for libraries generating old source (Glide, ...). Remove when no were required anymore

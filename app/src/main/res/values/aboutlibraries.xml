@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<resources>
+    <!-- Firebase -->
+    <string name="define_firebase" />
+    <string name="library_firebase_author">Google</string>
+    <string name="library_firebase_authorWebsite">https://firebase.google.com/</string>
+    <string name="library_firebase_libraryName">Firebase</string>
+    <string name="library_firebase_libraryDescription">Firebase is an app development platform with tools to help you build, grow and monetize your app.</string>
+    <string name="library_firebase_libraryWebsite">https://firebase.google.com/</string>
+    <string name="library_firebase_licenseId">apache_2_0</string>
+    <string name="library_firebase_isOpenSource">true</string>
+    <string name="library_firebase_repositoryLink">https://github.com/firebase/firebase-android-sdk</string>
+    <!-- okhttp-digest -->
+    <string name="define_okhttp_digest" />
+    <string name="library_okhttp_digest_author">rburgst</string>
+    <string name="library_okhttp_digest_libraryName">okhttp-digest</string>
+    <string name="library_okhttp_digest_libraryDescription">A digest authenticator for okhttp. Most of the code is ported from Apache Http Client.</string>
+    <string name="library_okhttp_digest_libraryWebsite">https://github.com/rburgst/okhttp-digest</string>
+    <string name="library_okhttp_digest_licenseId">apache_2_0</string>
+    <string name="library_okhttp_digest_isOpenSource">true</string>
+    <string name="library_okhttp_digest_repositoryLink">https://github.com/rburgst/okhttp-digest</string>
+    <!-- rxloader -->
+    <string name="define_rxloader_digest" />
+    <string name="library_rxloader_digest_author">Evan Tatarka</string>
+    <string name="library_rxloader_digest_libraryName">rxloader</string>
+    <string name="library_rxloader_digest_libraryDescription">Asynchronous operations in Android are very hard to get right due to the Activity lifecycle. AsyncTasks don\'t handle any of it making them difficult to use. Loaders handle many things for you, but have a clunky api and fall down anytime you want to do anything more complex than loading data immediately when the Activity or Fragment is shown.</string>
+    <string name="library_rxloader_libraryWebsite">https://github.com/evant/rxloader</string>
+    <string name="library_rxloader_licenseId">apache_2_0</string>
+    <string name="library_rxloader_isOpenSource">true</string>
+    <string name="library_rxloader_repositoryLink">https://github.com/evant/rxloader</string>
+    <!-- antlr -->
+    <string name="define_antlr3_digest" />
+    <string name="library_antlr3_digest_author">Terence Parr</string>
+    <string name="library_antlr3_digest_libraryName">Antlr</string>
+    <string name="library_antlr3_digest_libraryDescription">ANTLR (ANother Tool for Language Recognition) is a powerful parser generator for reading, processing, executing, or translating structured text or binary files. It\'s widely used to build languages, tools, and frameworks. From a grammar, ANTLR generates a parser that can build and walk parse trees.</string>
+    <string name="library_antlr3_libraryWebsite">https://www.antlr.org/</string>
+    <string name="library_antlr3_licenseId">bsd_3</string>
+    <string name="library_antlr3_isOpenSource">true</string>
+    <string name="library_antlr3_repositoryLink">https://github.com/antlr/antlr3</string>
+    <!-- prettytime -->
+    <string name="define_prettytime_digest" />
+    <string name="library_prettytime_digest_author">OCPsoft</string>
+    <string name="library_prettytime_authorWebsite">http://ocpsoft.org/</string>
+    <string name="library_prettytime_digest_libraryName">prettytime</string>
+    <string name="library_prettytime_digest_libraryDescription">Social Style Date and Time Formatting for Java.</string>
+    <string name="library_prettytime_libraryWebsite">https://www.ocpsoft.org/prettytime/</string>
+    <string name="library_prettytime_licenseId">apache_2_0</string>
+    <string name="library_prettytime_isOpenSource">true</string>
+    <string name="library_prettytime_repositoryLink">https://github.com/ocpsoft/prettytime</string>
+    <!-- androidsvg -->
+    <string name="define_androidsvg_digest" />
+    <string name="library_androidsvg_digest_author">Paul LeBeau</string>
+    <string name="library_androidsvg_digest_libraryName">AndroidSVG</string>
+    <string name="library_androidsvg_digest_libraryDescription">AndroidSVG is a SVG parser and renderer for Android. It has almost complete support for the static visual elements of the SVG 1.1 and SVG 1.2 Tiny specifications (except for filters).</string>
+    <string name="library_androidsvg_libraryWebsite">https://bigbadaboom.github.io/androidsvg/</string>
+    <string name="library_androidsvg_licenseId">apache_2_0</string>
+    <string name="library_androidsvg_isOpenSource">true</string>
+    <string name="library_androidsvg_repositoryLink">https://github.com/BigBadaboom/androidsvg</string>
+    <!-- keyboardvisibilityevent -->
+    <string name="define_keyboardvisibilityevent_digest" />
+    <string name="library_keyboardvisibilityevent_digest_author">Yasuhiro SHIMIZU</string>
+    <string name="library_keyboardvisibilityevent_digest_libraryName">KeyboardVisibilityEvent</string>
+    <string name="library_keyboardvisibilityevent_digest_libraryDescription">Android Library to handle soft keyboard visibility change event. show/hide keyboard method is also included.</string>
+    <string name="library_keyboardvisibilityevent_libraryWebsite">https://github.com/yshrsmz/KeyboardVisibilityEvent</string>
+    <string name="library_keyboardvisibilityevent_licenseId">apache_2_0</string>
+    <string name="library_keyboardvisibilityevent_isOpenSource">true</string>
+    <string name="library_keyboardvisibilityevent_repositoryLink">https://github.com/yshrsmz/KeyboardVisibilityEvent</string>
+    <!-- betterlinkmovementmethod -->
+    <string name="define_betterlinkmovementmethod_digest" />
+    <string name="library_betterlinkmovementmethod_digest_author">Saket Narayan</string>
+    <string name="library_betterlinkmovementmethod_digest_libraryName">Better-Link-Movement-Method</string>
+    <string name="library_betterlinkmovementmethod_digest_libraryDescription">Android Library that improves LinkMovementMethod.</string>
+    <string name="library_betterlinkmovementmethod_libraryWebsite">https://github.com/saket/Better-Link-Movement-Method</string>
+    <string name="library_betterlinkmovementmethod_licenseId">apache_2_0</string>
+    <string name="library_betterlinkmovementmethod_isOpenSource">true</string>
+    <string name="library_betterlinkmovementmethod_repositoryLink">https://github.com/saket/Better-Link-Movement-Method</string>
+    <!-- junit -->
+    <string name="define_junit_digest" />
+    <string name="library_junit_digest_author">Junit Team</string>
+    <string name="library_junit_digest_libraryName">Junit 4</string>
+    <string name="library_junit_digest_libraryDescription">JUnit is a simple framework to write repeatable tests. It is an instance of the xUnit architecture for unit testing frameworks.</string>
+    <string name="library_junit_libraryWebsite">https://junit.org/junit4/</string>
+    <string name="library_junit_licenseId">eclipse_2_0</string>
+    <string name="library_junit_isOpenSource">true</string>
+    <string name="library_junit_repositoryLink">https://github.com/junit-team/junit4</string>
+    <!-- hamcrest -->
+    <string name="define_hamcrest_digest" />
+    <string name="library_hamcrest_digest_author">Hamcrest</string>
+    <string name="library_hamcrest_digest_libraryName">Hamcrest</string>
+    <string name="library_hamcrest_digest_libraryDescription">Hamcrest is a library of matchers, which can be combined in to create flexible expressions of intent in tests. They\'ve also been used for other purposes.</string>
+    <string name="library_hamcrest_libraryWebsite">http://hamcrest.org/</string>
+    <string name="library_hamcrest_licenseId">bsd_3</string>
+    <string name="library_hamcrest_isOpenSource">true</string>
+    <string name="library_hamcrest_repositoryLink">https://github.com/hamcrest/JavaHamcrest</string>
+    <!-- powermock -->
+    <string name="define_powermock_digest" />
+    <string name="library_powermock_digest_author">powermock</string>
+    <string name="library_powermock_digest_libraryName">powermock</string>
+    <string name="library_powermock_digest_libraryDescription">PowerMock is a framework that extends other mock libraries with more powerful capabilities.</string>
+    <string name="library_powermock_libraryWebsite">https://github.com/powermock/powermock</string>
+    <string name="library_powermock_licenseId">apache_2_0</string>
+    <string name="library_powermock_isOpenSource">true</string>
+    <string name="library_powermock_repositoryLink">https://github.com/powermock/powermock</string>
+    <!-- robolectric -->
+    <string name="define_robolectric_digest" />
+    <string name="library_robolectric_digest_author">powermock</string>
+    <string name="library_robolectric_digest_libraryName">powermock</string>
+    <string name="library_robolectric_digest_libraryDescription">Robolectric is the industry-standard unit testing framework for Android. With Robolectric, your tests run in a simulated Android environment inside a JVM, without the overhead of an emulator.</string>
+    <string name="library_robolectric_libraryWebsite">http://robolectric.org/</string>
+    <string name="library_robolectric_licenseId">mit</string>
+    <string name="library_robolectric_isOpenSource">true</string>
+    <string name="library_robolectric_repositoryLink">https://github.com/robolectric/robolectric</string>
+    <!-- dexcount -->
+    <string name="define_dexcount_digest" />
+    <string name="library_dexcount_digest_author">KeepSafe</string>
+    <string name="library_dexcount_digest_libraryName">Dexcount Gradle Plugin</string>
+    <string name="library_dexcount_digest_libraryDescription">A Gradle plugin to report the number of method references in your APK, AAR, or java module on every build.</string>
+    <string name="library_dexcount_libraryWebsite">https://github.com/KeepSafe/dexcount-gradle-plugin</string>
+    <string name="library_dexcount_licenseId">apache_2_0</string>
+    <string name="library_dexcount_isOpenSource">true</string>
+    <string name="library_dexcount_repositoryLink">https://github.com/KeepSafe/dexcount-gradle-plugin</string>
+    <!-- iharder-base64 -->
+    <string name="define_iharder_base64_digest" />
+    <string name="library_iharder_base64_digest_author">iharder</string>
+    <string name="library_iharder_base64_digest_libraryName">iharder-base64</string>
+    <string name="library_iharder_base64_digest_libraryDescription">A java library providing very fast Base64 encoding and decoding in the form of convenience methods and input/output streams.</string>
+    <string name="library_iharder_base64_libraryWebsite">http://iharder.sourceforge.net/current/java/base64/</string>
+    <string name="library_iharder_base64_licenseId">mit</string>
+    <string name="library_iharder_base64_isOpenSource">true</string>
+    <string name="library_iharder_base64_repositoryLink">http://iharder.sourceforge.net/current/java/base64/</string>
+</resources>

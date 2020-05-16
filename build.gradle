@@ -46,11 +46,12 @@ ext {
         androidsvg                  : '3511e13649',
         keyboardvisibilityevent     : '2.3.0',
         better_link_movement_method : '2.2.0',
-        aboutlibraries              : '8.1.2'
+        aboutlibraries              : '8.1.2',
+        aboutlibraries_definitions  : '8.1.0'
     ]
 
     testLibraries = [
-        junit                       : '4.12',
+        junit                       : '4.13',
         hamcrest                    : '2.2',
         mockito                     : '3.3.3',
         powermock                   : '2.0.7',

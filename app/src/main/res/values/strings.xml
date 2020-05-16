@@ -20,6 +20,7 @@
 
     <!-- App name -->
     <string name="app_name" translatable="false">Rview</string>
+    <string name="app_description">A Gerrit client application for Android.</string>
 
     <!-- Notifications -->
     <string name="notifications_default_channel_name" translatable="false">Rview - <xliff:g id="repository" example="CyanogenMod">%1$s</xliff:g> - <xliff:g id="account" example="test">%2$s</xliff:g></string>

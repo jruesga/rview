@@ -33,6 +33,18 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.slidingpanelayout.widget.SlidingPaneLayout.PanelSlideListener;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.ruesga.rview.analytics.AnalyticsManagerImpl;
@@ -73,17 +85,6 @@ import com.ruesga.rview.wizards.SetupAccountActivity;
 
 import java.util.List;
 
-import androidx.annotation.Keep;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.GravityCompat;
-import androidx.databinding.DataBindingUtil;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.slidingpanelayout.widget.SlidingPaneLayout.PanelSlideListener;
 
 import static com.ruesga.rview.preferences.Constants.MY_FILTERS_GROUP_BASE_ID;
 import static com.ruesga.rview.preferences.Constants.OTHER_ACCOUNTS_GROUP_BASE_ID;
@@ -596,10 +597,13 @@ public class MainActivity extends ChangeListBaseActivity implements Reloadable {
                 String[] libraries = getResources().getStringArray(R.array.libraries_ids);
                 LibsBuilder builder = new LibsBuilder()
                         .withAboutAppName(getString(R.string.app_name))
+                        .withAboutDescription(getString(R.string.app_description))
                         .withAboutIconShown(true)
                         .withActivityTitle(getString(R.string.menu_about))
                         .withAboutVersionShown(true)
                         .withLibraries(libraries)
+                        .withAutoDetect(false)
+                        .withLicenseShown(true)
                         .withFields(R.string.class.getFields());
                 builder.start(this);
                 break;
