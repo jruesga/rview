@@ -18,6 +18,7 @@
   {"name":"Bazel", "url":"https://bazel-review.googlesource.com/", "ci_accounts": "^(copybara)$"},
   {"name":"BlissRoms", "url":"https://review.blissroms.com/"},
   {"name":"BoringSSL", "url":"https://boringssl-review.googlesource.com/", "ci_accounts": "^(CQ bot account.*)$", "ci_status_mode": "cq", "ci_status_url": "https://cr-buildbucket.appspot.com/_ah/api/buildbucket/v1/search?max_builds=500&fields=builds(status,result,tags,url)&tag=buildset:patch/gerrit/boringssl-review.googlesource.com/{change}/{revision}"},
+  {"name":"CalyxOS", "url":"https://review.calyxos.org/"},
   {"name":"CandyRoms", "url":"https://gerrit.bbqdroid.org/"},
   {"name":"CarbonROM", "url":"https://review.carbonrom.org/"},
   {"name":"Charm", "url":"https://charm.cs.illinois.edu/gerrit/", "ci_accounts": "^(Charm.*)$"},
