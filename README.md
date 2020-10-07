@@ -1,7 +1,7 @@
 Rview
 =====
 
-### Description [![Build Status](https://travis-ci.org/jruesga/rview.svg?branch=master)](https://travis-ci.org/jruesga/rview/branches) [![GitHub release](https://img.shields.io/github/release/jruesga/rview.svg)](https://github.com/jruesga/rview/releases/latest) [![Apache 2.0](https://img.shields.io/github/license/jruesga/rview.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+### Description [![Build Status](https://github.com/jruesga/rview/workflows/Android%20CI%20Workflow/badge.svg)](https://github.com/jruesga/rview/actions) [![GitHub release](https://img.shields.io/github/release/jruesga/rview.svg)](https://github.com/jruesga/rview/releases/latest) [![Apache 2.0](https://img.shields.io/github/license/jruesga/rview.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 A Gerrit client application  for Android
 
