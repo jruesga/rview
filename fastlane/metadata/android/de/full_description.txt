@@ -1,0 +1,10 @@
+Rview ist ein Gerrit-Client für Android. Es ermöglicht Zugriff
+auf eine Gerrit-Instanz, um Codereviews auszuführen.
+
+Funktionen:
+* Offene, akzeptierte oder verworfene Changes anzeigen
+* Nach Changes suchen
+* Changes begutachten und kommentieren
+* Dateien editieren und neue Revisionen veröffentlichen
+* Unterschiede veränderter Dateien in Textform und visuell vergleichen
+* und vieles mehr...

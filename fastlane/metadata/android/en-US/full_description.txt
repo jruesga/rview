@@ -1,0 +1,10 @@
+Rview is a Gerrit client application for Android, which allows you to
+access to a Gerrit instance to perform code reviews.
+
+Features:
+* View open, merged or abandoned changes
+* Search for changes
+* Review and comment on changes
+* Edit files and publish new revisions
+* Compare the differences on any changed file textually and visually
+* and much more...
