@@ -10,11 +10,11 @@ A Gerrit client application  for Android
 
 ### Features
 
-* View open, merged or abandoned changes.
-* Search for changes.
-* Review and comment on changes.
+* View open, merged or abandoned changes
+* Search for changes
+* Review and comment on changes
 * Edit files and publish new revisions
-* Compare textually and visually the differences on any changed file.
+* Compare the differences on any changed file textually and visually.
 * and much more...
 
 
