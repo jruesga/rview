@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+
+<resources>
+    <color name="primary">#05668d</color>
+    <color name="primaryDark">#044c69</color>
+    <color name="primaryDarkForeground">#05668d</color>
+    <color name="accent">#f44336</color>
+    <color name="alert">#f57f17</color>
+    <!--
+    <color name="secondaryIconColor">#757575</color>
+    <color name="approved">#2e7d32</color>
+    <color name="rejected">#c62828</color>
+    -->
+    <color name="noscore">#ff616161</color>
+    <color name="unscored">#ff303030</color>
+    <color name="primaryBackgroundColor">#212121</color>
+    <color name="selectedItem">#424242</color>
+    <!--
+    <color name="translucentStatusBarColor">#50000000</color>
+    -->
+
+    <color name="messageWithPositiveReview">#3000ff00</color>
+    <color name="messageWithNegativeReview">#30ff0000</color>
+
+    <color name="diffLineBackgroundColor">#212121</color>
+    <color name="diffAddedBackgroundColor">#4c00ff00</color>
+    <color name="diffDeletedBackgroundColor">#4cff0000</color>
+    <color name="diffAddedForegroundColor">#4c00ff00</color>
+    <color name="diffDeletedForegroundColor">#4cff0000</color>
+    <color name="diffSkipBackgroundColor">#000000</color>
+    <color name="diffNoDiffBackgroundColor">#303030</color>
+    <color name="diffCommentBackgroundColor">#827717</color>
+    <color name="diffHighlightColor">#d32f2f</color>
+
+    <color name="stats_open">#05668d</color>
+    <color name="stats_merged">#558b2f</color>
+    <color name="stats_abandoned">#c62828</color>
+    <color name="stats_line_text">#b3ffffff</color>
+
+    <color name="tab_text">#b3ffffff</color>
+    <color name="tab_selected_text">@android:color/white</color>
+    <color name="tab_indicator">@android:color/white</color>
+
+    <color name="starred">#ffeb3b</color>
+
+    <color name="quote">#40ffffff</color>
+    <!--
+
+    <color name="empty_state">#9e9e9e</color>
+    -->
+
+    <color name="wizard_navbar">#ff424242</color>
+    <color name="wizard_text_secondary">#ffffffff</color>
+</resources>
