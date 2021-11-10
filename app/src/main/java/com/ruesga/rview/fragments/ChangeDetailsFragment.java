@@ -87,6 +87,7 @@ import com.ruesga.rview.gerrit.model.Features;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.HashtagsInput;
 import com.ruesga.rview.gerrit.model.InitialChangeStatus;
+import com.ruesga.rview.gerrit.model.MergeableInfo;
 import com.ruesga.rview.gerrit.model.MoveInput;
 import com.ruesga.rview.gerrit.model.NotifyType;
 import com.ruesga.rview.gerrit.model.PrivateInput;
@@ -859,6 +860,7 @@ public class ChangeDetailsFragment extends Fragment implements
 
     private static class DataResponse {
         ChangeInfo mChange;
+        MergeableInfo mMergeableInfo;
         SubmitType mSubmitType;
         Map<String, FileInfo> mFiles;
         Map<String, ActionInfo> mActions;
@@ -1985,6 +1987,7 @@ public class ChangeDetailsFragment extends Fragment implements
                 .listenOn(mOnReviewerRemovedVoteListener)
                 .from(response.mChange);
         mBinding.changeInfo.setModel(response.mChange);
+        mBinding.changeInfo.setMergeableInfo(response.mMergeableInfo);
         mBinding.changeInfo.setSubmitType(response.mSubmitType);
         mBinding.changeInfo.setServerInfo(mAccount.getServerInfo());
         mBinding.changeInfo.setActions(response.mActions);
@@ -2004,6 +2007,7 @@ public class ChangeDetailsFragment extends Fragment implements
     private void updateReviewInfo(DataResponse response) {
         mBinding.reviewInfo.setHasData(true);
         mBinding.reviewInfo.setModel(response.mChange);
+        mBinding.changeInfo.setMergeableInfo(response.mMergeableInfo);
         mBinding.reviewInfo.setHandlers(mEventHandlers);
         mBinding.reviewInfo.setIsCurrentRevision(
                 mCurrentRevision.equals(response.mChange.currentRevision));
@@ -2040,6 +2044,13 @@ public class ChangeDetailsFragment extends Fragment implements
 
                 // Obtain the project configuration
                 if (dataResponse.mChange != null) {
+                    // Request mergeable info
+                    ChangeStatus status = dataResponse.mChange.status;
+                    if (!ChangeStatus.MERGED.equals(status) && !ChangeStatus.ABANDONED.equals(status)) {
+                        dataResponse.mMergeableInfo = api.getChangeRevisionMergeableStatus(
+                                changeId, dataResponse.mChange.currentRevision, null).blockingFirst();
+                    }
+
                     // Request project config
                     dataResponse.mProjectConfig = api.getProjectConfig(
                             dataResponse.mChange.project).blockingFirst();
@@ -2052,7 +2063,6 @@ public class ChangeDetailsFragment extends Fragment implements
                     // have some logic to deal with basic actions.
                     // Request actions could be a heavy operation in old and complex
                     // changes, so just try to omit it.
-                    ChangeStatus status = dataResponse.mChange.status;
                     if (mAccount.hasAuthenticatedAccessMode()
                             && !ChangeStatus.MERGED.equals(status)
                             && !ChangeStatus.ABANDONED.equals(status)) {

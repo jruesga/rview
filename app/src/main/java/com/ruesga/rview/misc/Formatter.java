@@ -46,6 +46,7 @@ import com.ruesga.rview.gerrit.model.ConfigInfo;
 import com.ruesga.rview.gerrit.model.FileInfo;
 import com.ruesga.rview.gerrit.model.FileStatus;
 import com.ruesga.rview.gerrit.model.GitPersonalInfo;
+import com.ruesga.rview.gerrit.model.MergeableInfo;
 import com.ruesga.rview.gerrit.model.ProjectStatus;
 import com.ruesga.rview.gerrit.model.ReviewerStatus;
 import com.ruesga.rview.gerrit.model.ReviewerUpdateInfo;
@@ -574,8 +575,8 @@ public class Formatter {
         view.setText(view.getResources().getQuantityString(R.plurals.more_items, q, q));
     }
 
-    @BindingAdapter({"changeStatus", "currentRevision"})
-    public static void toChangeStatus(TextView view, ChangeInfo change, boolean currentRevision) {
+    @BindingAdapter({"changeStatus", "mergeableInfo", "currentRevision"})
+    public static void toChangeStatus(TextView view, ChangeInfo change, MergeableInfo mergeableInfo, boolean currentRevision) {
         if (change == null) {
             view.setText(null);
             return;
@@ -586,7 +587,7 @@ public class Formatter {
         } else if (ChangeStatus.NEW.equals(change.status)) {
             if (change.submittable) {
                 view.setText(R.string.change_statuses_ready_to_submit);
-            } else if (!change.mergeable) {
+            } else if (!mergeableInfo.mergeable) {
                 view.setText(R.string.change_statuses_not_mergeable);
             } else {
                 String neededLabel = ModelHelper.checkNeedsLabel(change.labels);
