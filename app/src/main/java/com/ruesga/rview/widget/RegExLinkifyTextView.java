@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.SoundEffectConstants;
 import android.view.View;
 
+import com.ruesga.rview.BuildConfig;
 import com.ruesga.rview.misc.ActivityHelper;
 import com.ruesga.rview.misc.ModelHelper;
 import com.ruesga.rview.misc.StringHelper;
@@ -88,12 +89,12 @@ public class RegExLinkifyTextView extends StyleableTextView {
     public static final RegExLink GERRIT_CHANGE_ID_REGEX = new RegExLink(
             Constants.CUSTOM_URI_CHANGE,
             StringHelper.CHANGE_ID_REGEXP,
-            "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE + "/$1",
+            BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_CHANGE + "/$1",
             false);
     public static final RegExLink GERRIT_COMMIT_REGEX = new RegExLink(
             Constants.CUSTOM_URI_COMMIT,
             StringHelper.COMMIT_REGEXP,
-            "com.ruesga.rview://" + Constants.CUSTOM_URI_COMMIT + "/$1",
+            BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_COMMIT + "/$1",
             false);
 
     private final List<RegExLink> mRegEx = new ArrayList<>();
@@ -125,13 +126,13 @@ public class RegExLinkifyTextView extends StyleableTextView {
         regexLinks.add(new RegExLink(
                 Constants.CUSTOM_URI_CHANGE_ID,
                 "http(s)?://" + uri + "((\\?polygerrit=\\d)?(#/)?c/)?(\\d)+(/(((\\d)+\\.\\.)?(\\d)+)?(/(\\S)*+)?)?",
-                "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
+                BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
                 false,
                 group -> UriHelper.extractChangeId(group, repository)));
         regexLinks.add(new RegExLink(
                 Constants.CUSTOM_URI_CHANGE_ID,
                 "http(s)?://" + uri + "(\\?polygerrit=\\d)?(#/)?c/[\\w|\\-|\\d|\\/]*/\\+/\\d+(/(\\S)*+)?",
-                "com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
+                BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_CHANGE_ID + "/$1",
                 false,
                 group -> UriHelper.extractChangeId(group, repository)));
 
