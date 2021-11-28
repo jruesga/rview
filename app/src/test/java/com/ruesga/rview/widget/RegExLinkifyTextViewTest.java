@@ -15,6 +15,7 @@
  */
 package com.ruesga.rview.widget;
 
+import com.ruesga.rview.BuildConfig;
 import com.ruesga.rview.model.Repository;
 import com.ruesga.rview.preferences.Constants;
 import com.ruesga.rview.widget.RegExLinkifyTextView.RegExLink;
@@ -57,10 +58,10 @@ public class RegExLinkifyTextViewTest {
         assertEquals(4, links.size());
         assertNull(replaceLink(links.get(0),
                 "aaa https://test.com/#/c/project/abc_cba-123/+/129166/ aa"));
-        assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
+        assertEquals(BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
                 replaceLink(links.get(1),
                         "aaa https://test.com/#/c/project/abc_cba-123/+/129166/ aa"));
-        assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/32540",
+        assertEquals(BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_CHANGE_ID + "/32540",
                 replaceLink(links.get(1),
                         "aaa https://test.com/c/r8/+/32540, aa"));
         assertNull(replaceLink(links.get(2),
@@ -71,7 +72,7 @@ public class RegExLinkifyTextViewTest {
 
         assertNull(replaceLink(links.get(0),
                 "aaa\n\nhttps://test.com/#/c/project_aa_aa/abc/+/129166/\n\nhttps://test.com/#/c/project/abc/+/129167/\n\naa"));
-        assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
+        assertEquals(BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_CHANGE_ID + "/129166",
                 replaceLink(links.get(1),
                         "aaa\n\nhttps://test.com/#/c/project_aa_aa/abc/+/129166/\n\nhttps://test.com/#/c/project/abc/+/129167/\n\naa"));
         assertNull(replaceLink(links.get(2),
@@ -87,11 +88,11 @@ public class RegExLinkifyTextViewTest {
                         "text test@test.com test"));
 
 
-        assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_CHANGE
+        assertEquals(BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_CHANGE
                         + "/I528af53639e27b3b8297079b0bd18dc123d5b168",
                 replaceLink(RegExLinkifyTextView.GERRIT_CHANGE_ID_REGEX,
                         "text I528af53639e27b3b8297079b0bd18dc123d5b168 test"));
-        assertEquals("com.ruesga.rview://" + Constants.CUSTOM_URI_COMMIT
+        assertEquals(BuildConfig.APPLICATION_ID + "://" + Constants.CUSTOM_URI_COMMIT
                         + "/054822cf95da677c4768c2aec70ddeb8c66b0381",
                 replaceLink(RegExLinkifyTextView.GERRIT_COMMIT_REGEX,
                         "text 054822cf95da677c4768c2aec70ddeb8c66b0381 test"));
