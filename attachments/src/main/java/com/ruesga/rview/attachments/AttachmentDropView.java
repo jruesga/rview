@@ -144,8 +144,8 @@ public class AttachmentDropView extends View implements View.OnDragListener {
                 c.moveToFirst();
                 attachment.mName = new File(
                         c.getString(
-                                c.getColumnIndex(OpenableColumns.DISPLAY_NAME))).getName();
-                attachment.mSize = c.getLong(c.getColumnIndex(OpenableColumns.SIZE));
+                                c.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))).getName();
+                attachment.mSize = c.getLong(c.getColumnIndexOrThrow(OpenableColumns.SIZE));
             }
         }
     }

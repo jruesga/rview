@@ -491,15 +491,15 @@ public class GalleryChooserFragment extends BottomSheetBaseFragment {
             try {
                 while (c.moveToNext()) {
                     MediaItem attachment = new MediaItem(
-                            Uri.withAppendedPath(uri, c.getString(c.getColumnIndex(
+                            Uri.withAppendedPath(uri, c.getString(c.getColumnIndexOrThrow(
                                 MediaStore.Files.FileColumns._ID))));
-                    attachment.mTitle = c.getString(c.getColumnIndex(
+                    attachment.mTitle = c.getString(c.getColumnIndexOrThrow(
                             MediaStore.Files.FileColumns.TITLE));
-                    attachment.mMimeType = c.getString(c.getColumnIndex(
+                    attachment.mMimeType = c.getString(c.getColumnIndexOrThrow(
                             MediaStore.Files.FileColumns.MIME_TYPE));
-                    attachment.mMediaType = c.getInt(c.getColumnIndex(
+                    attachment.mMediaType = c.getInt(c.getColumnIndexOrThrow(
                             MediaStore.Files.FileColumns.MEDIA_TYPE));
-                    attachment.mSize = c.getLong(c.getColumnIndex(
+                    attachment.mSize = c.getLong(c.getColumnIndexOrThrow(
                             MediaStore.Files.FileColumns.SIZE));
                     images.add(attachment);
                 }

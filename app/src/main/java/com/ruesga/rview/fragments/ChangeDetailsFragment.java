@@ -1721,8 +1721,8 @@ public class ChangeDetailsFragment extends Fragment implements
                         attachment.mLocalUri = data.getData();
                         attachment.mName = StringHelper.getFileNameWithoutExtension(
                                 new File(c.getString(
-                                        c.getColumnIndex(OpenableColumns.DISPLAY_NAME))));
-                        attachment.mSize = c.getLong(c.getColumnIndex(OpenableColumns.SIZE));
+                                        c.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))));
+                        attachment.mSize = c.getLong(c.getColumnIndexOrThrow(OpenableColumns.SIZE));
                         attachment.mMimeType = cr.getType(attachment.mLocalUri);
                         addPendingAttachments(attachment);
                     }
