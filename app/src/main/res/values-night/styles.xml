@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2016 Jorge Ruesga
+
+     Licensed under the Apache License, ServerVersion 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+ -->
+<resources>
+    <style name="AppThemeBase" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">#05668d</item>
+        <item name="colorPrimaryDark">#044c69</item>
+        <item name="colorAccent">#f44336</item>
+        <item name="android:windowNoTitle">true</item>
+        <!--
+        <item name="android:textColorPrimary">#00ff00</item>
+        <item name="android:textColorSecondary">#0000ff</item>
+        -->
+        <!-- Diff options title -->
+        <item name="android:textColorPrimaryInverse">@android:color/white</item>
+        <!-- Pre-exposure tabs text -->
+        <item name="android:textColorSecondaryInverse">#b3ffffff</item>
+        <!-- Account name in nav drawer -->
+        <item name="android:textColorTertiaryInverse">#b3ffffff</item>
+    </style>
+    <style name="SearchView">
+        <item name="floatingSearch_suggestionRightIconColor">#f44336</item>
+        <item name="floatingSearch_searchBarTextSize">12sp</item>
+        <item name="floatingSearch_searchSuggestionTextSize">10sp</item>
+
+        <item name="floatingSearch_backgroundColor">#ff424242</item>
+        <item name="floatingSearch_viewTextColor">#ffffffff</item>
+        <item name="floatingSearch_hintTextColor">#80ffffff</item>
+        <item name="floatingSearch_dividerColor">#ff616161</item>
+        <item name="floatingSearch_clearBtnColor">#ffffffff</item>
+        <item name="floatingSearch_leftActionColor">#ffffffff</item>
+        <item name="floatingSearch_menuItemIconColor">#ffffffff</item>
+        <item name="floatingSearch_actionMenuOverflowColor">#ffffffff</item>
+    </style>
+</resources>
