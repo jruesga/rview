@@ -90,6 +90,7 @@
   {"name":"PixysOS", "url":"http://gerrit.pixysos.com/"},  
   {"name":"PolarSys", "url":"https://git.polarsys.org/r/", "ci_accounts": "^(Hudson CI)$"},
   {"name":"PotatoProject", "url":"https://review.potatoproject.co/"},
+  {"name":"Project-404", "url":"https://review.project404.co/"},
   {"name":"PureFusionOS", "url":"https://review.purefusionos.com/"},
   {"name":"Qt", "url":"https://codereview.qt-project.org/", "ci_accounts": "^(Qt CI Bot)$"},
   {"name":"R8", "url":"https://r8-review.googlesource.com/"},
