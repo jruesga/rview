@@ -306,6 +306,7 @@
     <string name="dashboard_incoming">Incoming</string>
     <string name="dashboard_cced">CCed</string>
     <string name="dashboard_recently_closed">Recently closed</string>
+    <string name="dashboard_your_turn">Your turn</string>
 
     <!-- Account Settings -->
     <string name="account_settings_title">Settings</string>

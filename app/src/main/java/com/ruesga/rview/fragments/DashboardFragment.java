@@ -99,7 +99,14 @@ public class DashboardFragment extends PageableFragment {
         }
 
         // Dashboard changed between versions just sure to use the proper ones
-        if (ModelHelper.isEqualsOrGreaterVersionThan(account, 3.0d)) {
+        if (ModelHelper.isEqualsOrGreaterVersionThan(account, 3.7d)) {
+            mDefaultDashboardTabs = getResources().getStringArray(R.array.dashboard_titles_3_7);
+            mDefaultDashboardFilters = getResources().getStringArray(R.array.dashboard_filters_3_7);
+            mDefaultDashboardReverse = getResources().getStringArray(
+                    Preferences.isAccountDashboardOngoingSort(getActivity(), account)
+                            ? R.array.dashboard_sort_inverse_3_7
+                            : R.array.dashboard_sort_3_7);
+        } else if (ModelHelper.isEqualsOrGreaterVersionThan(account, 3.0d)) {
             mDefaultDashboardTabs = getResources().getStringArray(R.array.dashboard_titles_3_0);
             mDefaultDashboardFilters = getResources().getStringArray(R.array.dashboard_filters_3_0);
             mDefaultDashboardReverse = getResources().getStringArray(
