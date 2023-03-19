@@ -47,7 +47,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             "is", "status", "added", "deleted", "delta", "size", "commentby", "from",
             "reviewedby", "author", "committer", "visibleto", "starredby", "watchedby",
             "draftby", "assignee", "cc", "unresolved", "submittable", "revertof",
-            "hashtag", "extension", "onlyextensions", "directory", "footer"
+            "hashtag", "extension", "onlyextensions", "directory", "footer", "attention"
     };
 
     public static final Class[] FIELDS_TYPES = {
@@ -58,7 +58,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             IsType.class, StatusType.class, Relation.class, Relation.class, Relation.class, Relation.class, String.class, String.class,
             String.class, String.class, String.class, String.class, String.class, String.class,
             String.class, String.class, String.class, Relation.class, SubmitRecordStatusType.class, Integer.class,
-            String.class, String.class, String.class, String.class, String.class
+            String.class, String.class, String.class, String.class, String.class, String.class
     };
 
     public static final Class[] SUGGEST_TYPES = {
@@ -69,7 +69,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             IsType.class, StatusType.class, null, null, null, null, AccountInfo.class, AccountInfo.class,
             AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class, AccountInfo.class,
             AccountInfo.class, AccountInfo.class, AccountInfo.class, Relation.class, SubmitRecordStatusType.class, null,
-            null, null, null, null, null
+            null, null, null, null, null, null
     };
 
     public static final Double[] SUPPORTED_FROM_VERSION = {
@@ -80,7 +80,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
             null, 2.14d, 2.14d, 2.14d, 2.14d, 2.15d,
-            2.15d, 3.0d, 3.0d, 3.0d, 3.0d
+            2.15d, 3.0d, 3.0d, 3.0d, 3.0d, 3.7d
     };
 
     public static final Double[] UNSUPPORTED_FROM_VERSION = {
@@ -91,7 +91,7 @@ public class ChangeQuery extends ComplexQuery<ChangeQuery> {
             null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
             2.15d, null, null, null, null, null,
-            null, null, null, null, null
+            null, null, null, null, null, null
     };
 
     public ChangeQuery age(TimeUnit unit, int value) {
