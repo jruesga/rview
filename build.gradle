@@ -43,7 +43,7 @@ ext {
         prettytime                  : '4.0.5.Final',
         flexboxlayout               : '2.0.1',
         floatingsearchview          : '2d435bead5',
-        androidsvg                  : '3511e13649',
+        androidsvg                  : '1.4',
         keyboardvisibilityevent     : '2.3.0',
         better_link_movement_method : '2.2.0',
         aboutlibraries              : '8.1.2',

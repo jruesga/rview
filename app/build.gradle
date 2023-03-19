@@ -40,7 +40,7 @@ dependencies {
     implementation "org.ocpsoft.prettytime:prettytime:${libraries.prettytime}"
     implementation "com.google.android:flexbox:${libraries.flexboxlayout}"
     implementation "com.github.jruesga:floatingsearchview:${libraries.floatingsearchview}"
-    implementation ("com.github.BigBadaboom:androidsvg:${libraries.androidsvg}") {
+    implementation ("com.caverock:androidsvg:${libraries.androidsvg}") {
         exclude group: 'org.jetbrains', module: 'annotations-java5'
     }
     implementation "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:${libraries.keyboardvisibilityevent}"
