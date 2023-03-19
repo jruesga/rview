@@ -57,7 +57,7 @@ public class UrlHandlerProxyActivity extends AppCompatActivity {
         }
 
         // Check we have something we allow to handle
-        final Uri uri = getIntent().getData();
+        final Uri uri = getIntent().getData().buildUpon().clearQuery().build();
         String scheme = uri.getScheme();
         if (scheme == null || (!scheme.equals("http") && !scheme.equals("https"))) {
             finish();
